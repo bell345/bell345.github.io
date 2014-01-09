@@ -75,24 +75,31 @@ function setBlogNav() {
 	$(".blognavn").attr("href", next);
 }
 var posts = [];
+var postsDone = [];
 function getPosts() {
     var iterator3 = 0;
+	for (i=0;i<posts.length;i++) {
+		postsDone[i] = false;
+	}
     var postinter = setInterval(function () {
         if (iterator3 < postInfo.length) {
-            var xhr = XHR();
-            xhr.open("GET", postInfo[iterator3][0], true);
-            xhr.send();
-            xhr.onreadystatechange = function () {
-                if (checkState(xhr)) {
-                    posts.push(xhr.response);
-                }
-                if (checkState(xhr) && iterator3 == postInfo.length) {
-                    iterator4++;
-                    $(document).trigger("blogset");
-                    clearInterval(postinter);
-                }
-            }
-            iterator3++;
+			if (!postsDone[iterator3]) {
+				var xhr = XHR();
+				xhr.open("GET", postInfo[iterator3][0], true);
+				xhr.send();
+				xhr.onreadystatechange = function () {
+					if (checkState(xhr)) {
+						posts[iterator3] = (xhr.response);
+						iterator3++;
+					}
+					if (checkState(xhr) && iterator3 == postInfo.length) {
+						iterator4++;
+						$(document).trigger("blogset");
+						clearInterval(postinter);
+					}
+				}
+				postsDone[iterator3] = true;
+			}
         }
     }, 150);
 }
