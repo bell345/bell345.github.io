@@ -183,6 +183,13 @@ function Popup(x, y, head, text) {
 	Popup.remove();
 	body.append(pup);
 }
+function updateHeight() {
+	if ($("#maincontent").height() - $("#maincontent").offset().top < innerHeight) {
+		$("footer nav a").hide();
+	} else {
+		$("footer nav a").show();
+	}
+}
 Popup.remove = function () {
 	$(".popup").remove();
 }
@@ -196,9 +203,7 @@ if (!Array.prototype.indexOf) {
     }
 }
 $(function () {
-	if ($("#maincontent").height() - $("#maincontent").offset().top < innerHeight) {
-		$("footer nav a").hide();
-	}
+	updateHeight();
 })
 // START OF COOKIE CODES //
 function createCookie(name, value, days) {

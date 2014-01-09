@@ -73,6 +73,7 @@ function setBlogNav() {
 	}
 	$(".blognavp").attr("href", back);
 	$(".blognavn").attr("href", next);
+	updateHeight();
 }
 var posts = [];
 var postsDone = [];
