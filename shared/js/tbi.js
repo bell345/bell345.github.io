@@ -196,6 +196,9 @@ if (!Array.prototype.indexOf) {
     }
 }
 $(function () {
+	if ($("#maincontent").height() - $("#maincontent").offset().top < innerHeight) {
+		$("footer nav a").hide();
+	}
 })
 // START OF COOKIE CODES //
 function createCookie(name, value, days) {
