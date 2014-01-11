@@ -472,19 +472,22 @@ Grid.Draw.updatePrevColours = function () {
 	var divs = [$("#gdrc0"),$("#gdrc1"),$("#gdrc2"),$("#gdrc3")];
 	var pColours = Grid.Draw.prevColours;
 	var len = pColours.length;
-	if (len < 1) {return 0;}
-	if (len == 5) Grid.Draw.prevColours.slice(1);
-	if (len >= 1) {divs[3].css("background",pColours[len-1]);divs[3].attr("title",pColours[len-1])}
-	if (len >= 2) {divs[2].css("background",pColours[len-2]);divs[2].attr("title",pColours[len-2])}
-	if (len >= 3) {divs[1].css("background",pColours[len-3]);divs[1].attr("title",pColours[len-3])}
-	if (len >= 4) {divs[0].css("background",pColours[len-4]);divs[0].attr("title",pColours[len-4])}
+	setTimeout(function () {
+	    if (len < 1) { return 0; }
+	    if (len == 5) { Grid.Draw.prevColours.shift(1); len = 4; pColours = Grid.Draw.prevColours; }
+	    if (len >= 1) { divs[3].css("background", pColours[len - 1]); divs[3].attr("title", pColours[len - 1]) }
+	    if (len >= 2) { divs[2].css("background", pColours[len - 2]); divs[2].attr("title", pColours[len - 2]) }
+	    if (len >= 3) { divs[1].css("background", pColours[len - 3]); divs[1].attr("title", pColours[len - 3]) }
+	    if (len >= 4) { divs[0].css("background", pColours[len - 4]); divs[0].attr("title", pColours[len - 4]) }
+	}, 100);
+	$(".gdrawrc").off();
 	$(".gdrawrc").click(function () {
-		if (pColours.indexOf(Grid.Draw.colour)==-1) 
-			Grid.Draw.prevColours.push(Grid.Draw.colour);
-		Grid.Draw.colour = $(this).attr("title");
-		Grid.Draw.updatePrevColours();
-		$("#gdrawcolour").val(Grid.Draw.colour);
-	})
+	    if (Grid.Draw.prevColours.indexOf(Grid.Draw.colour) == -1 && (Grid.Draw.colour != "transparent" || Grid.Draw.colour != "rgba(0,0,0,0)"))
+	        Grid.Draw.prevColours.push(Grid.Draw.colour);
+	    Grid.Draw.colour = $(this).attr("title");
+	    $("#gdrawcolour").val(Grid.Draw.colour);
+	    Grid.Draw.updatePrevColours();
+	});
 }
 Grid.Clear = {};
 // Erases all cells.

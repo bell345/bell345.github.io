@@ -14,7 +14,7 @@
         <h1>Thomas Bell Industries</h1>
         <img src="/shared/res/blank.png" />
     </header>
-    <nav>
+    <nav id="top">
         <a href="/">Home</a>
         <a href="/blog/">Blog</a>
         <a href="/proto/">Prototypes</a>
@@ -22,7 +22,7 @@
     </nav>
     <div id="content">
         <div id="maincontent">
-            <h2>Prototypes</h2>
+            <h1>Prototypes</h1>
             <p class="main">
                 These are programs and code snippets that I have on display 
                 for infinite free use and reuse by anybody for any purpose.
@@ -66,7 +66,7 @@
                     <button id="gdrawbrush">Brush</button>
                     <button id="gdrawerase">Eraser</button>
 					<button id="gdrawinspc">Inspect</button><br />
-                    Brush diameter: <br /><input type="text" id="gdrawdiam" />cells <br />
+                    Brush diameter: <br /><input type="text" id="gdrawdiam" value="3" />cells <br />
 					Recent colours: <br />
 					<div class="gdrawrc" id="gdrc0"></div><div class="gdrawrc" id="gdrc1">
 					</div><div class="gdrawrc" id="gdrc2"></div><div class="gdrawrc" id="gdrc3">
@@ -114,8 +114,8 @@
             <p class="main">
                 It's not that much at the moment, but the basic structure exists.
             </p>
-            <textarea id="txtengarea" disabled="disabled"></textarea><br />
-            <input type="text" id="txtengin" />
+            <textarea id="txtengarea" disabled="disabled" class="proto"></textarea><br />
+            <input type="text" id="txtengin" class="proto" />
             <h2 id="anchor5">Countdown</h2>
             <p class="main">
                 This is a widget based off of my countdown blog posts. There are a few bugs, 

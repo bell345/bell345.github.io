@@ -1,4 +1,5 @@
 ﻿/* START AT RULES */
+@import url(http://fonts.googleapis.com/css?family=Oswald|Open+Sans|Montserrat|Righteous);
 @font-face {
     font-family:'Oswald';
     font-weight:400;
@@ -17,7 +18,6 @@
   font-weight: 400;
   src: local('Montserrat-Regular'), url(/shared/res/Montserrat.woff) format('woff');
 }
-@import url(http://fonts.googleapis.com/css?family=Oswald|Open+Sans|Montserrat);
 /* END AT RULES */
 /* START GLOBAL STYLE */
 * {
@@ -45,6 +45,10 @@ nav {
     padding:6px;
     text-align:center;
     box-shadow:0px 8px 10px #222;
+}
+#top {
+    top:0;
+    z-index:9;
 }
 #content {
     position:relative;
@@ -269,10 +273,15 @@ h1 {
     text-align:center;
     color:#fff;
     text-shadow:4px 4px 0px #333;
-    font-family:'Montserrat','Georgia',serif;
+    font-family:'Righteous','Georgia',serif;
     font-size:58px;
     font-weight:normal;
     padding-top:6px;
+}
+#content h1 {
+    color:#333;
+    text-shadow:4px 4px 0px #ddd;
+    padding-bottom:16px;
 }
 h2 {
     color:#333;

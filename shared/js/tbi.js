@@ -203,7 +203,18 @@ if (!Array.prototype.indexOf) {
     }
 }
 $(function () {
-	updateHeight();
+    updateHeight();
+    $(document).scroll(function () {
+        if ($(document).scrollTop() > parseInt($("header").css("height"))) {
+            $("#top").css("position", "fixed");
+            $("#top").css("width", "100%");
+            $("#top").css("zIndex","9")
+        } else {
+            $("#top").css("position", "relative");
+            $("#top").css("width", "auto");
+            $("#top").css("zIndex", "-1");
+        }
+    });
 })
 // START OF COOKIE CODES //
 function createCookie(name, value, days) {
