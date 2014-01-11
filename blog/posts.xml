@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <postsIndex>
   <post>
+	<id>11</id>
+	<source>/blog/2014/01/2013-in-review.htm</source>
+	<title>2013 - Year In Review</title>
+	<date>2014-01-10</date>
+	<tags>
+	  <tag>life</tag>
+	  <tag>review</tag>
+	  <tag>reflection</tag>
+	</tags>
+	<author>Thomas Bell</author>
+  </post>
+  <post>
 	<id>10</id>
 	<source>/blog/2013/12/vert-today.htm</source>
 	<title>Advertising Today - Part 1</title>

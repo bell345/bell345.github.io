@@ -496,3 +496,8 @@ input[type="text"] {
 .inactive {
 	color:#aaa;
 }
+#sidebar .main {
+	font-size:14px;
+	position:absolute;
+	bottom:14px;
+}
