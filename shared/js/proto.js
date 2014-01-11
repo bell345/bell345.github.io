@@ -1035,7 +1035,7 @@ Cdown.main = function (enddate, dest) {
         if (active <= 6) finalCountdown += cStr[6] + " second" + plurals[6] + " ";
     }
     else {
-        if (active <= 3) finalCountdown += Math.floor(cStr[3] + cStr[2] / 30 + cStr[1] / 365) + " day(s) ";
+        if (active <= 3) finalCountdown += Math.floor(cStr[3] + cStr[2] * 30 + cStr[1] * 365) + " day(s) ";
         if (active <= 4) finalCountdown += cStr[4] + ":";
         if (active <= 5) finalCountdown += cStr[5] + ".";
         if (active <= 6) finalCountdown += cStr[6];
