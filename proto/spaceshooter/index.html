@@ -1,19 +1,16 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-		<title>Unity Web Player | Space Shooter</title>
-		<script type='text/javascript' src='https://ssl-webplayer.unity3d.com/download_webplayer-3.x/3.0/uo/jquery.min.js'></script>
+		<title>Space Shooter | Unity</title>
+		<script type='text/javascript' src='/shared/js/jquery.min.js'></script>
 		<script type="text/javascript">
-		<!--
 		var unityObjectUrl = "http://webplayer.unity3d.com/download_webplayer-3.x/3.0/uo/UnityObject2.js";
 		if (document.location.protocol == 'https:')
 			unityObjectUrl = unityObjectUrl.replace("http://", "https://ssl-");
 		document.write('<script type="text\/javascript" src="' + unityObjectUrl + '"><\/script>');
-		-->
 		</script>
 		<script type="text/javascript">
-		<!--
 			var config = {
 				width: 600, 
 				height: 900,
@@ -58,10 +55,30 @@
 				});
 				u.initPlugin(jQuery("#unityPlayer")[0], "Build.unity3d");
 			});
-		-->
+		</script>
+		<script type="application/javascript">
+			setTimeout(function () {
+				$("h1").slideUp();
+			}, 2000);
+			$(function () {
+				$("#head").click(function () {
+					$("h1").slideDown();
+				});
+				$("#head").mouseleave(function () {
+					$("h1").slideUp();
+				});
+				$("#sensitive").click(function () {
+					if ($("#head").css('display') == "none")
+						$("#head").slideDown();
+					else 
+						$("#head").slideUp();
+				});
+			});
 		</script>
 		<style type="text/css">
-		<!--
+		* {
+			margin:0;
+		}
 		body {
 			font-family: Helvetica, Verdana, Arial, sans-serif;
 			background-color: white;
@@ -69,13 +86,16 @@
 			text-align: center;
 		}
 		a:link, a:visited {
-			color: #000;
+			color: #fff;
 		}
 		a:active, a:hover {
-			color: #666;
+			color: #ccc;
 		}
 		p.header {
 			font-size: small;
+			padding:12px;
+			background:#555;
+			color:#fff;
 		}
 		p.header span {
 			font-weight: bold;
@@ -112,11 +132,52 @@
 			height: 900px;
 			width: 600px;
 		}
-		-->
+		p.header a {
+			position:relative;
+			top:1px;
+			text-align:center;
+			text-decoration:none;
+			font-size:20px;
+			font-family:sans-serif;
+			text-shadow:3px 3px 4px #000;
+			color:#fff;
+			border-bottom:5px solid transparent;
+			padding:6px 14px;
+			-webkit-transition:border 0.5s;
+			-moz-transition:border 0.5s;
+			-o-transition:border 0.5s;
+			transition:border 0.5s;
+		}
+		p.header a:hover {
+			border-bottom:5px solid #0094ff;
+		}
+		p.header:hover {
+			background:#777;
+		}
+		h1 {
+			padding:8px;
+			color:#fff;
+			background:#777;
+			text-shadow:4px 4px 3px #222;
+		}
+		#sensitive {
+			width:100%;
+			background:#ccc;
+			height:5px;
+			margin-bottom:15px;
+		}
+		#sensitive:hover {
+			background:#0af;
+		}
 		</style>
 	</head>
 	<body>
-		<p class="header"><span>Unity Web Player | </span>Space Shooter</p>
+		<header>
+		<div id="head"><h1>Space Shooter</h1>
+		<p class="header"><a href="http://unity3d.com/unity">Made with Unity</a>
+		<a href="/proto">Back to page</a></p></div>
+		<div id="sensitive"></div>
+		</header>
 		<div class="content">
 			<div id="unityPlayer">
 				<div class="missing">
@@ -131,6 +192,5 @@
 				</div>
 			</div>
 		</div>
-		<p class="footer">&laquo; created with <a href="http://unity3d.com/unity/" title="Go to unity3d.com">Unity</a> &raquo;</p>
 	</body>
 </html>
