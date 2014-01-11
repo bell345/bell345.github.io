@@ -212,7 +212,7 @@ $(function () {
         } else {
             $("#top").css("position", "relative");
             $("#top").css("width", "auto");
-            $("#top").css("zIndex", "-1");
+            $("#top").css("zIndex", "0");
         }
     });
 })
