@@ -49,6 +49,7 @@ nav {
 #top {
     top:0;
     z-index:9;
+    font-size:0;
 }
 #content {
     position:relative;
