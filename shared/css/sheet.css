@@ -232,6 +232,9 @@ footer {
     background:#dadada;
     color:#333;
 }
+.proto {
+    margin:0 24px;
+}
 button:active, button:focus {
 	outline:2px solid #0094ff;
 }
@@ -260,7 +263,8 @@ input[type="text"]:active, input[type="text"]:focus {
 	max-height:140px;
 	background:rgba(255,255,255,1);
 	border:2px solid #555;
-	position:absolute;
+	position:fixed;
+    z-index:10;
 	padding:4px;
 }
 .popup .main {
@@ -341,9 +345,6 @@ nav a:hover {
     padding-top:0;
     list-style-type:square;
 }
-.proto {
-    margin:24px;
-}
 .side {
     font-family:'Open Sans','Calibri',sans-serif;
     font-size:20px;
@@ -357,6 +358,9 @@ nav a:hover {
 .side a, .side a:visited {
     color:#333;
     text-decoration:none;
+}
+.side li a:hover {
+    color:#777;
 }
 .timestamp {
     font-weight:bold;

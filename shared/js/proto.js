@@ -667,7 +667,12 @@ $(function () {
 	        txteng.command();
 	    }
 	});
-	$("#calinner").css("height", ((parseInt($("#calendar").css("height")) - parseInt($("#calhead").css("height"))) - parseInt($("#calinner").css("padding")) * 2) - parseInt($("#calinner").css("border"))*2);
+	$("#calinner").css("height", (
+        (parseInt($("#calendar").css("height"))
+        - parseInt($("#calhead").css("height")))
+        - parseInt($("#calinner").css("padding")) * 2)
+        - parseInt($("#calinner").css("border")) * 2);
+	Cdown.check(false);
 });
 // END GRID CODE //
 // START CALENDAR CODE //
