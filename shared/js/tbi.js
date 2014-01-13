@@ -1,23 +1,21 @@
 function gebi(element) { return document.getElementById(element); };
 // Checks the state of an XHR.
-function checkState(request) {
-    if (request.readyState == 4) {
-        return 1;
-    }
-}
+function checkState(request) { return (request.readyState == 4); };
 // A XMLHttpRequest object constructor.
 function XHR() {
     var xhr;
     if (window.XMLHttpRequest) {
         xhr = new XMLHttpRequest();
-    }
-    else if (window.ActiveXObject) {
+    } else if (window.ActiveXObject) {
         xhr = new ActiveXObject("Microsoft.XMLHTTP");
-    }
-	else {
+    } else {
 		throw new Error("You are not using a supported browser.");
 	}
     return xhr;
+}
+function findIndex(file, name) {
+    var xml = $.parseXML(file.response);
+    return xml.getElementsByTagName(name);
 }
 // Appends HTML to an element.
 function modifyHtml(id, mod) {
@@ -108,9 +106,7 @@ function tris(num) {
     }
 }
 // Determines whether or not a number is even.
-function isEven(num) {
-    return (num % 2 == 0);
-}
+function isEven(num) { return (num % 2 == 0); }
 // Returns the numbers that go into the specified number.
 function divisors(num) {
 	if (num > 10e7) {
@@ -193,6 +189,60 @@ function updateHeight() {
 Popup.remove = function () {
 	$(".popup").remove();
 }
+var HTMLIncludes = {};
+HTMLIncludes.index;
+HTMLIncludes.info = [];
+HTMLIncludes.getDone = [];
+HTMLIncludes.includes = [];
+HTMLIncludes.getIndex = function () {
+    var xhr = new XHR();
+    xhr.open("GET", "/shared/html/includes.xml?"+unqid, true);
+    xhr.send();
+    xhr.onreadystatechange = function () {
+        if (checkState(xhr)) {
+            HTMLIncludes.index = findIndex(xhr, "include");
+            HTMLIncludes.list();
+        }
+    }
+}
+HTMLIncludes.list = function () {
+    var indx = HTMLIncludes.index;
+    var len = indx.length;
+    for (i = 0; i < len; i++) {
+        var tempIncl = [];
+        for (j = 0; j < indx[0].children.length; j++) {
+            tempIncl.push(indx[i].children[j].textContent);
+        }
+        HTMLIncludes.info.push(tempIncl);
+    }
+    HTMLIncludes.get();
+}
+HTMLIncludes.get = function () {
+    var current = 0;
+    for (i = 0; i < HTMLIncludes.info.length; i++) {
+        HTMLIncludes.getDone[i] = false;
+    }
+    timerSet("includes", 200, function () {
+        if (!HTMLIncludes.getDone[current]) {
+            HTMLIncludes.getDone[current] = true;
+            var xhr = new XHR();
+            xhr.open("GET", HTMLIncludes.info[current][0], true);
+            xhr.send();
+            xhr.onreadystatechange = function () {
+                if (checkState(xhr)) {
+                    HTMLIncludes.includes[current] = xhr.response;
+                    $(HTMLIncludes.info[current][1]).html(HTMLIncludes.includes[current]);
+                    if (current == HTMLIncludes.getDone.length - 1) {
+                        timerClear("includes");
+                        updateHeight();
+                    } else {
+                        current++;
+                    }
+                }
+            }
+        }
+    });
+}
 // For *special* browsers.
 if (!Array.prototype.indexOf) {
     Array.prototype.indexOf = function (obj, start) {
@@ -215,6 +265,7 @@ $(function () {
             $("#top").css("zIndex", "0");
         }
     });
+    HTMLIncludes.getIndex();
 })
 // START OF COOKIE CODES //
 function createCookie(name, value, days) {

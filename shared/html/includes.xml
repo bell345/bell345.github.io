@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<includeIndex>
+  <include>
+    <source>/shared/html/header.htm</source>
+    <insert>#navigation</insert>
+  </include>
+  <include>
+    <source>/shared/html/sidebar.htm</source>
+    <insert>#sidebar</insert>
+  </include>
+  <include>
+    <source>/shared/html/footer.htm</source>
+    <insert>footer</insert>
+  </include>
+</includeIndex>

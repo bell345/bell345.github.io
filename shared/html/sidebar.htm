@@ -1,0 +1,21 @@
+<p class="head">
+    Contact
+</p>
+<ul class="side">
+    <li><a href="//twitter.com/1betaTB">Twitter</a></li>
+    <li><a href="//steamcommunity.com/id/bell345">Steam</a></li>
+    <li><a href="mailto:tom.aus@outlook.com">Email</a></li>
+</ul>
+<script>
+    $(".side li:nth-child(3) a").mouseenter(function () {
+        var link = $(".side li:nth-child(3) a");
+        new Popup(link.offset().left+20, link.offset().top+30, "Email", "tom.aus@outlook.com");
+    });
+    $(".side li:nth-child(3) a").mouseleave(function () {
+        Popup.remove();
+    });
+</script>
+<p class="main">
+    <a href="//github.com/bell345/bell345.github.io/">Hosted on GitHub Pages</a><br />
+    Version 4
+</p>

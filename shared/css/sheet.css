@@ -1,5 +1,4 @@
 ﻿/* START AT RULES */
-@import url(http://fonts.googleapis.com/css?family=Oswald|Open+Sans|Montserrat|Righteous);
 @font-face {
     font-family:'Oswald';
     font-weight:400;
@@ -17,6 +16,12 @@
   font-style: normal;
   font-weight: 400;
   src: local('Montserrat-Regular'), url(/shared/res/Montserrat.woff) format('woff');
+}
+@font-face {
+    font-family:'Righteous';
+    font-style:normal;
+    font-weight:400;
+    src: local("Righteous"), local("Righteous-Regular"), url(/shared/res/Righteous.woff) format("woff");
 }
 /* END AT RULES */
 /* START GLOBAL STYLE */
@@ -253,7 +258,7 @@ input[type="text"]:active, input[type="text"]:focus {
 .popup {
 	max-width:220px;
 	max-height:140px;
-	background:rgba(255,255,255,0.7);
+	background:rgba(255,255,255,1);
 	border:2px solid #555;
 	position:absolute;
 	padding:4px;
