@@ -121,6 +121,7 @@ function getPosts() {
 }
 function setPosts() {
     if ($("#posts").length) {
+        $("#posts").html("");
         for (i = 0; i < posts.length; i++) {
             var temppost = "";
             temppost += "<h2 id='anchor" + (i + 2) + "'>" + postInfo[i][1] + "</h2>";
@@ -135,7 +136,6 @@ function setPosts() {
             }
             temppost += "</p>";
             temppost += posts[i];
-            $("#posts").html("");
             modifyHtml("posts", "<div id='post" + i + "'>" + temppost + "</div>");
         }
         iterator4++;
