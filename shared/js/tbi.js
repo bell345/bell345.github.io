@@ -18,6 +18,8 @@ function XHR() {
 }
 // Returns first-level elements in an XML index.
 function findIndex(file, name) {
+    if (navigator.userAgent.search(/MSIE [0-9]/) != -1)
+        var xml = $.parseXML(file.responseText);
     if (navigator.userAgent.indexOf("Trident") != -1)
         var xml = file.responseXML;
     else 
@@ -201,7 +203,7 @@ Popup.remove = function () {
 // Code for implementing a client-side HTML includes system.
 // An alternative to PHP includes.
 var HTMLIncludes = {};
-HTMLIncludes.index;
+HTMLIncludes.index = {};
 HTMLIncludes.info = [];
 HTMLIncludes.getDone = [];
 HTMLIncludes.includes = [];
@@ -316,3 +318,39 @@ function eraseCookie(name) {
 }
 function checkSession() {return readCookie("session")};
 // END OF COOKIE CODES //
+// START INCOMPATIBILITY CODE //
+document.onreadystatechange = function () {
+    if (navigator.userAgent.search(/MSIE [0-8]/) != -1) {
+        var incompat = "";
+        incompat += "<DIV style='width:100%;height:100%;background-color:#fff;color:#000;font-size:24px;padding:16px;'>";
+        incompat += "<H1 style='font-size:64px;font-family:monospace;color:#000;margin-bottom:48px;'>Your browser is unsupported.</H1>";
+        incompat += "<P style='text-align:center;margin:0 200px 0 200px;'>You have been detected using a version of Internet Explorer lower than IE9. ";
+        incompat += "This site's developer has no time for trying hopelessly for IE8 and lower support. ";
+        incompat += "Please upgrade your browser, preferably to either <A href='http://google.com/chrome'>Google Chrome</A> ";
+        incompat += "or <A href='http://firefox.com'>Mozilla Firefox</A>.</P>";
+        incompat += "</DIV>";
+        $("body").html(incompat);
+    } else if (navigator.userAgent.search(/MSIE 9/) != -1) {
+        if ($("#posts").html() != undefined) {
+            $("#posts").html("<p class='main'>We're sorry, but AJAX includes are unavailable for IE9. If you have a solution, come and " +
+                "contribute to the codebase at <a href='//github.com/bell345/bell345.github.io'>github</a>.</p>");
+        } else if ($("#featpost").html() != undefined) {
+            $("#featpost").html("<p class='main'>We're sorry, but AJAX includes are unavailable for IE9. If you have a solution, come and " +
+                "contribute to the codebase at <a href='//github.com/bell345/bell345.github.io'>github</a>.</p>");
+        }
+        $($("nav")[0]).html("<a href='/'>Home</a>" +
+            "<a href='/blog/'>Blog</a>" +
+            "<a href='/proto/'>Prototypes</a>" +
+            "<a href='/about/'>About</a>");
+        $("#sidebar").html("<p class='head'>" +
+                "Contact" +
+            "</p>" +
+            "<ul class='side'>" +
+                "<li><a href='//twitter.com/1betaTB'>Twitter</a></li>" +
+                "<li><a href='//steamcommunity.com/id/bell345'>Steam</a></li>" +
+                "<li><a href='//github.com/bell345'>GitHub</a></li>" +
+                "<li><a href='mailto:tom.aus@outlook.com'>Email</a></li>" +
+            "</ul>");
+    }
+}
+// END INCOMPATIBILITY CODE //

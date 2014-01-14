@@ -135,6 +135,7 @@ function setPosts() {
             }
             temppost += "</p>";
             temppost += posts[i];
+            $("#posts").html("");
             modifyHtml("posts", "<div id='post" + i + "'>" + temppost + "</div>");
         }
         iterator4++;
@@ -154,6 +155,7 @@ function setPosts() {
         }
         temppost += "</p>";
         temppost += posts[0];
+        $("#featpost").html("");
         modifyHtml("featpost", temppost);
         iterator4++;
         setBlogNav();

@@ -85,6 +85,7 @@ nav {
 }
 #featpost {
     padding:0 24px 24px;
+    text-align:center;
 }
 footer {
     width:100%;
@@ -92,6 +93,7 @@ footer {
 }
 #posts {
     padding:20px;
+    text-align:center;
 }
 .blogcont {
     width:100%;
@@ -311,6 +313,9 @@ h3.main {
     font-size:24px;
     padding-left:30px;
     padding-top:0;
+}
+p {
+    text-align:left;
 }
 div a {
     color:#09f;
