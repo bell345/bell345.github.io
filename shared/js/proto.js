@@ -7,6 +7,31 @@ Grid.height = this.width;
 Grid.cell = 0;
 Grid.heightQuant = 0;
 Grid.clicked = false;
+Grid.middleRow = [];
+Grid.rows = [];
+Grid.columns = [];
+Grid.layerCount = 0;
+Grid.layers = [];
+Grid.keepAlive = false;
+
+Grid.Draw = {};
+Grid.Draw.canDraw = false;
+Grid.Draw.colour = "yellow";
+Grid.Draw.interval = 0;
+Grid.Draw.tool = "brush";
+Grid.Draw.diameter = 3;
+Grid.Draw.prevDiam = 3;
+Grid.Draw.prevColours = [];
+
+Grid.Animation = {};
+Grid.Animation.Routine = {};
+Grid.Modify = {};
+Grid.Border = {};
+Grid.Mouse = {};
+Grid.Layer = {};
+Grid.Clear = {};
+Grid.Clear.Border = {};
+Grid.Status = {};
 // Creates a new grid of square div elements with different ids.
 // Function assumes grid is a square, as well as all grid cells
 Grid.set = function (height) {
@@ -45,9 +70,6 @@ Grid.altColours = function (colour1, colour2) {
         }
     }
 };
-Grid.middleRow = [];
-Grid.rows = [];
-Grid.columns = [];
 // Sets width, height, rows and columns all at once.
 // Called when grid is created.
 Grid.setProperties = function () {
@@ -88,8 +110,6 @@ Grid.setProperties = function () {
     $("#clcount").text(Grid.count);
     $("#cellstats").css("display", "inline-block");
 };
-Grid.Animation = {};
-Grid.Modify = {};
 // Returns coordinates.
 Grid.coords = function (column, row) {
     if (Grid.columns[column] == undefined) {
@@ -171,7 +191,6 @@ Grid.Modify.scale = function (colour1, colour2) {
     }
     Grid.Status.print("> Created a scale with the colours " + colour1 + " and " + colour2 + ".");
 }
-Grid.Border = {};
 // Changes the border value for a single cell
 Grid.Border.single = function (cell, border, colour) {
     var cellloc = $("#gridcell" + cell);
@@ -185,7 +204,6 @@ Grid.Border.all = function (border, colour) {
         Grid.Border.single(i, border, colour);
     }
 }
-Grid.Mouse = {};
 // Returns the position of the cursor (unused).
 Grid.Mouse.getPos = function () {
     $("#grid").click(function (event) {
@@ -198,7 +216,7 @@ Grid.Mouse.getPos = function () {
         return index;
     });
 }
-Grid.Animation.Routine = {};
+
 // Animation routine: Top left to Bottom Right.
 Grid.Animation.Routine.tL_to_bR = function (timeOut, colour) {
     var i = 0;
@@ -334,9 +352,6 @@ Grid.Animation.colSegReverse = function (column, start, end, timeOut, colour) {
         }
     }, timeOut);
 }
-Grid.Layer = {};
-Grid.layerCount = 0;
-Grid.layers = [];
 // Creates a new layer at the index.
 Grid.Layer.new = function (num) {
     var tempLayer = [];
@@ -388,7 +403,6 @@ Grid.Layer.import = function (num, array) {
     }
     Grid.layers.splice(num, 0, tempLayer);
 }
-Grid.keepAlive = false;
 // Displays all layers on top of each other in ascending numerical order.
 Grid.Layer.keepAlive = function (timeOut) {
     if (timeOut == undefined)
@@ -411,14 +425,6 @@ Grid.Layer.keepAlive = function (timeOut) {
         }
     }, timeOut);}
 }
-Grid.Draw = {};
-Grid.Draw.canDraw = false;
-Grid.Draw.colour = "yellow";
-Grid.Draw.interval = 0;
-Grid.Draw.tool = "brush";
-Grid.Draw.diameter = 3;
-Grid.Draw.prevDiam = 3;
-Grid.Draw.prevColours = [];
 // Modifies a single point based on mouse position.
 // Called automatically on mousedown event.
 Grid.Draw.pencil = function (pageX, pageY) {
@@ -489,7 +495,6 @@ Grid.Draw.updatePrevColours = function () {
 	    Grid.Draw.updatePrevColours();
 	});
 }
-Grid.Clear = {};
 // Erases all cells.
 Grid.Clear.stage = function () {
     $(".grid").empty();
@@ -557,7 +562,6 @@ Grid.Clear.layers = function () {
         Grid.Clear.layer(i);
     }
 }
-Grid.Clear.Border = {};
 // Clears the border value of a single cell.
 Grid.Clear.Border.single = function (cell) {
     var cellloc = $("#gridcell" + cell);
@@ -569,7 +573,6 @@ Grid.Clear.Border.single = function (cell) {
 Grid.Clear.Border.all = function () {
     Grid.Border.all(0, "black");
 }
-Grid.Status = {};
 // Debug status window print function.
 // Now unused.
 Grid.Status.print = function (message) {
@@ -679,6 +682,7 @@ $(function () {
 Calendar = {};
 Calendar.monthLengths = [null, 31, 28, 31, 30, 31, 30, 31, 30, 31, 31, 30, 31];
 Calendar.futureMonths = [];
+Calendar.days = [];
 Calendar.leapYear = false;
 Calendar.year; Calendar.month; Calendar.day; Calendar.date; Calendar.monthlength;
 Calendar.calcDate = function () {
@@ -710,7 +714,6 @@ Calendar.calcDate = function () {
         this.futureMonths.push(tempMonth);
     }
 }
-Calendar.days = [];
 Calendar.generate = function () {
     Calendar.calcDate();
     Calendar.width = parseInt($("#calinner").css("width"));
@@ -754,6 +757,20 @@ txteng.motd = [
     " -=|            Welcome to tXtEng v0.2.1            |=- ",
     " -=|             CC-BY Thomas Bell 2013             |=- "
 ];
+txteng.helpInfo = [
+    "echo: The echo command displays the message specified in the console." + "\n" +
+    "SYNTAX: echo \"[message]\"",
+    "run: Runs a tXtEng program." + "\n" +
+    "SYNTAX: run [program] {arguments}",
+    "help: Echoes out either the list of valid commands or displays useful information about" +
+    "a specific one." + "\n" +
+    "SYNTAX: help {program}",
+    "cl: Clears the console." + "\n" +
+    "SYNTAX: cl"
+];
+
+txteng.Program = {};
+
 txteng.echo = function (message) {
     if (message) {
         var input = $("#txtengarea");
@@ -862,17 +879,6 @@ txteng.run = function (program) {
 txteng.clear = function () {
     $("#txtengarea").val("");
 }
-txteng.helpInfo = [
-    "echo: The echo command displays the message specified in the console." + "\n" +
-    "SYNTAX: echo \"[message]\"",
-    "run: Runs a tXtEng program." + "\n" +
-    "SYNTAX: run [program] {arguments}",
-    "help: Echoes out either the list of valid commands or displays useful information about" +
-    "a specific one." + "\n" +
-    "SYNTAX: help {program}",
-    "cl: Clears the console." + "\n" +
-    "SYNTAX: cl"
-]
 txteng.help = function (command) {
     if (command == undefined || command == "" || command == " ") {
         txteng.echo("COMMANDS: ");
@@ -887,7 +893,6 @@ txteng.help = function (command) {
         txteng.echo("The command \"" + command + "\" was not recognised by tXtEng. Try again.");
     }
 }
-txteng.Program = {};
 txteng.Program.reset = function () {
     $("#txtengin").off("keydown");
     $("#txtengin").keydown(function (event) {
@@ -997,6 +1002,8 @@ Cdown.expand = true;
 Cdown.dbugTime = [];
 Cdown.prevSec;
 Cdown.active = false;
+Cdown.name = "";
+
 Cdown.main = function (enddate, dest) {
     this.rightNow = new Date();
     var bStr = unixToString(enddate);
@@ -1064,7 +1071,6 @@ Cdown.main = function (enddate, dest) {
     this.prevSec = cStr[6];
 }
 timerSet("nw", 100, function () { Cdown.rightNow = new Date() });
-Cdown.name = "";
 Cdown.verifyInput = function () {
     var inYear = $("#cdsetyear").val(),
         inMonth = $("#cdsetmonth").val(),

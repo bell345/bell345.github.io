@@ -29,25 +29,43 @@ function blogList(indx, pge) {
 	maxpost = indx.length;
 	if (5*pge > maxpost) {
 		var mxvar = maxpost;
-	}
-	else {
+	} else {
 		var mxvar = 5*pge;
 	}
-	var indxLength = indx[0].children.length;
-    for (i = (-5+(pge*5)); i < mxvar; i++) {
-        var temppost = [];
-        for (j = 1; j < 4; j++) {
-            temppost.push(indx[i].children[j].textContent);
+    try {
+        var indxLength = indx[0].children.length;
+        for (i = (-5+(pge*5)); i < mxvar; i++) {
+            var temppost = [];
+            for (j = 1; j < 4; j++) {
+                temppost.push(indx[i].children[j].textContent);
+            }
+            var temptags = [];
+            for (k = 0; k < indx[i].children[4].children.length; k++) {
+                temptags.push(indx[i].children[4].children[k].textContent);
+            }
+            temppost.push(temptags);
+            for (j = 5; j < indxLength; j++) {
+                temppost.push(indx[i].children[j].textContent);
+            }
+            postInfo.push(temppost);
         }
-        var temptags = [];
-        for (k = 0; k < indx[i].children[4].children.length; k++) {
-            temptags.push(indx[i].children[4].children[k].textContent);
+    } catch (e) {
+        var indxLength = indx[0].childNodes.length;
+        for (i = (-5 + (pge * 5)) ; i < mxvar; i++) {
+            var temppost = [];
+            for (j = 3; j < 9; j += 2) {
+                temppost.push(indx[i].childNodes[j].textContent);
+            }
+            var temptags = [];
+            for (k = 1; k < indx[i].childNodes[9].childNodes.length; k += 2) {
+                temptags.push(indx[i].childNodes[9].childNodes[k].textContent);
+            }
+            temppost.push(temptags);
+            for (j = 11; j < indxLength; j += 2) {
+                temppost.push(indx[i].childNodes[j].textContent);
+            }
+            postInfo.push(temppost);
         }
-        temppost.push(temptags);
-		for (j = 5; j < indxLength; j++) {
-			temppost.push(indx[i].children[j].textContent);
-		}
-        postInfo.push(temppost);
     }
     iterator4++;
     $(document).trigger("blogset");
@@ -70,6 +88,7 @@ function setBlogNav() {
 	$(".blognavp").attr("href", back);
 	$(".blognavn").attr("href", next);
 	updateHeight();
+	updateLinks();
 }
 var posts = [];
 var postsDone = [];
