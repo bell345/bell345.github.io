@@ -136,7 +136,7 @@ function setPosts() {
             }
             temppost += "</p>";
             temppost += posts[i];
-            modifyHtml("posts", "<div id='post" + i + "'>" + temppost + "</div>");
+            modifyHtml("posts", "<article id='post" + i + "'>" + temppost + "</article>");
         }
         iterator4++;
         setBlogNav();

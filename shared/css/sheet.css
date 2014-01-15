@@ -3,25 +3,25 @@
     font-family:'Oswald';
     font-weight:400;
     font-style:normal;
-    src:local("Oswald"), url(/shared/res/Oswald.woff) format("woff");
+    src:local("Oswald"), url(/shared/res/fonts/Oswald.woff) format("woff");
 }
 @font-face {
     font-family:'Open Sans';
     font-weight:400;
     font-style:normal;
-    src:local("Open Sans"), local("OpenSans"), url(/shared/res/OpenSans.woff) format("woff");
+    src:local("Open Sans"), local("OpenSans"), url(/shared/res/fonts/OpenSans.woff) format("woff");
 }
 @font-face {
   font-family: 'Montserrat';
   font-style: normal;
   font-weight: 400;
-  src: local('Montserrat-Regular'), url(/shared/res/Montserrat.woff) format('woff');
+  src: local('Montserrat-Regular'), url(/shared/res/fonts/Montserrat.woff) format('woff');
 }
 @font-face {
     font-family:'Righteous';
     font-style:normal;
     font-weight:400;
-    src: local("Righteous"), local("Righteous-Regular"), url(/shared/res/Righteous.woff) format("woff");
+    src: local("Righteous"), local("Righteous-Regular"), url(/shared/res/fonts/Righteous.woff) format("woff");
 }
 /* END AT RULES */
 /* START GLOBAL STYLE */
@@ -87,6 +87,16 @@ nav {
     padding:0 24px 24px;
     text-align:center;
 }
+.img-viewport {
+    text-align:center;
+    display:none;
+    margin-bottom:16px;
+    background:rgba(0,0,0,0.7);
+    color:#fff;
+    padding:12px;
+    font-family:'Open Sans',Calibri,sans-serif;
+    font-size:16px;
+}
 footer {
     width:100%;
     margin-top:20px;
@@ -95,7 +105,7 @@ footer {
     padding:20px;
     text-align:center;
 }
-#posts div {
+#posts article {
     text-align:left;
 }
 .blogcont {
@@ -237,6 +247,7 @@ footer {
 }
 .proto {
     margin:0 24px !important;
+    text-align:left;
 }
 button:active, button:focus {
 	outline:2px solid #0094ff;
@@ -528,4 +539,17 @@ input[type="text"] {
 	font-size:14px;
 	position:relative;
 	bottom:-8px;
+}
+img.centered {
+    margin: 16px auto;
+    border: 6px solid rgba(255,255,255, 0.5);
+    width: 400px;
+    border-radius:3px;
+    display:block;
+}
+.centered {
+    text-align:center;
+    display:block;
+    background:rgba(255,255,255,0.2);
+    padding:4px;
 }
