@@ -290,6 +290,10 @@ $(function () {
             $("#content").css("top", "0");
         }
     });
+    $(".ajaxProgress").progressbar({
+        value: false
+    });
+    $(".ajaxProgress").css("width", "50%");
     HTMLIncludes.getIndex();
     $(document).resize(function () { updateHeight(); });
 });

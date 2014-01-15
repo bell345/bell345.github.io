@@ -252,7 +252,7 @@ footer {
 button:active, button:focus {
 	outline:2px solid #0094ff;
 }
-button:active {
+button:active:not(.ui-icon) {
 	background:#ccc;
 }
 input[type="text"]:active, input[type="text"]:focus {
@@ -411,7 +411,7 @@ nav a:hover {
 .timestamp a:hover {
 	color:#ccc;
 }
-button {
+button:not(.ui-icon) {
     font-family:'Open Sans',Calibri,sans-serif;
     font-size:14px;
     padding:4px;
