@@ -1,3 +1,6 @@
+// TBI.JS - V4.4
+// Base functions, variables and helpers that are included and required in
+// all of my website pages.
 var now = new Date();
 var unqid = now.getTime();
 // Shorthand for getElementById.

@@ -1,6 +1,16 @@
+// BLOG.JS - V4.4.1
+// Code used to load blog posts from an external XML file.
 var now = new Date();
 var unqid = now.getTime();
 var page = 1;
+var maxpage;
+var postInfo = [];
+var maxpost;
+var index;
+var iterator4 = 0;
+var posts = [];
+var postsDone = [];
+
 if (location.search.match("page=") != null) {
 	if (location.search[7] != undefined) {
 		page = parseInt(location.search[6] + location.search[7]);
@@ -9,7 +19,6 @@ if (location.search.match("page=") != null) {
 		page = parseInt(location.search[6]);
 	}
 }
-var index;
 function getPostIndex() {
     var xhr = XHR();
     xhr.open("GET", "/blog/posts.xml?" + unqid, true);
@@ -21,9 +30,6 @@ function getPostIndex() {
         }
     }
 }
-var maxpage;
-var postInfo = [];
-var maxpost;
 function blogList(indx, pge) {
     maxpage = Math.ceil(indx.length / 5);
 	maxpost = indx.length;
@@ -90,11 +96,9 @@ function setBlogNav() {
 	updateHeight();
 	updateLinks();
 }
-var posts = [];
-var postsDone = [];
 function getPosts() {
     var iterator3 = 0;
-	for (i=0;i<posts.length;i++) {
+	for (i=0;i<postInfo.length;i++) {
 		postsDone[i] = false;
 	}
     var postinter = setInterval(function () {
@@ -162,7 +166,6 @@ function setPosts() {
     }
     $(document).trigger("blogset");
 }
-var iterator4 = 0;
 $(document).on("blogset", function () {
     if (iterator4 == 0) getPostIndex()
     else if (iterator4 == 1) getPosts()
