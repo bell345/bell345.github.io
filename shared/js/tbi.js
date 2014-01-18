@@ -1,8 +1,11 @@
-// TBI.JS - V4.4
+// TBI.JS - V4.5
 // Base functions, variables and helpers that are included and required in
 // all of my website pages.
 var now = new Date();
 var unqid = now.getTime();
+var query = {};
+var path = [];
+var basename = "";
 // Shorthand for getElementById.
 function gebi(element) { return document.getElementById(element); };
 // Checks the state of an XHR.
@@ -18,6 +21,30 @@ function XHR() {
 		throw new Error("You are not using a supported browser.");
 	}
     return xhr;
+}
+// Sets up the query variable with the search criteria.
+function queryManager() {
+	var search = location.search;
+	if (!isNull(location.search)) {
+		search = search.replace("?","");
+		search = search.split("&");
+		for (i=0;i<search.length;i++) {
+			search[i] = search[i].split("=");
+			query[search[i][0]] = search[i][1];
+		}
+	}
+}
+function pathManager() {
+	if (location.pathname.length > 1) {
+		var pathname = location.pathname;
+		if (pathname.indexOf("/") == 0) {
+			pathname = pathname.slice(1);
+		}
+		if (pathname.lastIndexOf("/") == pathname.length-1) {
+			pathname = shorten(pathname, pathname.length-1);
+		}
+		path = pathname.split("/");
+	}
 }
 // Returns first-level elements in an XML index.
 function findIndex(file, name) {
@@ -49,11 +76,14 @@ function shorten(str, index) {
 }
 // Highlights a nav link to the same page.
 function findPage() {
-    var currpage = location.pathname;
-    var children = $("nav").children();
-    for (i = 0; i < $("nav").children().length; i++) {
-        if (children[i].getAttribute("href") == currpage) {
-            children[i].id = "curr";
+    var curr = path[0];
+	if (isNull(curr)) {
+		curr = "";
+	}
+	var navbar = $("#top a");
+    for (i = 0; i < navbar.length; i++) {
+        if ($(navbar[i]).attr("href").split("/")[1] == curr) {
+            $(navbar[i]).attr("id","curr");
         }
     }
 }
@@ -109,6 +139,8 @@ function tris(num) {
 }
 // Determines whether or not a number is even.
 function isEven(num) { return (num % 2 == 0); }
+// Determines whether or not a variable is nothing at all.
+function isNull(thing) { return (thing == undefined || thing == "" || thing == null); }
 // Returns the numbers that go into the specified number.
 function divisors(num) {
 	if (num > 10e7) {
@@ -278,6 +310,8 @@ if (!Array.prototype.indexOf) {
     }
 }
 $(function () {
+	queryManager();
+	pathManager();
     updateHeight();
     $(document).scroll(function () {
         var navHeight = parseInt($("#top").css("height")) + (parseInt($("#top").css("paddingTop")) * 2);

@@ -1,4 +1,4 @@
-// BLOG.JS - V4.4.1
+// BLOG.JS - V4.6.2
 // Code used to load blog posts from an external XML file.
 var now = new Date();
 var unqid = now.getTime();
@@ -10,6 +10,9 @@ var index;
 var iterator4 = 0;
 var posts = [];
 var postsDone = [];
+var blogview = false;
+var singlePostInfo = [];
+var singlePost = [];
 
 if (location.search.match("page=") != null) {
 	if (location.search[7] != undefined) {
@@ -19,6 +22,9 @@ if (location.search.match("page=") != null) {
 		page = parseInt(location.search[6]);
 	}
 }
+if (location.pathname == "/blog/view/") {
+	blogview = true;
+}
 function getPostIndex() {
     var xhr = XHR();
     xhr.open("GET", "/blog/posts.xml?" + unqid, true);
@@ -26,7 +32,11 @@ function getPostIndex() {
     xhr.onreadystatechange = function () {
         if (checkState(xhr)) {
             index = findIndex(xhr, "post");
-            blogList(index, page);
+			if (blogview) {
+				getSinglePostInfo(query["id"]);
+			} else {
+				blogList(index, page);
+			}
         }
     }
 }
@@ -76,20 +86,81 @@ function blogList(indx, pge) {
     iterator4++;
     $(document).trigger("blogset");
 }
+function getSinglePostInfo(id) {
+	if (id == undefined) {
+		query["id"] = index.length-1;
+		id = query["id"];
+	}
+	var item = (index.length-1)-id;
+	try {
+		for (i=1;i<index[item].children.length;i++) {
+			if (i==4) {
+				var temptags = [];
+				for (jx=0;jx<index[item].children[4].children.length;jx++) {
+					temptags.push(index[item].children[4].children[jx].textContent);
+				}
+				singlePostInfo.push(temptags);
+			} else {
+				singlePostInfo.push(index[item].children[i].textContent);
+			}
+		}
+	} catch (e) {
+		for (i=1;i<index[item].childNodes.length;i++) {
+			if (i==4) {
+				var temptags = [];
+				for (j=0;j<index[item].childNodes[i].childNodes.length;j++) {
+					temptags.push(index[item].childNodes[i].childNodes[j].textContent);
+				}
+				singlePostInfo.push(temptags);
+			} else {
+				singlePostInfo.push(index[item].childNodes[i].textContent);
+			}
+		}
+	}
+	getSinglePost();
+}
 function setBlogNav() {
-	if (page == 1) {
-		var back = "?page=1";
-		$(".blognavp").css("display", "none");
-	}
-	else {
-	    var back = "?page=" + (page - 1);
-	}
-	if (page >= maxpage) {
-		var next = "?page=" + page;
-		$(".blognavn").css("display", "none");
-	}
-	else {
-		var next = "?page=" + (page+1);
+	if (blogview) {
+		if (query["id"] == index.length-1) {
+			var next = "?id="+(parseInt(query["id"])-1);
+			$(".blognavp").hide();
+		} else if (query["id"] == 0) {
+			$(".blognavn").hide();
+			var back = "?id=1";
+		} else {
+			var next = "?id="+(parseInt(query["id"])-1);
+			var back = "?id="+(parseInt(query["id"])+1);
+		}
+		$(".blogcont span.main").html("Post "+(parseInt(query["id"])+1));
+		$($(".blogcont a.main")[1]).attr("class","main active");
+		$($(".blogcont a.main")[1]).attr("href","#");
+		$($(".blogcont a.main")[3]).attr("class","main active");
+		$($(".blogcont a.main")[3]).attr("href","#");
+		var pge = parseInt(((index.length-1)-parseInt(query["id"]))/5)+1;
+		$($(".blogcont a.main")[0]).attr("href","/blog/?page="+pge);
+		$($(".blogcont a.main")[2]).attr("href","/blog/?page="+pge);
+	} else {
+		if (page == 1) {
+			var back = "?page=1";
+			$(".blognavp").css("display", "none");
+		}
+		else {
+			var back = "?page=" + (page - 1);
+		}
+		if (page >= maxpage) {
+			var next = "?page=" + page;
+			$(".blognavn").css("display", "none");
+		}
+		else {
+			var next = "?page=" + (page+1);
+		}
+		$(".blogcont span.main").html("Page "+page);
+		$($(".blogcont a.main")[0]).attr("class","main active");
+		$($(".blogcont a.main")[0]).attr("href","#");
+		$($(".blogcont a.main")[2]).attr("class","main active");
+		$($(".blogcont a.main")[2]).attr("href","#");
+		$($(".blogcont a.main")[1]).attr("href","/blog/view/?id="+(index.length-(index.length-(page-1)*5-1)).toString());
+		$($(".blogcont a.main")[3]).attr("href","/blog/view/?id="+(index.length-(index.length-(page-1)*5-1)).toString());
 	}
 	$(".blognavp").attr("href", back);
 	$(".blognavn").attr("href", next);
@@ -123,6 +194,17 @@ function getPosts() {
         }
     }, 150);
 }
+function getSinglePost() {
+	var xhr = XHR();
+	xhr.open("GET",singlePostInfo[0],true);
+	xhr.send();
+	xhr.onreadystatechange = function () {
+		if (checkState(xhr)) {
+			singlePost = xhr.response;
+			setSinglePost();
+		}
+	}
+}
 function setPosts() {
     if ($("#posts").length) {
         $("#posts").html("");
@@ -130,7 +212,8 @@ function setPosts() {
             var temppost = "";
             temppost += "<h2 id='anchor" + (i + 2) + "'>" + postInfo[i][1] + "</h2>";
             temppost += "<p class='timestamp'>";
-            temppost += "<a href='" + postInfo[i][0] + "'>";
+			var id = ((index.length-1)-(i+((page-1)*5)));
+            temppost += "<a href='/blog/view/?id=" + id.toString() + "' title='Permalink'>";
             temppost += postInfo[i][2];
             temppost += "</a><span class='author'>" + postInfo[i][4] + "</span></p>";
             temppost += "<p class='tags'>";
@@ -149,7 +232,8 @@ function setPosts() {
         var temppost = "";
         temppost += "<h2>" + postInfo[0][1] + "</h2>";
         temppost += "<p class='timestamp'>";
-        temppost += "<a href='" + postInfo[0][0] + "'>";
+		var id = index.length-1;
+        temppost += "<a href='/blog/view/?id=" + id.toString() + "' title='Permalink'>";
         temppost += postInfo[0][2];
         temppost += "</a><span class='author'>" + postInfo[0][4] + "</span></p>";
         temppost += "<p class='tags'>";
@@ -165,6 +249,24 @@ function setPosts() {
         setBlogNav();
     }
     $(document).trigger("blogset");
+}
+function setSinglePost() {
+	var temppost = "";
+    temppost += "<h2>" + singlePostInfo[1] + "</h2>";
+    temppost += "<p class='timestamp'>";
+    temppost += "<a href='" + singlePostInfo[0] + "' title='Raw text'>";
+    temppost += singlePostInfo[2];
+    temppost += "</a><span class='author'>" + singlePostInfo[4] + "</span></p>";
+    temppost += "<p class='tags'>";
+    temppost += "<b>Tags</b>: ";
+    for (j = 0; j < singlePostInfo[3].length; j++) {
+        temppost += "<span class='tag'>" + singlePostInfo[3][j] + " " + "</span>";
+    }
+    temppost += "</p>";
+    temppost += singlePost;
+    $("#singlepost").html("");
+    $("#singlepost").html(temppost);
+	setBlogNav();
 }
 $(document).on("blogset", function () {
     if (iterator4 == 0) getPostIndex()

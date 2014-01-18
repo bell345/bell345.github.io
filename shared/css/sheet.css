@@ -101,17 +101,18 @@ footer {
     width:100%;
     margin-top:20px;
 }
-#posts {
+#posts, #singlepost {
     padding:20px;
     text-align:center;
 }
-#posts article {
+#posts article, #singlepost article {
     text-align:left;
 }
 .blogcont {
     width:100%;
     height:40px;
     background:#004caa;
+	text-align:center;
 }
 .grid {
     background:rgba(255,255,255,0.3);
@@ -382,26 +383,23 @@ nav a:hover {
     list-style-type:none;
 }
 .timestamp {
-    font-weight:bold;
     font-size:24px;
     width:auto;
     background:#004caa;
-    padding:8px;
+    padding:8px 0;
+	font-family:'Montserrat',Calibri,sans-serif;
 }
 .timestamp a {
     text-decoration:none;
     color:#fff;
-    font-family:'Open Sans',sans-serif;
     list-style-type:square;
-	padding:4px;
+	padding:8px 12px;
 }
 .timestamp span {
     text-decoration:none;
     color:#fff;
-    font-family:'Open Sans',sans-serif;
     list-style-type:square;
 	padding:4px;
-	font-weight:400;
 	float:right;
 	margin:8px;
 	position:relative;
@@ -409,7 +407,8 @@ nav a:hover {
 	top:-4px;
 }
 .timestamp a:hover {
-	color:#ccc;
+	color:#eee;
+	background:rgba(255,255,255,0.3);
 }
 button:not(.ui-icon) {
     font-family:'Open Sans',Calibri,sans-serif;
@@ -468,23 +467,44 @@ input[type="text"] {
     font-family:'Montserrat',Calibri,sans-serif;
 }
 .blognavp {
-    float:left;
     padding:10px;
     color:#eee;
     font-family:'Open Sans',sans-serif;
     font-size:16px;
     text-decoration:none;
+	position:absolute;
+	left:0;
 }
 .blognavn {
-    float:right;
     padding:10px;
     color:#eee;
     font-family:'Open Sans',sans-serif;
     font-size:16px;
     text-decoration:none;
+	position:absolute;
+	right:0;
 }
 .blogcont a:hover {
     background:rgba(255,255,255,0.3);
+    color:#eee;
+}
+.blogcont .main {
+	color:#eee;
+	position:relative;
+	top:20%;
+	padding:10px;
+	padding-top:8px;
+}
+.blogcont p.main {
+	padding-top:0;
+	text-align:center;
+	display:inline;
+}
+.blogcont a.main {
+	display:inline;
+}
+.blogcont a.main.active {
+	background:rgba(255,255,255,0.3);
     color:#eee;
 }
 .main li {
