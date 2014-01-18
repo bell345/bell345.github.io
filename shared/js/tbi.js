@@ -1,4 +1,4 @@
-// TBI.JS - V4.5
+// TBI.JS - V4.5.1
 // Base functions, variables and helpers that are included and required in
 // all of my website pages.
 var now = new Date();
@@ -140,7 +140,7 @@ function tris(num) {
 // Determines whether or not a number is even.
 function isEven(num) { return (num % 2 == 0); }
 // Determines whether or not a variable is nothing at all.
-function isNull(thing) { return (thing == undefined || thing == "" || thing == null); }
+function isNull(thing) { return (thing == undefined || thing === "" || thing == null); }
 // Returns the numbers that go into the specified number.
 function divisors(num) {
 	if (num > 10e7) {

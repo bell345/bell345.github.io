@@ -1,4 +1,4 @@
-// BLOG.JS - V4.6.2
+// BLOG.JS - V4.6.3
 // Code used to load blog posts from an external XML file.
 var now = new Date();
 var unqid = now.getTime();
@@ -14,14 +14,14 @@ var blogview = false;
 var singlePostInfo = [];
 var singlePost = [];
 
-if (location.search.match("page=") != null) {
-	if (location.search[7] != undefined) {
-		page = parseInt(location.search[6] + location.search[7]);
+$(function () {
+	if (!isNull(query["page"])) {
+		if (query["page"]>0)
+			page = parseInt(query["page"]);
+		else
+			location.assign("/blog/?page=1");
 	}
-	else {
-		page = parseInt(location.search[6]);
-	}
-}
+});
 if (location.pathname == "/blog/view/") {
 	blogview = true;
 }
@@ -159,8 +159,8 @@ function setBlogNav() {
 		$($(".blogcont a.main")[0]).attr("href","#");
 		$($(".blogcont a.main")[2]).attr("class","main active");
 		$($(".blogcont a.main")[2]).attr("href","#");
-		$($(".blogcont a.main")[1]).attr("href","/blog/view/?id="+(index.length-(index.length-(page-1)*5-1)).toString());
-		$($(".blogcont a.main")[3]).attr("href","/blog/view/?id="+(index.length-(index.length-(page-1)*5-1)).toString());
+		$($(".blogcont a.main")[1]).attr("href","/blog/view/?id="+((index.length-(index.length-(index.length-(page-1)*5-1))).toString()));
+		$($(".blogcont a.main")[3]).attr("href","/blog/view/?id="+((index.length-(index.length-(index.length-(page-1)*5-1))).toString()));
 	}
 	$(".blognavp").attr("href", back);
 	$(".blognavn").attr("href", next);
