@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <postsIndex>
   <post>
+	<id>12</id>
+	<source>/blog/2014/01/incompatibility.htm</source>
+	<title>Incompatibility</title>
+	<date>2014-01-22</date>
+	<tags>
+	  <tag>development</tag>
+	  <tag>rant</tag>
+	</tags>
+	<author>Thomas Bell</author>
+  </post>
+  <post>
 	<id>11</id>
 	<source>/blog/2014/01/2013-in-review.htm</source>
 	<title>2013 - Year In Review</title>
