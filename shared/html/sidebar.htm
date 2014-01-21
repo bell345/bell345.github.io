@@ -15,14 +15,25 @@
     }
     var sidebarLinkContents = ["1betaTB", "BETA-Warrior", "bell345", "tom.aus@outlook.com"];
     for (i = 0; i < $(".side li a").length; i++) {
-        $($(".side li a")[i]).mouseenter(function () {
+        $($(".side li a")[i]).mouseenter(function (event) {
             for (i = 0; i < $(".side li a").length; i++) {
                 if ($(".side li a")[i] == this)
                     sidebarRef = i;
             }
             new Popup(
-                $(this).offset().left + 20,
-                $(this).offset().top + 30,
+                event.clientX + 10,
+                event.clientY + 20,
+                sidebarLinkHeaders[sidebarRef],
+                sidebarLinkContents[sidebarRef]);
+        });
+		$($(".side li a")[i]).mousemove(function (event) {
+            for (i = 0; i < $(".side li a").length; i++) {
+                if ($(".side li a")[i] == this)
+                    sidebarRef = i;
+            }
+            new Popup(
+                event.clientX + 10,
+                event.clientY + 10,
                 sidebarLinkHeaders[sidebarRef],
                 sidebarLinkContents[sidebarRef]);
         });

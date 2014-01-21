@@ -31,30 +31,33 @@
     border:0;
 }
 body {
-    background:#ddd;
+    background:url(/shared/res/ddd-noise.png) #ddd repeat;
 }
 /* END GLOBAL STYLE */
 /* START DIV STYLE */
 header {
     width:75%;
     height:70px;
-    background:url(/shared/res/tridiv.png) no-repeat #0094ff ;
+    background:url(/shared/res/head.png) repeat-x #0094ff ;
     margin:0 auto;
     padding-bottom:20px;
 }
 nav {
     width:auto;
     height:40px;
-    background-color:#555;
+    background:linear-gradient(#676767,#444) #555;
     margin:0 auto;
     padding:6px;
     text-align:center;
-    box-shadow:0px 8px 10px #222;
+    box-shadow:0px 3px 10px #555;
 }
 #top {
     top:0;
     z-index:9;
     font-size:0;
+}
+#navigation {
+	background:url(/shared/res/strong-ddd-noise.png) repeat #ddd;
 }
 #content {
     position:relative;
@@ -349,8 +352,7 @@ nav a {
     font-family:"Open Sans",Calibri,sans-serif;
     text-shadow:3px 3px 4px #000;
     color:#fff;
-    border-bottom:5px solid #555;
-    background:#555;
+    border-bottom:5px solid transparent;
     padding:8px 14px;
     -webkit-transition:border 0.5s;
     -moz-transition:border 0.5s;
@@ -572,4 +574,8 @@ img.centered {
     display:block;
     background:rgba(255,255,255,0.2);
     padding:4px;
+}
+.external:hover {
+	padding-right:16px;
+	background:no-repeat right url(/shared/res/external.png);
 }
