@@ -1,4 +1,4 @@
-// BLOG.JS - V4.6.3
+// BLOG.JS - V4.6.5
 // Code used to load blog posts from an external XML file.
 var now = new Date();
 var unqid = now.getTime();
@@ -105,15 +105,15 @@ function getSinglePostInfo(id) {
 			}
 		}
 	} catch (e) {
-		for (i=1;i<index[item].childNodes.length;i++) {
-			if (i==4) {
+		for (i=3;i<index[item].childNodes.length;i+=2) {
+			if (i==9) {
 				var temptags = [];
-				for (j=0;j<index[item].childNodes[i].childNodes.length;j++) {
-					temptags.push(index[item].childNodes[i].childNodes[j].textContent);
+				for (j=1;j<index[item].childNodes[i].childNodes.length;j+=2) {
+                    temptags.push(index[item].childNodes[i].childNodes[j].textContent);
 				}
 				singlePostInfo.push(temptags);
 			} else {
-				singlePostInfo.push(index[item].childNodes[i].textContent);
+                singlePostInfo.push(index[item].childNodes[i].textContent);
 			}
 		}
 	}
