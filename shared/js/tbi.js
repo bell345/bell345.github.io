@@ -1,11 +1,10 @@
-// TBI.JS - V4.5.1
+// TBI.JS - V4.6
 // Base functions, variables and helpers that are included and required in
 // all of my website pages.
 var now = new Date();
 var unqid = now.getTime();
 var query = {};
 var path = [];
-var basename = "";
 // Shorthand for getElementById.
 function gebi(element) { return document.getElementById(element); };
 // Checks the state of an XHR.
@@ -34,6 +33,7 @@ function queryManager() {
 		}
 	}
 }
+// Sets up the path variable with the current pathname.
 function pathManager() {
 	if (location.pathname.length > 1) {
 		var pathname = location.pathname;
@@ -64,15 +64,15 @@ function modifyHtml(id, mod) {
 // Shortens a string by an index.
 function shorten(str, index) {
     var tempstr = [];
-    for (i = 0; i < str.length; i++) {
-        if (i < index) {
-            tempstr.push(str[i]);
-        }
-        else if (i == index){
-            var out = tempstr.join("");
-            return out;
+    if (str.length > 0&&!isNull(str)) {
+        for (i = 0; i < str.length; i++) {
+            if (i < index)
+                tempstr.push(str[i]);
+            else if (i == index)
+                return tempstr.join("");
         }
     }
+    
 }
 // Highlights a nav link to the same page.
 function findPage() {
@@ -198,6 +198,34 @@ function unixToString(date) {
 function randomInt(num) {
 	return parseInt(Math.random()*num);
 }
+// For keypress events.
+// Converts a keypress event keycode into the character typed.
+// Returns null when an invisible character is typed (shift, alt, etc.)
+function convertKeyDown(event) {
+    var which = event.which;
+    if (which>47&&which<91) {
+        if (event.shiftKey)
+            var chars = ")!@#$%^&*(ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        else
+            var chars = "0123456789abcdefghijklmnopqrstuvwxyz";
+        return chars[which%48];
+    } else if (which>95&&which<112) {
+        var chars = "0123456789*+ -./";
+        return chars[which%96];
+    } else if (which>185&&which<193) {
+        if (event.shiftKey)
+            var chars = ":+<_>?~";
+        else
+            var chars = ";=,-./`";
+        return chars[which%186];
+    } else if (which>218&&which<223) {
+        if (event.shiftKey)
+            var chars = "{|}\"";
+        else
+            var chars = "[\\]'";
+        return chars[which%219];
+    } else return null;
+}
 // Creates a customizable, absolutely positioned popup element.
 // There can only be one at a time.
 function Popup(x, y, head, text) {
@@ -222,6 +250,7 @@ function updateHeight() {
 		$("footer nav a").show();
 	}
 }
+// Designates outgoing links.
 function updateLinks() {
     for (i = 0; i < $("a").length; i++) {
         if ($($("a")[i]).attr("href").search(/((http|https|mailto|news):|\/\/)/) == 0) {
@@ -366,7 +395,7 @@ document.onreadystatechange = function () {
         incompat += "<DIV style='width:100%;height:100%;background-color:#fff;color:#000;font-size:24px;padding:16px;'>";
         incompat += "<H1 style='font-size:64px;font-family:monospace;color:#000;margin-bottom:48px;'>Your browser is unsupported.</H1>";
         incompat += "<P style='text-align:center;margin:0 200px 0 200px;'>You have been detected using a version of Internet Explorer lower than IE9. ";
-        incompat += "This site's developer has no time for trying hopelessly for IE8 and lower support. ";
+        incompat += "";
         incompat += "Please upgrade your browser, preferably to either <A href='http://google.com/chrome'>Google Chrome</A> ";
         incompat += "or <A href='http://firefox.com'>Mozilla Firefox</A>.</P>";
         incompat += "</DIV>";

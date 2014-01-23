@@ -1,3 +1,23 @@
+var Prototypes = [];
+Prototypes[0] = ["Grid", "Grid JavaScript Test", "1.5"];
+Prototypes[1] = ["Calendar", "Calendar", "0.5"];
+Prototypes[2] = ["txteng", "tXtEng", "0.2.1"];
+Prototypes[3] = ["Cdown", "Countdown", "2.2"];
+Prototypes[4] = ["Calc", "Calculator", "0.5.1"];
+Prototypes[5] = ["spaceshooter", "Space Shooter", "1.0", "spaceshooter"];
+$(function () {
+    for (i=0;i<Prototypes.length;i++) {
+        var titleText = "";
+        if (!isNull(Prototypes[i][3]))
+            titleText += "<a href='"+Prototypes[i][3]+"'>";
+        titleText += Prototypes[i][1];
+        if (!isNull(Prototypes[i][3]))
+            titleText += "</a>";
+        $($("h2.proto, h3.proto")[i]).html(titleText);
+        $($(".version")[i]).html("Version "+Prototypes[i][2]);
+    }
+});
+// START GRID CODE //
 var Grid = {};
 Grid.count = 0;
 Grid.colcount = 0;
@@ -680,67 +700,189 @@ $(function () {
 // END GRID CODE //
 // START CALENDAR CODE //
 Calendar = {};
+Calendar.weekdays = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+Calendar.months = [null, "January","Feburary","March","April","May","June","July","August",
+    "September","October","November","December"];
 Calendar.monthLengths = [null, 31, 28, 31, 30, 31, 30, 31, 30, 31, 31, 30, 31];
-Calendar.futureMonths = [];
-Calendar.days = [];
-Calendar.leapYear = false;
-Calendar.year; Calendar.month; Calendar.day; Calendar.date; Calendar.monthlength;
-Calendar.calcDate = function () {
-    var now = new Date();
-    this.year = now.getFullYear();
-    this.month = now.getMonth()+1;
-    this.day = now.getDay();
-    this.date = now.getDate();
-    if (this.year % 4 == 0) {
-        if (this.month = 2)
-            this.monthlength = 29;
-        this.leapYear = true;
-    }
-    else {
-        this.monthlength = this.monthLengths[this.month];
-    }
-    var monthstart = new Date();
-    var msMonth = monthstart.getMonth();
-    monthstart.setDate(1);
-    for (i = msMonth; i <= 12; i++) {
-        var tempMonth = [];
-        for (j = 1; j <= this.monthLengths[i]; j++) {
-            var tempDay = new Date();
-            tempDay.setDate(j);
-            tempDay.setMonth(i);
-            var tempday = tempDay.getDay();
-            tempMonth.push(tempday);
-        }
-        this.futureMonths.push(tempMonth);
-    }
+Calendar.reset = function () {
+    Calendar.futureMonths = [];
+    Calendar.days = [];
+    Calendar.rows = [];
+    Calendar.columns = [];
+    Calendar.items = [];
+    Calendar.weeks = 0;
+    Calendar.year = 0;
+    Calendar.month = 0; 
+    Calendar.day = 0; 
+    Calendar.date = 0; 
+    Calendar.monthLength = 0;
+    Calendar.firstDay = 0;
+    Calendar.lastDay = 0;
+    Calendar.leapYear = false;
+    Calendar.calcSet = false;
 }
-Calendar.generate = function () {
-    Calendar.calcDate();
+Calendar.calcDate = function (year, month) {
+    Calendar.reset();
+    var rightNow = new Date();
+    rightNow.setFullYear(year);
+    rightNow.setMonth(month-1);
+    Calendar.year = rightNow.getFullYear();
+    Calendar.month = (rightNow.getMonth())+1;
+    Calendar.day = rightNow.getDay();
+    Calendar.date = rightNow.getDate();
+    Calendar.monthLength = Calendar.monthLengths[Calendar.month];
+    if (this.year%4==0) {
+        if (this.month==2)
+            Calendar.monthLength = 29;
+        Calendar.leapYear = true;
+    }
+    var firstDay = new Date()
+    firstDay.setMonth(month-1);
+    firstDay.setDate(1);
+    Calendar.firstDay = firstDay.getDay();
+    var lastDay = new Date()
+    lastDay.setMonth(month-1);
+    lastDay.setDate(Calendar.monthLength);
+    Calendar.lastDay = lastDay.getDay();
+}
+Calendar.generate = function (year, month) {
+    if (isNull(month)) {
+        monthDate = new Date();
+        month = monthDate.getMonth()+1;
+    }
+    if (isNull(year)) {
+        yearDate = new Date();
+        year = yearDate.getFullYear();
+    }
+    if (Calendar.calcSet) {
+        $("#calinner").empty();
+        Calendar.reset();
+    }
+    Calendar.calcDate(year, month);
     Calendar.width = parseInt($("#calinner").css("width"));
     Calendar.height = parseInt($("#calinner").css("height"));
-    Calendar.cellWidth = parseInt(Calendar.width / 7);
-	Calendar.weeks = Math.ceil(Calendar.monthlength/7);
+    Calendar.cellWidth = Calendar.width / 7;
+	Calendar.weeks = Math.ceil((Calendar.firstDay+Calendar.monthLength)/7);
     Calendar.cellHeight = parseInt(Calendar.height/Calendar.weeks);
     var count = 0;
     for (i = 0; i < 7; i++) {
         modifyHtml("calinner", "<div id='calcol" + i + "' class='calcol'>");
-        for (j = 0 ; j < Calendar.weeks ; j++) {
-            modifyHtml("calcol" + i, "<div id='calcell" + count + "' class='calcell'>");
-            count++;
+        var tempCol = [];
+        for (j=0;j<Calendar.weeks;j++) {
+            tempCol.push(i+j*7);
         }
+        Calendar.columns.push(tempCol);
+    }
+    for (i=0;i<Calendar.weeks;i++) {
+        var tempRow = [];
+        for (j=0;j<7;j++) {
+            modifyHtml("calcol"+j, "<div id='calcell"+count+"' class='calcell'>");
+            count++;
+            tempRow.push(j+i*7);
+        }
+        Calendar.rows.push(tempRow);
     }
     $(".calcol").css("width", Calendar.cellWidth);
-    $(".calcol").css("height", Calendar.height-4);
-    $(".calcell").css("width", Calendar.cellWidth);
-    $(".calcell").css("height", Calendar.cellHeight-4);
-    $(".calcell").css("border", "2px solid black");
-    for (i = 0; i < 7; i++) {
-        var tempWeek = [];
-        for (j = Calendar.weeks * i; j < Calendar.weeks * (i + 1) ; j++) {
-			
-        }
+    $(".calcell").css("height", Calendar.cellHeight-parseInt($(".calcell").css("borderWidth")));
+    $("#calcell"+Calendar.rows[0][Calendar.firstDay]).css("background","green");
+    $("#calcell"+Calendar.rows[Calendar.weeks-1][Calendar.lastDay]).css("background","red");
+    for (i=0;i<7*Calendar.weeks;i++) {
+        modifyHtml("calcell"+i,"<div class='calday' id='calday"+i+"'></div>");
     }
+    var refYear = Calendar.year;
+    var refMonth = Calendar.month;
+    if (Calendar.month==1) {
+        count = Calendar.monthLengths[12]-Calendar.firstDay;
+        refYear--;
+        refMonth = 12;
+    }
+    else if (Calendar.month==3&&Calendar.leapYear) {
+        count = 29-Calendar.firstDay;
+        refMonth--;
+    }
+    else {
+        count = Calendar.monthLengths[Calendar.month-1]-Calendar.firstDay;
+        refMonth--;
+    }
+    var tempItemRow = [];
+    for (i=0;i<Calendar.firstDay;i++) {
+        $("#calday"+(i)).html((count+1).toString());
+        var tempItem = {};
+        tempItem["year"] = refYear;
+        tempItem["month"] = refMonth;
+        tempItem["date"] = count+1;
+        tempItemRow.push(tempItem);
+        count++;
+    }
+    refYear = Calendar.year;
+    refMonth = Calendar.month;
+    count = 1;
+    for (i=Calendar.firstDay;i<7;i++) {
+        $("#calday"+i).html(count);
+        var tempItem = {};
+        tempItem["year"] = refYear;
+        tempItem["month"] = refMonth;
+        tempItem["date"] = count;
+        tempItemRow.push(tempItem);
+        count++;
+    }
+    Calendar.items.push(tempItemRow);
+    for (i=1;i<Calendar.weeks-1;i++) {
+        tempItemRow = [];
+        for (j=0;j<7;j++) {
+            $("#calday"+(j+i*7)).html(count.toString());
+            var tempItem = {};
+            tempItem["year"] = refYear;
+            tempItem["month"] = refMonth;
+            tempItem["date"] = count;
+            tempItemRow.push(tempItem);
+            count++;
+        }
+        Calendar.items.push(tempItemRow);
+    }
+    tempItemRow = [];
+    for (i=0;i<=Calendar.lastDay;i++) {
+        $("#calday"+(i+(Calendar.weeks-1)*7)).html(count.toString());
+        var tempItem = {};
+        tempItem["year"] = refYear;
+        tempItem["month"] = refMonth;
+        tempItem["date"] = count;
+        tempItemRow.push(tempItem);
+        count++;
+    }
+    count = 1;
+    if (Calendar.month==12) {
+        refYear++;
+        refMonth = 1;
+    }
+    else
+        refMonth++;
+    for (i=Calendar.lastDay+1;i<7;i++) {
+        $("#calday"+(i+(Calendar.weeks-1)*7)).html(count.toString());
+        var tempItem = {};
+        tempItem["year"] = refYear;
+        tempItem["month"] = refMonth;
+        tempItem["date"] = count;
+        tempItemRow.push(tempItem);
+        count++;
+    }
+    Calendar.items.push(tempItemRow);
+    Calendar.calcSet = true;
 }
+Calendar.search = function (year, month, date) {
+    for (i=0;i<Calendar.items.length;i++)
+        for (j=0;j<Calendar.items[i].length;j++)
+            if (Calendar.items[i][j]["year"]==year&&
+            Calendar.items[i][j]["month"]==month&&
+            Calendar.items[i][j]["date"]==date)
+                return Calendar.rows[i][j];
+}
+$(function () {
+    $("#calcontmonth").click(function () {
+        Calendar.generate();
+    });
+    Calendar.generate();
+});
 // END CALENDAR CODE //
 // START TXTENG CODE //
 txteng = {};
@@ -841,9 +983,6 @@ txteng.command = function () {
             tempword = [];
             tempcmd = "";
         }
-    }
-    for (i = 0; i < 6; i++) {
-        console.log(this.cmd[i]);
     }
     if (!txteng.inProgram) {
         var match = false;
@@ -1109,7 +1248,6 @@ Cdown.verifyInput = function () {
         out.setHours(inHour);
         out.setMinutes(inMinute);
         out.setSeconds(inSecond);
-        console.log("Input valid.");
         return out.getTime();
     }
     return false;
@@ -1160,7 +1298,6 @@ Cdown.check = function (bool) {
         $("#cdown-full h3")[0].innerHTML = "Countdown";
         timerClear("cDown");
     }
-    console.log("checkCdown called.");
 }
 Cdown.checkfn = function () {
 	var fnYear = $("#cdfn-year").val(),
@@ -1210,3 +1347,226 @@ $(function () {
 	});
 });
 // END COUNTDOWN CODE //
+// START CALC CODE //
+Calc = {};
+Calc.workingNum = "";
+Calc.numbers = [];
+Calc.string = "_";
+Calc.currentFunc = 0;
+Calc.functions = ["+","-","*","/"];
+Calc.answer;
+Calc.inputMode = 0;
+Calc.prevNum;
+Calc.answerShown = false;
+Calc.mode = 0;
+Calc.setUp = function () {
+    timerSet("calcwindow",1000,function () {
+        if ($($("#calcwindow span")[0]).css("display")=="none") {
+            $($("#calcwindow span")[0]).show();
+        } else {
+            $($("#calcwindow span")[0]).hide();
+        }
+    });
+    timerSet("calcstring",2,function () {
+        if (Calc.inputMode) {
+            $($("#calcwindow input")[0]).val(Calc.string);
+        } else {
+            $($("#calcwindow span")[0]).html(Calc.string);
+        }
+    });
+    for (i=0;i<$(".calcnum").length;i++) {
+        $($(".calcnum")[i]).click(function () {
+            var val = this.innerText;
+            var calcWindow = $($("#calcwindow span")[0]);
+            if (calcWindow.text().search(/[^0-9\.]/)!=-1) {
+                timerClear("calcwindow");
+                $($("#calcwindow span")[0]).show();
+                Calc.string = "";
+            }
+            if (Calc.answerShown) {
+                Calc.workingNum = "";
+                Calc.string = "";
+                Calc.numbers = [];
+                Calc.prevNum = "";
+                Calc.answerShown = false;
+            }
+            Calc.string+=val;
+            if (isNull(Calc.workingNum))
+                Calc.workingNum = Calc.string;
+            else
+                Calc.workingNum+=val;
+        });
+    }
+    $("#calcplus").click(function () { Calc.runFunction("+") });
+    $("#calcminus").click(function () { Calc.runFunction("-") });
+    $("#calctimes").click(function () { Calc.runFunction("*") });
+    $("#calcdivide").click(function () { Calc.runFunction("/") });
+    $("#calcdot").click(function () {
+        var val = this.innerText;
+        var calcWindow = $($("#calcwindow span")[0]);
+        if (calcWindow.text()=="_") {
+            timerClear("calcwindow");
+            $($("#calcwindow span")[0]).show();
+            Calc.string = "0";
+        }
+        if (Calc.answerShown) {
+            Calc.workingNum = "";
+            Calc.string = "";
+            Calc.prevNum = "";
+            Calc.numbers = [];
+            Calc.answerShown = false;
+        }
+        Calc.string+=val;
+        if (isNull(Calc.workingNum))
+            Calc.workingNum = Calc.string;
+        else
+            Calc.workingNum+=val;
+    });
+    $("#calcequals").click(function () {
+        if (!isNull(Calc.workingNum) && !isNaN(Calc.workingNum)) {
+            Calc.numbers.push(parseFloat(Calc.workingNum));
+        }
+        Calc.equate(isNull(Calc.workingNum));
+    });
+    $("#calcinput").click(function () {
+        if (Calc.inputMode == 1) {
+            $($("#calcwindow span")[0]).show();
+            $($("#calcwindow input")[0]).hide();
+            Calc.inputMode = 0;
+            this.innerText = "Keyboard Input";
+        } else {
+            timerClear("calcwindow");
+            $($("#calcwindow span")[0]).hide();
+            $($("#calcwindow input")[0]).show();
+            Calc.inputMode = 1;
+            if (Calc.string == "_") Calc.string = "";
+            this.innerText = "Button Input";
+        }
+    });
+    $("#calcbackspace").click(function () {
+        if (!isNull(Calc.string)) {
+            Calc.string = shorten(Calc.string.toString(), Calc.string.toString().length-1);
+            Calc.workingNum = Calc.string;
+        }
+    });
+    $("#calcdelete").click(function () {
+        if (!isNull(Calc.string)) {
+            var stringArr = Calc.string.toString().split("");
+            stringArr.shift();
+            Calc.string = stringArr.join("");
+            Calc.workingNum = Calc.string;
+        }
+    });
+    $($("#calcwindow input")[0]).keydown(function (event) {
+        Calc.handleKeyDown(event);
+    });
+    $("#calcclear").click(function () {
+        Calc.workingNum = "";
+        Calc.string = "";
+    });
+    $("#calcallclear").click(function () {
+        Calc.workingNum = "";
+        Calc.numbers = [];
+        if (!Calc.inputMode) { 
+            Calc.string = "_";
+            timerSet("calcwindow",1000,function () {
+                if ($($("#calcwindow span")[0]).css("display")=="none") {
+                    $($("#calcwindow span")[0]).show();
+                } else {
+                    $($("#calcwindow span")[0]).hide();
+                }
+            });
+        }
+        Calc.prevNum = null;
+    });
+}
+Calc.equate = function (bool) {
+    if (bool == undefined) bool = false;
+    if (Calc.numbers.length > 1 || (Calc.numbers.length == 1 && bool)) {
+        if (bool && !isNull(Calc.prevNum))
+            var secondNum = Calc.prevNum;
+        else
+            var secondNum = Calc.numbers[1];
+        switch (Calc.currentFunc) {
+            case (Calc.functions.indexOf("+")):
+                Calc.answer = Calc.numbers[0]+secondNum;
+                break;
+            case (Calc.functions.indexOf("-")):
+                Calc.answer = Calc.numbers[0]-secondNum;
+                break;
+            case (Calc.functions.indexOf("*")):
+                Calc.answer = Calc.numbers[0]*secondNum;
+                break;
+            case (Calc.functions.indexOf("/")):
+                Calc.answer = Calc.numbers[0]/secondNum;
+                break;
+            default:
+                Calc.answer = Calc.numbers[0];
+        }
+        if (Calc.answer.toString().length>14) {
+            Calc.answer = parseFloat(shorten((Calc.answer+0.000000000001).toString(),13));
+        }
+        Calc.string = Calc.answer;
+        Calc.workingNum = "";
+        Calc.prevNum = secondNum;
+        Calc.numbers = [Calc.answer];
+        Calc.answerShown = true;
+    }
+}
+Calc.runFunction = function (funcStr) {
+    Calc.currentFunc = Calc.functions.indexOf(funcStr);
+    if (!isNull(Calc.workingNum)) {
+        Calc.numbers.push(parseFloat(Calc.workingNum));
+    }
+    Calc.string = funcStr;
+    Calc.workingNum = "";
+    Calc.answerShown = false;
+    if (!(Calc.inputMode&&Calc.answerShown))
+        Calc.equate();
+    else {
+        Calc.string = "";
+        Calc.workingNum = "";
+    }
+};
+Calc.handleKeyDown = function (event) {
+    var character = convertKeyDown(event);
+    if (Calc.string.toString().search(/[^0-9\.]/)!=-1)
+        Calc.string = "";
+    if (event.which==8 && !isNull(Calc.string)) {
+        Calc.string = shorten(Calc.string, Calc.string.length-1);
+        Calc.workingNum = Calc.string;
+    } else if (event.which==46 && !isNull(Calc.string)) {
+        var stringArr = Calc.string.split("");
+        stringArr.shift();
+        Calc.string = stringArr.join("");
+        Calc.workingNum = Calc.string;
+    }
+    if (!isNaN(character)&&!isNull(character)) {
+            if (Calc.answerShown) {
+                Calc.workingNum = "";
+                Calc.string = "";
+                Calc.numbers = [];
+                Calc.prevNum = "";
+                Calc.answerShown = false;
+            }
+            Calc.string+=character;
+            if (isNull(Calc.workingNum))
+                Calc.workingNum = Calc.string;
+            else
+                Calc.workingNum+=character;
+    } else if (Calc.functions.indexOf(character)!=-1) {
+        Calc.runFunction(character);
+    } else if (character == ".") {
+        Calc.workingNum += ".";
+        Calc.string += ".";
+    } else if (event.which == 13) {
+        if (!isNull(Calc.workingNum) && !isNaN(Calc.workingNum)) {
+            Calc.numbers.push(parseFloat(Calc.workingNum));
+        }
+        Calc.equate(isNull(Calc.workingNum));
+    }
+}
+$(function () {
+    Calc.setUp();
+});
+// END CALC CODE //

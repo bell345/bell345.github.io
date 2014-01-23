@@ -62,7 +62,6 @@ nav {
 #content {
     position:relative;
     width:72%;
-    min-height:100px;
     margin:0 auto;
     color:#333;
     min-width:900px;
@@ -158,6 +157,19 @@ footer {
 .calcol {
     display:inline-block;
 }
+.calcell {
+    display:flex;
+    border:2px solid #000;
+}
+.calday {
+    width:100%;
+    height:30%;
+    font-family:'Open Sans',Calibri,sans-serif;
+    font-size:14px;
+    background:#555;
+    color:#fff;
+    padding:0 8px;
+}
 #dbuggrid {
     font-family:'Consolas',monospace;
     position:absolute;
@@ -183,6 +195,9 @@ footer {
     float:right;
     text-align:right;
 }
+#gridcontrolscont {
+    height:400px;
+}
 .main button {
     margin-bottom:4px;
 }
@@ -201,8 +216,8 @@ footer {
 }
 #calendar {
     position:relative;
-    width:600px;
-    height:400px;
+    width:700px;
+    height:500px;
 }
 #txtengarea {
     background:black;
@@ -260,15 +275,18 @@ footer {
     background:#dadada;
     color:#333;
 }
-.proto {
+.proto:not(h2):not(h3) {
     margin:0 24px !important;
     text-align:left;
 }
-button:active, button:focus {
+button:focus {
 	outline:2px solid #0094ff;
 }
 button:active:not(.ui-icon) {
-	background:#ccc;
+	background-color:rgba(0,0,0,0.2);
+    position:relative;
+    top:2px;
+    outline:0;
 }
 input[type="text"]:active, input[type="text"]:focus {
 	outline:2px solid #0094ff;
@@ -290,8 +308,8 @@ input[type="text"]:active, input[type="text"]:focus {
 .popup {
 	max-width:220px;
 	max-height:140px;
-	background:rgba(255,255,255,1);
-	border:2px solid #555;
+	background:rgba(255,255,255,0.85);
+    box-shadow:2px 2px 5px #555;
 	position:fixed;
     z-index:10;
 	padding:4px;
@@ -305,6 +323,63 @@ input[type="text"]:active, input[type="text"]:focus {
 	height:50px;
 	display:inline-block;
 	border:2px solid #444;
+}
+#calinner {
+    height: auto;
+    position: absolute;
+    top: 80px;
+    bottom: 0;
+    width:100%;
+}
+#calhead {
+    width:100%;
+    height:80px;
+    background-color:black;
+}
+#calculator {
+    width:300px;
+    border:2px solid #000;
+}
+#calcwindow {
+    height:45px;
+    background:#333;
+    color:#0f0;
+    padding:12px;
+    text-align:right;
+    overflow:hidden;
+}
+#calcwindow span {
+    font-family:"Consolas",monospace;
+    font-size:36px;
+    color:#0094ff;
+    text-align:right;
+    overflow:hidden;
+}
+#calcwindow input {
+    font-family:"Consolas",monospace;
+    font-size:32px;
+    color:#0f0;
+    padding:0;
+    margin:0;
+    background:rgba(255,255,255,0.2);
+    width:100%;
+    text-align:right;
+}
+#calcbuttons {
+    padding:16px;
+    background:#aaa;
+}
+.calcrow, .calcrowside {
+    text-align:center;
+}
+.calcrow {
+    margin-bottom:16px;
+}
+.calcrowmajor, .calcrowside {
+    display:inline-block;
+}
+.calcrowside {
+    float:right;
 }
 /* END DIV STYLE */
 /* START TEXT STYLE */
@@ -429,7 +504,7 @@ button:not(.ui-icon) {
     padding:4px;
     padding-left:8px;
     padding-right:8px;
-	background:#dadada;
+	background-color:#dadada;
 }
 input[type="text"] {
     font-family:'Open Sans',Calibri,sans-serif;
@@ -591,4 +666,59 @@ img.centered {
 .external:hover {
 	padding-right:16px;
 	background:no-repeat right url(/shared/res/external.png);
+}
+#calhead h3 {
+    padding:24px;
+    display:inline-block;
+    top:0;
+    bottom:0;
+    position:relative;
+    color:#fff;
+}
+#calinner button.gridcont {
+    display:inline-block;
+    position:relative;
+    z-index:2;
+}
+.calcrowmajor > button {
+    font-size:36px;
+    text-align:center;
+    width:64px;
+    margin-bottom:4px;
+}
+.calcrowside > button {
+    font-size:36px;
+    text-align:center;
+    width:64px;
+    margin-bottom:4px;
+}
+.calcbuttonvert {
+    height:118px;
+}
+.left-arrow {
+    background-image:url(/shared/res/arrows.png);
+    background-position:0px 0px;
+    min-width:48px;
+    min-height:24px;
+}
+.right-arrow {
+    background-image:url(/shared/res/arrows.png);
+    background-position:-48px 0px;
+    min-width:48px;
+    min-height:24px;
+}
+button.calcnum, #calcdot {
+    background-color:#555;
+    color:#eee;
+}
+#calcequals {
+    background-color:#f00;
+    color:#eee;
+}
+h3.version {
+    padding:6px 16px;
+    background:#555;
+    color:#eee;
+    margin-bottom:12px;
+    box-shadow: 2px 2px 5px #333;
 }
