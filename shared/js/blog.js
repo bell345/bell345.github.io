@@ -159,8 +159,8 @@ function setBlogNav() {
 		$($(".blogcont a.main")[0]).attr("href","#");
 		$($(".blogcont a.main")[2]).attr("class","main active");
 		$($(".blogcont a.main")[2]).attr("href","#");
-		$($(".blogcont a.main")[1]).attr("href","/blog/view/?id="+((index.length-(index.length-(index.length-(page-1)*5-1))).toString()));
-		$($(".blogcont a.main")[3]).attr("href","/blog/view/?id="+((index.length-(index.length-(index.length-(page-1)*5-1))).toString()));
+		$($(".blogcont a.main")[1]).attr("href","/blog/view/?id="+((index.length-(page-1)*5-1))).toString();
+		$($(".blogcont a.main")[3]).attr("href","/blog/view/?id="+((index.length-(page-1)*5-1))).toString();
 	}
 	$(".blognavp").attr("href", back);
 	$(".blognavn").attr("href", next);

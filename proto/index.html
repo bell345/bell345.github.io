@@ -32,7 +32,7 @@
                 This is a test for creating multiple elements in a grid that can be manipulated by CSS,
                 jQuery and JavaScript. More of a proof-of-concept than an actual working program.
             </p>
-            <div class="grid proto" id="grid">
+            <div class="grid proto">
             </div>
             <div id="gridcontrolscont">
             <div id="gridcontrols">
@@ -84,7 +84,7 @@
                 This calendar is going to contain a lot of features, including the ability to set your own events! It's an
                 ambitious project for sure, but it'll keep me on my toes.
             </p>
-            <div id="calendar" class="proto">
+            <div class="proto calendar">
                 <div id="calhead">
                     <h3>Calendar V0.5</h3>
                     <button class="gridcont" id="calcontday">Day</button>
@@ -157,8 +157,7 @@
             <p class="main">
                 BUGS:
                 <ul class="main">
-                    <li>In Keyboard Input Mode, backspacing/deleting to get rid of 
-                    a shown answer will be treated as if it's still there.</li>
+                    <li>None so far.</li>
                 </ul>
             </p>
             <div id="calculator" class="proto">
@@ -166,7 +165,7 @@
                     <span>_</span>
                     <input type="text" style="display:none" />
                 </div>
-                <div id="calcbuttons">
+                <div class="calcbuttons" id="calcsimple">
                     <div class="calcrow">
                         <button id="calcinput">Keyboard Input</button>
                         <button id="calcmode">Change Mode</button>
@@ -176,34 +175,31 @@
                         <button id="calcdelete">Delete</button>
                     </div>
                     <div class="calcrowmajor">
-                        <button id="calcallclear">AC</button>
-                        <button id="calcdivide">/</button>
-                        <button id="calctimes">*</button>
-                        <button id="calcminus">-</button>
-                    </div>
-                    <div class="calcrowmajor">
                         <button class="calcnum">7</button>
                         <button class="calcnum">8</button>
                         <button class="calcnum">9</button>
-                    </div>
-                    <div class="calcrowside">
-                        <button class="calcbuttonvert" id="calcplus">+</button><br />
-                        <button class="calcbuttonvert" id="calcequals">=</button>
+                        <button id="calcsign">+/-</button>
+                        <button id="calcsqrt">&radic;</button>
                     </div>
                     <div class="calcrowmajor">
                         <button class="calcnum">4</button>
                         <button class="calcnum">5</button>
                         <button class="calcnum">6</button>
+                        <button id="calctimes">*</button>
+                        <button id="calcdivide">/</button>
                     </div>
                     <div class="calcrowmajor">
                         <button class="calcnum">1</button>
                         <button class="calcnum">2</button>
                         <button class="calcnum">3</button>
+                        <button id="calcplus">+</button>
+                        <button id="calcminus">-</button>
                     </div>
                     <div class="calcrowmajor">
-                        <button id="calcclear">C</button>
+                        <button id="calcallclear">AC</button>
                         <button class="calcnum">0</button>
                         <button id="calcdot">.</button>
+                        <button class="calcbuttonhorz" id="calcequals">=</button>
                     </div>
                 </div>
             </div>

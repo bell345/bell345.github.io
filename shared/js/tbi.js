@@ -1,10 +1,35 @@
-// TBI.JS - V4.6
+// TBI.JS - V4.7
 // Base functions, variables and helpers that are included and required in
 // all of my website pages.
 var now = new Date();
 var unqid = now.getTime();
 var query = {};
 var path = [];
+var notePrevInfo = {
+    "head" : [], 
+    "text" : [],
+    "type" : []
+};
+function log(message) {
+    console.log(message);
+    new Notification("Log", message);
+}
+function warn(message) {
+    console.warn(message);
+    new Notification("Warning", message);
+}
+function error(message) {
+    console.error(message);
+    new Notification("Error", message, 1);
+}
+$(function () {
+    if (navigator.userAgent.search(/[Ff]irefox/)!=-1)
+        document.body.className = "gecko";
+    else if (navigator.userAgent.search(/[Ww]eb[Kk]it/)!=-1)
+        document.body.className = "webkit";
+    else if (navigator.userAgent.search(/[Tt]rident/)!=-1)
+        document.body.className = "trident";
+});
 // Shorthand for getElementById.
 function gebi(element) { return document.getElementById(element); };
 // Checks the state of an XHR.
@@ -140,7 +165,9 @@ function tris(num) {
 // Determines whether or not a number is even.
 function isEven(num) { return (num % 2 == 0); }
 // Determines whether or not a variable is nothing at all.
-function isNull(thing) { return (thing == undefined || thing === "" || thing == null); }
+function isNull(thing) { return (thing == undefined || thing === "" || thing == null || thing == new Array()); }
+// Determines whether a number is negative.
+function isNegative(num) { return (Math.abs(num) != num); }
 // Returns the numbers that go into the specified number.
 function divisors(num) {
 	if (num > 10e7) {
@@ -239,8 +266,78 @@ function Popup(x, y, head, text) {
 	pup += "<h3>"+this.head+"</h3>";
 	pup += "<p class='main'>"+this.text+"</p>";
 	pup += "</div>";
-	Popup.remove();
+	$(".popup").remove();
 	body.append(pup);
+}
+// A predefined popup element that can be added to by using the same header.
+// There can only be one notification, but that notification can be expanded upon.
+var aa;
+function Notification(head, text, type) {
+    if (type == undefined)
+        this.type = 0;
+    else
+        this.type = type;
+    var states = ["ui-state-highlight", "ui-state-error"];
+	this.head = head;
+	this.text = text;
+    this.noteNum = $(".notification").length;
+    if (notePrevInfo["head"].indexOf(this.head)!=-1
+    && !isNull(noteRemove_timer) 
+    && notePrevInfo["text"].indexOf(this.text)==-1) {
+        for (i=0;i<this.noteNum;i++) {
+            if ($($(".notification h3")[i]).text() == this.head) {
+                $($(".notification ul.main")[i]).append("<li>"+this.text+"</li>");
+            }
+        }
+    } else if (notePrevInfo["text"].indexOf(this.text)==-1 && notePrevInfo["head"].indexOf(this.head)==-1) {
+        $(".notification").remove();
+        var body = $('body');
+        var pup = "";
+        pup += "<div class='notification "+states[this.type]+" ui-corner-all'>";
+        pup += "<h3>"+this.head+"</h3>";
+        pup += "<ul class='main'><li>"+this.text+"</li></ul>";
+        pup += "</div>";
+        body.append(pup);
+    } else if (notePrevInfo["head"].indexOf(this.head)!=-1 && notePrevInfo["text"].indexOf(this.text)!=-1) {
+        for (i=0;i<this.noteNum;i++) {
+            if ($($(".notification h3")[i]).text() == this.head) {
+                var lines = $(".notification ul.main").children();
+                aa = lines;
+                for (j=0;j<lines.length;j++) {
+                    if ($(lines[j]).text() == this.text) {
+                        if ($(lines[j]).children().length == 0)
+                            var prevNum = 1;
+                        else
+                            var prevNum = parseInt($($(lines[j]).children()[0]).attr("class").split(/[- ]/)[4]);
+                        if (prevNum == 9)
+                            $(lines[j]).html("<div class='list-num list-num-plus'></div>"+$(lines[j]).text());
+                        else 
+                            $(lines[j]).html("<div class='list-num list-num-"+(prevNum+1)+"'></div>"+$(lines[j]).text());
+                    }
+                }
+            }
+        }
+    }
+    timerClear("noteRemove");
+    var timerCount = 0;
+    timerSet("noteRemove",500,function () {
+        if (timerCount >= 10000)
+            $(".notification").fadeOut(500);
+        if ($($(".notification")[0]).css("display")=="none") {
+            $(".notification").remove();
+            notePrevInfo = {
+                "head" : [], 
+                "text" : [],
+                "type" : []
+            };
+            timerClear("noteRemove");
+            timerCount = 0;
+        }
+        timerCount+=500;
+    });
+    notePrevInfo["head"].push(this.head);
+    notePrevInfo["text"].push(this.text);
+    notePrevInfo["type"].push(this.type);
 }
 // Updates the footer element based on the window size.
 function updateHeight() {
@@ -258,10 +355,6 @@ function updateLinks() {
             $($("a")[i]).attr("class", "external");
         }
     }
-}
-// Removes all Popups.
-Popup.remove = function () {
-	$(".popup").remove();
 }
 // START INCLUDE CODE //
 // Code for implementing a client-side HTML includes system.

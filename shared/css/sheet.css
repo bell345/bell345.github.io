@@ -12,10 +12,10 @@
     src:local("Open Sans"), local("OpenSans"), url(/shared/res/fonts/OpenSans.woff) format("woff");
 }
 @font-face {
-  font-family: 'Montserrat';
-  font-style: normal;
-  font-weight: 400;
-  src: local('Montserrat-Regular'), url(/shared/res/fonts/Montserrat.woff) format('woff');
+    font-family: 'Montserrat';
+    font-weight:400;
+    font-style:normal;
+    src: local('Montserrat-Regular'), url(/shared/res/fonts/Montserrat.woff) format('woff');
 }
 @font-face {
     font-family:'Righteous';
@@ -214,7 +214,7 @@ footer {
     width:100%;
     height:50px;
 }
-#calendar {
+.calendar {
     position:relative;
     width:700px;
     height:500px;
@@ -237,23 +237,6 @@ footer {
     font-size:16px;
     font-family:'Consolas',monospace;
     border:1px solid #00ff00;
-}
-#cdown {
-	min-width:540px;
-	color:#ffffff;
-	padding:16px;
-    border:2px solid #888;
-	}
-#cdown h3 {
-    display:inline-block;
-}
-#cdown button {
-    position:relative;
-    z-index:2;
-    top:-6px;
-    margin-left:12px;
-    background:#dadada;
-    color:#333;
 }
 .cdown {
 	min-width:540px;
@@ -282,7 +265,7 @@ footer {
 button:focus {
 	outline:2px solid #0094ff;
 }
-button:active:not(.ui-icon) {
+button:active {
 	background-color:rgba(0,0,0,0.2);
     position:relative;
     top:2px;
@@ -306,8 +289,6 @@ input[type="text"]:active, input[type="text"]:focus {
     display:none;
 }
 .popup {
-	max-width:220px;
-	max-height:140px;
 	background:rgba(255,255,255,0.85);
     box-shadow:2px 2px 5px #555;
 	position:fixed;
@@ -337,11 +318,10 @@ input[type="text"]:active, input[type="text"]:focus {
     background-color:black;
 }
 #calculator {
-    width:300px;
-    border:2px solid #000;
+    width:368px;
+    box-shadow:5px 5px 5px #555;
 }
 #calcwindow {
-    height:45px;
     background:#333;
     color:#0f0;
     padding:12px;
@@ -351,21 +331,21 @@ input[type="text"]:active, input[type="text"]:focus {
 #calcwindow span {
     font-family:"Consolas",monospace;
     font-size:36px;
-    color:#0094ff;
+    color:#3AACFF;
     text-align:right;
     overflow:hidden;
 }
 #calcwindow input {
     font-family:"Consolas",monospace;
-    font-size:32px;
-    color:#0f0;
+    font-size:36px;
+    color:#3AACFF;
     padding:0;
     margin:0;
     background:rgba(255,255,255,0.2);
     width:100%;
     text-align:right;
 }
-#calcbuttons {
+.calcbuttons {
     padding:16px;
     background:#aaa;
 }
@@ -380,6 +360,19 @@ input[type="text"]:active, input[type="text"]:focus {
 }
 .calcrowside {
     float:right;
+}
+.notification {
+    position:absolute;
+    right:25px;
+    bottom:25px;
+    padding:8px;
+}
+.notification {
+	background:rgba(255,255,255,0.85);
+    box-shadow:2px 2px 5px #555;
+	position:fixed;
+    z-index:10;
+	padding:4px;
 }
 /* END DIV STYLE */
 /* START TEXT STYLE */
@@ -694,6 +687,13 @@ img.centered {
 }
 .calcbuttonvert {
     height:118px;
+    margin-left:4px;
+}
+button.calcbuttonhorz {
+    width:132px;
+}
+button.calctext {
+    font-size:24px;
 }
 .left-arrow {
     background-image:url(/shared/res/arrows.png);
@@ -721,4 +721,50 @@ h3.version {
     color:#eee;
     margin-bottom:12px;
     box-shadow: 2px 2px 5px #333;
+}
+.notification ul {
+    display:inline-block;
+    padding-bottom:4px;
+    text-align:left;
+	padding-top:4px;
+    max-width:400px;
+    overflow:hidden;
+}
+.notification li {
+    list-style:none;
+    background-image:none;
+    margin-left:0;
+    text-align:right;
+}
+.notification h3 {
+    vertical-align:top;
+    display:inline-block;
+    padding-bottom:0;
+}
+.list-num {
+    height:16px;
+    width:16px;
+    background-image:url(/shared/res/listnumbers.png);
+    display:inline-block;
+    position:relative;
+    top:2px;
+    right:12px;
+    box-shadow:2px 2px 2px #555;
+}
+.list-num-2 { background-position:0px 0px; }
+.list-num-3 { background-position:-16px 0px; }
+.list-num-4 { background-position:-32px 0px; }
+.list-num-5 { background-position:-48px 0px; }
+.list-num-6 { background-position:-64px 0px; }
+.list-num-7 { background-position:-80px 0px; }
+.list-num-8 { background-position:-96px 0px; }
+.list-num-9 { background-position:-112px 0px; }
+.list-num-plus { background-position:16px 0px; }
+/* END TEXT STYLE */
+/* START COMPATIBILITY STYLE */
+body.gecko .calcbuttonvert {
+    height:124px;
+}
+body.gecko #calculator {
+    width:368px;
 }
