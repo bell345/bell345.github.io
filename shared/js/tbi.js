@@ -271,7 +271,6 @@ function Popup(x, y, head, text) {
 }
 // A predefined popup element that can be added to by using the same header.
 // There can only be one notification, but that notification can be expanded upon.
-var aa;
 function Notification(head, text, type) {
     if (type == undefined)
         this.type = 0;
@@ -302,7 +301,6 @@ function Notification(head, text, type) {
         for (i=0;i<this.noteNum;i++) {
             if ($($(".notification h3")[i]).text() == this.head) {
                 var lines = $(".notification ul.main").children();
-                aa = lines;
                 for (j=0;j<lines.length;j++) {
                     if ($(lines[j]).text() == this.text) {
                         if ($(lines[j]).children().length == 0)

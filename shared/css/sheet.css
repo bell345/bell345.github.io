@@ -345,6 +345,17 @@ input[type="text"]:active, input[type="text"]:focus {
     width:100%;
     text-align:right;
 }
+#calcstatus {
+    background:#444;
+    padding:6px;
+    text-align:right;
+}
+#calcstatus span {
+    font-family:"Consolas",monospace;
+    font-size:14px;
+    color:#3AACFF;
+    text-align:right;
+}
 .calcbuttons {
     padding:16px;
     background:#aaa;
@@ -685,6 +696,15 @@ img.centered {
     width:64px;
     margin-bottom:4px;
 }
+.calcrowminor > button {
+    font-size:20px;
+    text-align:center;
+    width:52px;
+    margin-bottom:4px;
+}
+.calcrowminor {
+    text-align:center;
+}
 .calcbuttonvert {
     height:118px;
     margin-left:4px;
@@ -712,6 +732,10 @@ button.calcnum, #calcdot {
     color:#eee;
 }
 #calcequals {
+    background-color:#0094ff;
+    color:#eee;
+}
+#calcallclear {
     background-color:#f00;
     color:#eee;
 }
@@ -760,6 +784,15 @@ h3.version {
 .list-num-8 { background-position:-96px 0px; }
 .list-num-9 { background-position:-112px 0px; }
 .list-num-plus { background-position:16px 0px; }
+sup.no-break {
+    vertical-align:inherit;
+    position:relative;
+    bottom:8px;
+    font-size:small;
+}
+.calcadvonly {
+    display:none;
+}
 /* END TEXT STYLE */
 /* START COMPATIBILITY STYLE */
 body.gecko .calcbuttonvert {

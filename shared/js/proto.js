@@ -3,7 +3,7 @@ Prototypes[0] = ["grid", "Grid JavaScript Test", "1.5"];
 Prototypes[1] = ["calendar", "Calendar", "0.5"];
 Prototypes[2] = ["txteng", "tXtEng", "0.2.1"];
 Prototypes[3] = ["cdown", "Countdown", "2.2"];
-Prototypes[4] = ["calc", "Calculator", "0.6"];
+Prototypes[4] = ["calc", "Calculator", "0.8"];
 Prototypes[5] = ["spaceshooter", "Space Shooter", "1.0", "spaceshooter"];
 $(function () {
     for (i=0;i<Prototypes.length;i++) {
@@ -1350,47 +1350,78 @@ $(function () {
 // END COUNTDOWN CODE //
 // START CALC CODE //
 Calc = {};
-Calc.workingNum = "";
+Calc.nanRegex = /[^0-9\.-]/;
+Calc.funcRegex = /[\+\-\*\/(pow)]/;
+Calc.functions = ["+","-","*","/","sqrt","sin","cos","tan","pow","x^2","x^3","10^x","rint"];
 Calc.numbers = [];
+Calc.statusLog = [];
 Calc.string = "_";
+Calc.workingNum = "";
 Calc.currentFunc = 0;
-Calc.functions = ["+","-","*","/","sqrt"];
-Calc.answer;
 Calc.inputMode = 0;
-Calc.prevNum;
-Calc.answerShown = false;
 Calc.mode = 0;
+Calc.answerShown = false;
 Calc.funcShown = false;
+Calc.answer;
+Calc.prevNum;
+
 Calc.setUp = function () {
     timerSet("calcwindow",1000,function () {
-        if ($($("#calcwindow span")[0]).css("color")=="rgba(0, 0, 0, 0)") {
+        if ($($("#calcwindow span")[0]).css("color")=="rgba(0, 0, 0, 0)")
             $($("#calcwindow span")[0]).css("color", "#3AACFF");
-        } else {
+        else
             $($("#calcwindow span")[0]).css("color", "transparent");
-        }
     });
     timerSet("calcstring",2,function () {
-        if (Calc.inputMode) {
+        if (Calc.inputMode)
             $($("#calcwindow input")[0]).val(Calc.string);
-        } else {
+        else
             $($("#calcwindow span")[0]).html(Calc.string);
-        }
     });
-    for (i=0;i<$(".calcnum").length;i++) {
-        $($(".calcnum")[i]).click(function () {
-            Calc.addDigit($(this).text());
-        });
-    }
+    timerSet("calcstatuswindow",1000,function () {
+        if ($($("#calcstatus span")[0]).css("color")=="rgba(0, 0, 0, 0)")
+            $($("#calcstatus span")[0]).css("color", "#3AACFF");
+        else
+            $($("#calcstatus span")[0]).css("color", "transparent");
+    });
     $("#calcplus").click(function () { Calc.runFunction("+") });
     $("#calcminus").click(function () { Calc.runFunction("-") });
     $("#calctimes").click(function () { Calc.runFunction("*") });
     $("#calcdivide").click(function () { Calc.runFunction("/") });
     $("#calcsqrt").click(function () { Calc.runFunction("sqrt") });
-    $("#calcdot").click(function () { Calc.addDigit(".") });
+    $("#calccos").click(function () { Calc.runFunction("cos") });
+    $("#calctan").click(function () { Calc.runFunction("tan") });
+    $("#calcsin").click(function () { Calc.runFunction("sin") });
+    $("#calcpower").click(function () { Calc.runFunction("pow") });
+    $("#calcpower2").click(function () { Calc.runFunction("x^2") });
+    $("#calcpower3").click(function () { Calc.runFunction("x^3") });
+    $("#calc10power").click(function () { Calc.runFunction("10^x") });
+    $("#calcrandint").click(function () { Calc.runFunction("rint") });
+    for (i=0;i<$(".calcnum").length;i++) {
+        $($(".calcnum")[i]).click(function () { Calc.addDigit($(this).text()) });
+    }
+    $("#calcdot").click(function () { 
+        if (Calc.workingNum.indexOf(".")==-1)
+            Calc.addDigit(".");
+     });
+    $("#calcconstpi").click(function () { 
+        Calc.string = "";
+        Calc.workingNum = "";
+        Calc.addDigit(Math.PI.toString());
+    });
+    $("#calcconste").click(function () { 
+        Calc.string = "";
+        Calc.workingNum = "";
+        Calc.addDigit(Math.E.toString());
+    });
+    $("#calcrand").click(function () {
+        Calc.string = "";
+        Calc.workingNum = "";
+        Calc.addDigit(Math.random());
+    });
     $("#calcequals").click(function () {
-        if (!isNull(Calc.workingNum) && !isNaN(Calc.workingNum)) {
+        if (!isNull(Calc.workingNum) && !isNaN(Calc.workingNum))
             Calc.numbers.push(parseFloat(Calc.workingNum));
-        }
         Calc.equate(isNull(Calc.workingNum));
     });
     $("#calcinput").click(function () {
@@ -1399,6 +1430,15 @@ Calc.setUp = function () {
             $($("#calcwindow input")[0]).hide();
             Calc.inputMode = 0;
             this.innerText = "Keyboard Input";
+            if (Calc.string == "") {
+                Calc.string = "_";
+                timerSet("calcwindow",1000,function () {
+                    if ($($("#calcwindow span")[0]).css("color")=="rgba(0, 0, 0, 0)")
+                        $($("#calcwindow span")[0]).css("color", "#3AACFF");
+                    else
+                        $($("#calcwindow span")[0]).css("color", "transparent");
+                });
+            }
         } else {
             timerClear("calcwindow");
             $($("#calcwindow span")[0]).hide();
@@ -1428,11 +1468,12 @@ Calc.setUp = function () {
     $("#calcclear").click(function () {
         Calc.workingNum = "";
         Calc.string = "";
+        Calc.answerShown = false;
     });
     $("#calcallclear").click(function () {
         Calc.workingNum = "";
         Calc.numbers = [];
-        if (!Calc.inputMode) { 
+        if (!Calc.inputMode && isNull(calcwindow_timer)) { 
             Calc.string = "_";
             timerSet("calcwindow",1000,function () {
                 if ($($("#calcwindow span")[0]).css("color")=="rgba(0, 0, 0, 0)") {
@@ -1443,6 +1484,7 @@ Calc.setUp = function () {
             });
         }
         Calc.prevNum = null;
+        Calc.answerShown = false;
     });
     $("#calcsign").click(function () {
         if (Calc.answerShown) {
@@ -1471,6 +1513,13 @@ Calc.setUp = function () {
             
         }
     });
+    $("#calcmode").click(function () {
+        Calc.mode = !Calc.mode;
+        if (Calc.mode)
+            $(".calcadvonly").show();
+        else
+            $(".calcadvonly").hide();
+    });
 }
 Calc.equate = function (bool) {
     if (bool == undefined) bool = false;
@@ -1492,21 +1541,8 @@ Calc.equate = function (bool) {
             case (Calc.functions.indexOf("/")):
                 Calc.answer = Calc.numbers[0]/secondNum;
                 break;
-            default:
-                Calc.answer = Calc.numbers[0];
-        }
-        if (Calc.answer.toString().length>14) {
-            Calc.answer = parseFloat(shorten((Calc.answer+0.000000000001).toString(),13));
-        }
-        Calc.string = Calc.answer;
-        Calc.workingNum = "";
-        Calc.prevNum = secondNum;
-        Calc.numbers = [Calc.answer];
-        Calc.answerShown = true;
-    } else if (Calc.functions[Calc.currentFunc].search(/[\+\-\*\/]/)==-1) {
-        switch (Calc.currentFunc) {
-            case (Calc.functions.indexOf("sqrt")):
-                Calc.answer = Math.sqrt(Calc.numbers[0]);
+            case (Calc.functions.indexOf("pow")):
+                Calc.answer = Math.pow(Calc.numbers[0], secondNum);
                 break;
             default:
                 Calc.answer = Calc.numbers[0];
@@ -1514,18 +1550,62 @@ Calc.equate = function (bool) {
         if (Calc.answer.toString().length>14) {
             Calc.answer = parseFloat(shorten((Calc.answer+0.000000000001).toString(),13));
         }
+        var firstNum = Calc.numbers[0];
         Calc.string = Calc.answer;
         Calc.workingNum = "";
         Calc.prevNum = secondNum;
         Calc.numbers = [Calc.answer];
         Calc.answerShown = true;
+        Calc.statusPrint(firstNum+" "+Calc.functions[Calc.currentFunc]+" "+secondNum+" = "+Calc.answer);
+    } else if (Calc.functions[Calc.currentFunc].search(Calc.funcRegex)==-1) {
+        switch (Calc.currentFunc) {
+            case (Calc.functions.indexOf("sqrt")):
+                Calc.answer = Math.sqrt(Calc.numbers[0]);
+                break;
+            case (Calc.functions.indexOf("sin")):
+                Calc.answer = Math.sin(Calc.numbers[0]);
+                break;
+            case (Calc.functions.indexOf("tan")):
+                Calc.answer = Math.tan(Calc.numbers[0]);
+                break;
+            case (Calc.functions.indexOf("cos")):
+                Calc.answer = Math.cos(Calc.numbers[0]);
+                break;
+            case (Calc.functions.indexOf("x^2")):
+                Calc.answer = Math.pow(Calc.numbers[0], 2);
+                break;
+            case (Calc.functions.indexOf("x^3")):
+                Calc.answer = Math.pow(Calc.numbers[0], 3);
+                break;
+            case (Calc.functions.indexOf("10^x")):
+                Calc.answer = Math.pow(10, Calc.numbers[0]);
+                break;
+            case (Calc.functions.indexOf("rint")):
+                Calc.answer = randomInt(Calc.numbers[0]);
+                break;
+            default:
+                Calc.answer = Calc.numbers[0];
+        }
+        if (Calc.answer.toString().length>14) {
+            Calc.answer = parseFloat(shorten((Calc.answer+0.000000000001).toString(),13));
+        }
+        var firstNum = Calc.numbers[0];
+        Calc.string = Calc.answer;
+        Calc.workingNum = "";
+        Calc.numbers = [Calc.answer];
+        Calc.answerShown = true;
+        Calc.statusPrint(Calc.functions[Calc.currentFunc]+"("+firstNum+") = "+Calc.answer);
     }
 }
 Calc.runFunction = function (funcStr) {
-    if (Calc.string.toString().search(/[^0-9\.-]/)==-1) {
+    if (Calc.string.toString().search(Calc.nanRegex)==-1) {
         Calc.currentFunc = Calc.functions.indexOf(funcStr);
         if (!isNull(Calc.workingNum)) {
             Calc.numbers.push(parseFloat(Calc.workingNum));
+            if (funcStr.search(Calc.funcRegex)!=-1)
+                Calc.statusPrint(Calc.workingNum+" "+funcStr);
+            else
+                Calc.statusPrint(funcStr+"("+Calc.workingNum+")");
         }
         Calc.string = funcStr;
         Calc.workingNum = "";
@@ -1541,7 +1621,7 @@ Calc.runFunction = function (funcStr) {
 };
 Calc.handleKeyDown = function (event) {
     var character = convertKeyDown(event);
-    if (!isNull(Calc.string)&&Calc.string.toString().search(/[^0-9\.-]/)!=-1)
+    if (!isNull(Calc.string)&&Calc.string.toString().search(Calc.nanRegex)!=-1)
         Calc.string = "";
     if (event.which==8 && !isNull(Calc.string)) {
         Calc.string = shorten(Calc.string, Calc.string.length-1);
@@ -1579,7 +1659,7 @@ Calc.handleKeyDown = function (event) {
 }
 Calc.addDigit = function (digit) {
     var calcWindow = $($("#calcwindow span")[0]);
-    if (calcWindow.text().search(/[^0-9\.-]/)!=-1) {
+    if (calcWindow.text().search(Calc.nanRegex)!=-1) {
         timerClear("calcwindow");
         $($("#calcwindow span")[0]).css("color", "#3AACFF");
         Calc.string = "";
@@ -1601,6 +1681,22 @@ Calc.addDigit = function (digit) {
         Calc.workingNum = Calc.string;
     else
         Calc.workingNum+=digit;
+}
+Calc.statusPrint = function (message) {
+    timerClear("calcstatuswindow");
+    $($("#calcstatus span")[0]).html(message);
+    timerClear("statusReset");
+    timerSet("statusReset",10000,function () {
+        $($("#calcstatus span")[0]).html("_");
+        timerClear("statusReset");
+        timerSet("calcstatuswindow",1000,function () {
+            if ($($("#calcstatus span")[0]).css("color")=="rgba(0, 0, 0, 0)")
+                $($("#calcstatus span")[0]).css("color", "#3AACFF");
+            else
+                $($("#calcstatus span")[0]).css("color", "transparent");
+        });
+    });
+    Calc.statusLog.push(message);
 }
 $(function () {
     Calc.setUp();
