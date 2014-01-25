@@ -1,4 +1,4 @@
-// TBI.JS - V4.7
+// TBI.JS - V4.7.1
 // Base functions, variables and helpers that are included and required in
 // all of my website pages.
 var now = new Date();
@@ -165,7 +165,15 @@ function tris(num) {
 // Determines whether or not a number is even.
 function isEven(num) { return (num % 2 == 0); }
 // Determines whether or not a variable is nothing at all.
-function isNull(thing) { return (thing == undefined || thing === "" || thing == null || thing == new Array()); }
+function isNull(thing) {
+    if (thing instanceof Array) {
+        for (i=0;i<thing.length;i++)
+            if (thing[i] == undefined || thing[i] === "" || thing[i] == null)
+                return true;
+        return false;
+    }
+    return (thing == undefined || thing === "" || thing == null || thing == new Array()); 
+}
 // Determines whether a number is negative.
 function isNegative(num) { return (Math.abs(num) != num); }
 // Returns the numbers that go into the specified number.
@@ -305,6 +313,8 @@ function Notification(head, text, type) {
                     if ($(lines[j]).text() == this.text) {
                         if ($(lines[j]).children().length == 0)
                             var prevNum = 1;
+                        else if (isNaN($($(lines[j]).children()[0]).attr("class").split(/[- ]/)[5]))
+                            var prevNum = 9;
                         else
                             var prevNum = parseInt($($(lines[j]).children()[0]).attr("class").split(/[- ]/)[4]);
                         if (prevNum == 9)
@@ -453,6 +463,12 @@ $(function () {
     $(".ajaxProgress").css("width", "50%");
     HTMLIncludes.getIndex();
     $(document).resize(function () { updateHeight(); });
+    $("button.toggle").click(function () {
+        if (this.className.search("toggle-on")!=-1)
+            this.className = this.className.replace("toggle-on","");
+        else
+            this.className+=" toggle-on";
+    });
 });
 // START OF COOKIE CODES //
 function createCookie(name, value, days) {

@@ -86,14 +86,25 @@
             </p>
             <div class="proto calendar">
                 <div id="calhead">
-                    <h3>Calendar V0.5</h3>
+                    <h3>Calendar</h3>
                     <button class="gridcont" id="calcontday">Day</button>
                     <button class="gridcont" id="calcontweek">Week</button>
                     <button class="gridcont" id="calcontmonth">Month</button>
-                    <button class="gridcont" onclick="
-                        $('#calcell'+Calendar.search(Calendar.year,Calendar.month,Calendar.date)).css('background','blue');
-                    ">Today</button>
+                    <button class="gridcont" id="calconttoday">Today</button>
+					<span id="calchanger">
+						<button id="calcchangeup">Earlier</button>
+						<button id="calcchangedown">Later</button>
+					</span>
                 </div>
+				<div id="calstatus">
+					<p></p>
+				</div>
+				<div id="calweekdays">
+					<div class="calweekday main">Sunday</div><div class="calweekday main">Monday</div>
+					<div class="calweekday main">Tuesday</div><div class="calweekday main">Wednesday</div>
+					<div class="calweekday main">Thursday</div><div class="calweekday main">Friday</div>
+					<div class="calweekday main">Saturday</div>
+				</div>
                 <div id="calinner">
 
                 </div>
@@ -176,7 +187,7 @@
                     <div class="calcrow">
                         <button id="calcbackspace">Backspace</button>
                         <button id="calcdelete">Delete</button>
-                        <button id="calcshift" class="calcadvonly">Shift</button>
+                        <button id="calcshift" class="calcadvonly toggle">Shift</button>
                     </div>
                     <div class="calcrowminor calcadvonly">
                         <button id="calcpower">x<sup class="no-break">y</sup></button>

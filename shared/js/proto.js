@@ -1,9 +1,9 @@
 var Prototypes = [];
 Prototypes[0] = ["grid", "Grid JavaScript Test", "1.5"];
-Prototypes[1] = ["calendar", "Calendar", "0.5"];
+Prototypes[1] = ["calendar", "Calendar", "0.6"];
 Prototypes[2] = ["txteng", "tXtEng", "0.2.1"];
-Prototypes[3] = ["cdown", "Countdown", "2.2"];
-Prototypes[4] = ["calc", "Calculator", "0.8"];
+Prototypes[3] = ["cdown", "Countdown", "2.3"];
+Prototypes[4] = ["calc", "Calculator", "0.8.1"];
 Prototypes[5] = ["spaceshooter", "Space Shooter", "1.0", "spaceshooter"];
 $(function () {
     for (i=0;i<Prototypes.length;i++) {
@@ -691,11 +691,6 @@ $(function () {
 	        txteng.command();
 	    }
 	});
-	$("#calinner").css("height", (
-        (parseInt($(".calendar").css("height"))
-        - parseInt($("#calhead").css("height")))
-        - parseInt($("#calinner").css("padding")) * 2)
-        - parseInt($("#calinner").css("border")) * 2);
 	Cdown.check(false);
 });
 // END GRID CODE //
@@ -783,7 +778,7 @@ Calendar.generate = function (year, month) {
         }
         Calendar.rows.push(tempRow);
     }
-    $(".calcol").css("width", Calendar.cellWidth);
+    $(".calcol").css("width", parseInt(Calendar.cellWidth));
     $(".calcell").css("height", Calendar.cellHeight-(parseInt($(".calcell").css("borderLeftWidth"))*2));
     $("#calcell"+Calendar.rows[0][Calendar.firstDay]).css("background","green");
     $("#calcell"+Calendar.rows[Calendar.weeks-1][Calendar.lastDay]).css("background","red");
@@ -869,6 +864,8 @@ Calendar.generate = function (year, month) {
     }
     Calendar.items.push(tempItemRow);
     Calendar.calcSet = true;
+	$($("#calstatus p")[0]).text(Calendar.months[Calendar.month]+" "+Calendar.year);
+	$(".calweekday").css("width",parseInt(Calendar.cellWidth));
 }
 Calendar.search = function (year, month, date) {
     for (i=0;i<Calendar.items.length;i++)
@@ -878,11 +875,36 @@ Calendar.search = function (year, month, date) {
             Calendar.items[i][j]["date"]==date)
                 return Calendar.rows[i][j];
 }
+Calendar.findToday = function () {
+	Calendar.generate(now.getFullYear(), now.getMonth()+1);
+	$('#calcell'+Calendar.search(Calendar.year,Calendar.month,Calendar.date)).css('background','blue');
+}
 $(function () {
     $("#calcontmonth").click(function () {
         Calendar.generate();
     });
     Calendar.generate();
+	$("#calcchangeup").click(function () {
+		if (Calendar.month == 1) {
+			var newMonth = 12;
+			var newYear = Calendar.year-1;
+		} else {
+			var newMonth = Calendar.month-1;
+			var newYear = Calendar.year;
+		}
+		Calendar.generate(newYear, newMonth);
+	});
+	$("#calcchangedown").click(function () {
+		if (Calendar.month == 12) {
+			var newMonth = 1;
+			var newYear = Calendar.year+1;
+		} else {
+			var newMonth = Calendar.month+1;
+			var newYear = Calendar.year;
+		}
+		Calendar.generate(newYear, newMonth);
+	});
+	$("#calconttoday").click(function () { Calendar.findToday(); });
 });
 // END CALENDAR CODE //
 // START TXTENG CODE //
@@ -1149,7 +1171,7 @@ Cdown.main = function (enddate, dest) {
     var bStr = unixToString(enddate);
     var nStr = unixToString(this.rightNow);
     var cStr = unixToString(this.rightNow);
-    offset = [null, 2100, 12, Calendar.monthLengths[parseInt(bStr[2])], 24, 60, 60];
+    offset = [null, 2100, 12, Calendar.monthLengths[parseInt(nStr[2])], 24, 60, 60];
     var it;
     for (it = 6; it > 0; it--) {
         if (parseInt(parseInt(bStr[it]) - nStr[it]) < 0) {
@@ -1212,43 +1234,48 @@ Cdown.main = function (enddate, dest) {
 }
 timerSet("nw", 100, function () { Cdown.rightNow = new Date() });
 Cdown.verifyInput = function () {
-    var inYear = $("#cdsetyear").val(),
-        inMonth = $("#cdsetmonth").val(),
-        inDay = $("#cdsetday").val(),
-        inHour = $("#cdsethour").val(),
-        inMinute = $("#cdsetminute").val(),
-        inSecond = $("#cdsetsecond").val();
+    var inYear = $("#cdsetyear"),
+        inMonth = $("#cdsetmonth"),
+        inDay = $("#cdsetday"),
+        inHour = $("#cdsethour"),
+        inMinute = $("#cdsetminute"),
+        inSecond = $("#cdsetsecond"),
+        inArr = [inYear, inMonth, inDay, inHour, inMinute, inSecond];
+        inArrValues = [inYear.val(), inMonth.val(), inDay.val(), inMinute.val(), inSecond.val()];
     this.name = $("#cdsetname").val();
     var inCurrent = [];
     var inNow = unixToString(this.rightNow);
     var out = new Date();
-    if (inYear <= inNow[1]) { inCurrent[1] = true }
-    if (inMonth == inNow[2] && inCurrent[1]) { inCurrent[2] = true }
-    if (inDay == inNow[3] && inCurrent[2]) { inCurrent[3] = true }
-    if (inHour == inNow[4] && inCurrent[3]) { inCurrent[4] = true }
-    if (inMinute == inNow[5] && inCurrent[4]) { inCurrent[5] = true }
-    if (inYear == "" || inMonth == "" || inDay == "" || inHour == "" || inMinute == "" || inSecond == ""
-        || isNaN(inYear) || isNaN(inMonth) || isNaN(inDay) || isNaN(inHour) || isNaN(inMinute) || isNaN(inSecond)) {
-        alert("All fields must be filled.");
+    if (inYear.val() <= inNow[1]) { inCurrent[1] = true }
+    if (inMonth.val() == inNow[2] && inCurrent[1]) { inCurrent[2] = true }
+    if (inDay.val() == inNow[3] && inCurrent[2]) { inCurrent[3] = true }
+    if (inHour.val() == inNow[4] && inCurrent[3]) { inCurrent[4] = true }
+    if (inMinute.val() == inNow[5] && inCurrent[4]) { inCurrent[5] = true }
+    for (i=0;i<inArr.length;i++)
+        if (isNaN(inArr[i].val()) && !isNull(inArr[i].val()))
+            inArr[i].val("0");
+    if (isNull(inArrValues)) {
+        alert("The values are invalid.");
+        return false;
     }
-    else if (inNow[1] > inYear || inYear > 2100) { alert("Year is invalid.") }
-    else if (inCurrent[1] && inMonth < inNow[2]) { alert("Month set in past.") }
-    else if (inCurrent[2] && inDay < inNow[3]) { alert("Day set in past.") }
-    else if (inCurrent[3] && inHour < inNow[4]) { alert("Hour set in past.") }
-    else if (inCurrent[4] && inMinute < inNow[5]) { alert("Minute set in past.") }
-    else if (inCurrent[5] && inSecond < inNow[6]) { alert("Second set in past.") }
-    else if (inMonth > 12 || inMonth < 1) { alert("Month is invalid.") }
-    else if (inDay > Calendar.monthLengths[inNow[3]] || inDay < 1) { alert("Day is invalid.") }
-    else if (inHour > 23 || inHour < 0) { alert("Hour is invalid.") }
-    else if (inMinute > 59 || inMinute < 0) { alert("Minute is invalid.") }
-    else if (inSecond > 59 || inSecond < 0) { alert("Second is invalid.") }
+    else if (inNow[1] > inYear.val() || inYear.val() > 2100) { alert("Year is invalid.") }
+    else if (inCurrent[1] && inMonth.val() < inNow[2]) { alert("Month set in past.") }
+    else if (inCurrent[2] && inDay.val() < inNow[3]) { alert("Day set in past.") }
+    else if (inCurrent[3] && inHour.val() < inNow[4]) { alert("Hour set in past.") }
+    else if (inCurrent[4] && inMinute.val() < inNow[5]) { alert("Minute set in past.") }
+    else if (inCurrent[5] && inSecond.val() < inNow[6]) { alert("Second set in past.") }
+    else if (inMonth.val() > 12 || inMonth.val() < 1) { alert("Month is invalid.") }
+    else if (inDay.val() > Calendar.monthLengths[inNow[3]] || inDay.val() < 1) { alert("Day is invalid.") }
+    else if (inHour.val() > 23 || inHour.val() < 0) { alert("Hour is invalid.") }
+    else if (inMinute.val() > 59 || inMinute.val() < 0) { alert("Minute is invalid.") }
+    else if (inSecond.val() > 59 || inSecond.val() < 0) { alert("Second is invalid.") }
     else {
-        out.setFullYear(inYear);
-        out.setMonth(inMonth - 1);
-        out.setDate(inDay);
-        out.setHours(inHour);
-        out.setMinutes(inMinute);
-        out.setSeconds(inSecond);
+        out.setFullYear(inYear.val());
+        out.setMonth(inMonth.val() - 1);
+        out.setDate(inDay.val());
+        out.setHours(inHour.val());
+        out.setMinutes(inMinute.val());
+        out.setSeconds(inSecond.val());
         return out.getTime();
     }
     return false;
@@ -1260,66 +1287,62 @@ Cdown.check = function (bool) {
         if (input) {
             createCookie("cDown", input+","+this.name, 365);
             out.setTime(input);
-            $("#cdown-full").attr("class", "cdown proto");
-            $("#cdset").css("display", "none");
-			$("#cd-fn-set").css("display", "none");
-            $("#cdown-count").css("display", "inline-block");
-            timerSet("cDown", 50, function () { Cdown.main(out, "cdown-count") });
-            if (this.name != "") {
-                $("#cdown-full h3")[0].innerHTML = "Countdown - " + this.name;
-            }
+            Cdown.set(out);
         }
-        else {
-            $("#cdown-full").attr("class", "cdown cdset proto");
-            $("#cdset").css("display", "inline");
-			$("#cd-fn-set").css("display", "inline-block");
-            $("#cdown-count").css("display", "none");
-            $("#cdown-full h3")[0].innerHTML = "Countdown";
-            timerClear("cDown");
-        }
+        else
+            Cdown.reset();
     }
     if (readCookie("cDown")) {
 		var cookie = readCookie("cDown").split(",");
         out.setTime(cookie[0]);
 		this.name = cookie[1];
-        $("#cdown-full").attr("class", "cdown proto");
-        $("#cdset").css("display", "none");
-		$("#cd-fn-set").css("display", "none");
-        $("#cdown-count").css("display", "block");
-        timerSet("cDown", 50, function () { Cdown.main(out, "cdown-count") });
-        if (this.name != "") {
-            $("#cdown-full h3")[0].innerHTML = "Countdown - " + this.name;
-        }
+        Cdown.set(out);
     }
-    else {
-        $("#cdown-full").attr("class", "cdown cdset proto");
+    else
+        Cdown.reset();
+}
+Cdown.reset = function () {
+    $("#cdown-full").attr("class", "cdown cdset proto");
         $("#cdset").css("display", "inline");
 		$("#cd-fn-set").css("display", "inline-block");
         $("#cdown-count").css("display", "none");
         $("#cdown-full h3")[0].innerHTML = "Countdown";
         timerClear("cDown");
-    }
+}
+Cdown.set = function (out) {
+    $("#cdown-full").attr("class", "cdown proto");
+    $("#cdset").css("display", "none");
+	$("#cd-fn-set").css("display", "none");
+    $("#cdown-count").css("display", "inline-block");
+    timerSet("cDown", 50, function () { Cdown.main(out, "cdown-count") });
+    if (!isNull(this.name))
+        $("#cdown-full h3")[0].innerHTML = "Countdown - " + this.name;
 }
 Cdown.checkfn = function () {
-	var fnYear = $("#cdfn-year").val(),
-		fnMonth = $("#cdfn-month").val(),
-		fnDay = $("#cdfn-day").val(),
-		fnHour = $("#cdfn-hour").val(),
-		fnMinute = $("#cdfn-minute").val(),
-		fnSecond = $("#cdfn-second").val();
-	if (isNaN(fnYear)||isNaN(fnMonth)||isNaN(fnDay)||isNaN(fnHour)||isNaN(fnMinute)||isNaN(fnSecond)||
-fnYear==""||fnMonth==""||fnDay==""||fnHour==""||fnMinute==""||fnSecond=="") {
-		alert("The values are invalid.");
-	}
+	var fnYear = $("#cdfn-year"),
+		fnMonth = $("#cdfn-month"),
+		fnDay = $("#cdfn-day"),
+		fnHour = $("#cdfn-hour"),
+		fnMinute = $("#cdfn-minute"),
+		fnSecond = $("#cdfn-second"),
+        fnArr = [fnYear, fnMonth, fnDay, fnHour, fnMinute, fnSecond];
+        fnArrValues = [fnYear.val(), fnMonth.val(), fnDay.val(), fnHour.val(), fnMinute.val(), fnSecond.val()];
+    for (i=0;i<fnArr.length;i++)
+        if (isNaN(fnArr[i].val()) && !isNull(fnArr[i].val()))
+            fnArr[i].val("0");
+    if (isNull(fnArrValues)) {
+        alert("The values are invalid.");
+        return null;
+    }
 	else {
-		var mLength = Calendar.monthLengths[unixToString(Cdown.rightNow)[2]];
+		var mLength = Calendar.monthLengths[parseInt(unixToString(Cdown.rightNow)[2])];
 		var out = 0;
-		out += fnSecond*1000;
-		out += fnMinute*1000*60;
-		out += fnHour*1000*60*60;
-		out += fnDay*1000*60*60*24;
-		out += fnMonth*1000*60*60*24*mLength;
-		out += fnYear*1000*60*60*24*mLength*12;
+		out += fnSecond.val()*1000;
+		out += fnMinute.val()*1000*60;
+		out += fnHour.val()*1000*60*60;
+		out += fnDay.val()*1000*60*60*24;
+		out += fnMonth.val()*1000*60*60*24*mLength;
+		out += fnYear.val()*1000*60*60*24*mLength*12;
 		out += Cdown.rightNow.getTime();
 		this.name = $("#cdsetname").val();
 		eraseCookie("cDown")
@@ -1330,11 +1353,12 @@ $(function () {
 	var cdInputs = $("#cdown-full input");
 	timerSet("cdInputs",100,function () {
 		for (i=1;i<cdInputs.length;i++) {
-			if (isNaN(cdInputs[i].value)) {
+			if (isNaN($(cdInputs[i]).val())) {
 				cdInputs[i].className = "inactive";
 			}
 			else {
-				cdInputs[i].className = "";
+				cdInputs[i].className = "";;
+				$(cdInputs[i]).off();
 			}
 		}
 		$(".inactive").click(function () {
@@ -1344,6 +1368,16 @@ $(function () {
 			$("#cdsetname").off();
 			$("#cdsetname").attr("class","");
 			gebi("cdsetname").attributes[3] = undefined;
+		});
+		$(".cdset").keydown(function (event) {
+			if (event.which == 13)
+				Cdown.check(true);
+		});
+		$(".cd-fn-set").keydown(function (event) {
+			if (event.which == 13) {
+				Cdown.checkfn();
+				Cdown.check(false);
+			}
 		});
 	});
 });
@@ -1547,8 +1581,8 @@ Calc.equate = function (bool) {
             default:
                 Calc.answer = Calc.numbers[0];
         }
-        if (Calc.answer.toString().length>14) {
-            Calc.answer = parseFloat(shorten((Calc.answer+0.000000000001).toString(),13));
+        if (Calc.answer.toString().length>16) {
+            Calc.answer = parseFloat(shorten((Calc.answer+0.00000000000001).toString(),16));
         }
         var firstNum = Calc.numbers[0];
         Calc.string = Calc.answer;
@@ -1627,7 +1661,7 @@ Calc.handleKeyDown = function (event) {
         Calc.string = shorten(Calc.string, Calc.string.length-1);
         Calc.workingNum = Calc.string;
     } else if (event.which==46 && !isNull(Calc.string)) {
-        var stringArr = Calc.string.split("");
+        var stringArr = Calc.string.toString().split("");
         stringArr.shift();
         Calc.string = stringArr.join("");
         Calc.workingNum = Calc.string;

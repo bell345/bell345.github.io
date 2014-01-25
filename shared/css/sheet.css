@@ -216,7 +216,7 @@ footer {
 }
 .calendar {
     position:relative;
-    width:700px;
+    width:auto;
     height:500px;
 }
 #txtengarea {
@@ -308,14 +308,14 @@ input[type="text"]:active, input[type="text"]:focus {
 #calinner {
     height: auto;
     position: absolute;
-    top: 80px;
+    top: 130px;
     bottom: 0;
     width:100%;
 }
 #calhead {
     width:100%;
     height:80px;
-    background-color:black;
+	position:relative;
 }
 #calculator {
     width:368px;
@@ -384,6 +384,43 @@ input[type="text"]:active, input[type="text"]:focus {
 	position:fixed;
     z-index:10;
 	padding:4px;
+}
+#calchanger {
+	display:inline-block;
+	float:right;
+	padding:26px;
+}
+#calchanger button {
+	position:relative;
+	margin:auto 0;
+}
+#calstatus {
+	height:30px;
+	background:#333;
+	position:relative;
+	z-index:1;
+}
+#calstatus p {
+	color:#fff;
+	padding-top:4px;
+	font-weight:bold;
+	font-family:'Montserrat',Calibri,sans-serif;
+	font-size:17px;
+	padding-left:16px;
+}
+#calweekdays {
+	height:20px;
+	background:#555;
+	position:relative;
+	z-index:1;
+	font-size:0;
+}
+#calweekdays .main {
+	color:#fff;
+	padding:0;
+	display:inline-block;
+	font-size:14px;
+	text-align:center;
 }
 /* END DIV STYLE */
 /* START TEXT STYLE */
@@ -677,7 +714,6 @@ img.centered {
     top:0;
     bottom:0;
     position:relative;
-    color:#fff;
 }
 #calinner button.gridcont {
     display:inline-block;
@@ -792,6 +828,13 @@ sup.no-break {
 }
 .calcadvonly {
     display:none;
+}
+button.toggle-on {
+    background-color:rgba(0,0,0,0.2);
+    position:relative;
+    top:2px;
+    outline:0;
+    color:#eee;
 }
 /* END TEXT STYLE */
 /* START COMPATIBILITY STYLE */
