@@ -17,6 +17,12 @@ $(function () {
         $($("h2.proto, h3.proto")[i]).attr("id",Prototypes[i][0]);
         $($(".version")[i]).html("Version "+Prototypes[i][2]);
     }
+    if (!isNull(location.hash)&&!isNull($(location.hash))) {
+        timerSet("scroll",0,function () {
+            $(document).scrollTop(parseInt($(location.hash).offset().top - 52));
+            timerClear("scroll");
+        });
+    }
 });
 // START GRID CODE //
 var Grid = {};
@@ -756,6 +762,7 @@ Calendar.generate = function (year, month) {
     }
     Calendar.calcDate(year, month);
     Calendar.width = parseInt($("#calinner").css("width"));
+    $(".calendar").css("height",((Calendar.width*0.8)+"px"));
     Calendar.height = parseInt($("#calinner").css("height"));
     Calendar.cellWidth = Calendar.width / 7;
 	Calendar.weeks = Math.ceil((Calendar.firstDay+Calendar.monthLength)/7);
@@ -866,7 +873,44 @@ Calendar.generate = function (year, month) {
     Calendar.calcSet = true;
 	$($("#calstatus p")[0]).text(Calendar.months[Calendar.month]+" "+Calendar.year);
 	$(".calweekday").css("width",parseInt(Calendar.cellWidth));
+    $(".calcell").click(function (event) {
+        var isSelected = (this.className.search("calselect")!=-1);
+        if ($(".calselect").length == 0 && !isSelected)
+            this.className += " calselect";
+        else if ($(".calselect").length > 0 && event.ctrlKey && !isSelected)
+            this.className += " calselect";
+        else if ($(".calselect").length > 0 && event.shiftKey && !isSelected) {
+            var firstId = $(".calselect")[$(".calselect").length-1].id.match(/[0-9]+/)[0];
+            var thisId = this.id.match(/[0-9]+/)[0];
+            if (parseInt(firstId) > parseInt(thisId)) {
+                var tempId = firstId;
+                firstId = thisId;
+                thisId = tempId;
+            }
+            firstId = parseInt(firstId);
+            thisId = parseInt(thisId);
+            var ix;
+            for (ix=firstId;ix<thisId+1;ix++) {
+                if (gebi("calcell"+ix).className.search(" calselect")==-1) {
+                    gebi("calcell"+ix).className += " calselect";
+                }
+            }
+        }
+        else if ($(".calselect").length > 0 && !event.ctrlKey && !isSelected) {
+            var selected = $(".calselect");
+            for (ix=0;ix<selected.length;ix++)
+                selected[ix].className = selected[ix].className.replace(" calselect", "");
+            this.className += " calselect";
+        } else if ($(".calselect").length > 0 && !event.ctrlKey && isSelected) {
+            var selected = $(".calselect");
+            for (ix=0;ix<selected.length;ix++)
+                selected[ix].className = selected[ix].className.replace(" calselect", "");
+        }
+        else if ($(".calselect").length > 0 && event.ctrlKey && isSelected)
+            this.className = this.className.replace(" calselect", "");
+    });
 }
+var tt;
 Calendar.search = function (year, month, date) {
     for (i=0;i<Calendar.items.length;i++)
         for (j=0;j<Calendar.items[i].length;j++)
@@ -874,6 +918,10 @@ Calendar.search = function (year, month, date) {
             Calendar.items[i][j]["month"]==month&&
             Calendar.items[i][j]["date"]==date)
                 return Calendar.rows[i][j];
+}
+Calendar.idSearch = function (id) {
+    var targetDay = id % 7;
+    var targetWeek = id / 5;
 }
 Calendar.findToday = function () {
 	Calendar.generate(now.getFullYear(), now.getMonth()+1);
@@ -1396,6 +1444,7 @@ Calc.inputMode = 0;
 Calc.mode = 0;
 Calc.answerShown = false;
 Calc.funcShown = false;
+Calc.shift = false;
 Calc.answer;
 Calc.prevNum;
 
@@ -1554,6 +1603,7 @@ Calc.setUp = function () {
         else
             $(".calcadvonly").hide();
     });
+    $("#calcshift").click(function () { Calc.shift = !Calc.shift });
 }
 Calc.equate = function (bool) {
     if (bool == undefined) bool = false;

@@ -161,6 +161,14 @@ footer {
     display:flex;
     border:2px solid #000;
 }
+.calcell:hover {
+    outline:2px solid #0094ff;
+    position:relative;
+    z-index:2;
+}
+.calcell:active, .calcell:focus {
+    background-color:#96D3FF;
+}
 .calday {
     width:100%;
     height:30%;
@@ -218,6 +226,12 @@ footer {
     position:relative;
     width:auto;
     height:500px;
+    -webkit-user-select:none;
+    -khtml-user-select:none;
+    -moz-user-select:none;
+    -ms-user-select:none;
+    -o-user-select:none;
+    user-select:none;
 }
 #txtengarea {
     background:black;
@@ -297,7 +311,9 @@ input[type="text"]:active, input[type="text"]:focus {
 }
 .popup .main {
 	padding:6px;
-	padding-top:0;
+}
+.popup h3 {
+    padding-bottom:0;
 }
 .gdrawrc {
 	width:50px;
@@ -835,6 +851,9 @@ button.toggle-on {
     top:2px;
     outline:0;
     color:#eee;
+}
+.calselect {
+    background:#96D3FF;
 }
 /* END TEXT STYLE */
 /* START COMPATIBILITY STYLE */

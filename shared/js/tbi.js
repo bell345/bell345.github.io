@@ -71,6 +71,20 @@ function pathManager() {
 		path = pathname.split("/");
 	}
 }
+function checkNav() {
+    var navHeight = parseInt($("#top").css("height")) + (parseInt($("#top").css("paddingTop")) * 2);
+    if ($(document).scrollTop() > parseInt($("header").css("height"))+parseInt($("header").css("paddingBottom"))) {
+        $("#top").css("position", "fixed");
+        $("#top").css("width", "100%");
+        $("#top").css("zIndex", "9");
+        $("#content").css("top", navHeight + "px");
+    } else {
+        $("#top").css("position", "relative");
+        $("#top").css("width", "auto");
+        $("#top").css("zIndex", "0");
+        $("#content").css("top", "0");
+    }
+}
 // Returns first-level elements in an XML index.
 function findIndex(file, name) {
     if (navigator.userAgent.search(/MSIE [0-9]/) != -1)
@@ -89,7 +103,7 @@ function modifyHtml(id, mod) {
 // Shortens a string by an index.
 function shorten(str, index) {
     var tempstr = [];
-    if (str.length > 0&&!isNull(str)) {
+    if (str.length > 0 && !isNull(str)) {
         for (i = 0; i < str.length; i++) {
             if (i < index)
                 tempstr.push(str[i]);
@@ -112,56 +126,6 @@ function findPage() {
         }
     }
 }
-// Returns a fibonacci sequence.
-function fibonacci(num) {
-    if (!isNaN(num)) {
-        if (num > 2) {
-            var sequence = [0, 1];
-        } else if (num == 2) {
-            return [0, 1];
-        } else if (num < 2) {
-            return [0];
-        } else if (num > 500) {
-            return "No!";
-        }
-        for (i = 2; i < num; i++) {
-            sequence.push(sequence[i - 1] + sequence[i - 2]);
-        }
-        return sequence;
-    }
-}
-// Returns a list of the square numbers up to the specified root.
-function squares(num) {
-    if (!isNaN(num)) {
-        if (num == 1) {
-            return [1];
-        } else if (num > 10000) {
-            return "No!";
-        } else {
-            var sequence = [1]
-        }
-        for (i = 2; i <= num; i++) {
-            sequence.push(Math.pow(i, 2));
-        }
-        return sequence;
-    }
-}
-// Returns triangular numbers up to the specified number.
-function tris(num) {
-    if (!isNaN(num)) {
-        var sequence = [];
-        if (num == 1) {
-            return [1];
-        } else if (num > 1000) {
-            return "No!";
-        }
-        for (i = 1, j = 1, k = 0; i <= num; i++) {
-            k += j++;
-            sequence.push(k);
-        }
-        return sequence;
-    }
-}
 // Determines whether or not a number is even.
 function isEven(num) { return (num % 2 == 0); }
 // Determines whether or not a variable is nothing at all.
@@ -170,9 +134,9 @@ function isNull(thing) {
         for (i=0;i<thing.length;i++)
             if (thing[i] == undefined || thing[i] === "" || thing[i] == null)
                 return true;
-        return false;
+        return (thing.length == 0)
     }
-    return (thing == undefined || thing === "" || thing == null || thing == new Array()); 
+    return (thing == undefined || thing === "" || thing == null)
 }
 // Determines whether a number is negative.
 function isNegative(num) { return (Math.abs(num) != num); }
@@ -230,9 +194,7 @@ function unixToString(date) {
 	return [date.getTime(), date.getFullYear(), month, day, hour, minute, second];
 }
 // Returns a random integer.
-function randomInt(num) {
-	return parseInt(Math.random()*num);
-}
+function randomInt(num) { return parseInt(Math.random()*num) }
 // For keypress events.
 // Converts a keypress event keycode into the character typed.
 // Returns null when an invisible character is typed (shift, alt, etc.)
@@ -271,7 +233,8 @@ function Popup(x, y, head, text) {
 	var body = $('body');
 	var pup = "";
 	pup += "<div class='popup' style='top:"+this.y+"px;left:"+this.x+"px;'>";
-	pup += "<h3>"+this.head+"</h3>";
+    if (!isNull(this.head))
+        pup += "<h3>"+this.head+"</h3>";
 	pup += "<p class='main'>"+this.text+"</p>";
 	pup += "</div>";
 	$(".popup").remove();
@@ -311,13 +274,13 @@ function Notification(head, text, type) {
                 var lines = $(".notification ul.main").children();
                 for (j=0;j<lines.length;j++) {
                     if ($(lines[j]).text() == this.text) {
-                        if ($(lines[j]).children().length == 0)
-                            var prevNum = 1;
-                        else if (isNaN($($(lines[j]).children()[0]).attr("class").split(/[- ]/)[5]))
-                            var prevNum = 9;
-                        else
-                            var prevNum = parseInt($($(lines[j]).children()[0]).attr("class").split(/[- ]/)[4]);
-                        if (prevNum == 9)
+                        var prevNum = 0;
+                        notePrevInfo["text"].forEach(function (el) {
+                            if (el == text) {
+                                prevNum++;
+                            }
+                        });
+                        if (prevNum >= 9)
                             $(lines[j]).html("<div class='list-num list-num-plus'></div>"+$(lines[j]).text());
                         else 
                             $(lines[j]).html("<div class='list-num list-num-"+(prevNum+1)+"'></div>"+$(lines[j]).text());
@@ -330,7 +293,7 @@ function Notification(head, text, type) {
     var timerCount = 0;
     timerSet("noteRemove",500,function () {
         if (timerCount >= 10000)
-            $(".notification").fadeOut(500);
+            $(".notification").hide();
         if ($($(".notification")[0]).css("display")=="none") {
             $(".notification").remove();
             notePrevInfo = {
@@ -443,23 +406,9 @@ $(function () {
 	queryManager();
 	pathManager();
     updateHeight();
-    $(document).scroll(function () {
-        var navHeight = parseInt($("#top").css("height")) + (parseInt($("#top").css("paddingTop")) * 2);
-        if ($(document).scrollTop() > parseInt($("header").css("height"))+parseInt($("header").css("paddingBottom"))) {
-            $("#top").css("position", "fixed");
-            $("#top").css("width", "100%");
-            $("#top").css("zIndex", "9");
-            $("#content").css("top", navHeight + "px");
-        } else {
-            $("#top").css("position", "relative");
-            $("#top").css("width", "auto");
-            $("#top").css("zIndex", "0");
-            $("#content").css("top", "0");
-        }
-    });
-    $(".ajaxProgress").progressbar({
-        value: false
-    });
+    checkNav();
+    $(document).scroll(function () { checkNav() });
+    $(".ajaxProgress").progressbar({ value: false });
     $(".ajaxProgress").css("width", "50%");
     HTMLIncludes.getIndex();
     $(document).resize(function () { updateHeight(); });
