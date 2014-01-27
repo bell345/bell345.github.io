@@ -219,4 +219,4 @@ pip-log.txt
 #########
 
 #Config files
-[Ww]eb.config
+.web.config
