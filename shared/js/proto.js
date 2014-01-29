@@ -738,8 +738,10 @@ Calendar.calcDate = function (year, month) {
     if (this.year%4==0) {
         if (this.month==2)
             Calendar.monthLength = 29;
+        Calendar.monthLengths[2] = 29;
         Calendar.leapYear = true;
-    }
+    } else
+        Calendar.monthLengths[2] = 28;
     var firstDay = new Date()
     firstDay.setMonth(month-1);
     firstDay.setDate(1);
@@ -1292,8 +1294,7 @@ Cdown.verifyInput = function () {
         inSecond = $("#cdsetsecond"),
         inArr = [inYear, inMonth, inDay, inHour, inMinute, inSecond];
         inArrValues = [inYear.val(), inMonth.val(), inDay.val(), inMinute.val(), inSecond.val()];
-    if (Cdown.name != "Name")
-        Cdown.name = $("#cdsetname").val();
+    Cdown.name = $("#cdsetname").val();
     var inCurrent = [];
     var inNow = unixToString(this.rightNow);
     var out = new Date();
@@ -1336,7 +1337,7 @@ Cdown.check = function (bool) {
     if (bool) {
         var input = this.verifyInput();
         if (input) {
-            createCookie("cDown", input+","+this.name, 365);
+            createCookie("cDown", input+","+Cdown.name, 365);
             out.setTime(input);
             Cdown.set(out);
         }
@@ -1346,7 +1347,7 @@ Cdown.check = function (bool) {
     if (readCookie("cDown")) {
 		var cookie = readCookie("cDown").split(",");
         out.setTime(cookie[0]);
-		this.name = cookie[1];
+		Cdown.name = cookie[1];
         Cdown.set(out);
     }
     else
@@ -1366,8 +1367,8 @@ Cdown.set = function (out) {
 	$("#cd-fn-set").css("display", "none");
     $("#cdown-count").css("display", "inline-block");
     timerSet("cDown", 50, function () { Cdown.main(out, "cdown-count") });
-    if (!isNull(this.name))
-        $("#cdown-full h3")[0].innerHTML = "Countdown - " + this.name;
+    if (!isNull(Cdown.name))
+        $("#cdown-full h3")[0].innerHTML = "Countdown - " + Cdown.name;
 }
 Cdown.checkfn = function () {
 	var fnYear = $("#cdfn-year"),
@@ -1395,9 +1396,9 @@ Cdown.checkfn = function () {
 		out += fnMonth.val()*1000*60*60*24*mLength;
 		out += fnYear.val()*1000*60*60*24*mLength*12;
 		out += Cdown.rightNow.getTime();
-		this.name = $("#cdsetname").val();
+		Cdown.name = $("#cdsetname").val();
 		eraseCookie("cDown")
-		createCookie("cDown", out+","+this.name, 365);
+		createCookie("cDown", out+","+Cdown.name, 365);
 	}
 }
 $(function () {
