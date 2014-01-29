@@ -2,7 +2,7 @@ var Prototypes = [];
 Prototypes[0] = ["grid", "Grid JavaScript Test", "1.5"];
 Prototypes[1] = ["calendar", "Calendar", "0.6"];
 Prototypes[2] = ["txteng", "tXtEng", "0.2.1"];
-Prototypes[3] = ["cdown", "Countdown", "2.3"];
+Prototypes[3] = ["cdown", "Countdown", "2.3.1"];
 Prototypes[4] = ["calc", "Calculator", "0.8.1"];
 Prototypes[5] = ["spaceshooter", "Space Shooter", "1.0", "spaceshooter"];
 $(function () {
@@ -1290,7 +1290,8 @@ Cdown.verifyInput = function () {
         inSecond = $("#cdsetsecond"),
         inArr = [inYear, inMonth, inDay, inHour, inMinute, inSecond];
         inArrValues = [inYear.val(), inMonth.val(), inDay.val(), inMinute.val(), inSecond.val()];
-    this.name = $("#cdsetname").val();
+    if (Cdown.name != "Name")
+        Cdown.name = $("#cdsetname").val();
     var inCurrent = [];
     var inNow = unixToString(this.rightNow);
     var out = new Date();
@@ -1301,7 +1302,7 @@ Cdown.verifyInput = function () {
     if (inMinute.val() == inNow[5] && inCurrent[4]) { inCurrent[5] = true }
     for (i=0;i<inArr.length;i++)
         if (isNaN(inArr[i].val()) && !isNull(inArr[i].val()))
-            inArr[i].val("0");
+            inArr[i].val("00");
     if (isNull(inArrValues)) {
         alert("The values are invalid.");
         return false;
@@ -1318,12 +1319,12 @@ Cdown.verifyInput = function () {
     else if (inMinute.val() > 59 || inMinute.val() < 0) { alert("Minute is invalid.") }
     else if (inSecond.val() > 59 || inSecond.val() < 0) { alert("Second is invalid.") }
     else {
-        out.setFullYear(inYear.val());
-        out.setMonth(inMonth.val() - 1);
-        out.setDate(inDay.val());
-        out.setHours(inHour.val());
-        out.setMinutes(inMinute.val());
         out.setSeconds(inSecond.val());
+        out.setMinutes(inMinute.val());
+        out.setHours(inHour.val());
+        out.setDate(inDay.val());
+        out.setMonth(parseInt(inMonth.val())-1);
+        out.setFullYear(inYear.val());
         return out.getTime();
     }
     return false;
