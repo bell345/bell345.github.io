@@ -1,6 +1,6 @@
 var Prototypes = [];
 Prototypes[0] = ["grid", "Grid JavaScript Test", "1.5"];
-Prototypes[1] = ["calendar", "Calendar", "0.6"];
+Prototypes[1] = ["calendar", "Calendar", "0.6.1"];
 Prototypes[2] = ["txteng", "tXtEng", "0.2.1"];
 Prototypes[3] = ["cdown", "Countdown", "2.3.1"];
 Prototypes[4] = ["calc", "Calculator", "0.8.1"];
@@ -726,6 +726,8 @@ Calendar.reset = function () {
 Calendar.calcDate = function (year, month) {
     Calendar.reset();
     var rightNow = new Date();
+    if (rightNow.getDate() > Calendar.monthLengths[month])
+        rightNow.setDate(1);
     rightNow.setFullYear(year);
     rightNow.setMonth(month-1);
     Calendar.year = rightNow.getFullYear();
@@ -1456,11 +1458,13 @@ Calc.setUp = function () {
         else
             $($("#calcwindow span")[0]).css("color", "transparent");
     });
-    timerSet("calcstring",2,function () {
+    timerSet("calcstring",4,function () {
         if (Calc.inputMode)
             $($("#calcwindow input")[0]).val(Calc.string);
         else
             $($("#calcwindow span")[0]).html(Calc.string);
+        if (Calc.statusLog.length > 20)
+            Calc.statusLog.shift();
     });
     timerSet("calcstatuswindow",1000,function () {
         if ($($("#calcstatus span")[0]).css("color")=="rgba(0, 0, 0, 0)")
@@ -1643,6 +1647,10 @@ Calc.equate = function (bool) {
         Calc.answerShown = true;
         Calc.statusPrint(firstNum+" "+Calc.functions[Calc.currentFunc]+" "+secondNum+" = "+Calc.answer);
     } else if (Calc.functions[Calc.currentFunc].search(Calc.funcRegex)==-1) {
+        if (isNull(Calc.prevNum))
+            var prevNum = Calc.numbers[0];
+        else
+            var prevNum = Calc.prevNum;
         switch (Calc.currentFunc) {
             case (Calc.functions.indexOf("sqrt")):
                 Calc.answer = Math.sqrt(Calc.numbers[0]);
@@ -1666,7 +1674,7 @@ Calc.equate = function (bool) {
                 Calc.answer = Math.pow(10, Calc.numbers[0]);
                 break;
             case (Calc.functions.indexOf("rint")):
-                Calc.answer = randomInt(Calc.numbers[0]);
+                Calc.answer = randomInt(prevNum);
                 break;
             default:
                 Calc.answer = Calc.numbers[0];
@@ -1680,6 +1688,10 @@ Calc.equate = function (bool) {
         Calc.numbers = [Calc.answer];
         Calc.answerShown = true;
         Calc.statusPrint(Calc.functions[Calc.currentFunc]+"("+firstNum+") = "+Calc.answer);
+        if (isNull(Calc.prevNum))
+            Calc.prevNum = Calc.numbers[0]
+        else
+            Calc.prevNum = prevNum;
     }
 }
 Calc.runFunction = function (funcStr) {
@@ -1770,6 +1782,7 @@ Calc.addDigit = function (digit) {
 Calc.statusPrint = function (message) {
     timerClear("calcstatuswindow");
     $($("#calcstatus span")[0]).html(message);
+    $($("#calcstatus span")[0]).css("color","#3AACFF");
     timerClear("statusReset");
     timerSet("statusReset",10000,function () {
         $($("#calcstatus span")[0]).html("_");
