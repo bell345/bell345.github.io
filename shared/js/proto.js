@@ -1,6 +1,6 @@
 var Prototypes = [];
 Prototypes[0] = ["grid", "Grid JavaScript Test", "1.5"];
-Prototypes[1] = ["calendar", "Calendar", "0.6.1"];
+Prototypes[1] = ["calendar", "Calendar", "0.6.2"];
 Prototypes[2] = ["txteng", "tXtEng", "0.2.1"];
 Prototypes[3] = ["cdown", "Countdown", "2.3.1"];
 Prototypes[4] = ["calc", "Calculator", "0.8.1"];
@@ -705,7 +705,7 @@ Calendar = {};
 Calendar.weekdays = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 Calendar.months = [null, "January","Feburary","March","April","May","June","July","August",
     "September","October","November","December"];
-Calendar.monthLengths = [null, 31, 28, 31, 30, 31, 30, 31, 30, 31, 31, 30, 31];
+Calendar.monthLengths = [null, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 Calendar.reset = function () {
     Calendar.futureMonths = [];
     Calendar.days = [];
@@ -814,10 +814,7 @@ Calendar.generate = function (year, month) {
     var tempItemRow = [];
     for (i=0;i<Calendar.firstDay;i++) {
         $("#calday"+(i)).html((count+1).toString());
-        var tempItem = {};
-        tempItem["year"] = refYear;
-        tempItem["month"] = refMonth;
-        tempItem["date"] = count+1;
+        var tempItem = { "year" : refYear, "month" : refMonth, "date" : count+1 };
         tempItemRow.push(tempItem);
         count++;
     }
@@ -826,10 +823,7 @@ Calendar.generate = function (year, month) {
     count = 1;
     for (i=Calendar.firstDay;i<7;i++) {
         $("#calday"+i).html(count);
-        var tempItem = {};
-        tempItem["year"] = refYear;
-        tempItem["month"] = refMonth;
-        tempItem["date"] = count;
+        var tempItem = { "year" : refYear, "month" : refMonth, "date" : count };
         tempItemRow.push(tempItem);
         count++;
     }
@@ -838,10 +832,7 @@ Calendar.generate = function (year, month) {
         tempItemRow = [];
         for (j=0;j<7;j++) {
             $("#calday"+(j+i*7)).html(count.toString());
-            var tempItem = {};
-            tempItem["year"] = refYear;
-            tempItem["month"] = refMonth;
-            tempItem["date"] = count;
+            var tempItem = { "year" : refYear, "month" : refMonth, "date" : count };
             tempItemRow.push(tempItem);
             count++;
         }
@@ -850,10 +841,7 @@ Calendar.generate = function (year, month) {
     tempItemRow = [];
     for (i=0;i<=Calendar.lastDay;i++) {
         $("#calday"+(i+(Calendar.weeks-1)*7)).html(count.toString());
-        var tempItem = {};
-        tempItem["year"] = refYear;
-        tempItem["month"] = refMonth;
-        tempItem["date"] = count;
+        var tempItem = { "year" : refYear, "month" : refMonth, "date" : count };
         tempItemRow.push(tempItem);
         count++;
     }
@@ -866,10 +854,7 @@ Calendar.generate = function (year, month) {
         refMonth++;
     for (i=Calendar.lastDay+1;i<7;i++) {
         $("#calday"+(i+(Calendar.weeks-1)*7)).html(count.toString());
-        var tempItem = {};
-        tempItem["year"] = refYear;
-        tempItem["month"] = refMonth;
-        tempItem["date"] = count;
+        var tempItem = { "year" : refYear, "month" : refMonth, "date" : count };
         tempItemRow.push(tempItem);
         count++;
     }
@@ -901,14 +886,10 @@ Calendar.generate = function (year, month) {
             }
         }
         else if ($(".calselect").length > 0 && !event.ctrlKey && !isSelected) {
-            var selected = $(".calselect");
-            for (ix=0;ix<selected.length;ix++)
-                selected[ix].className = selected[ix].className.replace(" calselect", "");
+            Calendar.clearSelected();
             this.className += " calselect";
         } else if ($(".calselect").length > 0 && !event.ctrlKey && isSelected) {
-            var selected = $(".calselect");
-            for (ix=0;ix<selected.length;ix++)
-                selected[ix].className = selected[ix].className.replace(" calselect", "");
+            Calendar.clearSelected();
         }
         else if ($(".calselect").length > 0 && event.ctrlKey && isSelected)
             this.className = this.className.replace(" calselect", "");
@@ -928,8 +909,24 @@ Calendar.idSearch = function (id) {
     var targetWeek = id / 5;
 }
 Calendar.findToday = function () {
-	Calendar.generate(now.getFullYear(), now.getMonth()+1);
-	$('#calcell'+Calendar.search(Calendar.year,Calendar.month,Calendar.date)).css('background','blue');
+    var todayId = Calendar.search(now.getFullYear(),now.getMonth()+1,now.getDate());
+    if (isNull(todayId)) {
+        Calendar.generate(now.getFullYear(), now.getMonth()+1);
+        todayId = Calendar.search(Calendar.year,Calendar.month,Calendar.date);
+    }
+    var classname = $('#calcell'+todayId).attr("class");
+    var selected = $(".calselect");
+    if (selected.length > 0) {
+        Calendar.clearSelected();
+    }
+    if (classname.search(" calselect")==-1) {
+        $('#calcell'+todayId).attr("class", classname += " calselect");
+    }
+}
+Calendar.clearSelected = function () {
+    var selected = $(".calselect");
+    for (ix=0;ix<selected.length;ix++)
+        selected[ix].className = selected[ix].className.replace(" calselect", "");
 }
 $(function () {
     $("#calcontmonth").click(function () {

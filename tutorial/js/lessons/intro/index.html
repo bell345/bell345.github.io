@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Thomas's WebSite</title>
+    <meta charset="utf-8" />
+	<link rel="shortcut icon" href="/favicon.png" />
+    <link rel="stylesheet" href="/shared/css/sheet.css" />
+    <link rel="stylesheet" href="/shared/css/jquery-ui.css" />
+    <script src="/shared/js/jquery.min.js"></script>
+    <script src="/shared/js/jquery-ui.min.js"></script>
+    <script src="/shared/js/tbi.js"></script>
+</head>
+<body>
+    <div id="navigation">
+        <header>
+            <h1>Thomas's WebSite</h1>
+        </header>
+        <nav>
+        </nav>
+    </div>
+    <div id="content">
+        <div id="maincontent">
+            <h1>Introduction To JavaScript</h1>
+            <p class="main">
+                For those of you who have never programmed before, welcome! JavaScript is a type of language 
+                different from the likes of C++ or Java. It is called a <em>scripting language</em>, which is 
+                a simpler language that is used to make programs do something, rather than create programs from 
+                the ground up. This type of programming is great to get people started, as well as being very 
+                useful in it's own way.
+            </p>
+            <p class="main">
+                JavaScript is a language that is widely used in websites, from hobbyists like me to huge 
+                companies, such as Google or Microsoft. It can turn boring old website code that does not a 
+                whole lot into shiny interactive experiences. In fact, this website is an example of JavaScript 
+                at work!
+            </p>
+            <p class="main note">
+                In this tutorial, I will assume that you have at least a basic understanding of HTML and CSS, as 
+                that is how JavaScript (JS for short) is implemented in websites.
+            </p>
+            <h2>Implementation</h2>
+            <p class="main">
+                To put some JavaScript into a website, you will need to have a HTML page to display the result 
+                upon. Let's make one now, like so:
+            </p>
+            <pre class="main code">
+&lt;!DOCTYPE html>
+&lt;html>
+&lt;head>
+    &lt;title>A Webpage&lt;/title>
+    &lt;meta charset="utf-8" />
+&lt;/head>
+&lt;body>
+    &lt;p>A Paragraph&lt;/p>
+&lt;/body>
+&lt;/html>
+</pre>
+            <p class="main">
+                There are two ways of implementing JavaScript into a page. One way is by placing the script 
+                directly into the page with <code>script</code> tags like this:
+            </p>
+            <pre class="main code">
+&lt;script> alert("Hello, world!"); &lt;/script>
+</pre>
+            <p class="main note">
+                All you need to know about the code above is that it displays a message to the user that 
+                looks like <a href="javascript:alert('Hello, world!');">this</a>.
+            </p>
+            <p class="main">
+                Alternatively, you can load scripts from another file by using the <code>src</code> attribute 
+                on the <code>script</code> tag. JavaScript is plain text like HTML, so JS files can be edited in 
+                a text editor. The files have an extension of <code>.js</code>.
+            </p>
+            <pre class="main code">
+&lt;script src="myjavascript.js">&lt;/script>
+</pre>
+            <h2>Syntax</h2>
+            <p class="main">
+                How you write your code is very important, as your program may not know what to do if you don't 
+                follow a set of rules called <strong>syntax</strong>. This is kind of like grammar in English - 
+                not following these rules could lead the reader to be confused (in this case, the program). 
+                Here is some example code to show some common syntax rules:
+            </p>
+            <pre class="main code">
+// Returns the numbers that go into the specified number.
+function divisors(num) {
+	if (num > 10e7) {
+		return "Nope!";
+	} else {
+		var divisors = [];
+		for (i = 1; i &lt;= num / 2; i++) {
+			if (num % i == 0) {
+				divisors.push(i);
+			}
+		}
+		divisors.push(num);
+		return divisors;
+	}
+}            
+</pre>
+            <p class="main note">
+                This is a piece of code that can be repeated over and over again from different places (a function). 
+                It gives you a bunch of numbers that are the divisors of the number you give it.
+            </p>
+            <p class="main">
+                An important syntax rule to learn now is to end every line with a semicolon (";"). This prevents 
+                the program from thinking that a line of your script is in the wrong place. You don't need to do 
+                this on every line however, only on lines that don't start a block (marked with "{}"). There are 
+                also special places where semicolons are used, but don't worry about it now.
+            </p>
+            <p class="main">
+                Notice how every bracket "()" and block "{}" are closed in this sample, even if it is on another 
+                line? This is of paramount importance, as the program will not know where your code is if you 
+                ignore this rule.
+            </p>
+            <p class="main">
+                
+            </p>
+            <p class="main">
+            </p>
+            <h2>Summary</h2>
+            <p class="main">
+                This has been a quick introduction to JavaScript. To quickly clear up a misconception - no, 
+                JavaScript (the scripting language) is not related in anyway to Java (the programming language), 
+                except for some syntax. Fun fact, JavaScript is actually a derivative language of ECMAScript, 
+                developed for the same purpose.
+            </p>
+            <p class="main">
+                In the next tutorial, we will write our first JavaScript and get introduced to programming basics.
+            </p>
+            <div class="blogcont">
+                <a href="/tutorial" class="blognavp">&lt;&lt; Back to index</a>
+                <a href="../variables" class="blognavn">Next Tutorial - Variables >></a>
+            </div>
+            <footer>
+            </footer>
+        </div>
+        <div id="sidebar">
+        </div>
+    </div>
+</body>
+</html>

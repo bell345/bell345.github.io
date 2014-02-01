@@ -32,6 +32,12 @@
                 This is a test for creating multiple elements in a grid that can be manipulated by CSS,
                 jQuery and JavaScript. More of a proof-of-concept than an actual working program.
             </p>
+            <p class="main">
+                BUGS/ISSUES:
+            </p><ul class="main">
+                <li>Not all of the UI is there yet</li>
+                <li>Isn't very straightforward</li>
+            </ul>
             <div class="grid proto">
             </div>
             <div id="gridcontrolscont">
@@ -84,6 +90,19 @@
                 This calendar is going to contain a lot of features, including the ability to set your own events! It's an
                 ambitious project for sure, but it'll keep me on my toes.
             </p>
+            <p class="main">
+                BUGS/ISSUES:
+            </p><ul class="main">
+                <li>Styling is not quite right when the number of weeks displayed is 6.</li>
+            </ul>
+            <p class="main">
+                PLANNED:
+            </p><ul class="main">
+                <li>Events</li>
+                <li>More buttons!</li>
+                <li>Cookies</li>
+                <li>User personalization</li>
+            </ul>
             <div class="proto calendar">
                 <div id="calhead">
                     <h3>Calendar</h3>
@@ -127,8 +146,10 @@
                 <li>A few other utility commands (cl, help)</li>
             </ul>
             <p class="main">
-                It's not that much at the moment, but the basic structure exists.
-            </p>
+                NOTES:
+            </p><ul class="main">
+                <li>Unlikely to ever be worked upon again, due to the relative difficulty and undesirability.</li>
+            </ul>
             <textarea id="txtengarea" disabled="disabled" class="proto"></textarea><br />
             <input type="text" id="txtengin" class="proto" />
             <h2 id="anchor5" class="proto">Countdown</h2>
@@ -137,7 +158,13 @@
                 This is a widget based off of my countdown blog posts. You can set it to 
                 count down towards a specific date in the future, or to a duration from now 
                 onwards.
-            </p>
+            </p><p class="main">
+                PLANNED:
+            </p><ul class="main">
+                <li>The ability to count <em>from</em> a particular moment instead of towards.</li>
+                <li>Theming</li>
+                <li>No more dependence on other code</li>
+            </ul>
             <div id="cdown-full" class="cdown cdset proto">
                 <h3>Countdown</h3><button class="gridcont" onclick="
                     if (Cdown.expand) Cdown.expand = false; else Cdown.expand = true;">
@@ -167,8 +194,20 @@
             </p>
             <p class="main">
                 BUGS:
-                <ul class="main">
-                    <li>None so far.</li>
+                </p><ul class="main">
+                    <li>Concerning the keyboard input mode: 
+                        <ul class="main">
+                            <li>When pressing a key, the key is flashed, even if it is invalid.</li>
+                            <li>Some numerous issues with backspace/delete functionality.</li>
+                            <li>Doesn't support any advanced mode features.</li>
+                        </ul>
+                    </li>
+                </ul><p class="main">
+                PLANNED:
+                </p><ul class="main">
+                    <li>More functions</li>
+                    <li>A keyboard mode that isn't borked</li>
+                    <li>An expression mode, which only processes your function when completed.</li>
                 </ul>
             </p>
             <div id="calculator" class="proto">
