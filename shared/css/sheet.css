@@ -680,7 +680,7 @@ input[type="text"] {
 #cd-fn-set {
 	margin-top:12px;
 }
-#cd-fn-set input[type="text"] {
+#cd-fn-set input[type="text"]:not(#cdfn-name) {
 	width:120px;
 }
 #gdrawdiam {

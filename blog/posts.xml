@@ -1,97 +1,97 @@
 <?xml version="1.0" encoding="utf-8"?>
 <postsIndex>
   <post>
-	<id>12</id>
-	<source>/blog/2014/01/incompatibility.htm</source>
-	<title>Incompatibility</title>
-	<date>2014-01-22</date>
-	<tags>
-	  <tag>development</tag>
-	  <tag>rant</tag>
-	</tags>
+    <id>12</id>
+    <source>/blog/2014/01/incompatibility.htm</source>
+    <title>Incompatibility</title>
+    <date>2014-01-22</date>
+    <tags>
+      <tag>development</tag>
+      <tag>rant</tag>
+    </tags>
+    <author>Thomas Bell</author>
+  </post>
+  <post>
+    <id>11</id>
+    <source>/blog/2014/01/2013-in-review.htm</source>
+    <title>2013 - Year In Review</title>
+    <date>2014-01-10</date>
+    <tags>
+      <tag>life</tag>
+      <tag>review</tag>
+      <tag>reflection</tag>
+    </tags>
+    <author>Thomas Bell</author>
+  </post>
+  <post>
+    <id>10</id>
+    <source>/blog/2013/12/vert-today.htm</source>
+    <title>Advertising Today - Part 1</title>
+    <date>2013-12-29</date>
+    <tags>
+      <tag>opinion</tag>
+    </tags>
+    <author>Thomas Bell</author>
+  </post>
+  <post>
+    <id>9</id>
+    <source>/blog/2013/12/how-im-doing.htm</source>
+    <title>How I'm Doing</title>
+    <date>2013-12-22</date>
+    <tags>
+      <tag>life</tag>
+      <tag>events</tag>
+    </tags>
 	<author>Thomas Bell</author>
   </post>
   <post>
-	<id>11</id>
-	<source>/blog/2014/01/2013-in-review.htm</source>
-	<title>2013 - Year In Review</title>
-	<date>2014-01-10</date>
-	<tags>
-	  <tag>life</tag>
-	  <tag>review</tag>
-	  <tag>reflection</tag>
-	</tags>
-	<author>Thomas Bell</author>
+    <id>8</id>
+    <source>/blog/2013/12/end-of-school.htm</source>
+    <title>End of School</title>
+    <date>2013-12-16</date>
+    <tags>
+      <tag>widget</tag>
+      <tag>events</tag>
+      <tag>school</tag>
+    </tags>
+    <author>Thomas Bell</author>
   </post>
   <post>
-	<id>10</id>
-	<source>/blog/2013/12/vert-today.htm</source>
-	<title>Advertising Today - Part 1</title>
-	<date>2013-12-29</date>
-	<tags>
-	  <tag>opinion</tag>
-	</tags>
-	<author>Thomas Bell</author>
+    <id>7</id>
+    <source>/blog/2013/12/review-sb-beta.htm</source>
+    <title>Review - Starbound Beta</title>
+    <date>2013-12-11</date>
+    <tags>
+      <tag>starbound</tag>
+      <tag>review</tag>
+      <tag>gaming</tag>
+      <tag>opinion</tag>
+    </tags>
+    <author>Thomas Bell</author>
   </post>
   <post>
-	<id>9</id>
-	<source>/blog/2013/12/how-im-doing.htm</source>
-	<title>How I'm Doing</title>
-	<date>2013-12-22</date>
-	<tags>
-	  <tag>life</tag>
-	  <tag>events</tag>
-	</tags>
-	<author>Thomas Bell</author>
-  </post>
-  <post>
-	<id>8</id>
-	<source>/blog/2013/12/end-of-school.htm</source>
-	<title>End of School</title>
-	<date>2013-12-16</date>
-	<tags>
-	  <tag>widget</tag>
-	  <tag>events</tag>
-	  <tag>school</tag>
-	</tags>
-	<author>Thomas Bell</author>
-  </post>
-  <post>
-	<id>7</id>
-	<source>/blog/2013/12/review-sb-beta.htm</source>
-	<title>Review - Starbound Beta</title>
-	<date>2013-12-11</date>
-	<tags>
-	  <tag>starbound</tag>
-	  <tag>review</tag>
-	  <tag>gaming</tag>
-	  <tag>opinion</tag>
-	</tags>
-	<author>Thomas Bell</author>
-  </post>
-  <post>
-	<id>6</id>
-	<source>/blog/2013/12/sb-beta-countdown.htm</source>
-	<title>Starbound Countdown</title>
-	<date>2013-12-03</date>
-	<tags>
-	  <tag>starbound</tag>
-	  <tag>gaming</tag>
-	  <tag>widget</tag>
-	</tags>
-	<author>Thomas Bell</author>
+    <id>6</id>
+    <source>/blog/2013/12/sb-beta-countdown.htm</source>
+    <title>Starbound Countdown</title>
+    <date>2013-12-03</date>
+    <tags>
+      <tag>starbound</tag>
+      <tag>gaming</tag>
+      <tag>widget</tag>
+    </tags>
+    <author>Thomas Bell</author>
   </post>
   <post>
     <id>5</id>
     <source>/blog/2013/12/linux-is-love.htm</source>
-	<title>Linux Is Love</title>
-	<date>2013-12-01</date>
-	<tags>
-	  <tag>programming</tag>
+    <title>Linux Is Love</title>
+    <date>2013-12-01</date>
+    <tags>
+      <tag>programming</tag>
       <tag>life</tag>
       <tag>car</tag>
-	</tags>
-	<author>Thomas Bell</author>
+    </tags>
+    <author>Thomas Bell</author>
   </post>
   <post>
     <id>4</id>

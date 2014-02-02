@@ -310,6 +310,25 @@ function Notification(head, text, type) {
     notePrevInfo["text"].push(this.text);
     notePrevInfo["type"].push(this.type);
 }
+function chromeNotification(img, title, desc, link) {
+    if (isNull(window.webkitNotifications))
+        return null;
+    var permission = window.webkitNotifications.checkPermission();
+    if (permission == 0) {
+        var note = window.webkitNotifications.createNotification(
+            img, title, desc
+        );
+        if (!isNull(link)) {
+            note.onclick = function () {
+                window.open(link);
+                note.close();
+            }
+        }
+        note.show();
+    } else {
+        window.webkitNotifications.requestPermission();
+    }
+}
 // Updates the footer element based on the window size.
 function updateHeight() {
 	if ($("#maincontent").height() - $("#maincontent").offset().top < innerHeight) {

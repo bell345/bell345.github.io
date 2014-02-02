@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>CountDown</title>
+    <meta charset="utf-8" />
+	<link rel="shortcut icon" href="/favicon.png" />
+    <link rel="stylesheet" href="/shared/css/sheet.css" />
+    <link rel="stylesheet" href="./cdown.css" />
+    <script src="/shared/js/jquery.min.js"></script>
+    <script src="/shared/js/jquery-ui.min.js"></script>
+    <script src="./cdown.js"></script>
+</head>
+<body>
+    <div id="cdown-full" class="cdown cdset">
+        <div id="cd-controls">
+            <h3>Countdown</h3>
+            <button class="gridcont" onclick="Cdown.expand = !Cdown.expand">Expand/Contract</button>
+            <button class="gridcont" onclick="eraseCookie('cDown'); Cdown.check(false); Cdown.bypass = true">Reset</button>
+            <button class="gridcont toggle" id="cd-share">Share</button>
+            <button class="gridcont" onclick="window.open('../')">Back to website</button>
+        </div>
+        <h3 id="cd-set-title">Countdown</h3>
+        <button class="gridcont" onclick="Cdown.check(true)" id="cdset-sub">Submit</button><br />
+		<div id="cdset">
+			<input type="text" id="cdsetname" value="Name" class="inactive" /><br />
+        	<input type="text" id="cdsetyear" value="YYYY" />/<input type="text" id="cdsetmonth" value="MM" />/
+        	<input type="text" id="cdsetday" value="DD" /><input type="text" id="cdsethour" value="HH" />:
+        	<input type="text" id="cdsetminute" value="M" />.<input type="text" id="cdsetsecond" value="S" /><br />
+        </div>
+		<div id="cd-fn-set">
+			<h3>From Now</h3>
+            <button class="gridcont" onclick="Cdown.checkfn();Cdown.check(false);">Submit</button><br />
+            <input type="text" id="cdfn-name" value="Name" class="inactive" /><br />
+			<input type="text" id="cdfn-year" value="Years" /><input type="text" id="cdfn-month" value="Months" />
+			<input type="text" id="cdfn-day" value="Days" /><input type="text" id="cdfn-hour" value="Hours" />
+			<input type="text" id="cdfn-minute" value="Minutes" /><input type="text" id="cdfn-second" value="Seconds" />
+		</div>
+        <div id="cd-text-container">
+            <h2 id="cdown-count">Countdown over!!!</h2>
+            <div id="cdtext-share">
+                <h3>Share this countdown!</h3>
+                <p class="main">Copy the URL: </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
