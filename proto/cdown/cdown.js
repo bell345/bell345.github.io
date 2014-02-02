@@ -347,7 +347,7 @@ $(function () {
         if (!isNull(Cdown.name))
             link += "&name="+encodeURI(Cdown.name);
         $("#cdtext-share").slideToggle();
-        $("#cdtext-share p.main").html("Copy the URL: <a href='#'>"+link+"</a>");
+        $("#cdtext-share p.main").html("Copy the URL: <a href='"+link+"'>"+link+"</a>");
     });
     queryManager();
     Cdown.check(false);
