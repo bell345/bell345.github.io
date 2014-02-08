@@ -289,15 +289,20 @@ Cdown.check = function (bool) {
         else
             Cdown.reset();
     }
-    if (!isNull(query["t"]) && !isNaN(query["t"]) && parseInt(query["t"]) > Cdown.rightNow.getTime() && !Cdown.bypass) {
+    if (!isNull(query["t"]) && !isNaN(query["t"]) && !Cdown.bypass) {
         if (!isNull(query["name"])) {
             Cdown.name = decodeURI(query["name"]);
         }
-        out.setTime(query["t"]);
-        if (isNull(query["m"]) || query["m"] == "0")
-            Cdown.set(out);
-        else
+        out.setTime(parseInt(query["t"]));
+        console.log(out);
+        if (isNull(query["m"]) || query["m"] == "0") {
+            if (parseInt(query["t"]) > Cdown.rightNow.getTime()) {
+                Cdown.set(out);
+            }
+        }
+        else {
             Cdown.upSet(out);
+        }
     } else if (readCookie("cDown")) {
 		var cookie = readCookie("cDown").split(",");
         out.setTime(cookie[0]);
@@ -316,6 +321,7 @@ Cdown.reset = function () {
     $("#countup-set").css("display", "block");
     $("#cd-text-container").css("display", "none");
     $("#cdset-sub").css("display","inline");
+    $("#cdset-web").css("display","inline");
     $("#cdown-full h3")[0].innerHTML = "Countdown";
     $("#cd-set-title").show();
     $("#cd-controls").hide();
@@ -330,6 +336,7 @@ Cdown.set = function (out) {
     Cdown.main(out, "cdown-count");
     timerSet("cDown", 50, function () { Cdown.main(out, "cdown-count") });
     $("#cdset-sub").css("display","none");
+    $("#cdset-web").css("display","none");
     if (!isNull(Cdown.name))
         $("#cdown-full h3")[0].innerHTML = "Countdown - " + Cdown.name;
     $("#cd-set-title").hide();
@@ -345,6 +352,7 @@ Cdown.upSet = function (out) {
     timerClear("cDown");
     timerSet("cDown", 50, function () { Cdown.up(out, "cdown-count") });
     $("#cdset-sub").css("display","none");
+    $("#cdset-web").css("display","none");
     $("#cdown-full h3")[0].innerHTML = "Timer";
     if (!isNull(Cdown.name))
         $("#cdown-full h3")[0].innerHTML = "Timer - " + Cdown.name;
