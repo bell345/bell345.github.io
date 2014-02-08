@@ -14,16 +14,17 @@
     <div id="cdown-full" class="cdown cdset">
         <div id="cd-controls">
             <h3>Countdown</h3>
-            <button class="gridcont" onclick="Cdown.expand = !Cdown.expand">Expand/Contract</button>
-            <button class="gridcont" onclick="eraseCookie('cDown'); Cdown.check(false); Cdown.bypass = true">Reset</button>
+            <button class="gridcont toggle" onclick="Cdown.expand = !Cdown.expand">Shorten</button>
+            <button class="gridcont" onclick="eraseCookie('cDown');Cdown.check(false);Cdown.bypass = true">Reset</button>
             <button class="gridcont toggle" id="cd-share">Share</button>
             <button class="gridcont" onclick="window.open('../')">Back to website</button>
         </div>
         <h3 id="cd-set-title">Countdown</h3>
-        <button class="gridcont" onclick="Cdown.check(true)" id="cdset-sub">Submit</button><br />
 		<div id="cdset">
+            <button class="gridcont" onclick="Cdown.check(true)" id="cdset-sub">Submit</button>
+            <button class="gridcont" onclick="window.open('../')">Back to website</button><br />
 			<input type="text" id="cdsetname" value="Name" class="inactive" /><br />
-        	<input type="text" id="cdsetyear" value="YYYY" />/<input type="text" id="cdsetmonth" value="MM" />/
+        	<input type="text" id="cdsetyear" value="YYYY" />-<input type="text" id="cdsetmonth" value="MM" />-
         	<input type="text" id="cdsetday" value="DD" /><input type="text" id="cdsethour" value="HH" />:
         	<input type="text" id="cdsetminute" value="M" />.<input type="text" id="cdsetsecond" value="S" /><br />
         </div>
@@ -35,6 +36,11 @@
 			<input type="text" id="cdfn-day" value="Days" /><input type="text" id="cdfn-hour" value="Hours" />
 			<input type="text" id="cdfn-minute" value="Minutes" /><input type="text" id="cdfn-second" value="Seconds" />
 		</div>
+        <div id="countup-set">
+            <h3>Timer</h3>
+            <button class="gridcont" onclick="Cdown.upCheck();Cdown.check(false);">Start Now</button><br />
+            <input type="text" id="cup-name" value="Name" class="inactive" /><br />
+        </div>
         <div id="cd-text-container">
             <h2 id="cdown-count">Countdown over!!!</h2>
             <div id="cdtext-share">

@@ -2,7 +2,7 @@ var Prototypes = [];
 Prototypes[0] = ["grid", "Grid JavaScript Test", "1.5"];
 Prototypes[1] = ["calendar", "Calendar", "0.6.2"];
 Prototypes[2] = ["txteng", "tXtEng", "0.2.1"];
-Prototypes[3] = ["cdown", "Countdown", "2.5.1", "./cdown"];
+Prototypes[3] = ["cdown", "Countdown", "2.6", "./cdown"];
 Prototypes[4] = ["calc", "Calculator", "0.8.1"];
 Prototypes[5] = ["spaceshooter", "Space Shooter", "1.0", "./spaceshooter"];
 $(function () {

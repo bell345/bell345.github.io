@@ -62,7 +62,7 @@ body {
 #cdtext-share {
     display:none;
 }
-#cdsetname, #cdfn-name {
+#cdsetname, #cdfn-name, #cup-name {
     font-size:24px;
     width:600px;
 }

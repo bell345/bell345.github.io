@@ -102,62 +102,64 @@ Cdown.name = "";
 Cdown.monthLengths = [null, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 Cdown.bypass = false;
 Cdown.timestamp;
+Cdown.mode = 0;
 
 Cdown.main = function (enddate, dest) {
     this.rightNow = new Date();
     var bStr = unixToString(enddate);
     var nStr = unixToString(this.rightNow);
-    var cStr = unixToString(this.rightNow);
+    var resultStr = unixToString(this.rightNow);
     offset = [null, 2100, 12, Cdown.monthLengths[parseInt(nStr[2])], 24, 60, 60];
     var it;
     for (it = 6; it > 0; it--) {
         if (parseInt(parseInt(bStr[it]) - nStr[it]) < 0) {
             bStr[it - 1]--;
-            cStr[it] = offset[it] - Math.abs(parseInt(bStr[it]) - nStr[it]);
+            resultStr[it] = offset[it] - Math.abs(parseInt(bStr[it]) - nStr[it]);
         }
         else {
-            cStr[it] = parseInt(bStr[it]) - nStr[it];
+            resultStr[it] = parseInt(bStr[it]) - nStr[it];
         }
     }
     for (it = 4; it < 7; it++) {
-        if (cStr[it] < 10) {
-            cStr[it] = "0" + cStr[it];
+        if (resultStr[it] < 10) {
+            resultStr[it] = "0" + resultStr[it];
         }
     }
     var plurals = [];
     var active = 6;
     var searchActive = true;
     for (it = 1; it < 7; it++) {
-        if (cStr[it] == 1) {
+        if (resultStr[it] == 1) {
             plurals[it] = "";
         }
         else {
             plurals[it] = "s";
         }
-        if (cStr[it] > 0 && searchActive) {
+        if (resultStr[it] > 0 && searchActive) {
             searchActive = false;
             active = it;
         }
     }
     var finalCountdown = "";
     if (this.expand) {
-        if (active <= 1) finalCountdown += cStr[1] + " year" + plurals[1] + " ";
-        if (active <= 2) finalCountdown += cStr[2] + " month" + plurals[2] + " ";
-        if (active <= 3) finalCountdown += cStr[3] + " day" + plurals[3] + " ";
-        if (active <= 4) finalCountdown += cStr[4] + " hour" + plurals[4] + " ";
-        if (active <= 5) finalCountdown += cStr[5] + " minute" + plurals[5] + " ";
-        if (active <= 6) finalCountdown += cStr[6] + " second" + plurals[6] + " ";
+        if (active <= 1) finalCountdown += resultStr[1] + " year" + plurals[1] + " ";
+        if (active <= 2) finalCountdown += resultStr[2] + " month" + plurals[2] + " ";
+        if (active <= 3) finalCountdown += resultStr[3] + " day" + plurals[3] + " ";
+        if (active <= 4) finalCountdown += resultStr[4] + " hour" + plurals[4] + " ";
+        if (active <= 5) finalCountdown += resultStr[5] + " minute" + plurals[5] + " ";
+        if (active <= 6) finalCountdown += resultStr[6] + " second" + plurals[6] + " ";
     }
     else {
-        if (active <= 3) finalCountdown += Math.floor(cStr[3] + cStr[2] * 30 + cStr[1] * 365) + " day(s) ";
-        if (active <= 4) finalCountdown += cStr[4] + ":";
-        if (active <= 5) finalCountdown += cStr[5] + ".";
-        if (active <= 6) finalCountdown += cStr[6];
+        if (active <= 3) finalCountdown += Math.floor(resultStr[3] + resultStr[2] * 30 + resultStr[1] * 365) + " day(s) ";
+        if (active <= 4) finalCountdown += resultStr[4] + ":";
+        if (active <= 5) finalCountdown += resultStr[5] + ".";
+        if (active <= 6) finalCountdown += resultStr[6];
     }
     if (bStr[0] >= nStr[0]) {
         $("#" + dest).html(finalCountdown);
         this.active = true;
         Cdown.timestamp = bStr[0];
+        Cdown.mode = 0;
     }
     else {
         $("#" + dest).html("Countdown over!!!");
@@ -166,10 +168,66 @@ Cdown.main = function (enddate, dest) {
 		Cdown.check(false);
         chromeNotification("http://localhost:83/shared/res/clock.png","Countdown over!!!", Cdown.name);
     }
-    this.dbugTime[0] = cStr;
+    this.dbugTime[0] = resultStr;
     this.dbugTime[1] = bStr;
     this.dbugTime[2] = nStr;
-    this.prevSec = cStr[6];
+    this.prevSec = resultStr[6];
+}
+Cdown.up = function (startdate, dest) {
+    this.rightNow = new Date();
+    var startStr = unixToString(startdate);
+    var nowStr = unixToString(this.rightNow);
+    var resultStr = unixToString(this.rightNow);
+    offset = [null, 2100, 12, Cdown.monthLengths[parseInt(startStr[2])], 24, 60, 60];
+    var it;
+    for (it = 6; it > 0; it--) {
+        if (parseInt(parseInt(nowStr[it]) - startStr[it]) < 0) {
+            nowStr[it - 1]--;
+            resultStr[it] = offset[it] - Math.abs(parseInt(nowStr[it]) - startStr[it]);
+        }
+        else {
+            resultStr[it] = parseInt(nowStr[it]) - startStr[it];
+        }
+    }
+    for (it = 4; it < 7; it++) {
+        if (resultStr[it] < 10) {
+            resultStr[it] = "0" + resultStr[it];
+        }
+    }
+    var plurals = [];
+    var active = 6;
+    var searchActive = true;
+    for (it = 1; it < 7; it++) {
+        if (resultStr[it] == 1) {
+            plurals[it] = "";
+        }
+        else {
+            plurals[it] = "s";
+        }
+        if (resultStr[it] > 0 && searchActive) {
+            searchActive = false;
+            active = it;
+        }
+    }
+    var finalCountdown = "";
+    if (this.expand) {
+        if (active <= 1) finalCountdown += resultStr[1] + " year" + plurals[1] + " ";
+        if (active <= 2) finalCountdown += resultStr[2] + " month" + plurals[2] + " ";
+        if (active <= 3) finalCountdown += resultStr[3] + " day" + plurals[3] + " ";
+        if (active <= 4) finalCountdown += resultStr[4] + " hour" + plurals[4] + " ";
+        if (active <= 5) finalCountdown += resultStr[5] + " minute" + plurals[5] + " ";
+        if (active <= 6) finalCountdown += resultStr[6] + " second" + plurals[6] + " ";
+    }
+    else {
+        if (active <= 3) finalCountdown += Math.floor(resultStr[3] + resultStr[2] * 30 + resultStr[1] * 365) + " day(s) ";
+        if (active <= 4) finalCountdown += resultStr[4] + ":";
+        if (active <= 5) finalCountdown += resultStr[5] + ".";
+        if (active <= 6) finalCountdown += resultStr[6];
+    }
+    $("#" + dest).html(finalCountdown);
+    this.active = true;
+    Cdown.timestamp = startStr[0];
+    Cdown.mode = 1;
 }
 timerSet("nw", 100, function () { Cdown.rightNow = new Date() });
 Cdown.verifyInput = function () {
@@ -224,29 +282,30 @@ Cdown.check = function (bool) {
     if (bool) {
         var input = this.verifyInput();
         if (input) {
-            createCookie("cDown", input+","+Cdown.name, 365);
+            createCookie("cDown", input+","+Cdown.name+",0", 365);
             out.setTime(input);
             Cdown.set(out);
         }
         else
             Cdown.reset();
     }
-    if (
-        !isNull(query["t"]) && 
-        !isNaN(query["t"]) && 
-        parseInt(query["t"]) > Cdown.rightNow.getTime() &&
-        parseInt(query["t"]) < 1e+13 &&
-        !Cdown.bypass) {
+    if (!isNull(query["t"]) && !isNaN(query["t"]) && parseInt(query["t"]) > Cdown.rightNow.getTime() && !Cdown.bypass) {
         if (!isNull(query["name"])) {
             Cdown.name = decodeURI(query["name"]);
         }
         out.setTime(query["t"]);
-        Cdown.set(out);
+        if (isNull(query["m"]) || query["m"] == "0")
+            Cdown.set(out);
+        else
+            Cdown.upSet(out);
     } else if (readCookie("cDown")) {
 		var cookie = readCookie("cDown").split(",");
         out.setTime(cookie[0]);
-		Cdown.name = cookie[1];
-        Cdown.set(out);
+        Cdown.name = cookie[1];
+        if (isNull(cookie[2]) || cookie[2] == "0")
+            Cdown.set(out);
+        else if (cookie[2] == "1")
+            Cdown.upSet(out);
     } else
         Cdown.reset();
 }
@@ -254,6 +313,7 @@ Cdown.reset = function () {
     $("#cdown-full").attr("class", "cdown cdset");
     $("#cdset").css("display", "block");
 	$("#cd-fn-set").css("display", "block");
+    $("#countup-set").css("display", "block");
     $("#cd-text-container").css("display", "none");
     $("#cdset-sub").css("display","inline");
     $("#cdown-full h3")[0].innerHTML = "Countdown";
@@ -265,12 +325,29 @@ Cdown.set = function (out) {
     $("#cdown-full").attr("class", "cdown");
     $("#cdset").css("display", "none");
 	$("#cd-fn-set").css("display", "none");
+    $("#countup-set").css("display", "none");
     $("#cd-text-container").css("display", "block");
     Cdown.main(out, "cdown-count");
     timerSet("cDown", 50, function () { Cdown.main(out, "cdown-count") });
     $("#cdset-sub").css("display","none");
     if (!isNull(Cdown.name))
         $("#cdown-full h3")[0].innerHTML = "Countdown - " + Cdown.name;
+    $("#cd-set-title").hide();
+    $("#cd-controls").show();
+}
+Cdown.upSet = function (out) {
+    $("#cdown-full").attr("class", "cdown");
+    $("#cdset").css("display", "none");
+	$("#cd-fn-set").css("display", "none");
+    $("#countup-set").css("display", "none");
+    $("#cd-text-container").css("display", "block");
+    Cdown.up(out, "cdown-count");
+    timerClear("cDown");
+    timerSet("cDown", 50, function () { Cdown.up(out, "cdown-count") });
+    $("#cdset-sub").css("display","none");
+    $("#cdown-full h3")[0].innerHTML = "Timer";
+    if (!isNull(Cdown.name))
+        $("#cdown-full h3")[0].innerHTML = "Timer - " + Cdown.name;
     $("#cd-set-title").hide();
     $("#cd-controls").show();
 }
@@ -302,15 +379,21 @@ Cdown.checkfn = function () {
 		out += Cdown.rightNow.getTime();
 		Cdown.name = $("#cdfn-name").val();
 		eraseCookie("cDown")
-		createCookie("cDown", out+","+Cdown.name, 365);
+		createCookie("cDown", out+","+Cdown.name+",0", 365);
 	}
+}
+Cdown.upCheck = function () {
+    Cdown.name = $("#cup-name").val();
+    eraseCookie("cDown");
+    var out = Cdown.rightNow.getTime().toString();
+    createCookie("cDown", out+","+Cdown.name+",1", 365);
 }
 $(function () {
 	var cdInputs = $("#cdown-full input");
 	timerSet("cdInputs",100,function () {
 		for (i=1;i<cdInputs.length;i++) {
 			if (isNaN($(cdInputs[i]).val())) {
-                if (i != 7)
+                if (i != 7 && i != 14)
                     cdInputs[i].className = "inactive";
 			}
 			else {
@@ -343,7 +426,7 @@ $(function () {
 		});
 	});
     $("#cd-share").click(function (event) {
-        var link = "http://"+location.hostname+"/proto/cdown?t="+Cdown.timestamp;
+        var link = "http://"+location.hostname+"/proto/cdown?t="+Cdown.timestamp+"&m="+Cdown.mode;
         if (!isNull(Cdown.name))
             link += "&name="+encodeURI(Cdown.name);
         $("#cdtext-share").slideToggle();

@@ -30,8 +30,49 @@
             </p>
             <p class="main">
                 To use a variable, you must <strong>declare</strong> it. Declaring a variable is as simple as 
-                writing the word <code>var</code> (a keyword), then your variable's name. For example, to 
+                writing the word <code>var</code> (a keyword), then your variable's name. For example, to declare 
+                a variable called <code>myvar</code>:
             </p>
+            <p class="main code">
+var myvar;
+            </p>
+            <p class="main">
+                To actually use a variable, you must <strong>assign</strong> a value to it using the <code>=</code>
+                operator. For example, to assign 
+                a number to <code>myvar</code>:
+            </p>
+            <p class="main code">
+var myvar = 24;
+            </p>
+            <p class="main note">
+                You can also assign a variable in the same line that you declare it, as above.
+            </p>
+            <p class="main">
+                Since variables are containers for information, you can substitute values in your code for them. 
+                To add this number that you have given your variable to another, just use the variable name 
+                instead of a number.
+            </p>
+            <p class="main code">
+// Equals 30
+24 + 6;
+// Also equals 30
+myvar + 6;
+            </p>
+            <p class="main">
+                There are a few simple data types you can assign a variable:
+            </p>
+            <ul class="main">
+                <li><b>Boolean:</b> Either <code>true</code> or <code>false</code>. These are used 
+                for simple functions, such as <code>isNaN()</code>, which returns whether or not a 
+                variable is not a number in a boolean.</li>
+                <li><b>Integer:</b> A number without a decimal point. For example: <code>42</code>, 
+                <code>8842</code> or <code>-27</code>.</li>
+                <li><b>Floating-point number:</b> A number <em>with</em> a decimal point. For example: 
+                <code>82.3</code>, <code>-22.8843</code> or <code>664.00</code>.</li>
+                <li><b>String:</b> Some text. Is delimited (or starts and ends with) with single or 
+                double quotes. For example: <code>'cheese'</code>, <code>"Cracking job, old man!"</code> 
+                or <code>"All of the time, I like eating some cheese."</code>.</li>
+            </ul>
             <footer>
             </footer>
         </div>
