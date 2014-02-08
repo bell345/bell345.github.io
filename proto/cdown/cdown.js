@@ -92,17 +92,14 @@ function Popup(x, y, head, text) {
 }
 var Cdown = {};
 Cdown.rightNow = new Date();
-Cdown.difference = new Date();
-Cdown.diff = new Date();
 Cdown.expand = true;
-Cdown.dbugTime = [];
-Cdown.prevSec;
 Cdown.active = false;
 Cdown.name = "";
 Cdown.monthLengths = [null, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 Cdown.bypass = false;
 Cdown.timestamp;
 Cdown.mode = 0;
+Cdown.prevTime = {};
 
 Cdown.main = function (enddate, dest) {
     this.rightNow = new Date();
@@ -155,23 +152,29 @@ Cdown.main = function (enddate, dest) {
         if (active <= 5) finalCountdown += resultStr[5] + ".";
         if (active <= 6) finalCountdown += resultStr[6];
     }
-    if (bStr[0] >= nStr[0]) {
+    var cDownTitle = "";
+    if (active <= 3) cDownTitle += Math.floor(resultStr[3] + resultStr[2] * 30 + resultStr[1] * 365) + "d ";
+    if (active <= 4) cDownTitle += resultStr[4] + ":";
+    if (active <= 5) cDownTitle += resultStr[5] + ".";
+    if (active <= 6) cDownTitle += resultStr[6];
+    if (isNull(Cdown.prevTime))
+        Cdown.prevTime = resultStr;
+    if (bStr[0] >= nStr[0] && Cdown.prevTime[6] != resultStr[6]) {
         $("#" + dest).html(finalCountdown);
         this.active = true;
         Cdown.timestamp = bStr[0];
         Cdown.mode = 0;
+        document.title = "CDown - "+cDownTitle;
+        Cdown.prevTime = resultStr;
     }
-    else {
+    else if (bStr[0] < nStr[0]) {
         $("#" + dest).html("Countdown over!!!");
         this.active = false;
 		eraseCookie("cDown");
 		Cdown.check(false);
         chromeNotification("http://localhost:83/shared/res/clock.png","Countdown over!!!", Cdown.name);
+        document.title = "CountDown";
     }
-    this.dbugTime[0] = resultStr;
-    this.dbugTime[1] = bStr;
-    this.dbugTime[2] = nStr;
-    this.prevSec = resultStr[6];
 }
 Cdown.up = function (startdate, dest) {
     this.rightNow = new Date();
@@ -224,7 +227,13 @@ Cdown.up = function (startdate, dest) {
         if (active <= 5) finalCountdown += resultStr[5] + ".";
         if (active <= 6) finalCountdown += resultStr[6];
     }
+    var timerTitle = "";
+    if (active <= 3) timerTitle += Math.floor(resultStr[3] + resultStr[2] * 30 + resultStr[1] * 365) + "d ";
+    if (active <= 4) timerTitle += resultStr[4] + ":";
+    if (active <= 5) timerTitle += resultStr[5] + ".";
+    if (active <= 6) timerTitle += resultStr[6];
     $("#" + dest).html(finalCountdown);
+    document.title = "Timer - "+timerTitle;
     this.active = true;
     Cdown.timestamp = startStr[0];
     Cdown.mode = 1;
@@ -326,6 +335,7 @@ Cdown.reset = function () {
     $("#cd-set-title").show();
     $("#cd-controls").hide();
     timerClear("cDown");
+    document.title = "CountDown";
 }
 Cdown.set = function (out) {
     $("#cdown-full").attr("class", "cdown");
@@ -341,6 +351,7 @@ Cdown.set = function (out) {
         $("#cdown-full h3")[0].innerHTML = "Countdown - " + Cdown.name;
     $("#cd-set-title").hide();
     $("#cd-controls").show();
+    document.title = "CountDown";
 }
 Cdown.upSet = function (out) {
     $("#cdown-full").attr("class", "cdown");
@@ -358,6 +369,7 @@ Cdown.upSet = function (out) {
         $("#cdown-full h3")[0].innerHTML = "Timer - " + Cdown.name;
     $("#cd-set-title").hide();
     $("#cd-controls").show();
+    document.title = "Timer";
 }
 Cdown.checkfn = function () {
 	var fnYear = $("#cdfn-year"),
