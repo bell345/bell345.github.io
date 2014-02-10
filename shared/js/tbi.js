@@ -1,4 +1,4 @@
-// TBI.JS - V4.7.1
+// TBI.JS - V4.7.2
 // Base functions, variables and helpers that are included and required in
 // all of my website pages.
 var now = new Date();
@@ -42,7 +42,7 @@ function XHR() {
     } else if (window.ActiveXObject) {
         xhr = new ActiveXObject("Microsoft.XMLHTTP");
     } else {
-		throw new Error("You are not using a supported browser.");
+		error("You are not using a supported browser.");
 	}
     return xhr;
 }
@@ -136,7 +136,7 @@ function isNull(thing) {
                 return true;
         return (thing.length == 0)
     }
-    return (thing == undefined || thing === "" || thing == null)
+    return (thing == undefined || thing === "" || thing == null || thing.toString() == "NaN")
 }
 // Determines whether a number is negative.
 function isNegative(num) { return (Math.abs(num) != num); }
@@ -280,10 +280,11 @@ function Notification(head, text, type) {
                                 prevNum++;
                             }
                         });
+                        var divStart = "<div class='list-num list-num-";
                         if (prevNum >= 9)
-                            $(lines[j]).html("<div class='list-num list-num-plus'></div>"+$(lines[j]).text());
+                            $(lines[j]).html(divStart+"plus'></div>"+$(lines[j]).text());
                         else 
-                            $(lines[j]).html("<div class='list-num list-num-"+(prevNum+1)+"'></div>"+$(lines[j]).text());
+                            $(lines[j]).html(divStart+(prevNum+1)+"'></div>"+$(lines[j]).text());
                     }
                 }
             }

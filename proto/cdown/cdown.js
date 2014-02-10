@@ -299,8 +299,8 @@ Cdown.check = function (bool) {
             Cdown.reset();
     }
     if (!isNull(query["t"]) && !isNaN(query["t"]) && !Cdown.bypass) {
-        if (!isNull(query["name"])) {
-            Cdown.name = decodeURI(query["name"]);
+        if (!isNull(query["n"])) {
+            Cdown.name = decodeURI(query["n"]);
         }
         out.setTime(parseInt(query["t"]));
         console.log(out);
@@ -448,7 +448,7 @@ $(function () {
     $("#cd-share").click(function (event) {
         var link = "http://"+location.hostname+"/proto/cdown?t="+Cdown.timestamp+"&m="+Cdown.mode;
         if (!isNull(Cdown.name))
-            link += "&name="+encodeURI(Cdown.name);
+            link += "&n="+encodeURI(Cdown.name);
         $("#cdtext-share").slideToggle();
         $("#cdtext-share p.main").html("Copy the URL: <a href='"+link+"'>"+link+"</a>");
     });

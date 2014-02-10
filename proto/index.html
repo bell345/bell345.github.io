@@ -294,6 +294,53 @@
 		    <a href="http://yoyogames.com/studio/download">Game Maker</a> game. Bear in mind - I <em>had the 
 		    same budget.</em>
 		</p>
+        <h2 id="anchor8">Canvas</h2>
+        <p class="main">
+            Hooray! Canvas things! Click to draw.
+        </p>
+        <div style="width:600px;height:600px;padding:24px;">
+            <canvas id="cvs-tut" width="500" height="500" onclick="CanvasTutorial.draw()"></canvas>
+        </div>
+        <script type="application/javascript">
+            var CanvasTutorial = {};
+            CanvasTutorial.draw = function () {
+                var cvs = gebi("cvs-tut");
+                cvs.style.border = "2px solid #000";
+                if (cvs.getContext)
+                    var ctx = cvs.getContext("2d");
+                else
+                    return null;
+                // SYNTAX FOR FUNCTIONS:
+                // (topLeftCornerX, topLeftCornerY, width, height)
+                ctx.beginPath();
+                ctx.moveTo(75,50);
+                ctx.lineTo(100,75);
+                ctx.lineTo(100,25);
+                ctx.fill();
+            }
+            var canInspectCanvas = true;
+            // Canvas Inspector
+            $("canvas").mousemove(function (event) {
+                if (!canInspectCanvas)
+                    return null;
+                var off = $(this).offset();
+                var border = [parseInt(this.style.borderLeftWidth), parseInt(this.style.borderTopWidth)];
+                var offset = [off.left+border[0], off.top+border[1]];
+                var relative = [event.pageX - offset[0], event.pageY - offset[1]];
+                if (isNaN(relative[0]))
+                    return null;
+                new Popup(
+                    event.clientX+20, 
+                    event.clientY+20, 
+                    "Canvas Coordinates", 
+                        (Math.floor(relative[0]) + "px ") + 
+                        (Math.floor(relative[1]) + "px")
+                );
+            });
+            $("canvas").mouseleave(function () {
+                $(".popup").remove();
+            });
+        </script>
             <footer>
             </footer>
         </div>
