@@ -1,0 +1,16 @@
+{
+    "includeIndex" : [
+        {
+            "source" : "/shared/html/header.htm",
+            "insert" : "#navigation"
+        }, 
+        {
+            "source" : "/shared/html/sidebar.htm",
+            "insert" : "#sidebar"
+        },
+        {
+            "source" : "/shared/html/footer.htm",
+            "insert" : "footer"
+        }
+    ]
+}

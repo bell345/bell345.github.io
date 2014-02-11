@@ -1,0 +1,43 @@
+{
+    "prototypes" : [
+        {
+            "id" : "grid",
+            "name" : "Grid JavaScript Test",
+            "version" : "1.5"
+        }, 
+        {
+            "id" : "calendar",
+            "name" : "Calendar",
+            "version" : "0.6.2"
+        }, 
+        {
+            "id" : "txteng",
+            "name" : "tXtEng",
+            "version" : "0.2.1"
+        }, 
+        {
+            "id" : "cdown",
+            "name" : "CountDown",
+            "version" : "2.6",
+            "link" : "/proto/cdown/"
+        }, 
+        {
+            "id" : "calc",
+            "name" : "Calculator",
+            "version" : "0.8.1"
+        }, 
+        {
+            "id" : "spaceshooter",
+            "name" : "Space Shooter",
+            "version" : "1.0",
+            "link" : "/proto/spaceshooter/"
+        }
+    ],
+    "work" : [
+        {
+            "name" : "CountDown",
+            "version" : "2.6",
+            "link" : "/proto/cdown"
+        }
+    ]
+}

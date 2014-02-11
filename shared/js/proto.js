@@ -1,23 +1,31 @@
-var Prototypes = [];
-Prototypes[0] = ["grid", "Grid JavaScript Test", "1.5"];
-Prototypes[1] = ["calendar", "Calendar", "0.6.2"];
-Prototypes[2] = ["txteng", "tXtEng", "0.2.1"];
-Prototypes[3] = ["cdown", "Countdown", "2.6", "./cdown"];
-Prototypes[4] = ["calc", "Calculator", "0.8.1"];
-Prototypes[5] = ["spaceshooter", "Space Shooter", "1.0", "./spaceshooter"];
-$(function () {
+var Prototypes;
+function fetchProtoIndex() {
+    var xhr = new XHR();
+    xhr.open("GET","/shared/data/work.json",true);
+    xhr.send();
+    xhr.onreadystatechange = function () {
+        if (checkState(xhr)) {
+            Prototypes = $.parseJSON(xhr.response).prototypes;
+            setupPrototypes();
+        }
+    }
+}
+function setupPrototypes() {
     for (i=0;i<Prototypes.length;i++) {
         var titleText = "";
-        if (!isNull(Prototypes[i][3]))
-            titleText += "<a href='"+Prototypes[i][3]+"'>";
-        titleText += Prototypes[i][1];
-        if (!isNull(Prototypes[i][3]))
+        if (!isNull(Prototypes[i].link))
+            titleText += "<a href='"+Prototypes[i].link+"'>";
+        titleText += Prototypes[i].name;
+        if (!isNull(Prototypes[i].link))
             titleText += "</a>";
         $($("h2.proto, h3.proto")[i]).html(titleText);
-        $($("h2.proto, h3.proto")[i]).attr("id",Prototypes[i][0]);
-        $($(".version")[i]).html("Version "+Prototypes[i][2]);
+        $($("h2.proto, h3.proto")[i]).attr("id",Prototypes[i].id);
+        $($(".version")[i]).html("Version "+Prototypes[i].version);
     }
-    if (!isNull(location.hash)&&!isNull($(location.hash))) {
+}
+$(function () {
+    fetchProtoIndex();
+    if (!isNull(location.hash)) {
         timerSet("scroll",0,function () {
             $(document).scrollTop(parseInt($(location.hash).offset().top - 52));
             timerClear("scroll");

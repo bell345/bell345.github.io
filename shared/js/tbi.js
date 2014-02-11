@@ -351,62 +351,40 @@ function updateLinks() {
 // Code for implementing a client-side HTML includes system.
 // An alternative to PHP includes.
 var HTMLIncludes = {};
-HTMLIncludes.index = {};
 HTMLIncludes.info = [];
 HTMLIncludes.getDone = [];
 HTMLIncludes.includes = [];
 HTMLIncludes.getIndex = function () {
     var xhr = new XHR();
-    xhr.open("GET", "/shared/html/includes.xml?"+unqid, true);
+    xhr.open("GET","/shared/data/includes.json",true);
     xhr.send();
     xhr.onreadystatechange = function () {
         if (checkState(xhr)) {
-            HTMLIncludes.index = findIndex(xhr, "include");
-            HTMLIncludes.list();
+            HTMLIncludes.info = $.parseJSON(xhr.response).includeIndex;
+            HTMLIncludes.get();
         }
     }
-}
-HTMLIncludes.list = function () {
-    var indx = HTMLIncludes.index;
-    var len = indx.length;
-    for (i = 0; i < len; i++) {
-        var tempIncl = [];
-        try {
-            for (j = 0; j < indx[0].children.length; j++) {
-                tempIncl.push(indx[i].children[j].textContent);
-            }
-        } catch (e) {
-            for (j = 0; j < indx[0].childNodes.length; j++) {
-                if (indx[i].childNodes[j].localName != null)
-                    tempIncl.push(indx[i].childNodes[j].textContent);
-            }
-        }
-        HTMLIncludes.info.push(tempIncl);
-    }
-    HTMLIncludes.get();
 }
 HTMLIncludes.get = function () {
-    var current = 0;
+    var curr = 0;
     for (i = 0; i < HTMLIncludes.info.length; i++) {
         HTMLIncludes.getDone[i] = false;
     }
     timerSet("includes", 200, function () {
-        if (!HTMLIncludes.getDone[current]) {
-            HTMLIncludes.getDone[current] = true;
+        if (!HTMLIncludes.getDone[curr]) {
+            HTMLIncludes.getDone[curr] = true;
             var xhr = new XHR();
-            xhr.open("GET", HTMLIncludes.info[current][0], true);
+            xhr.open("GET", HTMLIncludes.info[curr].source, true);
             xhr.send();
             xhr.onreadystatechange = function () {
                 if (checkState(xhr)) {
-                    HTMLIncludes.includes[current] = xhr.response;
-                    $(HTMLIncludes.info[current][1]).html(HTMLIncludes.includes[current]);
-                    if (current == HTMLIncludes.getDone.length - 1) {
+                    HTMLIncludes.includes[curr] = xhr.response;
+                    $(HTMLIncludes.info[curr].insert).html(HTMLIncludes.includes[curr]);
+                    if (curr == HTMLIncludes.getDone.length - 1) {
                         timerClear("includes");
                         updateHeight();
                         updateLinks();
-                    } else {
-                        current++;
-                    }
+                    } else curr++;
                 }
             }
         }
