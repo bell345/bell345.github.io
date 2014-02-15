@@ -33,8 +33,6 @@
 body {
     background:url(/shared/res/ddd-noise.png) #ddd repeat;
 }
-/* END GLOBAL STYLE */
-/* START DIV STYLE */
 header {
     width:75%;
     height:70px;
@@ -52,6 +50,101 @@ nav {
     text-align:center;
     box-shadow:0px 3px 10px #555;
 }
+footer {
+    width:100%;
+    margin-top:20px;
+}
+button:focus {
+	outline:2px solid #0094ff;
+}
+button:active {
+	background-color:rgba(0,0,0,0.2);
+    position:relative;
+    top:2px;
+    outline:0;
+}
+input[type="text"]:active, input[type="text"]:focus {
+	outline:2px solid #0094ff;
+}
+h1 {
+    text-align:center;
+    color:#fff;
+    text-shadow:4px 4px 0px #333;
+    font-family:'Righteous','Georgia',serif;
+    font-size:58px;
+    font-weight:normal;
+    padding-top:6px;
+}
+h2 {
+    color:#333;
+    font-family:'Montserrat',Calibri,sans-serif;
+    font-size:36px;
+    text-align:left;
+    padding:10px 24px;
+}
+h3 {
+    color:#333;
+    font-family:'Montserrat',Calibri,sans-serif;
+    font-size:22px;
+    padding:10px;
+    padding-top:0;
+    text-align:left;
+}
+h3.main {
+    color:#333;
+    font-family:'Montserrat',Calibri,sans-serif;
+    font-size:24px;
+    padding-left:30px;
+    padding-top:0;
+}
+p {
+    text-align:left;
+}
+div a {
+    color:#09f;
+    text-decoration:none;
+}
+div a:hover {
+    color:#aaa;
+}
+nav a {
+    position:relative;
+    top:3px;
+    text-align:center;
+    text-decoration:none;
+    font-size:22px;
+    font-family:"Open Sans",Calibri,sans-serif;
+    text-shadow:3px 3px 4px #000;
+    color:#fff;
+    border-bottom:5px solid transparent;
+    padding:8px 14px;
+    -webkit-transition:border 0.5s;
+    -moz-transition:border 0.5s;
+    -o-transition:border 0.5s;
+    transition:border 0.5s;
+}
+nav a:hover {
+    border-bottom:5px solid #fff;
+    color:#fff;
+}
+button:not(.ui-icon) {
+    font-family:'Open Sans',Calibri,sans-serif;
+    font-size:14px;
+    padding:4px;
+    padding-left:8px;
+    padding-right:8px;
+	background-color:#dadada;
+}
+input[type="text"] {
+    font-family:'Open Sans',Calibri,sans-serif;
+    font-size:14px;
+    padding:4px;
+    padding-left:8px;
+    padding-right:8px;
+    margin:4px;
+}
+/* END GLOBAL STYLE */
+/* START DIV STYLE */
 #top {
     top:0;
     z-index:9;
@@ -113,10 +206,6 @@ nav {
 }
 .img-viewport-inline img {
     margin:auto;
-}
-footer {
-    width:100%;
-    margin-top:20px;
 }
 #posts, #singlepost {
     padding:20px;
@@ -280,18 +369,6 @@ footer {
     margin:0 24px !important;
     text-align:left;
 }
-button:focus {
-	outline:2px solid #0094ff;
-}
-button:active {
-	background-color:rgba(0,0,0,0.2);
-    position:relative;
-    top:2px;
-    outline:0;
-}
-input[type="text"]:active, input[type="text"]:focus {
-	outline:2px solid #0094ff;
-}
 .cdset {
     border:2px solid transparent;
     background:#555;
@@ -453,17 +530,92 @@ input[type="text"]:active, input[type="text"]:focus {
     margin-top:4px;
     box-shadow:2px 2px 3px #333;
 }
+.ttable {
+    width:85%;
+}
+.ttable > div {
+    text-align:center;
+    font-family:"Segoe UI","Open Sans",Calibri,sans-serif;
+    font-size:12px;
+    border-spacing:0;
+}
+.ttable-head span {
+    width:19%;
+    font-weight:normal;
+    text-transform:uppercase;
+    font-size:12px;
+    text-decoration:underline;
+    color:#555;
+    display:inline-block;
+}
+.ttable > div:first-child > div > *:first-child {
+    width:5%;
+    display:inline-block;
+    font-size:24px;
+    vertical-align:middle;
+    background:#444;
+    color:#eee;
+}
+.ttable-cell {
+    background:#ddd;
+    width:19%;
+    display:inline-block;
+    font-size:12px;
+    position:relative;
+    left:15px;
+    border-right:1px solid #444;
+}
+.ttable-row>div:first-child {
+    position:absolute;
+    left:0;
+    height:100%;
+}
+.ttable-cell div {
+    padding:2px;
+}
+.ttable-cellh {
+    font-weight:bold;
+}
+.ttable-celli {
+    background:rgba(255,255,255,0.7);
+}
+.ttable-break {
+    width:100%;
+    font-size:18px;
+    background:#444;
+    color:#eee;
+}
+.ttable-row, .ttable-head {
+    font-size:0;
+    vertical-align:top;
+    position:relative;
+}
+.ttable-head, .ttable-row, .ttable-break {
+    border-bottom:2px solid #444;
+}
+.ttb-info {
+    margin-top:24px;
+}
+.ttbi-field {
+    border-bottom:1px dotted #444;
+}
+.ttbi-fieldh, .ttbi-fieldi {
+    display:inline-block;
+    font-size:16px;
+    padding:4px 0;
+}
+.ttbi-fieldh {
+    width:20%;
+    text-transform:capitalize;
+    background:#444;
+    color:#eee;
+    font-weight:bold;
+}
+.ttbi-fieldi {
+    width:80%;
+}
 /* END DIV STYLE */
 /* START TEXT STYLE */
-h1 {
-    text-align:center;
-    color:#fff;
-    text-shadow:4px 4px 0px #333;
-    font-family:'Righteous','Georgia',serif;
-    font-size:58px;
-    font-weight:normal;
-    padding-top:6px;
-}
 .slanted-logo h1 {
     position:absolute;
     -webkit-transform:translateX(24px) translateY(-6px) skewX(20deg);
@@ -474,58 +626,6 @@ h1 {
     color:#333;
     text-shadow:4px 4px 0px #ddd;
     padding-bottom:16px;
-}
-h2 {
-    color:#333;
-    font-family:'Montserrat',Calibri,sans-serif;
-    font-size:36px;
-    text-align:left;
-    padding:10px 24px;
-}
-h3 {
-    color:#333;
-    font-family:'Montserrat',Calibri,sans-serif;
-    font-size:22px;
-    padding:10px;
-    padding-top:0;
-    text-align:left;
-}
-h3.main {
-    color:#333;
-    font-family:'Montserrat',Calibri,sans-serif;
-    font-size:24px;
-    padding-left:30px;
-    padding-top:0;
-}
-p {
-    text-align:left;
-}
-div a {
-    color:#09f;
-    text-decoration:none;
-}
-div a:hover {
-    color:#aaa;
-}
-nav a {
-    position:relative;
-    top:3px;
-    text-align:center;
-    text-decoration:none;
-    font-size:22px;
-    font-family:"Open Sans",Calibri,sans-serif;
-    text-shadow:3px 3px 4px #000;
-    color:#fff;
-    border-bottom:5px solid transparent;
-    padding:8px 14px;
-    -webkit-transition:border 0.5s;
-    -moz-transition:border 0.5s;
-    -o-transition:border 0.5s;
-    transition:border 0.5s;
-}
-nav a:hover {
-    border-bottom:5px solid #fff;
-    color:#fff;
 }
 #curr {
     border-bottom:5px solid #0094ff;
@@ -575,22 +675,6 @@ nav a:hover {
 .timestamp a:hover {
 	color:#eee;
 	background:rgba(255,255,255,0.3);
-}
-button:not(.ui-icon) {
-    font-family:'Open Sans',Calibri,sans-serif;
-    font-size:14px;
-    padding:4px;
-    padding-left:8px;
-    padding-right:8px;
-	background-color:#dadada;
-}
-input[type="text"] {
-    font-family:'Open Sans',Calibri,sans-serif;
-    font-size:14px;
-    padding:4px;
-    padding-left:8px;
-    padding-right:8px;
-    margin:4px;
 }
 .gridcont {
 	font-family:'Open Sans',Calibri,sans-serif;

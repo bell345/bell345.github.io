@@ -31,6 +31,11 @@
             "name" : "Space Shooter",
             "version" : "1.0",
             "link" : "/proto/spaceshooter/"
+        },
+        {
+            "id" : "ttbl",
+            "name" : "TimeTable",
+            "version" : "0.3"
         }
     ],
     "work" : [

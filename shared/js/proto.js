@@ -1806,3 +1806,114 @@ $(function () {
     Calc.setUp();
 });
 // END CALC CODE //
+// START TTBL CODE //
+var TTBL = {};
+TTBL.ttables = {};
+TTBL.curr = "thomas_bell2";
+TTBL.dayKeys = ["mon","tue","wed","thu","fri"];
+TTBL.periods = [];
+TTBL.breaks = [];
+TTBL.setup = function () {
+    if (!isNull(localStorage.TTBL)) {
+        TTBL.ttables = $.parseJSON(localStorage.TTBL);
+        TTBL.currTable = TTBL.ttables[TTBL.curr];
+        TTBL.pLen = TTBL.currTable.variables.periodLength;
+        TTBL.days = TTBL.currTable.variables.days;
+        TTBL.display = TTBL.currTable.variables.display;
+        TTBL.defs = TTBL.currTable.defs;
+        TTBL.fillIn();
+        TTBL.set();
+    }
+}
+TTBL.addTime = function (timeString, minCount) {
+    minCount = parseInt(minCount);
+    var time = timeString.split(".");
+    time[0] = parseInt(time[0]);
+    time[1] = parseInt(time[1]);
+    while (time[1] + minCount > 60) {
+        time[0]++;
+        minCount -= 60;
+    }
+    if (time[1] += minCount > 23)
+        time[1] = 0;
+    else
+        time[1] += minCount;
+    if (time[0] < 10) { time[0] = "0"+time[0]; }
+    if (time[1] < 10) { time[1] = "0"+time[1]; }
+    return time[0].toString()+"."+time[1].toString();
+}
+TTBL.fillIn = function () {
+    for (var it = 0; it < TTBL.currTable.table.length; it++) {
+        var thisDay = TTBL.currTable.table[it];
+        var periods = [];
+        for (var jt = 0; jt < thisDay.length; jt++) {
+            if (isNull(thisDay[jt].start)) {
+                if (!isNull(thisDay[jt-1].end)) {
+                    thisDay[jt].start = thisDay[jt-1].end;
+                }
+            }
+            if (isNull(thisDay[jt].end)) {
+                if (!isNull(thisDay[jt].start)) {
+                    thisDay[jt].end = TTBL.addTime(thisDay[jt].start, TTBL.pLen);
+                }
+            }
+            if (!isNull(thisDay[jt].lesson) && isNull(thisDay[jt].subject)) {
+                var lesson = TTBL.defs.lesson[TTBL.currTable.info.grade][thisDay[jt].lesson];
+                var subject = TTBL.defs.subject[lesson.subject];
+                thisDay[jt].subject = subject.name;
+                if (!isNull(subject.fullName))
+                    thisDay[jt].subFull = subject.fullName;
+                else
+                    thisDay[jt].subFull = subject.name;
+                thisDay[jt].teacher = TTBL.defs.teacher[lesson.teacher];
+                thisDay[jt].class = lesson.class;
+                thisDay[jt].colour = subject.colour;
+                if (!isNull(subject.colour))
+                    thisDay[jt].text = subject.text
+                else
+                    thisDay[jt].text = "#000";
+            }
+            if (isNull(thisDay[jt].type) || thisDay[jt].type != "break") {
+                periods.push(thisDay[jt]);
+            } else if (thisDay[jt].type == "break" && TTBL.breaks.indexOf(thisDay[jt].name) == -1) {
+                TTBL.breaks.push(thisDay[jt].name);
+            }
+        }
+        TTBL.periods.push(periods);
+    }
+}
+TTBL.set = function () {
+    for (var it = 0; it < TTBL.periods.length; it++) {
+        var cells = $(".ttb-"+TTBL.dayKeys[it]);
+        for (var jt = 0; jt < cells.length; jt++) {
+            var currPeriod = TTBL.periods[it][jt];
+            cells[jt].style.background = currPeriod.colour;
+            var header = cells[jt].getElementsByClassName("ttable-cellh")[0];
+            header.innerHTML = currPeriod.subject;
+            $(header).attr("title",currPeriod.subFull);
+            header.style.color = currPeriod.text;
+            var info = cells[jt].getElementsByClassName("ttable-celli");
+            info[0].innerHTML = currPeriod.teacher;
+            if (!isNull(currPeriod.class))
+                info[1].innerHTML = currPeriod.class;
+            var time = currPeriod.start+"-"+currPeriod.end;
+            info[2].innerHTML = time;
+        }
+    }
+    for (it = 0; it < TTBL.breaks.length; it++)
+        $(".ttable-break")[it].innerHTML = TTBL.breaks[it];
+    for (it = 0; it < TTBL.display.info.length; it++) {
+        var tempElement = "";
+        tempElement += "<div class='ttbi-field'>";
+        tempElement += "<div class='ttbi-fieldh'></div>";
+        tempElement += "<div class='ttbi-fieldi'></div>";
+        tempElement += "</div>"
+        $(".ttb-info").append(tempElement);
+        var header = TTBL.display.info[it];
+        var content = TTBL.currTable.info[TTBL.display.info[it]];
+        $(".ttbi-fieldh")[it].innerHTML = header;
+        $(".ttbi-fieldi")[it].innerHTML = content;
+    }
+}
+$(function () { TTBL.setup(); });
+// END TTBL CODE //
