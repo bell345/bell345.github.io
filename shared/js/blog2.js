@@ -32,7 +32,10 @@ function getPostIndex() {
     xhr.send();
     xhr.onreadystatechange = function () {
         if (checkState(xhr)) {
-            index = $.parseJSON(xhr.response).postIndex;
+            if (isNull(xhr.response))
+                index = $.parseJSON(xhr.responseText).postIndex;
+            else
+                index = $.parseJSON(xhr.response).postIndex;
             if (blogview)
                 getSinglePostInfo(query.id)
             else
@@ -122,7 +125,10 @@ function getPosts() {
                 xhr.send();
                 xhr.onreadystatechange = function () {
                     if (checkState(xhr)) {
-						posts[it3] = xhr.response;
+                        if (isNull(xhr.response))
+                            posts[it3] = xhr.responseText;
+                        else
+                            posts[it3] = xhr.response;
 						it3++;
 					}
 					if (checkState(xhr) && it3 == postInfo.length) {
@@ -141,7 +147,10 @@ function getSinglePost() {
     xhr.send();
     xhr.onreadystatechange = function () {
         if (checkState(xhr)) {
-            singlePost = xhr.response;
+            if (isNull(xhr.response))
+                singlePost = xhr.responseText;
+            else
+                singlePost = xhr.response;
             setSinglePost();
         }
     }

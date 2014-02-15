@@ -1,6 +1,21 @@
 // TBI.JS - V4.7.2
 // Base functions, variables and helpers that are included and required in
 // all of my website pages.
+// START INCOMPATIBILITY CODE //
+document.onreadystatechange = function () {
+    if (!window.jQuery) {
+        var incompat = "";
+        incompat += "<DIV style='width:100%;height:100%;background-color:#fff;color:#000;font-size:24px;padding:16px;'>";
+        incompat += "<H1 style='font-size:64px;font-family:monospace;color:#000;margin-bottom:48px;'>Your browser is unsupported.</H1>";
+        incompat += "<P style='text-align:center;margin:0 200px 0 200px;'>Your browser is too out of date to view the website content properly. ";
+        incompat += "";
+        incompat += "Please upgrade your browser, preferably to either <A href='http://google.com/chrome'>Google Chrome</A> ";
+        incompat += "or <A href='http://firefox.com'>Mozilla Firefox</A>.</P>";
+        incompat += "</DIV>";
+        document.body.innerHTML = incompat;
+    }
+}
+// END INCOMPATIBILITY CODE //
 var now = new Date();
 var unqid = now.getTime();
 var query = {};
@@ -360,7 +375,10 @@ HTMLIncludes.getIndex = function () {
     xhr.send();
     xhr.onreadystatechange = function () {
         if (checkState(xhr)) {
-            HTMLIncludes.info = $.parseJSON(xhr.response).includeIndex;
+            if (isNull(xhr.response))
+                HTMLIncludes.info = $.parseJSON(xhr.responseText).includeIndex;
+            else
+                HTMLIncludes.info = $.parseJSON(xhr.response).includeIndex;
             HTMLIncludes.get();
         }
     }
@@ -378,7 +396,10 @@ HTMLIncludes.get = function () {
             xhr.send();
             xhr.onreadystatechange = function () {
                 if (checkState(xhr)) {
-                    HTMLIncludes.includes[curr] = xhr.response;
+                    if (isNull(xhr.response))
+                        HTMLIncludes.includes[curr] = xhr.responseText;
+                    else
+                        HTMLIncludes.includes[curr] = xhr.response;
                     $(HTMLIncludes.info[curr].insert).html(HTMLIncludes.includes[curr]);
                     if (curr == HTMLIncludes.getDone.length - 1) {
                         timerClear("includes");
@@ -472,39 +493,3 @@ if(/^[\],:{}\s]*$/.test(text.replace(/\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g,'@').
 throw new SyntaxError('JSON.parse');};}}());
 
 // END JSON2.JS //
-// START INCOMPATIBILITY CODE //
-document.onreadystatechange = function () {
-    if (navigator.userAgent.search(/MSIE [0-8]/) != -1) {
-        var incompat = "";
-        incompat += "<DIV style='width:100%;height:100%;background-color:#fff;color:#000;font-size:24px;padding:16px;'>";
-        incompat += "<H1 style='font-size:64px;font-family:monospace;color:#000;margin-bottom:48px;'>Your browser is unsupported.</H1>";
-        incompat += "<P style='text-align:center;margin:0 200px 0 200px;'>You have been detected using a version of Internet Explorer lower than IE9. ";
-        incompat += "";
-        incompat += "Please upgrade your browser, preferably to either <A href='http://google.com/chrome'>Google Chrome</A> ";
-        incompat += "or <A href='http://firefox.com'>Mozilla Firefox</A>.</P>";
-        incompat += "</DIV>";
-        $("body").html(incompat);
-    } else if (navigator.userAgent.search(/MSIE 9/) != -1) {
-        if ($("#posts").html() != undefined) {
-            $("#posts").html("<p class='main'>We're sorry, but AJAX includes are unavailable for IE9. If you have a solution, come and " +
-                "contribute to the codebase at <a href='//github.com/bell345/bell345.github.io'>github</a>.</p>");
-        } else if ($("#featpost").html() != undefined) {
-            $("#featpost").html("<p class='main'>We're sorry, but AJAX includes are unavailable for IE9. If you have a solution, come and " +
-                "contribute to the codebase at <a href='//github.com/bell345/bell345.github.io'>github</a>.</p>");
-        }
-        $($("nav")[0]).html("<a href='/'>Home</a>" +
-            "<a href='/blog/'>Blog</a>" +
-            "<a href='/proto/'>Prototypes</a>" +
-            "<a href='/about/'>About</a>");
-        $("#sidebar").html("<p class='head'>" +
-                "Contact" +
-            "</p>" +
-            "<ul class='side'>" +
-                "<li><a href='//twitter.com/1betaTB'>Twitter</a></li>" +
-                "<li><a href='//steamcommunity.com/id/bell345'>Steam</a></li>" +
-                "<li><a href='//github.com/bell345'>GitHub</a></li>" +
-                "<li><a href='mailto:tom.aus@outlook.com'>Email</a></li>" +
-            "</ul>");
-    }
-}
-// END INCOMPATIBILITY CODE //
