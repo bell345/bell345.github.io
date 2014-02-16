@@ -1,14 +1,9 @@
 var Prototypes;
 function fetchProtoIndex() {
-    var xhr = new XHR();
-    xhr.open("GET","/shared/data/work.json",true);
-    xhr.send();
-    xhr.onreadystatechange = function () {
-        if (checkState(xhr)) {
-            Prototypes = $.parseJSON(xhr.response).prototypes;
-            setupPrototypes();
-        }
-    }
+    var xhr = new AJAX("/shared/data/work.json", function () {
+        Prototypes = $.parseJSON(xhr.response).prototypes;
+        setupPrototypes();
+    });
 }
 function setupPrototypes() {
     for (i=0;i<Prototypes.length;i++) {
@@ -1981,19 +1976,11 @@ $(function () {
     TTBL.setup(); 
     $("#ttb-test").click(function () {
         if (isNull(TTBL.data) && isNull(localStorage.TTBL2)) {
-            var xhr = new XHR();
-            xhr.open("GET","/shared/data/ttb1.json",true);
-            xhr.send();
-            xhr.onreadystatechange = function () {
-                if (checkState(xhr)) {
-                    if (isNull(xhr.response))
-                        localStorage.TTBL2 = xhr.responseBody;
-                    else
-                        localStorage.TTBL2 = xhr.response;
-                    TTBL.data = localStorage.TTBL2;
-                    TTBL.setup();
-                }
-            }
+            var xhr = new AJAX("/shared/data/ttb1.json", function () {
+                localStorage.TTBL2 = xhr.response;
+                TTBL.data = localStorage.TTBL2;
+                TTBL.setup();
+            });
         } else if (!isNull(TTBL.data) && isNull(localStorage.TTBL2)) {
             localStorage.TTBL2 = TTBL.data;
             TTBL.setup();

@@ -1,4 +1,4 @@
-// BLOG2.JS v5.0
+// BLOG2.JS v5.1
 // Code used to load blog posts from an external JSON file.
 var now = new Date();
 var unqid = now.getTime();
@@ -27,21 +27,11 @@ if (location.pathname == "/blog/view/") {
 	blogview = true;
 }
 function getPostIndex() {
-    var xhr = XHR();
-    xhr.open("GET","/shared/data/blog.json",true);
-    xhr.send();
-    xhr.onreadystatechange = function () {
-        if (checkState(xhr)) {
-            if (isNull(xhr.response))
-                index = $.parseJSON(xhr.responseText).postIndex;
-            else
-                index = $.parseJSON(xhr.response).postIndex;
-            if (blogview)
-                getSinglePostInfo(query.id)
-            else
-                blogList(page);
-        }
-    }
+    var xhr = new AJAX("/shared/data/blog.json", function () {
+        index = $.parseJSON(xhr.response).postIndex;
+        if (blogview) getSinglePostInfo(query.id);
+        else blogList(page);
+    });
 }
 function blogList(pge) {
     maxpage = Math.ceil(index.length/5);
@@ -120,40 +110,24 @@ function getPosts() {
     timerSet("postInter", 150, function () {
         if (it3 < postInfo.length) {
             if (!postsDone[it3]) {
-                var xhr = new XHR();
-                xhr.open("GET", postInfo[it3].source, true);
-                xhr.send();
-                xhr.onreadystatechange = function () {
-                    if (checkState(xhr)) {
-                        if (isNull(xhr.response))
-                            posts[it3] = xhr.responseText;
-                        else
-                            posts[it3] = xhr.response;
-						it3++;
-					}
-					if (checkState(xhr) && it3 == postInfo.length) {
+                var xhr = new AJAX(postInfo[it3].source, function () {
+                    posts[it3] = xhr.response;
+                    it3++;
+                    if (it3 == postInfo.length) {
                         setPosts();
-						timerClear("postInter");
-					}
-                }
+                        timerClear("postInter");
+                    }
+                });
                 postsDone[it3] = true;
             }
         }
     });
 }
 function getSinglePost() {
-    var xhr = new XHR();
-    xhr.open("GET", singlePostInfo.source, true);
-    xhr.send();
-    xhr.onreadystatechange = function () {
-        if (checkState(xhr)) {
-            if (isNull(xhr.response))
-                singlePost = xhr.responseText;
-            else
-                singlePost = xhr.response;
-            setSinglePost();
-        }
-    }
+    var xhr = new AJAX(singlePostInfo.source, function () {
+        singlePost = xhr.response;
+        setSinglePost();
+    });
 }
 function setPosts() {
     if ($("#posts").length) {
@@ -212,9 +186,9 @@ function setSinglePost() {
         temppost += "<span class='tag'>" + thisPost.tags[j] + " " + "</span>";
     }
     temppost += "</p>";
-    temppost += posts[0];
+    temppost += singlePost;
     $("#singlepost").html("");
-    modifyHtml("featpost", temppost);
+    modifyHtml("singlepost", temppost);
     setBlogNav();
 }
 $(function () {

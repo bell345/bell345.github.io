@@ -1,4 +1,4 @@
-// TBI.JS - V4.7.2
+// TBI.JS - V4.9.0
 // Base functions, variables and helpers that are included and required in
 // all of my website pages.
 // START INCOMPATIBILITY CODE //
@@ -59,6 +59,20 @@ function XHR() {
     } else {
 		error("You are not using a supported browser.");
 	}
+    return xhr;
+}
+function AJAX(url, func) {
+    var xhr = new XHR();
+    xhr.open("GET",url,true);
+    xhr.send();
+    xhr.onreadystatechange = function () {
+        if (checkState(xhr)) {
+            if (isNull(xhr.response))
+                xhr.response = xhr.responseText;
+            if (func instanceof Function)
+                func();
+        }
+    }
     return xhr;
 }
 // Sets up the query variable with the search criteria.
@@ -147,7 +161,7 @@ function isEven(num) { return (num % 2 == 0); }
 function isNull(thing) {
     if (thing instanceof Array) {
         for (i=0;i<thing.length;i++)
-            if (thing[i] == undefined || thing[i] === "" || thing[i] == null)
+            if (thing[i] == undefined || thing[i] === "" || thing[i] == null || thing.toString() == "NaN")
                 return true;
         return (thing.length == 0)
     }
@@ -394,18 +408,10 @@ HTMLIncludes.info = [];
 HTMLIncludes.getDone = [];
 HTMLIncludes.includes = [];
 HTMLIncludes.getIndex = function () {
-    var xhr = new XHR();
-    xhr.open("GET","/shared/data/includes.json",true);
-    xhr.send();
-    xhr.onreadystatechange = function () {
-        if (checkState(xhr)) {
-            if (isNull(xhr.response))
-                HTMLIncludes.info = $.parseJSON(xhr.responseText).includeIndex;
-            else
-                HTMLIncludes.info = $.parseJSON(xhr.response).includeIndex;
-            HTMLIncludes.get();
-        }
-    }
+    var xhr = new AJAX("/shared/data/includes.json", function () {
+        HTMLIncludes.info = $.parseJSON(xhr.response).includeIndex;
+        HTMLIncludes.get();
+    });
 }
 HTMLIncludes.get = function () {
     var curr = 0;
@@ -415,23 +421,15 @@ HTMLIncludes.get = function () {
     timerSet("includes", 200, function () {
         if (!HTMLIncludes.getDone[curr]) {
             HTMLIncludes.getDone[curr] = true;
-            var xhr = new XHR();
-            xhr.open("GET", HTMLIncludes.info[curr].source, true);
-            xhr.send();
-            xhr.onreadystatechange = function () {
-                if (checkState(xhr)) {
-                    if (isNull(xhr.response))
-                        HTMLIncludes.includes[curr] = xhr.responseText;
-                    else
-                        HTMLIncludes.includes[curr] = xhr.response;
-                    $(HTMLIncludes.info[curr].insert).html(HTMLIncludes.includes[curr]);
-                    if (curr == HTMLIncludes.getDone.length - 1) {
-                        timerClear("includes");
-                        updateHeight();
-                        updateLinks();
-                    } else curr++;
-                }
-            }
+            var xhr = new AJAX(HTMLIncludes.info[curr].source, function () {
+                HTMLIncludes.includes[curr] = xhr.response;
+                $(HTMLIncludes.info[curr].insert).html(HTMLIncludes.includes[curr]);
+                if (curr == HTMLIncludes.getDone.length - 1) {
+                    timerClear("includes");
+                    updateHeight();
+                    updateLinks();
+                } else curr++;
+            });
         }
     });
 }
