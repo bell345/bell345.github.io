@@ -240,6 +240,7 @@ function convertKeyDown(event) {
 }
 // Creates a customizable, absolutely positioned popup element.
 // There can only be one at a time.
+Popup.registry = [];
 function Popup(x, y, head, text) {
 	this.x = x;
 	this.y = y;
@@ -254,6 +255,29 @@ function Popup(x, y, head, text) {
 	pup += "</div>";
 	$(".popup").remove();
 	body.append(pup);
+}
+Popup.registry.add = function (element, head, text) {
+    if (element instanceof Node) {
+        Popup.registry.push([element, head, text]);
+        $(element).mousemove(function (event) {
+            var thisReg = [];
+            for (i=0;i<Popup.registry.length;i++)
+                if (Popup.registry[i][0] == $(this)[0])
+                    thisReg = Popup.registry[i];
+        new Popup(event.clientX+20, event.clientY+20, thisReg[1], thisReg[2]);
+        });
+        $(element).mouseleave(function () {
+            $('.popup').remove();
+        });
+    } else {
+        throw new Error("Supplied element is invalid.");
+    }
+}
+Popup.registry.remove = function (element) {
+    for (i=0;i<Popup.registry.length;i++) 
+        if (Popup.registry[i][0] == $(element)[0])
+            Popup.registry[i] = undefined;
+    $(element).off("mousemove");
 }
 // A predefined popup element that can be added to by using the same header.
 // There can only be one notification, but that notification can be expanded upon.

@@ -344,12 +344,17 @@
         <h2 id="anchor9" class="proto">TimeTable</h2>
         <h3 class="main version"></h3>
         <p class="main">
-            This may look like an ordinary timetable template, but it is not! Instead, it loads 
+            This may look like nothing, but it is not! Instead, it is a timetable, which loads 
             the information to fill the table from a JSON file in the local storage of 
-            the browser!
+            the browser! All of the variables (days, number of periods, info, colours) 
+            are defined in the data to be as extensible as possible. Press the buttons below for a preview: 
         </p>
         <p class="main">
-            I think it's pretty neat, even though you can't see it, but this will soon have the 
+            <button id="ttb-test">Test timetable</button>
+            <button id="ttb-clear">Clear timetable</button>
+        </p>
+        <p class="main">
+            I think it's pretty neat, but this will soon have the 
             capability for YOU - yes, you - to be able to make your own TimeTable!
         </p>
         <p class="main">
@@ -361,178 +366,6 @@
             </ul>
         <div id="ttable-proto" class="ttable proto">
             <div class="ttb-body">
-                <div class="ttable-head">
-                    <span></span><span>Monday</span>
-                    <span>Tuesday</span><span>Wednesday</span>
-                    <span>Thursday</span><span>Friday</span>
-                </div>
-                <div class="ttable-row">
-                    <div>1</div>
-                    <div class="ttable-cell ttb-mon">
-                        <div class="ttable-cellh">unknown</div>
-                        <div class="ttable-celli">nobody</div>
-                        <div class="ttable-celli">&nbsp;</div>
-                        <div class="ttable-celli">indeterminate</div>
-                    </div>
-                    <div class="ttable-cell ttb-tue">
-                        <div class="ttable-cellh">unknown</div>
-                        <div class="ttable-celli">nobody</div>
-                        <div class="ttable-celli">&nbsp;</div>
-                        <div class="ttable-celli">indeterminate</div>
-                    </div>
-                    <div class="ttable-cell ttb-wed">
-                        <div class="ttable-cellh">unknown</div>
-                        <div class="ttable-celli">nobody</div>
-                        <div class="ttable-celli">&nbsp;</div>
-                        <div class="ttable-celli">indeterminate</div>
-                    </div>
-                    <div class="ttable-cell ttb-thu">
-                        <div class="ttable-cellh">unknown</div>
-                        <div class="ttable-celli">nobody</div>
-                        <div class="ttable-celli">&nbsp;</div>
-                        <div class="ttable-celli">indeterminate</div>
-                    </div>
-                    <div class="ttable-cell ttb-fri">
-                        <div class="ttable-cellh">unknown</div>
-                        <div class="ttable-celli">nobody</div>
-                        <div class="ttable-celli">&nbsp;</div>
-                        <div class="ttable-celli">indeterminate</div>
-                    </div>
-                </div>
-                <div class="ttable-row">
-                    <div>2</div>
-                    <div class="ttable-cell ttb-mon">
-                        <div class="ttable-cellh">unknown</div>
-                        <div class="ttable-celli">nobody</div>
-                        <div class="ttable-celli">&nbsp;</div>
-                        <div class="ttable-celli">indeterminate</div>
-                    </div>
-                    <div class="ttable-cell ttb-tue">
-                        <div class="ttable-cellh">unknown</div>
-                        <div class="ttable-celli">nobody</div>
-                        <div class="ttable-celli">&nbsp;</div>
-                        <div class="ttable-celli">indeterminate</div>
-                    </div>
-                    <div class="ttable-cell ttb-wed">
-                        <div class="ttable-cellh">unknown</div>
-                        <div class="ttable-celli">nobody</div>
-                        <div class="ttable-celli">&nbsp;</div>
-                        <div class="ttable-celli">indeterminate</div>
-                    </div>
-                    <div class="ttable-cell ttb-thu">
-                        <div class="ttable-cellh">unknown</div>
-                        <div class="ttable-celli">nobody</div>
-                        <div class="ttable-celli">&nbsp;</div>
-                        <div class="ttable-celli">indeterminate</div>
-                    </div>
-                    <div class="ttable-cell ttb-fri">
-                        <div class="ttable-cellh">unknown</div>
-                        <div class="ttable-celli">nobody</div>
-                        <div class="ttable-celli">&nbsp;</div>
-                        <div class="ttable-celli">indeterminate</div>
-                    </div>
-                </div>
-                <div class="ttable-break">break0</div>
-                <div class="ttable-row">
-                    <div>3</div>
-                    <div class="ttable-cell ttb-mon">
-                        <div class="ttable-cellh">unknown</div>
-                        <div class="ttable-celli">nobody</div>
-                        <div class="ttable-celli">&nbsp;</div>
-                        <div class="ttable-celli">indeterminate</div>
-                    </div>
-                    <div class="ttable-cell ttb-tue">
-                        <div class="ttable-cellh">unknown</div>
-                        <div class="ttable-celli">nobody</div>
-                        <div class="ttable-celli">&nbsp;</div>
-                        <div class="ttable-celli">indeterminate</div>
-                    </div>
-                    <div class="ttable-cell ttb-wed">
-                        <div class="ttable-cellh">unknown</div>
-                        <div class="ttable-celli">nobody</div>
-                        <div class="ttable-celli">&nbsp;</div>
-                        <div class="ttable-celli">indeterminate</div>
-                    </div>
-                    <div class="ttable-cell ttb-thu">
-                        <div class="ttable-cellh">unknown</div>
-                        <div class="ttable-celli">nobody</div>
-                        <div class="ttable-celli">&nbsp;</div>
-                        <div class="ttable-celli">indeterminate</div>
-                    </div>
-                    <div class="ttable-cell ttb-fri">
-                        <div class="ttable-cellh">unknown</div>
-                        <div class="ttable-celli">nobody</div>
-                        <div class="ttable-celli">&nbsp;</div>
-                        <div class="ttable-celli">indeterminate</div>
-                    </div>
-                </div>
-                <div class="ttable-row">
-                    <div>4</div>
-                    <div class="ttable-cell ttb-mon">
-                        <div class="ttable-cellh">unknown</div>
-                        <div class="ttable-celli">nobody</div>
-                        <div class="ttable-celli">&nbsp;</div>
-                        <div class="ttable-celli">indeterminate</div>
-                    </div>
-                    <div class="ttable-cell ttb-tue">
-                        <div class="ttable-cellh">unknown</div>
-                        <div class="ttable-celli">nobody</div>
-                        <div class="ttable-celli">&nbsp;</div>
-                        <div class="ttable-celli">indeterminate</div>
-                    </div>
-                    <div class="ttable-cell ttb-wed">
-                        <div class="ttable-cellh">unknown</div>
-                        <div class="ttable-celli">nobody</div>
-                        <div class="ttable-celli">&nbsp;</div>
-                        <div class="ttable-celli">indeterminate</div>
-                    </div>
-                    <div class="ttable-cell ttb-thu">
-                        <div class="ttable-cellh">unknown</div>
-                        <div class="ttable-celli">nobody</div>
-                        <div class="ttable-celli">&nbsp;</div>
-                        <div class="ttable-celli">indeterminate</div>
-                    </div>
-                    <div class="ttable-cell ttb-fri">
-                        <div class="ttable-cellh">unknown</div>
-                        <div class="ttable-celli">nobody</div>
-                        <div class="ttable-celli">&nbsp;</div>
-                        <div class="ttable-celli">indeterminate</div>
-                    </div>
-                </div>
-                <div class="ttable-break">break1</div>
-                <div class="ttable-row">
-                    <div>5</div>
-                    <div class="ttable-cell ttb-mon">
-                        <div class="ttable-cellh">unknown</div>
-                        <div class="ttable-celli">nobody</div>
-                        <div class="ttable-celli">&nbsp;</div>
-                        <div class="ttable-celli">indeterminate</div>
-                    </div>
-                    <div class="ttable-cell ttb-tue">
-                        <div class="ttable-cellh">unknown</div>
-                        <div class="ttable-celli">nobody</div>
-                        <div class="ttable-celli">&nbsp;</div>
-                        <div class="ttable-celli">indeterminate</div>
-                    </div>
-                    <div class="ttable-cell ttb-wed">
-                        <div class="ttable-cellh">unknown</div>
-                        <div class="ttable-celli">nobody</div>
-                        <div class="ttable-celli">&nbsp;</div>
-                        <div class="ttable-celli">indeterminate</div>
-                    </div>
-                    <div class="ttable-cell ttb-thu">
-                        <div class="ttable-cellh">unknown</div>
-                        <div class="ttable-celli">nobody</div>
-                        <div class="ttable-celli">&nbsp;</div>
-                        <div class="ttable-celli">indeterminate</div>
-                    </div>
-                    <div class="ttable-cell ttb-fri">
-                        <div class="ttable-cellh">unknown</div>
-                        <div class="ttable-celli">nobody</div>
-                        <div class="ttable-celli">&nbsp;</div>
-                        <div class="ttable-celli">indeterminate</div>
-                    </div>
-                </div>
             </div>
             <div class="ttb-info">
             </div>

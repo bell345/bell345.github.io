@@ -1,13 +1,9 @@
 {
-    "thomas_bell2" : {
+    "default" : {
         "variables" : {
             "periodLength" : "64",
             "days" : [
-                "Monday",
-                "Tuesday",
-                "Wednesday",
-                "Thursday",
-                "Friday"
+                1,2,3,4,5
             ],
             "display" : {
                 "info" : [
@@ -15,11 +11,37 @@
                     "grade",
                     "house",
                     "term"
+                ],
+                "group" : [
+                    "subject",
+                    "teacher",
+                    "class"
+                ],
+                "gpshort" : [
+                    "subject",
+                    "teacher"
+                ],
+                "period" : [
+                    "subject",
+                    "teacher",
+                    "class",
+                    "time"
                 ]
-            }
+            },
+            "length" : [
+                "7",
+                "7",
+                "7",
+                "7",
+                "7"
+            ]
         },
         "defs" : {
             "subject" : {
+                "XX" : {
+                    "name" : "Unknown",
+                    "colour" : "#ddd"
+                },
                 "PE" : {
                     "name" : "Physical Education",
                     "colour" : "#b0f",
@@ -27,12 +49,12 @@
                 },
                 "SE" : {
                     "name" : "Society and Env.",
-                    "fullName" : "Society and Environment",
+                    "full" : "Society and Environment",
                     "colour" : "#fd0"
                 },
                 "sIT" : {
                     "name" : "Specialist ICT",
-                    "fullName" : "Specialist Information Communication Technology",
+                    "full" : "Specialist Information Communication Technology",
                     "colour" : "#05f",
                     "text" : "#fff"
                 },
@@ -54,12 +76,13 @@
                 },
                 "HE" : {
                     "name" : "Health",
-                    "fullName" : "Health Education",
+                    "full" : "Health Education",
                     "colour" : "#b0f",
                     "text" : "#fff"
                 }
             },
             "teacher" : {
+                "msgno" : "Missingno",
                 "dlamb" : "Mr D Lambrinidis",
                 "cwood" : "Ms C Woodacre",
                 "vakel" : "Mr V Akella",
@@ -69,104 +92,107 @@
                 "smiha" : "Mr S Mihailjevich",
                 "tchap" : "Ms T Chapman"
             },
-            "lesson" : {
-                "9" : {
-                    "MT3" : {
-                        "subject" : "MT",
-                        "teacher" : "bneil",
-                        "class" : "B11"
-                    },
-                    "PE3" : {
-                        "subject" : "PE",
-                        "teacher" : "dlamb",
-                        "class" : ""
-                    },
-                    "SE4" : {
-                        "subject" : "SE",
-                        "teacher" : "cwood",
-                        "class" : "F2"
-                    },
-                    "sIT1" : {
-                        "subject" : "sIT",
-                        "teacher" : "vakel",
-                        "class" : "CS1"
-                    },
-                    "EN4" : {
-                        "subject" : "EN",
-                        "teacher" : "jthom",
-                        "class" : "A6"
-                    },
-                    "SC5" : {
-                        "subject" : "SC",
-                        "teacher" : "lyeu",
-                        "class" : "E2"
-                    },
-                    "DR1" : {
-                        "subject" : "DR",
-                        "teacher" : "smiha",
-                        "class" : "B1"
-                    },
-                    "HE4" : {
-                        "subject" : "HE",
-                        "teacher" : "tchap",
-                        "class" : "B7"
-                    }
-                }
+            "group" : {
+                "9_XX0" : [
+                    "XX",
+                    "msgno",
+                    ""
+                ],
+                "9_MT3" : [
+                    "MT",
+                    "bneil",
+                    "B11"
+                ],
+                "9_PE3" : [
+                    "PE",
+                    "dlamb",
+                    ""
+                ],
+                "9_SE4" : [
+                    "SE",
+                    "cwood",
+                    "F2"
+                ],
+                "9_sIT1" : [
+                    "sIT",
+                    "vakel",
+                    "CS1"
+                ],
+                "9_EN4" : [
+                    "EN",
+                    "jthom",
+                    "A6"
+                ],
+                "9_SC5" : [
+                    "SC",
+                    "lyeu",
+                    "E2"
+                ],
+                "9_DR1" : [
+                    "DR",
+                    "smiha",
+                    "B1"
+                ],
+                "9_HE4" : [
+                    "HE",
+                    "tchap",
+                    "B7"
+                ]
             }
         },
         "info" : {
             "year" : "2014",
             "grade" : "9",
             "term" : "1",
-            "version" : "1.2",
+            "version" : "2.0",
             "name" : "Thomas Bell",
             "house" : "Jupiter"
         },
         "table" : [
             [
-                { "lesson" : "PE3", "start" : "08.30" },
-                { "lesson" : "SE4" },
+                { "group" : "9_PE3", "start" : "08.30" },
+                { "group" : "9_SE4" },
                 { "type" : "break", "end" : "11.00", "name" : "Recess" },
-                { "lesson" : "sIT1" },
-                { "lesson" : "MT3" },
+                { "group" : "9_sIT1" },
+                { "group" : "9_MT3" },
                 { "type" : "break", "end" : "13.40", "name" : "Lunch" },
-                { "lesson" : "EN4" }
+                { "group" : "9_EN4" }
             ],
             [
-                { "lesson" : "MT3", "start" : "08.30" },
-                { "lesson" : "SE4" },
+                { "group" : "9_MT3", "start" : "08.30" },
+                { "group" : "9_SE4" },
                 { "type" : "break", "end" : "11.00", "name" : "Recess" },
-                { "lesson" : "EN4" },
-                { "lesson" : "sIT1" },
+                { "group" : "9_EN4" },
+                { "group" : "9_sIT1" },
                 { "type" : "break", "end" : "13.40", "name" : "Lunch" },
-                { "lesson" : "SC5" }
+                { "group" : "9_SC5" }
             ],
             [
-                { "lesson" : "SC5", "start" : "08.30" },
-                { "lesson" : "SE4" },
+                { "group" : "9_SC5", "start" : "08.30" },
+                { "group" : "9_SE4" },
                 { "type" : "break", "end" : "11.00", "name" : "Recess" },
-                { "lesson" : "DR1" },
-                { "lesson" : "MT3" },
+                { "group" : "9_DR1" },
+                { "group" : "9_MT3" },
                 { "type" : "break", "end" : "13.40", "name" : "Lunch" },
-                { "lesson" : "EN4" }
+                { "group" : "9_EN4" }
             ],
             [
-                { "lesson" : "SC5", "start" : "08.55" },
-                { "lesson" : "sIT1" },
+                { "group" : "9_SC5", "start" : "08.55" },
+                { "group" : "9_sIT1" },
                 { "type" : "break", "end" : "11.25", "name" : "Recess" },
-                { "lesson" : "SE4" },
-                { "lesson" : "PE3" },
+                { "group" : "9_SE4" },
+                { "group" : "9_PE3" },
                 { "type" : "break", "end" : "13.55", "name" : "Lunch" },
-                { "lesson" : "EN4" }
+                { "group" : "9_EN4" }
             ],
             [
-                { "lesson" : "MT3", "start" : "08.30" },
-                { "lesson" : "SC5" },
+                { "group" : "9_MT3", "start" : "08.30" },
+                { "group" : "9_SC5" },
                 { "type" : "break", "end" : "11.00", "name" : "Recess" },
-                { "lesson" : "sIT1" },
-                { "lesson" : "DR1" },
+                { "group" : "9_sIT1" },
+                { "group" : "9_DR1" },
                 { "type" : "break", "end" : "13.40", "name" : "Lunch" },
-                { "lesson" : "HE4" }
+                { "group" : "9_HE4" }
             ]
         ]
     }
