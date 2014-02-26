@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Thomas's WebSite</title>
+    <meta charset="utf-8" />
+	<link rel="shortcut icon" href="/favicon.png" />
+    <link rel="stylesheet" href="/shared/css/jquery-ui.css" />
+    <link rel="stylesheet" href="/shared/css/sheet.css" />
+    <script src="/shared/js/jquery2.min.js"></script>
+    <script src="/shared/js/jquery-ui.min.js"></script>
+    <script src="/shared/js/tbi.js"></script>
+    <script src="./calc.js"></script>
+</head>
+<body>
+    <div id="calculator">
+        <div id="calcwindow">
+            <span style="color: rgb(58, 172, 255);">_</span>
+            <input type="text" style="display:none">
+        </div>
+        <div id="calcstatus" class="calcadvonly">
+            <span style="color: rgb(58, 172, 255);">_</span>
+        </div>
+        <div class="calcbuttons" id="calcsimple">
+            <div class="calcrow">
+                <button id="calcinput">Keyboard Input</button>
+                <button id="calcmode">Change Mode</button>
+                <button id="calcpop">Pop Out</button>
+            </div>
+            <div class="calcrow">
+                <button id="calcbackspace">Backspace</button>
+                <button id="calcdelete">Delete</button>
+                <button id="calcshift" class="calcadvonly toggle">Shift</button>
+            </div>
+            <div class="calcrowminor calcadvonly">
+                <button id="calcpower">x<sup class="no-break">y</sup></button>
+                <button id="calcpower2">x<sup class="no-break">2</sup></button>
+                <button id="calcsin" title="Sine">sin</button>
+                <button id="calccos" title="Cosine">cos</button>
+                <button id="calctan" title="Tangent">tan</button>
+                <button id="calcconstpi" title="Pi">π</button>
+            </div>
+            <div class="calcrowminor calcadvonly">
+                <button id="calcrand" title="Random Float">Rnd</button>
+                <button id="calcrandint" title="Random Integer">RInt</button>
+                <button id="calcpower3">x<sup class="no-break">3</sup></button>
+                <button id="calcfactorial" title="Factorial">x!</button>
+                <button id="calc10power">10<sup class="no-break">x</sup></button>
+                <button id="calcconste">e</button>
+            </div>
+            <div class="calcrowmajor">
+                <button class="calcnum">7</button>
+                <button class="calcnum">8</button>
+                <button class="calcnum">9</button>
+                <button id="calcsign">+/-</button>
+                <button id="calcsqrt">√</button>
+            </div>
+            <div class="calcrowmajor">
+                <button class="calcnum">4</button>
+                <button class="calcnum">5</button>
+                <button class="calcnum">6</button>
+                <button id="calctimes">*</button>
+                <button id="calcdivide">/</button>
+            </div>
+            <div class="calcrowmajor">
+                <button class="calcnum">1</button>
+                <button class="calcnum">2</button>
+                <button class="calcnum">3</button>
+                <button id="calcplus">+</button>
+                <button id="calcminus">-</button>
+            </div>
+            <div class="calcrowmajor">
+                <button id="calcallclear">AC</button>
+                <button class="calcnum">0</button>
+                <button id="calcdot">.</button>
+                <button class="calcbuttonhorz" id="calcequals">=</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

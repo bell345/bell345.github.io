@@ -1,7 +1,8 @@
-// TBI.JS - V4.9.0
+// TBI.JS - V4.10
 // Base functions, variables and helpers that are included and required in
 // all of my website pages.
 // START INCOMPATIBILITY CODE //
+'use strict';
 document.onreadystatechange = function () {
     if (!window.jQuery) {
         var incompat = "";
@@ -25,16 +26,19 @@ var notePrevInfo = {
     "text" : [],
     "type" : []
 };
-function log(message) {
+function log(message, timeout) {
     console.log(message);
-    new Notification("Log", message);
+    timeout = isNull(timeout) ? 30000 : timeout;
+    new Notification("Log", message, 0, timeout);
 }
-function warn(message) {
+function warn(message, timeout) {
     console.warn(message);
+    timeout = isNull(timeout) ? 40000 : timeout;
     new Notification("Warning", message);
 }
-function error(message) {
+function error(message, timeout) {
     console.error(message);
+    timeout = isNull(timeout) ? 50000 : timeout;
     new Notification("Error", message, 1);
 }
 $(function () {
@@ -46,20 +50,12 @@ $(function () {
         document.body.className = "trident";
 });
 // Shorthand for getElementById.
-function gebi(element) { return document.getElementById(element); };
+function gebi(element) { return document.getElementById(element); }
 // Checks the state of an XHR.
-function checkState(request) { return (request.readyState == 4); };
+function checkState(request) { return (request.readyState == 4); }
 // A XMLHttpRequest object constructor.
 function XHR() {
-    var xhr;
-    if (window.XMLHttpRequest) {
-        xhr = new XMLHttpRequest();
-    } else if (window.ActiveXObject) {
-        xhr = new ActiveXObject("Microsoft.XMLHTTP");
-    } else {
-		error("You are not using a supported browser.");
-	}
-    return xhr;
+    return window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
 }
 function AJAX(url, func) {
     var xhr = new XHR();
@@ -81,11 +77,20 @@ function queryManager() {
 	if (!isNull(location.search)) {
 		search = search.replace("?","");
 		search = search.split("&");
-		for (i=0;i<search.length;i++) {
+		for (var i=0;i<search.length;i++) {
 			search[i] = search[i].split("=");
 			query[search[i][0]] = search[i][1];
 		}
 	}
+    var hash = location.hash;
+    if (!isNull(location.hash)) {
+        hash = hash.replace("#","");
+        hash = hash.split("&");
+        for (var i=0;i<hash.length;i++) {
+            hash[i] = hash[i].split("=");
+            query[hash[i][0]] = hash[i][1];
+        }
+    }
 }
 // Sets up the path variable with the current pathname.
 function pathManager() {
@@ -113,6 +118,30 @@ function checkNav() {
         $("#top").css("zIndex", "0");
         $("#content").css("top", "0");
     }
+    $("#top").off("mousemove");
+    $("#top").off("mouseleave");
+    $("#top a").mousemove(function (event) {
+        var half = parseInt($("#navtop-container div").css("width"))/2;
+        $("#navtop-container div").css("left", (event.clientX-half)+"px");
+        $("#navtop-container div").css("transition", "all 0s");
+        $("#navtop-container div").css("background", "#eee");
+    });
+    $("#top a").mouseleave(function (event) {
+        $("#navtop-container div").css("transition", "all .4s");
+        var pad = parseInt($("#curr").css("paddingLeft"))*2;
+        var loc = $("#curr").offset().left + (parseInt($("#curr").css("width"))+pad)/2;
+        var half = parseInt($("#navtop-container div").css("width"))/2;
+        $("#navtop-container div").css("left", (loc - half) + "px");
+        $("#navtop-container div").css("background", "#0094ff");
+    });
+    if ($("#top").length > 0) {
+        $("#navtop-container div").css("transition", "all .4s");
+        var pad = parseInt($("#curr").css("paddingLeft"))*2;
+        var loc = $("#curr").offset().left + (parseInt($("#curr").css("width"))+pad)/2;
+        var half = parseInt($("#navtop-container div").css("width"))/2;
+        $("#navtop-container div").css("left", (loc - half) + "px");
+        $("#navtop-container div").css("background", "#0094ff");
+    }
 }
 // Returns first-level elements in an XML index.
 function findIndex(file, name) {
@@ -133,7 +162,7 @@ function modifyHtml(id, mod) {
 function shorten(str, index) {
     var tempstr = [];
     if (str.length > 0 && !isNull(str)) {
-        for (i = 0; i < str.length; i++) {
+        for (var i = 0; i < str.length; i++) {
             if (i < index)
                 tempstr.push(str[i]);
             else if (i == index)
@@ -145,22 +174,19 @@ function shorten(str, index) {
 // Highlights a nav link to the same page.
 function findPage() {
     var curr = path[0];
-	if (isNull(curr)) {
+	if (isNull(curr))
 		curr = "";
-	}
 	var navbar = $("#top a");
-    for (i = 0; i < navbar.length; i++) {
-        if ($(navbar[i]).attr("href").split("/")[1] == curr) {
+    for (var i = 0; i < navbar.length; i++)
+        if ($(navbar[i]).attr("href").split("/")[1] == curr)
             $(navbar[i]).attr("id","curr");
-        }
-    }
 }
 // Determines whether or not a number is even.
 function isEven(num) { return (num % 2 == 0); }
 // Determines whether or not a variable is nothing at all.
 function isNull(thing) {
     if (thing instanceof Array) {
-        for (i=0;i<thing.length;i++)
+        for (var i=0;i<thing.length;i++)
             if (thing[i] == undefined || thing[i] === "" || thing[i] == null || thing.toString() == "NaN")
                 return true;
         return (thing.length == 0)
@@ -175,7 +201,7 @@ function divisors(num) {
 		return "Nope!";
 	} else {
 		var divisors = [];
-		for (i=1;i<=num/2;i++) {
+		for (var i=1;i<=num/2;i++) {
 			if (num%i == 0) {
 				divisors.push(i);
 			}
@@ -271,11 +297,12 @@ function Popup(x, y, head, text) {
 	body.append(pup);
 }
 Popup.registry.add = function (element, head, text) {
-    if (element instanceof Node) {
+    if (true) {
         Popup.registry.push([element, head, text]);
+        $(element).off("mousemove");
         $(element).mousemove(function (event) {
             var thisReg = [];
-            for (i=0;i<Popup.registry.length;i++)
+            for (var i=0;i<Popup.registry.length;i++)
                 if (Popup.registry[i][0] == $(this)[0])
                     thisReg = Popup.registry[i];
         new Popup(event.clientX+20, event.clientY+20, thisReg[1], thisReg[2]);
@@ -288,18 +315,20 @@ Popup.registry.add = function (element, head, text) {
     }
 }
 Popup.registry.remove = function (element) {
-    for (i=0;i<Popup.registry.length;i++) 
+    for (var i=0;i<Popup.registry.length;i++) 
         if (Popup.registry[i][0] == $(element)[0])
             Popup.registry[i] = undefined;
     $(element).off("mousemove");
 }
 // A predefined popup element that can be added to by using the same header.
 // There can only be one notification, but that notification can be expanded upon.
-function Notification(head, text, type) {
+function Notification(head, text, type, timeout) {
     if (type == undefined)
         this.type = 0;
     else
         this.type = type;
+    if (timeout == undefined)
+        timeout = 10000;
     var states = ["ui-state-highlight", "ui-state-error"];
 	this.head = head;
 	this.text = text;
@@ -307,7 +336,7 @@ function Notification(head, text, type) {
     if (notePrevInfo["head"].indexOf(this.head)!=-1
     && !isNull(noteRemove_timer) 
     && notePrevInfo["text"].indexOf(this.text)==-1) {
-        for (i=0;i<this.noteNum;i++) {
+        for (var i=0;i<this.noteNum;i++) {
             if ($($(".notification h3")[i]).text() == this.head) {
                 $($(".notification ul.main")[i]).append("<li>"+this.text+"</li>");
             }
@@ -322,16 +351,15 @@ function Notification(head, text, type) {
         pup += "</div>";
         body.append(pup);
     } else if (notePrevInfo["head"].indexOf(this.head)!=-1 && notePrevInfo["text"].indexOf(this.text)!=-1) {
-        for (i=0;i<this.noteNum;i++) {
+        for (var i=0;i<this.noteNum;i++) {
             if ($($(".notification h3")[i]).text() == this.head) {
                 var lines = $(".notification ul.main").children();
-                for (j=0;j<lines.length;j++) {
+                for (var j=0;j<lines.length;j++) {
                     if ($(lines[j]).text() == this.text) {
                         var prevNum = 0;
                         notePrevInfo["text"].forEach(function (el) {
-                            if (el == text) {
+                            if (el == text)
                                 prevNum++;
-                            }
                         });
                         var divStart = "<div class='list-num list-num-";
                         if (prevNum >= 9)
@@ -346,7 +374,7 @@ function Notification(head, text, type) {
     timerClear("noteRemove");
     var timerCount = 0;
     timerSet("noteRemove",500,function () {
-        if (timerCount >= 10000)
+        if (timerCount >= timeout)
             $(".notification").hide();
         if ($($(".notification")[0]).css("display")=="none") {
             $(".notification").remove();
@@ -372,31 +400,27 @@ function chromeNotification(img, title, desc, link) {
         var note = window.webkitNotifications.createNotification(
             img, title, desc
         );
-        if (!isNull(link)) {
+        if (!isNull(link))
             note.onclick = function () {
                 window.open(link);
-                note.close();
             }
-        }
         note.show();
-    } else {
+    } else
         window.webkitNotifications.requestPermission();
-    }
 }
 // Updates the footer element based on the window size.
 function updateHeight() {
-	if ($("#maincontent").height() - $("#maincontent").offset().top < innerHeight) {
+	if ($("#maincontent").length > 0 && $("#maincontent").height() - $("#maincontent").offset().top < innerHeight)
 		$("footer nav a").hide();
-	} else {
+	else
 		$("footer nav a").show();
-	}
 }
 // Designates outgoing links.
 function updateLinks() {
-    for (i = 0; i < $("a").length; i++) {
-        if ($($("a")[i]).attr("href").search(/((http|https|mailto|news):|\/\/)/) == 0) {
-            $($("a")[i]).attr("target", "_blank");
-            $($("a")[i]).attr("class", "external");
+    for (var i = 0; i < $("a[href]").length; i++) {
+        if ($("a[href]:nth("+i+")").attr("href").search(/((http|https|mailto|news):|\/\/)/) == 0) {
+            $("a[href]:nth("+i+")").attr("target", "_blank");
+            $("a[href]:nth("+i+")").attr("class", "external");
         }
     }
 }
@@ -415,7 +439,7 @@ HTMLIncludes.getIndex = function () {
 }
 HTMLIncludes.get = function () {
     var curr = 0;
-    for (i = 0; i < HTMLIncludes.info.length; i++) {
+    for (var i = 0; i < HTMLIncludes.info.length; i++) {
         HTMLIncludes.getDone[i] = false;
     }
     timerSet("includes", 200, function () {
@@ -455,10 +479,16 @@ $(function () {
     $(document).resize(function () { updateHeight(); });
     $("button.toggle").click(function () {
         if (this.className.search("toggle-on")!=-1)
-            this.className = this.className.replace("toggle-on","");
+            this.className = this.className.replace(" toggle-on","");
         else
             this.className+=" toggle-on";
     });
+    $(".switch").click(function () {
+        var toSwitch = $("#"+$(this).attr("for"));
+        if (toSwitch.length > 0)
+            toSwitch.fadeToggle();
+    });
+    
 });
 // START OF COOKIE CODES //
 function createCookie(name, value, days) {
@@ -500,11 +530,11 @@ var cx,escapable,gap,indent,meta,rep;function quote(string){escapable.lastIndex=
 function str(key,holder){var i,k,v,length,mind=gap,partial,value=holder[key];if(value&&typeof value==='object'&&typeof value.toJSON==='function'){value=value.toJSON(key);}
 if(typeof rep==='function'){value=rep.call(holder,key,value);}
 switch(typeof value){case'string':return quote(value);case'number':return isFinite(value)?String(value):'null';case'boolean':case'null':return String(value);case'object':if(!value){return'null';}
-gap+=indent;partial=[];if(Object.prototype.toString.apply(value)==='[object Array]'){length=value.length;for(i=0;i<length;i+=1){partial[i]=str(i,value)||'null';}
+gap+=indent;partial=[];if(Object.prototype.toString.apply(value)==='[object Array]'){length=value.length;for(var i=0;i<length;i+=1){partial[i]=str(i,value)||'null';}
 v=partial.length===0?'[]':gap?'[\n'+gap+partial.join(',\n'+gap)+'\n'+mind+']':'['+partial.join(',')+']';gap=mind;return v;}
-if(rep&&typeof rep==='object'){length=rep.length;for(i=0;i<length;i+=1){if(typeof rep[i]==='string'){k=rep[i];v=str(k,value);if(v){partial.push(quote(k)+(gap?': ':':')+v);}}}}else{for(k in value){if(Object.prototype.hasOwnProperty.call(value,k)){v=str(k,value);if(v){partial.push(quote(k)+(gap?': ':':')+v);}}}}
+if(rep&&typeof rep==='object'){length=rep.length;for(var i=0;i<length;i+=1){if(typeof rep[i]==='string'){k=rep[i];v=str(k,value);if(v){partial.push(quote(k)+(gap?': ':':')+v);}}}}else{for(k in value){if(Object.prototype.hasOwnProperty.call(value,k)){v=str(k,value);if(v){partial.push(quote(k)+(gap?': ':':')+v);}}}}
 v=partial.length===0?'{}':gap?'{\n'+gap+partial.join(',\n'+gap)+'\n'+mind+'}':'{'+partial.join(',')+'}';gap=mind;return v;}}
-if(typeof JSON.stringify!=='function'){escapable=/[\\\"\x00-\x1f\x7f-\x9f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g;meta={'\b':'\\b','\t':'\\t','\n':'\\n','\f':'\\f','\r':'\\r','"':'\\"','\\':'\\\\'};JSON.stringify=function(value,replacer,space){var i;gap='';indent='';if(typeof space==='number'){for(i=0;i<space;i+=1){indent+=' ';}}else if(typeof space==='string'){indent=space;}
+if(typeof JSON.stringify!=='function'){escapable=/[\\\"\x00-\x1f\x7f-\x9f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g;meta={'\b':'\\b','\t':'\\t','\n':'\\n','\f':'\\f','\r':'\\r','"':'\\"','\\':'\\\\'};JSON.stringify=function(value,replacer,space){var i;gap='';indent='';if(typeof space==='number'){for(var i=0;i<space;i+=1){indent+=' ';}}else if(typeof space==='string'){indent=space;}
 rep=replacer;if(replacer&&typeof replacer!=='function'&&(typeof replacer!=='object'||typeof replacer.length!=='number')){throw new Error('JSON.stringify');}
 return str('',{'':value});};}
 if(typeof JSON.parse!=='function'){cx=/[\u0000\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g;JSON.parse=function(text,reviver){var j;function walk(holder,key){var k,v,value=holder[key];if(value&&typeof value==='object'){for(k in value){if(Object.prototype.hasOwnProperty.call(value,k)){v=walk(value,k);if(v!==undefined){value[k]=v;}else{delete value[k];}}}}

@@ -446,7 +446,7 @@ $(function () {
 		});
 	});
     $("#cd-share").click(function (event) {
-        var link = "http://"+location.hostname+"/proto/cdown?t="+Cdown.timestamp+"&m="+Cdown.mode;
+        var link = "http://"+location.host+"/proto/cdown?t="+Cdown.timestamp+"&m="+Cdown.mode;
         if (!isNull(Cdown.name))
             link += "&n="+encodeURI(Cdown.name);
         $("#cdtext-share").slideToggle();

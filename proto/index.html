@@ -4,10 +4,12 @@
     <title>Thomas's WebSite</title>
     <meta charset="utf-8" />
 	<link rel="shortcut icon" href="/favicon.png" />
-    <link rel="stylesheet" href="/shared/css/sheet.css" />
     <link rel="stylesheet" href="/shared/css/jquery-ui.css" />
+    <link rel="stylesheet" href="/shared/css/sheet.css" />
+    <link rel="stylesheet" href="/shared/css/spectrum.css" />
     <script src="/shared/js/jquery2.min.js"></script>
     <script src="/shared/js/jquery-ui.min.js"></script>
+    <script src="/shared/js/spectrum.min.js"></script>
     <script src="/shared/js/tbi.js"></script>
     <script src="/shared/js/proto.js"></script>
 </head>
@@ -220,6 +222,7 @@
                     <div class="calcrow">
                         <button id="calcinput">Keyboard Input</button>
                         <button id="calcmode">Change Mode</button>
+                        <button id="calcpop">Pop Out</button>
                     </div>
                     <div class="calcrow">
                         <button id="calcbackspace">Backspace</button>
@@ -354,8 +357,9 @@
             <button id="ttb-clear">Clear timetable</button>
         </p>
         <p class="main">
-            I think it's pretty neat, but this will soon have the 
-            capability for YOU - yes, you - to be able to make your own TimeTable!
+            Okay, so I've given up on creating a UI for this, as its extensibility leads to lots of 
+            problems and useless classes and IDs that I'm beginning to hate. Now it's simply a JSON 
+            editor.
         </p>
         <p class="main">
             PLANNED: 
@@ -365,6 +369,16 @@
                 <li>Exporting</li>
             </ul>
         <div id="ttable-proto" class="ttable proto">
+            <div class="ttb-set">
+                <textarea class="main" disabled style='width:80%; height:220px;'>
+                </textarea>
+                <div class="ttbs-mode">
+                    <input type="radio" id="ttbs-modev" checked name="ttbs-mode"/>
+                    <label for="ttbs-modev">View</label>
+                    <input type="radio" id="ttbs-modee" name="ttbs-mode" />
+                    <label for="ttbs-modee">Edit</label>
+                </div>
+            </div>
             <div class="ttb-body">
             </div>
             <div class="ttb-info">

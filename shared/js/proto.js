@@ -21,9 +21,11 @@ function setupPrototypes() {
 $(function () {
     fetchProtoIndex();
     if (!isNull(location.hash) && !isNull($(location.hash))) {
-        timerSet("scroll",0,function () {
-            $(document).scrollTop(parseInt($(location.hash).offset().top - 52));
-            timerClear("scroll");
+        timerSet("scroll",10,function () {
+            if (!isNull($(location.hash).offset())) {
+                $(document).scrollTop(parseInt($(location.hash).offset().top - 52));
+                timerClear("scroll");
+            }
         });
     }
 });
@@ -1367,7 +1369,7 @@ Cdown.set = function (out) {
 	$("#cd-fn-set").css("display", "none");
     $("#cdown-count").css("display", "inline-block");
     timerSet("cDown", 50, function () { Cdown.main(out, "cdown-count") });
-    if (!isNull(Cdown.name))
+    if (!isNull(Cdown.name) && !isNull(gebi("cdown-full")))
         $("#cdown-full h3")[0].innerHTML = "Countdown - " + Cdown.name;
 }
 Cdown.checkfn = function () {
@@ -1610,6 +1612,9 @@ Calc.setUp = function () {
             $(".calcadvonly").hide();
     });
     $("#calcshift").click(function () { Calc.shift = !Calc.shift });
+    $("#calcpop").click(function () {
+        
+    });
 }
 Calc.equate = function (bool) {
     if (bool == undefined) bool = false;
@@ -1765,7 +1770,6 @@ Calc.addDigit = function (digit) {
     if (Calc.answerShown) {
         Calc.workingNum = "";
         Calc.string = "";
-        Calc.numbers = [];
         Calc.prevNum = "";
         Calc.answerShown = false;
     } else if (Calc.funcShown) {
@@ -1807,6 +1811,7 @@ TTBL.ttables = {};
 TTBL.curr = "default";
 TTBL.dayKeys = ["sun","mon","tue","wed","thu","fri","sat"];
 TTBL.days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+TTBL.input = { "default" : { "variables" : { "days" : []}, "defs" : {}, "info" : {}, "table" : {}}};
 TTBL.setup = function () {
     var valid = true;
     try {
@@ -1846,7 +1851,7 @@ TTBL.generate = function () {
     for (var it = 0; it < TTBL.df.days.length; it++)
         $(".ttable-head").append("<span>"+TTBL.df.days[it]+"</span>");
     var firstWidth = $(".ttable-head span")[0].style.width;
-    $(".ttable-head span").css("width",100/TTBL.df.days.length-1+"%");
+    $(".ttable-head span").css("width",100/TTBL.df.days.length-(100/TTBL.df.days.length/20)+"%");
     $(".ttable-head span:first-child").css("width",firstWidth);
     for (it = 0; it < TTBL.vr.maxlength; it++) {
         if (TTBL.blocks[0][it].type == "period") {
@@ -1870,7 +1875,7 @@ TTBL.generate = function () {
     for (it = 0; it < TTBL.vr.length.length; it++) {
         $(".ttable-row:nth("+it+") > div:first-child").text(it+1);
     }
-    $(".ttable-cell").css("width",100/TTBL.df.days.length-1+"%");
+    $(".ttb-body .ttable-cell").css("width",100/TTBL.df.days.length-(100/TTBL.df.days.length/20)+"%");
 }
 TTBL.addTime = function (timeString, minCount) {
     minCount = parseInt(minCount);
@@ -1895,31 +1900,30 @@ TTBL.fillIn = function () {
         var periods = [];
         var blocks = [];
         for (var jt = 0; jt < thisDay.length; jt++) {
-            if (isNull(thisDay[jt].start)) {
-                if (!isNull(thisDay[jt-1].end)) {
+            if (isNull(thisDay[jt].start))
+                if (!isNull(thisDay[jt-1].end))
                     thisDay[jt].start = thisDay[jt-1].end;
-                }
-            }
-            if (isNull(thisDay[jt].end)) {
-                if (!isNull(thisDay[jt].start)) {
+            if (isNull(thisDay[jt].end))
+                if (!isNull(thisDay[jt].start))
                     thisDay[jt].end = TTBL.addTime(thisDay[jt].start, TTBL.vr.periodLength);
-                }
-            }
             if (!isNull(thisDay[jt].group)) {
                 var info = TTBL.vr.display.group;
                 var group = thisDay[jt].group;
                 for (var kt = 0; kt < info.length; kt++) {
                     if (kt == 0) {
                         var ref = TTBL.df[info[0]][TTBL.df.group[group][0]];
-                        thisDay[jt][info[0]] = ref.name;
-                        thisDay[jt].colour = ref.colour;
-                        if (!isNull(ref.text))
+                        if (isNull(thisDay[jt][info[0]]))
+                            thisDay[jt][info[0]] = ref.name;
+                        if (isNull(thisDay[jt].colour))
+                            thisDay[jt].colour = ref.colour;
+                        if (isNull(thisDay[jt].text))
                             thisDay[jt].text = ref.text;
                         else
                             thisDay[jt].text = "#000";
-                    } else if (TTBL.vr.display.gpshort.indexOf(info[kt]) != -1)
+                    } else if (TTBL.vr.display.gpshort.indexOf(info[kt]) != -1 
+                        && isNull(thisDay[jt][info[kt]]))
                         thisDay[jt][info[kt]] = TTBL.df[info[kt]][TTBL.df.group[group][kt]];
-                    else
+                    else if (isNull(thisDay[jt][info[kt]]))
                         thisDay[jt][info[kt]] = TTBL.df.group[group][kt];
                 }
             }
@@ -1959,6 +1963,7 @@ TTBL.set = function () {
     }
     for (it = 0; it < TTBL.breaks.length; it++)
         $(".ttable-break")[it].innerHTML = TTBL.breaks[it];
+    $(".ttb-info").empty();
     for (it = 0; it < TTBL.vr.display.info.length; it++) {
         var tempElement = "";
         tempElement += "<div class='ttbi-field'>";
@@ -1975,7 +1980,8 @@ TTBL.set = function () {
 $(function () { 
     TTBL.setup(); 
     $("#ttb-test").click(function () {
-        if (isNull(TTBL.data) && isNull(localStorage.TTBL2)) {
+        if ((isNull(TTBL.data) && isNull(localStorage.TTBL2)) || 
+        (!isNull(localStorage.TTBL2) && confirm("Do you want to overwrite your current timetable?"))) {
             var xhr = new AJAX("/shared/data/ttb1.json", function () {
                 localStorage.TTBL2 = xhr.response;
                 TTBL.data = localStorage.TTBL2;
@@ -1997,5 +2003,26 @@ $(function () {
     });
     Popup.registry.add($("#ttb-clear")[0], "Clear timetable", 
     "The 'Test timetable' button will be unavailable for a few seconds");
+    $(".ttbs-mode").buttonset();
+    $(".ttb-set textarea").val(JSON.stringify($.parseJSON(localStorage.TTBL2), null, 4));
+    $("#ttbs-modee").click(function () {
+        if ($(this).val() == "on") {
+            $(".ttb-set textarea").attr("disabled", false);
+        }
+    });
+    $("#ttbs-modev").click(function () {
+        if ($(this).val() == "on") {
+            $(".ttb-set textarea").attr("disabled", true);
+            localStorage.TTBL4 = localStorage.TTBL2;
+            try {
+                localStorage.TTBL2 = JSON.stringify($.parseJSON($(".ttb-set textarea").val()));
+                TTBL.setup();
+            } catch (e) {
+                log("Failed");
+                localStorage.TTBL2 = localStorage.TTBL4;
+                localStorage.removeItem("TTBL4");
+            }
+        }
+    });
 });
 // END TTBL CODE //
