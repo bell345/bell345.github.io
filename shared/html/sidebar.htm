@@ -11,10 +11,13 @@
     var sidebarText = ["1betaTB", "BETA-Warrior", "bell345", "tom.aus@outlook.com"];
     for (var it = 0; it < $(".side li a").length; it++)
         Popup.registry.add($(".side li a")[it], $(".side li a")[it].innerText, sidebarText[it]);
+    Popup.registry.add($(".license")[0], "License info", 
+    "This work can be used for any purpose, under the following conditions: "+
+    "<ul class='main'><li>The author is attributed</li><li>The work is shared under the same license</li></ul>");
     $("#year").html(new Date().getFullYear());
 </script>
 <p class="main">
     Version 4<br />
-    <a href="//creativecommons.org/licenses/by-sa/4.0">(CC-BY-SA)</a> Thomas Bell 
+    <a href="//creativecommons.org/licenses/by-sa/4.0" class="license">(CC-BY-SA)</a> Thomas Bell 
     <span id="year"></span>
 </p>

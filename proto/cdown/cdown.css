@@ -9,6 +9,7 @@ body {
     margin-top:10%;
     border:0;
     text-align:center;
+    padding:0;
 }
 .cdown h2 {
     font-size:72px;
@@ -41,6 +42,7 @@ body {
 }
 .cdset {
     background:#333;
+    padding:12px;
 }
 #cdset {
     background:#333;

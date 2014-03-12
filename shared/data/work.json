@@ -24,7 +24,8 @@
         {
             "id" : "calc",
             "name" : "Calculator",
-            "version" : "0.8.2"
+            "version" : "0.8.2",
+            "link" : "/proto/calc/"
         }, 
         {
             "id" : "spaceshooter",
@@ -33,9 +34,19 @@
             "link" : "/proto/spaceshooter/"
         },
         {
+            "id" : "canvas",
+            "name" : "Canvas",
+            "version" : "1.0"
+        },
+        {
             "id" : "ttbl",
             "name" : "TimeTable",
             "version" : "0.5"
+        },
+        {
+            "id" : "gl",
+            "name" : "WebGL Test",
+            "version" : "0.2"
         }
     ],
     "work" : [

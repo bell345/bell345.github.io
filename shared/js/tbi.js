@@ -1,8 +1,7 @@
-// TBI.JS - V4.10
+﻿// TBI.JS - V4.11
 // Base functions, variables and helpers that are included and required in
 // all of my website pages.
 // START INCOMPATIBILITY CODE //
-'use strict';
 document.onreadystatechange = function () {
     if (!window.jQuery) {
         var incompat = "";
@@ -26,6 +25,7 @@ var notePrevInfo = {
     "text" : [],
     "type" : []
 };
+// START CONSOLE NOTIFICATIONS //
 function log(message, timeout) {
     console.log(message);
     timeout = isNull(timeout) ? 30000 : timeout;
@@ -34,13 +34,16 @@ function log(message, timeout) {
 function warn(message, timeout) {
     console.warn(message);
     timeout = isNull(timeout) ? 40000 : timeout;
-    new Notification("Warning", message);
+    new Notification("Warning", message, 0, timeout);
 }
 function error(message, timeout) {
     console.error(message);
+    if (typeof(message) == "object")
+        message = message.message;
     timeout = isNull(timeout) ? 50000 : timeout;
-    new Notification("Error", message, 1);
+    new Notification("Error", message, 1, timeout);
 }
+// END CONSOLE NOTIFICATIONS //
 $(function () {
     if (navigator.userAgent.search(/[Ff]irefox/)!=-1)
         document.body.className = "gecko";
@@ -54,9 +57,8 @@ function gebi(element) { return document.getElementById(element); }
 // Checks the state of an XHR.
 function checkState(request) { return (request.readyState == 4); }
 // A XMLHttpRequest object constructor.
-function XHR() {
-    return window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
-}
+function XHR() { return window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP"); }
+// An AJAX (Asynchronous JavaScript And XML) GET request constructor.
 function AJAX(url, func) {
     var xhr = new XHR();
     xhr.open("GET",url,true);
@@ -72,7 +74,7 @@ function AJAX(url, func) {
     return xhr;
 }
 // Sets up the query variable with the search criteria.
-function queryManager() {
+function requestManager() {
 	var search = location.search;
 	if (!isNull(location.search)) {
 		search = search.replace("?","");
@@ -91,10 +93,7 @@ function queryManager() {
             query[hash[i][0]] = hash[i][1];
         }
     }
-}
-// Sets up the path variable with the current pathname.
-function pathManager() {
-	if (location.pathname.length > 1) {
+    if (location.pathname.length > 1) {
 		var pathname = location.pathname;
 		if (pathname.indexOf("/") == 0) {
 			pathname = pathname.slice(1);
@@ -155,7 +154,7 @@ function findIndex(file, name) {
 }
 // Appends HTML to an element.
 function modifyHtml(id, mod) {
-	var thing = document.getElementById(id);
+	var thing = gebi(id);
 	thing.innerHTML += mod;
 }
 // Shortens a string by an index.
@@ -169,8 +168,8 @@ function shorten(str, index) {
                 return tempstr.join("");
         }
     }
-    
 }
+function zeroPrefix(num) { return (num<10?"0":"")+num; }
 // Highlights a nav link to the same page.
 function findPage() {
     var curr = path[0];
@@ -197,18 +196,12 @@ function isNull(thing) {
 function isNegative(num) { return (Math.abs(num) != num); }
 // Returns the numbers that go into the specified number.
 function divisors(num) {
-	if (num > 10e7) {
-		return "Nope!";
-	} else {
-		var divisors = [];
-		for (var i=1;i<=num/2;i++) {
-			if (num%i == 0) {
-				divisors.push(i);
-			}
-		}
-		divisors.push(num);
-		return divisors;
-	}
+    var divisors=[];
+    for (var i=1;i<=num/2;i++)
+        if (num%i==0)
+            divisors.push(i);
+    divisors.push(num);
+    return divisors;
 }
 // An externally edited replacement for setInterval.
 function timerSet(timer, seconds, func) {
@@ -241,15 +234,19 @@ function unixToString(date) {
 	var hour = date.getHours();
 	var minute = date.getMinutes();
 	var second = date.getSeconds();
-	if (month < 10) {month="0"+month};
-	if (day < 10) {day="0"+day};
-	if (hour < 10) {hour="0"+hour};
-	if (minute < 10) {minute="0"+minute};
-	if (second < 10) {second="0"+second};
+	month = zeroPrefix(month);
+	day = zeroPrefix(day);
+	hour = zeroPrefix(hour);
+	minute = zeroPrefix(minute);
+	second = zeroPrefix(second);
 	return [date.getTime(), date.getFullYear(), month, day, hour, minute, second];
 }
 // Returns a random integer.
 function randomInt(num) { return parseInt(Math.random()*num) }
+// For legacy applications.
+function intRand(num) { return randomInt(num) }
+// Degrees to radians.
+function dtr(deg) { return (Math.PI/180)*deg }
 // For keypress events.
 // Converts a keypress event keycode into the character typed.
 // Returns null when an invisible character is typed (shift, alt, etc.)
@@ -295,7 +292,16 @@ function Popup(x, y, head, text) {
 	pup += "</div>";
 	$(".popup").remove();
 	body.append(pup);
+    if (parseInt($(".popup").css("width"))+parseInt($(".popup").css("left"))+120 > window.innerWidth) {
+        $(".popup").attr("class", $(".popup").attr("class") + " right");
+        $(".popup").css("left", (parseInt($(".popup").css("left")) - parseInt($(".popup").css("width")) - 40) + "px");
+    }
+    if (parseInt($(".popup").css("height"))+parseInt($(".popup").css("top"))+120 > window.innerHeight) {
+        $(".popup").attr("class", $(".popup").attr("class") + " bottom");
+        $(".popup").css("top", (parseInt($(".popup").css("top")) - parseInt($(".popup").css("height")) - 40) + "px");
+    }
 }
+// Adds a popup when hovering over a specified element.
 Popup.registry.add = function (element, head, text) {
     if (true) {
         Popup.registry.push([element, head, text]);
@@ -314,6 +320,7 @@ Popup.registry.add = function (element, head, text) {
         throw new Error("Supplied element is invalid.");
     }
 }
+// Removes an element from the registry.
 Popup.registry.remove = function (element) {
     for (var i=0;i<Popup.registry.length;i++) 
         if (Popup.registry[i][0] == $(element)[0])
@@ -321,14 +328,10 @@ Popup.registry.remove = function (element) {
     $(element).off("mousemove");
 }
 // A predefined popup element that can be added to by using the same header.
-// There can only be one notification, but that notification can be expanded upon.
+// There can only be one notification type, but multiple messages and instances of messages.
 function Notification(head, text, type, timeout) {
-    if (type == undefined)
-        this.type = 0;
-    else
-        this.type = type;
-    if (timeout == undefined)
-        timeout = 10000;
+    this.type = isNull(type) ? 0 : type;
+    timeout = isNull(timeout) ? 10000 : timeout;
     var states = ["ui-state-highlight", "ui-state-error"];
 	this.head = head;
 	this.text = text;
@@ -392,6 +395,8 @@ function Notification(head, text, type, timeout) {
     notePrevInfo["text"].push(this.text);
     notePrevInfo["type"].push(this.type);
 }
+// For Blink only.
+// Generates a desktop notification outside of the regular environment.
 function chromeNotification(img, title, desc, link) {
     if (isNull(window.webkitNotifications))
         return null;
@@ -405,8 +410,67 @@ function chromeNotification(img, title, desc, link) {
                 window.open(link);
             }
         note.show();
-    } else
-        window.webkitNotifications.requestPermission();
+    } else window.webkitNotifications.requestPermission();
+}
+// A 2D canvas context constructor.
+function Canvas2D(id) {
+    var curr = gebi(id);
+    if (curr.getContext && !isNull(curr))
+        var ctx = curr.getContext("2d");
+    else return null;
+    return ctx;
+}
+Canvas2D.dotEnabled = true;
+// Adds a coordinate popup to a specified canvas.
+Canvas2D.inspector = function (context) {
+    var cvs = context.canvas;
+    $(cvs).off("mousemove");
+    if (context.inspector) {
+        $(cvs).mousemove(function (event) {
+            new Popup(
+                event.clientX + 20,
+                event.clientY + 20,
+                "Canvas Inspector",
+                event.offsetX + "X, " + event.offsetY + "Y"
+            );
+        });
+        $(cvs).mouseleave(function () { $('.popup').remove() });
+    } else return null;
+}
+// Processes a string of canvas commands.
+Canvas2D.path = function (context, obj) {
+    var path = obj.path;
+    var type = obj.type;
+    var style = obj.style;
+    context[type+"Style"] = style;
+    context.beginPath();
+    context.moveTo(path[0][0], path[0][1]);
+    for (var i = 1; i < path.length; i++)
+        context.lineTo(path[i][0], path[i][1]);
+    context.closePath();
+    context[type]();
+}
+Canvas2D.reset = function (context) {
+    context.closePath();
+    context.beginPath();
+    context.firstPos = [];
+    context.secondPos = [];
+    return 0;
+}
+Canvas2D.dot = function (x, y, colour) {
+    var v = Canvas2D.dotEnabled ? "visible" : "hidden";
+    $("body").append("<div class='cvs-dot' style='background:"+colour+";left:"+
+        x+"px;top:"+y+"px;visibility:"+v+";'></div>");
+}
+function Canvas3D(cvs) {
+    var gl = null;
+    try { gl = cvs.getContext("webgl") || cvs.getContext("experimental-webgl"); }
+    catch (e) {} 
+    if (isNull(gl)) { 
+        error("WebGL failed to initialize.");
+        gl = null;
+    }
+    return gl;
 }
 // Updates the footer element based on the window size.
 function updateHeight() {
@@ -439,9 +503,8 @@ HTMLIncludes.getIndex = function () {
 }
 HTMLIncludes.get = function () {
     var curr = 0;
-    for (var i = 0; i < HTMLIncludes.info.length; i++) {
+    for (var i = 0; i < HTMLIncludes.info.length; i++)
         HTMLIncludes.getDone[i] = false;
-    }
     timerSet("includes", 200, function () {
         if (!HTMLIncludes.getDone[curr]) {
             HTMLIncludes.getDone[curr] = true;
@@ -452,6 +515,7 @@ HTMLIncludes.get = function () {
                     timerClear("includes");
                     updateHeight();
                     updateLinks();
+                    $(document).trigger("includesDone");
                 } else curr++;
             });
         }
@@ -468,27 +532,23 @@ if (!Array.prototype.indexOf) {
     }
 }
 $(function () {
-	queryManager();
-	pathManager();
+	requestManager();
     updateHeight();
     checkNav();
     $(document).scroll(function () { checkNav() });
     $(".ajaxProgress").progressbar({ value: false });
-    $(".ajaxProgress").css("width", "50%");
     HTMLIncludes.getIndex();
     $(document).resize(function () { updateHeight(); });
     $("button.toggle").click(function () {
-        if (this.className.search("toggle-on")!=-1)
-            this.className = this.className.replace(" toggle-on","");
-        else
-            this.className+=" toggle-on";
+        var a = " toggle-on";
+        var c = this.className;
+        this.className=c.search(a)!=-1?c.replace(a,""):c+a;
     });
     $(".switch").click(function () {
         var toSwitch = $("#"+$(this).attr("for"));
         if (toSwitch.length > 0)
             toSwitch.fadeToggle();
     });
-    
 });
 // START OF COOKIE CODES //
 function createCookie(name, value, days) {
@@ -513,11 +573,9 @@ function readCookie(name) {
 function eraseCookie(name) {
     createCookie(name, "", -1);
 }
-function checkSession() {return readCookie("session")};
 // END OF COOKIE CODES //
 // json2.js -- Credit to Douglas Crockford -- //
 // START JSON2.JS //
-
 if(typeof JSON!=='object'){JSON={};}
 (function(){'use strict';function f(n){return n<10?'0'+n:n;}
 if(typeof Date.prototype.toJSON!=='function'){Date.prototype.toJSON=function(){return isFinite(this.valueOf())?this.getUTCFullYear()+'-'+
@@ -543,5 +601,4 @@ text=String(text);cx.lastIndex=0;if(cx.test(text)){text=text.replace(cx,function
 ('0000'+a.charCodeAt(0).toString(16)).slice(-4);});}
 if(/^[\],:{}\s]*$/.test(text.replace(/\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g,'@').replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g,']').replace(/(?:^|:|,)(?:\s*\[)+/g,''))){j=eval('('+text+')');return typeof reviver==='function'?walk({'':j},''):j;}
 throw new SyntaxError('JSON.parse');};}}());
-
 // END JSON2.JS //

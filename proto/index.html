@@ -222,7 +222,7 @@
                     <div class="calcrow">
                         <button id="calcinput">Keyboard Input</button>
                         <button id="calcmode">Change Mode</button>
-                        <button id="calcpop">Pop Out</button>
+                        <a href="/proto/calc"><button id="calcpop">Pop Out</button></a>
                     </div>
                     <div class="calcrow">
                         <button id="calcbackspace">Backspace</button>
@@ -296,54 +296,44 @@
 		    <a href="http://yoyogames.com/studio/download">Game Maker</a> game. Bear in mind - I <em>had the 
 		    same budget.</em>
 		</p>
-        <h2 id="anchor8">Canvas</h2>
+        <h2 id="anchor8" class="proto">Canvas</h2>
+        <h3 class="main version"></h3>
         <p class="main">
-            Hooray! Canvas things! Not really a thing yet, just messing around. Not visible at 
-            the moment.
+            Hooray! Canvas things! Not really a thing yet, just messing around.
         </p>
-        <div style="width:600px;height:600px;padding:24px;display:none;">
-            <canvas id="cvs-tut" width="500" height="500" onclick="CanvasTutorial.draw()"></canvas>
+        <div class="proto">
+            <div id="cvs-cont">
+                <div class="button-row">
+                    <button id="cvs-line">Line</button>
+                    <button id="cvs-brush">Brush</button>
+                    <button id="cvs-quad">Basic curve</button>
+                    <button id="cvs-bezier">Advanced curve</button>
+                    <button id="cvs-poly">Polygon</button>
+                    <button id="cvs-end">End path</button>
+                </div><div class="button-row">
+                    <label for="cvs-style-0">Stroke Style</label>
+                    <input type="text" id="cvs-style-0" value="black" />
+                    <label for="cvs-style-1">Fill Style</label>
+                    <input type="text" id="cvs-style-1" value="white" />
+                    <br />
+                    <label for="cvs-width">Line Width</label>
+                    <input type="text" id="cvs-width" value="5" />
+                    <label for="cvs-bwid">Brush Width</label>
+                    <input type="text" id="cvs-bwid" value="10" />
+                </div><div class="button-row">
+                    <button id="cvs-stroke" class="toggle toggle-on">Toggle Stroke</button>
+                    <button id="cvs-fill" class="toggle toggle-on">Toggle Fill</button>
+                    <button id="cvs-guide" class="toggle toggle-on">Toggle Guides</button>
+                </div><div class="button-row">
+                    <span class="main">Mode: </span><span id="cvs-mode">None</span>
+                </div>
+            </div>
+            <canvas id="cvs" width="750" height="750" style="border:2px solid #000">
+                <p class="main">
+                    Your browser doesn't seem to support the HTML5 &lt;canvas&gt; element.
+                </p>
+            </canvas>
         </div>
-        <script type="application/javascript">
-            var CanvasTutorial = {};
-            CanvasTutorial.draw = function () {
-                var cvs = gebi("cvs-tut");
-                cvs.style.border = "2px solid #000";
-                if (cvs.getContext)
-                    var ctx = cvs.getContext("2d");
-                else
-                    return null;
-                // SYNTAX FOR FUNCTIONS:
-                // (topLeftCornerX, topLeftCornerY, width, height)
-                ctx.beginPath();
-                ctx.moveTo(75,50);
-                ctx.lineTo(100,75);
-                ctx.lineTo(100,25);
-                ctx.fill();
-            }
-            var canInspectCanvas = true;
-            // Canvas Inspector
-            $("canvas").mousemove(function (event) {
-                if (!canInspectCanvas)
-                    return null;
-                var off = $(this).offset();
-                var border = [parseInt(this.style.borderLeftWidth), parseInt(this.style.borderTopWidth)];
-                var offset = [off.left+border[0], off.top+border[1]];
-                var relative = [event.pageX - offset[0], event.pageY - offset[1]];
-                if (isNaN(relative[0]))
-                    return null;
-                new Popup(
-                    event.clientX+20, 
-                    event.clientY+20, 
-                    "Canvas Coordinates", 
-                        (Math.floor(relative[0]) + "px ") + 
-                        (Math.floor(relative[1]) + "px")
-                );
-            });
-            $("canvas").mouseleave(function () {
-                $(".popup").remove();
-            });
-        </script>
         <h2 id="anchor9" class="proto">TimeTable</h2>
         <h3 class="main version"></h3>
         <p class="main">
@@ -370,8 +360,7 @@
             </ul>
         <div id="ttable-proto" class="ttable proto">
             <div class="ttb-set">
-                <textarea class="main" disabled style='width:80%; height:220px;'>
-                </textarea>
+                <textarea class="main" disabled style='width:80%; height:220px;'></textarea>
                 <div class="ttbs-mode">
                     <input type="radio" id="ttbs-modev" checked name="ttbs-mode"/>
                     <label for="ttbs-modev">View</label>
@@ -383,6 +372,35 @@
             </div>
             <div class="ttb-info">
             </div>
+        </div>
+        <h2 id="anchor10" class="proto">WebGL Test</h2>
+        <h3 class="main version"></h3>
+        <p class="main">
+            Moving on from <a href="#canvas">2D</a> graphics, it's time to test 3D graphics!
+        </p>
+        <div class="proto">
+            <canvas id="gl-test" width="600" height="600">
+                <p class="main">
+                    You silly sod. Your browser is too crap to recognise the &lt;canvas&gt; tag.
+                </p>
+            </canvas>
+            <script id="shader-fs" type="x-shader/x-fragment">
+                varying lowp vec4 vColour;
+                void main(void) {
+                    gl_FragColor = vColour;
+                }
+            </script>
+            <script id="shader-vs" type="x-shader/x-vertex">
+                attribute vec3 aVertexPosition;
+                attribute vec4 aVertexColour;
+                uniform mat4 uMVMatrix;
+                uniform mat4 uPMatrix;
+                varying lowp vec4 vColour;
+                void main(void) {
+                    gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+                    vColour = aVertexColour;
+                }
+            </script>
         </div>
             <footer>
             </footer>

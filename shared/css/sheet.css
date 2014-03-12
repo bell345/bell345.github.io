@@ -45,11 +45,11 @@ header {
 nav {
     width:auto;
     height:40px;
-    background:#555;
+    background:#444;
     margin:0 auto;
     padding:6px;
     text-align:center;
-    box-shadow:0px 3px 10px #555;
+    box-shadow:0px 3px 10px #444;
 }
 footer {
     width:100%;
@@ -68,6 +68,9 @@ input[type="text"]:active, input[type="text"]:focus,
 textarea:active, textarea:focus,
 *[contenteditable]:active, *[contenteditable]:focus {
 	outline:2px solid #0094ff;
+}
+textarea {
+    padding:6px;
 }
 h1 {
     text-align:center;
@@ -331,13 +334,6 @@ button.main {
     left:0;
     text-align:right;
 }
-#license {
-    text-align:center;
-    position:absolute;
-    bottom:20px;
-    width:100%;
-    height:50px;
-}
 .calendar {
     position:relative;
     width:auto;
@@ -598,8 +594,7 @@ header .slanted-logo:nth-child(4) {
     display:inline-block;
     font-size:12px;
     position:relative;
-    left:15px;
-    border-right:1px solid #444;
+    left:14px;
 }
 .ttable-row>div:first-child {
     position:absolute;
@@ -713,7 +708,7 @@ button.ui-icon {
     bottom:0;
     left:0;
     right:0;
-    background:#555;
+    background:inherit;
 }
 #navtop-container div {
     width:80px;
@@ -721,6 +716,23 @@ button.ui-icon {
     background:#0094ff;
     position:absolute;
     left:-80px;
+}
+#cvs-cont {
+    margin-bottom:12px;
+}
+.cvs-dot {
+    width:8px;
+    height:8px;
+    border-radius:4px;
+    box-shadow:0px 0px 2px 1px #fff;
+    position:absolute;
+    pointer-events:none;
+}
+.ajaxProgress {
+    width:50%;
+}
+.button-row {
+    margin-bottom:12px;
 }
 /* END DIV STYLE */
 /* START TEXT STYLE */
