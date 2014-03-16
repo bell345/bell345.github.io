@@ -83,14 +83,14 @@
             },
             "teacher" : {
                 "msgno" : "Missingno",
-                "dlamb" : "Mr D Lambrinidis",
-                "cwood" : "Ms C Woodacre",
-                "vakel" : "Mr V Akella",
-                "bneil" : "Mr B O'Neill",
-                "jthom" : "Miss J Thompson",
-                "lyeu" : "Ms L Yeu",
-                "smiha" : "Mr S Mihailjevich",
-                "tchap" : "Ms T Chapman"
+                "sport" : "#Sport Teacher#",
+                "sande" : "#S & E Teacher#",
+                "split" : "#ICT Teacher#",
+                "maths" : "#Maths Teacher#",
+                "enlng" : "#English Teacher#",
+                "exsci" : "#Science Teacher#",
+                "drama" : "#Drama Teacher#",
+                "healt" : "#Health Teacher#"
             },
             "group" : {
                 "9_XX0" : [
@@ -100,42 +100,42 @@
                 ],
                 "9_MT3" : [
                     "MT",
-                    "bneil",
+                    "maths",
                     "B11"
                 ],
                 "9_PE3" : [
                     "PE",
-                    "dlamb",
+                    "sport",
                     ""
                 ],
                 "9_SE4" : [
                     "SE",
-                    "cwood",
+                    "sande",
                     "F2"
                 ],
                 "9_sIT1" : [
                     "sIT",
-                    "vakel",
+                    "split",
                     "CS1"
                 ],
                 "9_EN4" : [
                     "EN",
-                    "jthom",
+                    "enlng",
                     "A6"
                 ],
                 "9_SC5" : [
                     "SC",
-                    "lyeu",
+                    "exsci",
                     "E2"
                 ],
                 "9_DR1" : [
                     "DR",
-                    "smiha",
+                    "drama",
                     "B1"
                 ],
                 "9_HE4" : [
                     "HE",
-                    "tchap",
+                    "healt",
                     "B7"
                 ]
             }

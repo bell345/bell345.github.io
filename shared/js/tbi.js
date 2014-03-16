@@ -252,7 +252,12 @@ function dtr(deg) { return (Math.PI/180)*deg }
 // Returns null when an invisible character is typed (shift, alt, etc.)
 function convertKeyDown(event) {
     var which = event.which;
-    if (which>47&&which<91) {
+    if (which>8&&which<47) {
+        var chars = ["backspace","tab","","","","return","","","shift","control","alt","pause","caps",
+            "","","","","","","escape","","","","","","page up","page down","end","home","left","up","right",
+            "down","","","","","insert","delete"];
+        return chars[which-8];
+    } else if (which>47&&which<91) {
         if (event.shiftKey)
             var chars = ")!@#$%^&*(ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         else
@@ -296,7 +301,7 @@ function Popup(x, y, head, text) {
         $(".popup").attr("class", $(".popup").attr("class") + " right");
         $(".popup").css("left", (parseInt($(".popup").css("left")) - parseInt($(".popup").css("width")) - 40) + "px");
     }
-    if (parseInt($(".popup").css("height"))+parseInt($(".popup").css("top"))+120 > window.innerHeight) {
+    if (parseInt($(".popup").css("height"))+parseInt($(".popup").css("top"))+20 > window.innerHeight) {
         $(".popup").attr("class", $(".popup").attr("class") + " bottom");
         $(".popup").css("top", (parseInt($(".popup").css("top")) - parseInt($(".popup").css("height")) - 40) + "px");
     }

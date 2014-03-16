@@ -15,7 +15,7 @@ function setupPrototypes() {
             titleText += "</a>";
         $($("h2.proto, h3.proto")[i]).html(titleText);
         $($("h2.proto, h3.proto")[i]).attr("id",Prototypes[i].id);
-        $($(".version")[i]).html("Version "+Prototypes[i].version);
+        $($(".version")[i]).html(Prototypes[i].version);
     }
 }
 $(function () {
@@ -757,14 +757,8 @@ Calendar.calcDate = function (year, month) {
     Calendar.lastDay = lastDay.getDay();
 }
 Calendar.generate = function (year, month) {
-    if (isNull(month)) {
-        monthDate = new Date();
-        month = monthDate.getMonth()+1;
-    }
-    if (isNull(year)) {
-        yearDate = new Date();
-        year = yearDate.getFullYear();
-    }
+    month = isNull(month) ? new Date().getMonth()+1 : month;
+    year = isNull(year) ? new Date().getFullYear() : year;
     if (Calendar.calcSet) {
         $("#calinner").empty();
         Calendar.reset();
@@ -1867,12 +1861,19 @@ TTBL.generate = function () {
                 }
                 $(".ttb-body > div:nth("+(it+1)+") > .ttable-cell:nth("+jt+")").append(celli);
             }
-        }
-        else if (TTBL.blocks[0][it].type == "break")
+        } else if (TTBL.blocks[0][it].type == "break")
             $(".ttb-body").append("<div class='ttable-break'></div>");
     }
     for (it = 0; it < TTBL.vr.length.length; it++) {
         $(".ttable-row:nth("+it+") > div:first-child").text(it+1);
+    }
+    var it = 0;
+    var jt = 0;
+    while (it < TTBL.vr.length[0]) { 
+        if (TTBL.blocks[0][it].type != "break") {
+            $(".ttable-row:nth("+jt+") > div:first-child").text(jt+1);
+            jt++;
+        } it++;
     }
     $(".ttb-body .ttable-cell").css("width",100/TTBL.df.days.length-(100/TTBL.df.days.length/20)+"%");
 }
@@ -2490,3 +2491,170 @@ GLTest.mvRotate = function (angle, v) {
     GLTest.mvMatrix = GLTest.mvMatrix.x(m);
 }
 $(function () { GLTest.init() });
+
+var TWF8 = {};
+TWF8.moveTile = function (sx, sy, dx, dy) {
+    $("#twf8-pos-"+sx+sy).attr("id", "twf8-pos-"+dx+dy);
+}
+TWF8.checkTile = function (x, y) {
+    try {if ($("#twf8-pos-"+x+y).length > 0) return parseInt($("#twf8-pos-"+x+y)
+        .attr("class")
+        .match(/val\-[0-9]+/)[0]
+        .match(/[0-9]+/)[0]); 
+    else return false;
+    } catch (e) { return true; }
+}
+TWF8.moveTileLeft = function (sx, sy) {
+    var val = parseInt($("#twf8-pos-"+sx+sy).attr('class').match(/val\-[0-9]+/)[0].match(/[0-9]+/)[0]);
+    while (sy > 0 && (TWF8.checkTile(sx, sy-1) == val || !TWF8.checkTile(sx, sy-1))) {
+        if (!TWF8.checkTile(sx, sy-1)) {
+            TWF8.moveTile(sx,sy,sx,sy-1);
+            sy--;
+        } else if (TWF8.checkTile(sx, sy-1) == val) {
+            $("#twf8-pos-"+sx+(sy-1)).remove();
+            gebi("twf8-pos-"+sx+sy).className = gebi("twf8-pos-"+sx+sy).className.replace("twf8-val-"+val, "twf8-val-"+(val*2));
+            TWF8.moveTile(sx, sy, sx, sy-1);
+            return null;
+        }
+    }
+}
+TWF8.moveTileRight = function (sx, sy) {
+    var val = parseInt($("#twf8-pos-"+sx+sy).attr('class').match(/val\-[0-9]+/)[0].match(/[0-9]+/)[0]);
+    while (sy < 3 && (TWF8.checkTile(sx, sy+1) == val || !TWF8.checkTile(sx, sy+1))) {
+        if (!TWF8.checkTile(sx, sy+1)) {
+            TWF8.moveTile(sx, sy, sx, sy+1);
+            sy++;
+        } else if (TWF8.checkTile(sx, sy+1) == val) {
+            $("#twf8-pos-"+sx+(sy+1)).remove();
+            gebi("twf8-pos-"+sx+sy).className = gebi("twf8-pos-"+sx+sy).className.replace("twf8-val-"+val, "twf8-val-"+(val*2));
+            TWF8.moveTile(sx, sy, sx, sy+1);
+            return null;
+        }
+    }
+}
+TWF8.moveTileUp = function (sx, sy) {
+    var val = parseInt($("#twf8-pos-"+sx+sy).attr('class').match(/val\-[0-9]+/)[0].match(/[0-9]+/)[0]);
+    while (sx > 0 && (TWF8.checkTile(sx-1, sy) == val || !TWF8.checkTile(sx-1, sy))) {
+        if (!TWF8.checkTile(sx-1, sy)) {
+            TWF8.moveTile(sx, sy, sx-1, sy);
+            sx--;
+        } else if (TWF8.checkTile(sx-1, sy) == val) {
+            $("#twf8-pos-"+(sx-1)+sy).remove();
+            gebi("twf8-pos-"+sx+sy).className = gebi("twf8-pos-"+sx+sy).className.replace("twf8-val-"+val, "twf8-val-"+(val*2));
+            TWF8.moveTile(sx, sy, sx-1, sy);
+            return null;
+        }
+    }
+}
+TWF8.moveTileDown = function (sx, sy) {
+    while (sx < 3 && !TWF8.checkTile(sx+1, sy)) {
+        $("#twf8-pos-"+sx+sy).attr("id", "twf8-pos-"+(sx+1)+sy);
+        sx++;
+    }
+    var val = parseInt($("#twf8-pos-"+sx+sy).attr('class').match(/val\-[0-9]+/)[0].match(/[0-9]+/)[0]);
+    while (sx < 3 && (TWF8.checkTile(sx+1, sy) == val || !TWF8.checkTile(sx+1, sy))) {
+        if (!TWF8.checkTile(sx+1, sy)) {
+            TWF8.moveTile(sx, sy, sx+1, sy);
+            sx--;
+        } else if (TWF8.checkTile(sx+1, sy) == val) {
+            $("#twf8-pos-"+(sx+1)+sy).remove();
+            gebi("twf8-pos-"+sx+sy).className = gebi("twf8-pos-"+sx+sy).className.replace("twf8-val-"+val, "twf8-val-"+(val*2));
+            TWF8.moveTile(sx, sy, sx+1, sy);
+            return null;
+        }
+    }
+}
+TWF8.spawnTile = function (dx, dy, val) {
+    if (isNull(dx) || isNull(dy) || isNull(val)) return error("TWF8: Tile spawning failed: Insufficient values");
+    if ($("#twf8-pos-"+dx+dy).length < 1 && dx > -1 && dy > -1 && dx < 4 && dy < 4)
+        $("#twf8-tiles").append("<div class='twf8-tile twf8-val-"+val+"' id='twf8-pos-"+dx+dy+"'></div>");
+}
+TWF8.moveAllLeft = function () {
+    for (var i = 0; i < 4; i++) {
+        for (var j = 0; j < 4; j++) {
+            if ($("#twf8-pos-"+i+j).length > 0) TWF8.moveTileLeft(i, j);
+        }
+    }
+}
+TWF8.moveAllRight = function () {
+    for (var i = 0; i < 4; i++) {
+        for (var j = 3; j >= 0; j--) {
+            if ($("#twf8-pos-"+i+j).length > 0) TWF8.moveTileRight(i, j);
+        }
+    }
+}
+TWF8.moveAllUp = function () {
+    for (var i = 0; i < 4; i++) {
+        for (var j = 0; j < 4; j++) {
+            if ($("#twf8-pos-"+i+j).length > 0) TWF8.moveTileUp(i, j);
+        }
+    }
+}
+TWF8.moveAllDown = function () {
+    for (var i = 3; i >= 0; i--) {
+        for (var j = 0; j < 4; j++) {
+            if ($("#twf8-pos-"+i+j).length > 0) TWF8.moveTileDown(i, j);
+        }
+    }
+}
+TWF8.determineLeft = function () {
+    var results = [];
+    for (var i = 3; i >= 0; i--) {
+        for (var j = 1; j < 4; j++) {
+            if ($("#twf8-pos-"+i+j).length > 0) {
+                var val = parseInt($("#twf8-pos-"+i+j).attr('class').match(/val\-[0-9]+/)[0].match(/[0-9]+/)[0]);
+                results.push(TWF8.checkTile(i, j-1) != val);
+            } else return true;
+        }
+    }
+    return results.indexOf(true) != -1;
+}
+TWF8.determineRight = function () {
+    var results = [];
+    for (var i = 0; i < 4; i++) {
+        for (var j = 0; j < 3; j++) {
+            if ($("#twf8-pos-"+i+j).length > 0) {
+                var val = parseInt($("#twf8-pos-"+i+j).attr('class').match(/val\-[0-9]+/)[0].match(/[0-9]+/)[0]);
+                results.push(TWF8.checkTile(i, j+1) != val);
+            } else return true;
+        }
+    }
+    return results.indexOf(true) != -1;
+}
+TWF8.determineUp = function () {
+    var results = [];
+    for (var i = 1; i < 4; i++) {
+        for (var j = 0; j < 4; j++) {
+            if ($("#twf8-pos-"+i+j).length > 0) {
+                var val = parseInt($("#twf8-pos-"+i+j).attr('class').match(/val\-[0-9]+/)[0].match(/[0-9]+/)[0]);
+                results.push(TWF8.checkTile(i-1, j) != val);
+            } else return true;
+        }
+    }
+    return results.indexOf(true) != -1;
+}
+TWF8.determineDown = function () {
+    var results = [];
+    for (var i = 2; i >= 0; i--) {
+        for (var j = 1; j < 4; j++) {
+            if ($("#twf8-pos-"+i+j).length > 0) {
+                var val = parseInt($("#twf8-pos-"+i+j).attr('class').match(/val\-[0-9]+/)[0].match(/[0-9]+/)[0]);
+                results.push(TWF8.checkTile(i+1, j) != val);
+            } else return true;
+        }
+    }
+    return results.indexOf(true) != -1;
+}
+$(document).keyup(function (event) {
+    var key = convertKeyDown(event);
+    if (key == "left" && TWF8.determineLeft()) TWF8.moveAllLeft();
+    else if (key == "right" && TWF8.determineRight()) TWF8.moveAllRight();
+    else if (key == "up" && TWF8.determineUp()) TWF8.moveAllUp();
+    else if (key == "down" && TWF8.determineDown()) TWF8.moveAllDown();
+    else if (!TWF8.determineLeft() && !TWF8.determineRight() && !TWF8.determineUp() && !TWF8.determineDown()) {
+        log("TWF8: Game Over!");
+    }
+    do { var randLocation = [randomInt(4), randomInt(4)]; }
+    while ($("#twf8-pos-"+randLocation[0]+randLocation[1]).length > 0)
+    TWF8.spawnTile(randLocation[0], randLocation[1], 2);
+});

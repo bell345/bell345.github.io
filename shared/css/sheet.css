@@ -1024,6 +1024,9 @@ h3.version {
     margin-bottom:12px;
     box-shadow: 2px 2px 5px #333;
 }
+h3.version:before {
+    content:"Version ";
+}
 .notification ul {
     display:inline-block;
     padding-bottom:4px;
