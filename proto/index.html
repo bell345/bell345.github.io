@@ -354,9 +354,7 @@
         <p class="main">
             PLANNED: 
             </p><ul class="main">
-                <li>Set your own timetable!</li>
                 <li>Theming</li>
-                <li>Exporting</li>
             </ul>
         <div id="ttable-proto" class="ttable proto">
             <div class="ttb-set">
@@ -368,6 +366,7 @@
                     <label for="ttbs-modee">Edit</label>
                 </div>
             </div>
+            <button id="ttbs-hlnow">Highlight Now</button>
             <div class="ttb-body">
             </div>
             <div class="ttb-info">
@@ -402,7 +401,8 @@
                 }
             </script>
         </div>
-        <h2><a href="http://gabrielecirulli.github.io/2048/">2048</a> clone</h2>
+        <h2 class="proto"><a href="http://gabrielecirulli.github.io/2048/">2048</a> clone</h2>
+		<h3 class="main version"></h3>
         <p class="main">
             This is a clone of the addictive online block sliding game, 2048. It has a few bugs, one
             of which is the lose condition is a browser hang; but other than that it works fine.
@@ -440,6 +440,10 @@
                 </div>
             </div>
             <style>
+                #twf8-game {
+                    background:#bbada0;
+                    border-radius:5px;
+                }
                 #twf8-board {
                     position:relative;
                     font-size:0;
@@ -448,12 +452,13 @@
                     display:inline;
                 }
                 .twf8-cell {
-                    background:#335;
+                    background:rgba(238, 228, 218, 0.35);
                     color:#eee;
                     margin:12px;
                     height:120px;
                     width:120px;
                     display:inline-block;
+                    border-radius:5px;
                 }
                 .twf8-tiles {
                     position:absolute;
@@ -467,7 +472,8 @@
                     color:#000;
                     z-index:1;
                     font-size:48px;
-                    -webkit-transition:all 0.5s;
+                    -webkit-transition:all 0.2s;
+                    border-radius:5px;
                 }
                 .twf8-tile:after {
                     display:block;
@@ -475,6 +481,8 @@
                     text-align:center;
                     margin-top:26px;
                     color:#eee;
+                    font-family:"Clear Sans";
+                    font-weight:bold;
                 }
                 #twf8-pos-00 { -webkit-transform:translateX(12px) translateY(12px); }
                 #twf8-pos-01 { -webkit-transform:translateX(156px) translateY(12px); }
@@ -503,9 +511,9 @@
                 .twf8-val-512:after { content:"512" }
                 .twf8-val-1024:after { content:"1024" }
                 .twf8-val-2048:after { content:"2048"; color:#555; }
-                .twf8-val-2 { background:bisque; color:#000; }
-                .twf8-val-4 { background:beige; color:#000; }
-                .twf8-val-8 { background:yellow; color:#000; }
+                .twf8-val-2 { background:#eee4da; color:#776E65; }
+                .twf8-val-4 { background:beige; color:#776E65; }
+                .twf8-val-8 { background:yellow; color:#776E65; }
                 .twf8-val-16 { background:orange; color:#eee; }
                 .twf8-val-32 { background:red; color:#eee; }
                 .twf8-val-64 { background:maroon; color:#eee; }

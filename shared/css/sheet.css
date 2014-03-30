@@ -23,6 +23,12 @@
     font-weight:400;
     src: local("Righteous"), local("Righteous-Regular"), url(/shared/res/fonts/Righteous.woff) format("woff");
 }
+@font-face {
+    name:"Clear Sans";
+    font-weight:700;
+    font-style:normal;
+    src:local("Clear Sans Bold") url(/shared/res/fonts/ClearSansBold.woff) format("woff");
+}
 /* END AT RULES */
 /* START GLOBAL STYLE */
 * {
@@ -167,8 +173,10 @@ input[type="text"], input {
 /* START DIV STYLE */
 #top {
     top:0;
-    z-index:9;
+    z-index:0;
     font-size:0;
+    width:auto;
+    position:relative;
 }
 #navigation {
 	background:url(/shared/res/strong-ddd-noise.png) repeat #ddd;
@@ -494,7 +502,6 @@ button.main {
     padding:8px;
 }
 .notification {
-	background:rgba(255,255,255,0.85);
     box-shadow:2px 2px 5px #555;
 	position:fixed;
     z-index:10;
@@ -569,6 +576,12 @@ header .slanted-logo:nth-child(4) {
     font-family:"Segoe UI","Open Sans",Calibri,sans-serif;
     font-size:12px;
     border-spacing:0;
+}
+.ttb-set {
+    margin-bottom:8px;
+}
+.ttb-body {
+    margin-top:4px;
 }
 .ttable-head span {
     width:19%;
@@ -701,6 +714,15 @@ button.ui-icon {
 .ttbsg-done {
     margin-bottom:20px;
 }
+.ttb-highlight {
+    box-shadow:0px 0px 4px 3px #0094ff;
+    background:#22b4ff !important;
+    color:#eee !important;
+    z-index:9;
+}
+.ttb-highlight .ttable-cellh {
+    color:#eee !important;
+}
 #navtop-container {
     width:auto;
     height:5px;
@@ -733,6 +755,11 @@ button.ui-icon {
 }
 .button-row {
     margin-bottom:12px;
+}
+#top.floating {
+    position:fixed;
+    width:100%;
+    z-index:99;
 }
 /* END DIV STYLE */
 /* START TEXT STYLE */
@@ -1041,6 +1068,10 @@ h3.version:before {
     margin-left:0;
     text-align:right;
 }
+.notification li button {
+    margin-left:16px;
+    margin-bottom:0;
+}
 .notification h3 {
     vertical-align:top;
     display:inline-block;
@@ -1091,11 +1122,17 @@ ul.index {
     padding:14px 20px;
     list-style-type:none;
 }
-.note {
+p.note, span.note {
     margin:12px 16px;
     padding:16px;
     background:url(/shared/res/jquery-ui/ui-bg_diagonals-thick_95_fef1ec_40x40.png) #fef1ec;
     border:1px solid #F6F7A2;
+}
+p.info, span.info {
+    background:url(/shared/res/jquery-ui/ui-bg_diagonals-thick_55_e0f2fd_40x40.png) #e0f2fd;
+    border:2px solid #7FCCF7;
+    padding:16px;
+    margin:12px 16px;
 }
 .code {
     margin-left:28px;

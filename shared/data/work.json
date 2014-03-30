@@ -41,12 +41,18 @@
         {
             "id" : "ttbl",
             "name" : "TimeTable",
-            "version" : "0.5"
+            "version" : "0.6"
         },
         {
             "id" : "gl",
             "name" : "WebGL Test",
             "version" : "0.2"
+        },
+        {
+            "id" : "twf8",
+            "name" : "2048 clone",
+            "version" : "0.9",
+            "link" : "http://gabrielecirulli.github.io/2048"
         }
     ],
     "work" : [

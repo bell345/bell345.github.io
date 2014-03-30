@@ -1,4 +1,4 @@
-var Prototypes;
+﻿var Prototypes;
 function fetchProtoIndex() {
     var xhr = new AJAX("/shared/data/work.json", function () {
         Prototypes = $.parseJSON(xhr.response).prototypes;
@@ -1864,16 +1864,18 @@ TTBL.generate = function () {
         } else if (TTBL.blocks[0][it].type == "break")
             $(".ttb-body").append("<div class='ttable-break'></div>");
     }
-    for (it = 0; it < TTBL.vr.length.length; it++) {
-        $(".ttable-row:nth("+it+") > div:first-child").text(it+1);
-    }
-    var it = 0;
-    var jt = 0;
-    while (it < TTBL.vr.length[0]) { 
-        if (TTBL.blocks[0][it].type != "break") {
-            $(".ttable-row:nth("+jt+") > div:first-child").text(jt+1);
-            jt++;
-        } it++;
+    if (TTBL.vr.length.length > 0) {
+        for (it = 0; it < TTBL.vr.length.length; it++) {
+            $(".ttable-row:nth("+it+") > div:first-child").text(it+1);
+        }
+        var it = 0;
+        var jt = 0;
+        while (it < TTBL.vr.length[0]) { 
+            if (TTBL.blocks[0][it].type != "break") {
+                $(".ttable-row:nth("+jt+") > div:first-child").text(jt+1);
+                jt++;
+            } it++;
+        }
     }
     $(".ttb-body .ttable-cell").css("width",100/TTBL.df.days.length-(100/TTBL.df.days.length/20)+"%");
 }
@@ -1882,7 +1884,7 @@ TTBL.addTime = function (timeString, minCount) {
     var time = timeString.split(".");
     time[0] = parseInt(time[0]);
     time[1] = parseInt(time[1]);
-    while (time[1] + minCount > 60) {
+    while (time[1] + minCount >= 59) {
         if (time[0]+1 < 24)
             time[0]++;
         else
@@ -1945,7 +1947,7 @@ TTBL.set = function () {
         var cells = $(".ttb-"+TTBL.df.dayKeys[it]);
         for (var jt = 0; jt < cells.length; jt++) {
             var currPeriod = TTBL.periods[it][jt];
-            cells[jt].style.background = currPeriod.colour;
+            cells[jt].style.backgroundColor = currPeriod.colour;
             var header = cells[jt].getElementsByClassName("ttable-cellh")[0];
             header.innerHTML = currPeriod[TTBL.vr.display.period[0]];
             header.style.color = currPeriod.text;
@@ -1959,6 +1961,7 @@ TTBL.set = function () {
                 else 
                     info[kt].innerHTML = "&nbsp;";
             }
+            cells[jt].style.visibility = currPeriod.type == "blank" ? "hidden" : "visible";
         }
     }
     for (it = 0; it < TTBL.breaks.length; it++)
@@ -1976,6 +1979,33 @@ TTBL.set = function () {
         $(".ttbi-fieldh")[it].innerHTML = header;
         $(".ttbi-fieldi")[it].innerHTML = content;
     }
+}
+TTBL.find = function (day, hour, minute) {
+    if (TTBL.vr.days.indexOf(day) == -1) return false;
+    var td = TTBL.tb[TTBL.vr.days.indexOf(day)];
+    for (var i = 0; i < td.length; i++) {
+        var start = td[i].start.split(".");
+        var end = td[i].end.split(".");
+        if (hour >= start[0] &&
+            hour <= end[0] &&
+            (hour > start[0] || minute >= start[1]) &&
+            (hour < end[0] || minute <= end[1]))
+            return [TTBL.vr.days.indexOf(day), i];
+    }
+    return false;
+}
+TTBL.highlight = function (col, row) {
+    var cell = $(".ttb-body>div:not(.ttable-head):nth("+row+")>div:not(:first-child):nth("+col+")")[0];
+    if (isNull(cell)) cell = $(".ttb-body>div:not(.ttable-head):nth("+row+")")[0];
+    if (isNull(cell)) return false;
+    var highlighted = $(".ttb-highlight");
+    for (var i = 0; i < highlighted.length; i++)
+        highlighted[i].className = highlighted[i].className.replace(" ttb-highlight", "");
+    if (cell.className.search(" ttb-highlight") == -1) {
+        cell.className = cell.className += " ttb-highlight";
+        return true;
+    }
+    return false;
 }
 $(function () { 
     TTBL.setup(); 
@@ -2025,12 +2055,17 @@ $(function () {
                 localStorage.TTBL2 = JSON.stringify($.parseJSON($(".ttb-set textarea").val()));
                 TTBL.setup();
             } catch (e) {
-                error("Failed: "+e.message);
+                error(e);
                 localStorage.TTBL2 = localStorage.TTBL4;
                 localStorage.removeItem("TTBL4");
             }
         }
     });
+    $("#ttbs-hlnow").click(function () {
+        var found = TTBL.find(now.getDay(), now.getHours(), now.getMinutes());
+        TTBL.highlight(found[0], found[1]);
+    });
+    $("#ttbs-hlnow").trigger("click");
 });
 // END TTBL CODE //
 // START CANVAS CODE //
@@ -2441,16 +2476,16 @@ GLTest.drawScene = function (gl) {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     GLTest.perspMatrix = makePerspective(45, 600.0/600.0, 0.1, 100.0);
     GLTest.mvMatrix = Matrix.I(4);
-    GLTest.mvMatrix = GLTest.mvMatrix.x(Matrix.Translation($V([-0.0, 0.0, -6.0]))).ensure4x4();
+    GLTest.mvMatrix = GLTest.mvMatrix.x(Matrix.Translation($V([-0.0, 0.0, -4.0]))).ensure4x4();
+    GLTest.mvPushMtx();
+    GLTest.mvRotate(dtr(40.0), [1,0,1]);
+    GLTest.mvPopMtx();
     gl.bindBuffer(gl.ARRAY_BUFFER, GLTest.sqVtcBuffer);
     gl.vertexAttribPointer(GLTest.vtxPosAttribute, 3, gl.FLOAT, false, 0, 0);
     gl.bindBuffer(gl.ARRAY_BUFFER, GLTest.sqVtcColBuffer);
     gl.vertexAttribPointer(GLTest.vtxColAttribute, 4, gl.FLOAT, false, 0, 0);
     GLTest.setMatrixUniforms(gl);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-    GLTest.mvPushMtx();
-    GLTest.mvRotate(GLTest.sqRotation, [1,0,1]);
-    GLTest.mvPopMtx();
     var currTime = new Date().getTime();
     if (!isNull(GLTest.lastSqUpTime)) {
         var delta = currTime - GLTest.lastSqUpTime;
@@ -2491,8 +2526,11 @@ GLTest.mvRotate = function (angle, v) {
     GLTest.mvMatrix = GLTest.mvMatrix.x(m);
 }
 $(function () { GLTest.init() });
-
+// END GL CODE //
+// START TWF8 CODE //
 var TWF8 = {};
+TWF8.moved = [];
+TWF8.enabled = false;
 TWF8.moveTile = function (sx, sy, dx, dy) {
     $("#twf8-pos-"+sx+sy).attr("id", "twf8-pos-"+dx+dy);
 }
@@ -2510,10 +2548,12 @@ TWF8.moveTileLeft = function (sx, sy) {
         if (!TWF8.checkTile(sx, sy-1)) {
             TWF8.moveTile(sx,sy,sx,sy-1);
             sy--;
+            TWF8.moved.push(sx,sy);
         } else if (TWF8.checkTile(sx, sy-1) == val) {
             $("#twf8-pos-"+sx+(sy-1)).remove();
             gebi("twf8-pos-"+sx+sy).className = gebi("twf8-pos-"+sx+sy).className.replace("twf8-val-"+val, "twf8-val-"+(val*2));
             TWF8.moveTile(sx, sy, sx, sy-1);
+            TWF8.moved.push(sx,sy);
             return null;
         }
     }
@@ -2524,10 +2564,12 @@ TWF8.moveTileRight = function (sx, sy) {
         if (!TWF8.checkTile(sx, sy+1)) {
             TWF8.moveTile(sx, sy, sx, sy+1);
             sy++;
+            TWF8.moved.push(sx,sy);
         } else if (TWF8.checkTile(sx, sy+1) == val) {
             $("#twf8-pos-"+sx+(sy+1)).remove();
             gebi("twf8-pos-"+sx+sy).className = gebi("twf8-pos-"+sx+sy).className.replace("twf8-val-"+val, "twf8-val-"+(val*2));
             TWF8.moveTile(sx, sy, sx, sy+1);
+            TWF8.moved.push(sx,sy);
             return null;
         }
     }
@@ -2538,28 +2580,28 @@ TWF8.moveTileUp = function (sx, sy) {
         if (!TWF8.checkTile(sx-1, sy)) {
             TWF8.moveTile(sx, sy, sx-1, sy);
             sx--;
+            TWF8.moved.push(sx,sy);
         } else if (TWF8.checkTile(sx-1, sy) == val) {
             $("#twf8-pos-"+(sx-1)+sy).remove();
             gebi("twf8-pos-"+sx+sy).className = gebi("twf8-pos-"+sx+sy).className.replace("twf8-val-"+val, "twf8-val-"+(val*2));
             TWF8.moveTile(sx, sy, sx-1, sy);
+            TWF8.moved.push(sx,sy);
             return null;
         }
     }
 }
 TWF8.moveTileDown = function (sx, sy) {
-    while (sx < 3 && !TWF8.checkTile(sx+1, sy)) {
-        $("#twf8-pos-"+sx+sy).attr("id", "twf8-pos-"+(sx+1)+sy);
-        sx++;
-    }
     var val = parseInt($("#twf8-pos-"+sx+sy).attr('class').match(/val\-[0-9]+/)[0].match(/[0-9]+/)[0]);
     while (sx < 3 && (TWF8.checkTile(sx+1, sy) == val || !TWF8.checkTile(sx+1, sy))) {
         if (!TWF8.checkTile(sx+1, sy)) {
             TWF8.moveTile(sx, sy, sx+1, sy);
-            sx--;
+            sx++;
+            TWF8.moved.push(sx,sy);
         } else if (TWF8.checkTile(sx+1, sy) == val) {
             $("#twf8-pos-"+(sx+1)+sy).remove();
             gebi("twf8-pos-"+sx+sy).className = gebi("twf8-pos-"+sx+sy).className.replace("twf8-val-"+val, "twf8-val-"+(val*2));
             TWF8.moveTile(sx, sy, sx+1, sy);
+            TWF8.moved.push(sx,sy);
             return null;
         }
     }
@@ -2570,91 +2612,57 @@ TWF8.spawnTile = function (dx, dy, val) {
         $("#twf8-tiles").append("<div class='twf8-tile twf8-val-"+val+"' id='twf8-pos-"+dx+dy+"'></div>");
 }
 TWF8.moveAllLeft = function () {
-    for (var i = 0; i < 4; i++) {
-        for (var j = 0; j < 4; j++) {
-            if ($("#twf8-pos-"+i+j).length > 0) TWF8.moveTileLeft(i, j);
-        }
-    }
+    for (var i = 0; i < 4; i++) for (var j = 0; j < 4; j++) if ($("#twf8-pos-"+i+j).length > 0) TWF8.moveTileLeft(i, j);
 }
 TWF8.moveAllRight = function () {
-    for (var i = 0; i < 4; i++) {
-        for (var j = 3; j >= 0; j--) {
-            if ($("#twf8-pos-"+i+j).length > 0) TWF8.moveTileRight(i, j);
-        }
-    }
+    for (var i = 0; i < 4; i++) for (var j = 3; j >= 0; j--) if ($("#twf8-pos-"+i+j).length > 0) TWF8.moveTileRight(i, j);
 }
 TWF8.moveAllUp = function () {
-    for (var i = 0; i < 4; i++) {
-        for (var j = 0; j < 4; j++) {
-            if ($("#twf8-pos-"+i+j).length > 0) TWF8.moveTileUp(i, j);
-        }
-    }
+    for (var i = 0; i < 4; i++) for (var j = 0; j < 4; j++) if ($("#twf8-pos-"+i+j).length > 0) TWF8.moveTileUp(i, j);
 }
 TWF8.moveAllDown = function () {
-    for (var i = 3; i >= 0; i--) {
-        for (var j = 0; j < 4; j++) {
-            if ($("#twf8-pos-"+i+j).length > 0) TWF8.moveTileDown(i, j);
-        }
-    }
+    for (var i = 3; i >= 0; i--) for (var j = 0; j < 4; j++) if ($("#twf8-pos-"+i+j).length > 0) TWF8.moveTileDown(i, j);
 }
-TWF8.determineLeft = function () {
+TWF8.determine = function (dir) {
+    var check = function (i, j) {
+        var ct = TWF8.checkTile;
+        switch (dir) {
+        case "left":return !ct(i, j-1) || (ct(i, j-1) == ct(i, j) && (ct(i, j)));
+        case "right":return !ct(i, j+1) || (ct(i, j+1) == ct(i, j) && (ct(i, j)));
+        case "up":return !ct(i-1, j) || (ct(i-1, j) == ct(i, j) && (ct(i, j)));
+        case "down":return !ct(i+1, j) || (ct(i+1, j) == ct(i, j) && (ct(i, j)));
+        default:return false;
+    }}
     var results = [];
-    for (var i = 3; i >= 0; i--) {
-        for (var j = 1; j < 4; j++) {
-            if ($("#twf8-pos-"+i+j).length > 0) {
-                var val = parseInt($("#twf8-pos-"+i+j).attr('class').match(/val\-[0-9]+/)[0].match(/[0-9]+/)[0]);
-                results.push(TWF8.checkTile(i, j-1) != val);
-            } else return true;
-        }
-    }
-    return results.indexOf(true) != -1;
-}
-TWF8.determineRight = function () {
-    var results = [];
-    for (var i = 0; i < 4; i++) {
-        for (var j = 0; j < 3; j++) {
-            if ($("#twf8-pos-"+i+j).length > 0) {
-                var val = parseInt($("#twf8-pos-"+i+j).attr('class').match(/val\-[0-9]+/)[0].match(/[0-9]+/)[0]);
-                results.push(TWF8.checkTile(i, j+1) != val);
-            } else return true;
-        }
-    }
-    return results.indexOf(true) != -1;
-}
-TWF8.determineUp = function () {
-    var results = [];
-    for (var i = 1; i < 4; i++) {
-        for (var j = 0; j < 4; j++) {
-            if ($("#twf8-pos-"+i+j).length > 0) {
-                var val = parseInt($("#twf8-pos-"+i+j).attr('class').match(/val\-[0-9]+/)[0].match(/[0-9]+/)[0]);
-                results.push(TWF8.checkTile(i-1, j) != val);
-            } else return true;
-        }
-    }
-    return results.indexOf(true) != -1;
-}
-TWF8.determineDown = function () {
-    var results = [];
-    for (var i = 2; i >= 0; i--) {
-        for (var j = 1; j < 4; j++) {
-            if ($("#twf8-pos-"+i+j).length > 0) {
-                var val = parseInt($("#twf8-pos-"+i+j).attr('class').match(/val\-[0-9]+/)[0].match(/[0-9]+/)[0]);
-                results.push(TWF8.checkTile(i+1, j) != val);
-            } else return true;
-        }
-    }
-    return results.indexOf(true) != -1;
+    var ix = dir=="up"?1:0;
+    var iy = dir=="down"?3:4;
+    var jx = dir=="left"?1:0;
+    var jy = dir=="right"?3:4;
+    for (var i = ix; i < iy; i++) for (var j = jx; j < jy; j++) if (check(i, j)) results.push([i, j]);
+    return results.length > 0;
 }
 $(document).keyup(function (event) {
+    if (!TWF8.enabled) return null;
     var key = convertKeyDown(event);
-    if (key == "left" && TWF8.determineLeft()) TWF8.moveAllLeft();
-    else if (key == "right" && TWF8.determineRight()) TWF8.moveAllRight();
-    else if (key == "up" && TWF8.determineUp()) TWF8.moveAllUp();
-    else if (key == "down" && TWF8.determineDown()) TWF8.moveAllDown();
-    else if (!TWF8.determineLeft() && !TWF8.determineRight() && !TWF8.determineUp() && !TWF8.determineDown()) {
+    var determined = TWF8.determine(key);
+    if (key == "left" && determined) TWF8.moveAllLeft();
+    else if (key == "right" && determined) TWF8.moveAllRight();
+    else if (key == "up" && determined) TWF8.moveAllUp();
+    else if (key == "down" && determined) TWF8.moveAllDown();
+    else if (key != "left" || key != "right" || key != "up" || key != "down") return null;
+    if (!TWF8.determine("left") && !TWF8.determine("right") && !TWF8.determine("up") && !TWF8.determine("down")) {
         log("TWF8: Game Over!");
     }
-    do { var randLocation = [randomInt(4), randomInt(4)]; }
-    while ($("#twf8-pos-"+randLocation[0]+randLocation[1]).length > 0)
-    TWF8.spawnTile(randLocation[0], randLocation[1], 2);
+    if (TWF8.moved.length > 0) {
+        timerSet("twf8spawn", 200, function () {
+            do { var randLocation = [randomInt(4), randomInt(4)]; }
+            while ($("#twf8-pos-"+randLocation[0]+randLocation[1]).length > 0)
+            var num = Math.random() < 0.8 ? 2 : 4;
+            TWF8.spawnTile(randLocation[0], randLocation[1], num);
+            timerClear("twf8spawn");
+        });
+    }
+    TWF8.moved = [];
 });
+$("#twf8-board").mouseenter(function () { TWF8.enabled = true; });
+$("#twf8-board").mouseleave(function () { TWF8.enabled = false; });

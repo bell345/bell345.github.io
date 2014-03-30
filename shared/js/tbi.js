@@ -38,10 +38,18 @@ function warn(message, timeout) {
 }
 function error(message, timeout) {
     console.error(message);
+    var orig = message;
     if (typeof(message) == "object")
         message = message.message;
     timeout = isNull(timeout) ? 50000 : timeout;
-    new Notification("Error", message, 1, timeout);
+    var onclick = "$($(this).parent()[0].getElementsByTagName(\"div\")[0]).slideToggle()";
+    if (typeof(orig) == "object")
+        new Notification("Error", 
+            orig.message+"<button onclick='"+onclick+"'>Show/Hide Stack</button><div style='display:none'>"+orig.stack+"</div>", 
+            1, 
+            timeout);
+    else
+        new Notification("Error", message, 1, timeout);
 }
 // END CONSOLE NOTIFICATIONS //
 $(function () {
@@ -107,14 +115,10 @@ function requestManager() {
 function checkNav() {
     var navHeight = parseInt($("#top").css("height")) + (parseInt($("#top").css("paddingTop")) * 2);
     if ($(document).scrollTop() > parseInt($("header").css("height"))+parseInt($("header").css("paddingBottom"))) {
-        $("#top").css("position", "fixed");
-        $("#top").css("width", "100%");
-        $("#top").css("zIndex", "9");
+        $("#top").attr("class","floating");
         $("#content").css("top", navHeight + "px");
     } else {
-        $("#top").css("position", "relative");
-        $("#top").css("width", "auto");
-        $("#top").css("zIndex", "0");
+        $("#top").attr("class","");
         $("#content").css("top", "0");
     }
     $("#top").off("mousemove");
