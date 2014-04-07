@@ -15,10 +15,14 @@ function setupPrototypes() {
             titleText += "</a>";
         $($("h2.proto, h3.proto")[i]).html(titleText);
         $($("h2.proto, h3.proto")[i]).attr("id",Prototypes[i].id);
-        $($(".version")[i]).html(Prototypes[i].version);
+        var toggleHTML = "";
+        toggleHTML += "<span class='right'><a href='javascript:void(0)' ";
+        toggleHTML += "onclick='$($(\".proto-main\")["+i+"]).slideToggle()'>";
+        toggleHTML += "Toggle Prototype</a></span>"
+        $($(".version")[i]).html(Prototypes[i].version + toggleHTML);
     }
 }
-$(function () {
+$(document).on("includesDone", function () {
     fetchProtoIndex();
     if (!isNull(location.hash) && !isNull($(location.hash))) {
         timerSet("scroll",10,function () {
@@ -1884,7 +1888,7 @@ TTBL.addTime = function (timeString, minCount) {
     var time = timeString.split(".");
     time[0] = parseInt(time[0]);
     time[1] = parseInt(time[1]);
-    while (time[1] + minCount >= 59) {
+    while (time[1] + minCount >= 60) {
         if (time[0]+1 < 24)
             time[0]++;
         else
@@ -2065,7 +2069,7 @@ $(function () {
         var found = TTBL.find(now.getDay(), now.getHours(), now.getMinutes());
         TTBL.highlight(found[0], found[1]);
     });
-    $("#ttbs-hlnow").trigger("click");
+    if (!isNull(localStorage.TTBL4)) $("#ttbs-hlnow").trigger("click");
 });
 // END TTBL CODE //
 // START CANVAS CODE //
@@ -2664,5 +2668,177 @@ $(document).keyup(function (event) {
     }
     TWF8.moved = [];
 });
-$("#twf8-board").mouseenter(function () { TWF8.enabled = true; });
-$("#twf8-board").mouseleave(function () { TWF8.enabled = false; });
+$(function () {
+    $("#twf8-board").mouseenter(function () { TWF8.enabled = true; });
+    $("#twf8-board").mouseleave(function () { TWF8.enabled = false; });
+});
+var PSim = {};
+PSim.starbank = [];
+PSim.objectbank = {};
+PSim.speed = 1;
+PSim.scale = 1;
+PSim.zoom = 1;
+PSim.planetLines = false;
+PSim.objectvars = {
+    "Mercury" : {
+        "distance" : 30,
+        "speed" : 0.1,
+        "size" : 2,
+        "colour" : "#eee",
+        "rotation" : 60,
+        "type" : "planet"
+    },
+    "Venus" : {
+        "distance" : 40,
+        "speed" : 0.04,
+        "size" : 3,
+        "colour" : "#ff6",
+        "rotation" : 170,
+        "type" : "planet"
+    },
+    "Earth" : {
+        "distance" : 50,
+        "speed" : 0.01,
+        "size" : 3.1,
+        "colour" : "#55f",
+        "rotation" : 30,
+        "type" : "planet"
+    },
+    "aster" : {
+        "distance" : 80,
+        "distance_range" : 12,
+        "density" : 200,
+        "speed" : 0.007,
+        "size" : 0.6,
+        "size_range" : 0.8,
+        "colour" : "#999",
+        "type" : "field"
+    }
+};
+PSim.init = function () {
+    PSim.ctx = new Canvas2D("psim-canvas");
+    PSim.ctx.translate(300, 300);
+    timerSet("PSim", 10, function () {
+        PSim.simulate();
+    });
+}
+PSim.simulate = function () {
+    PSim.ctx.clearRect(-300,-300,600,600);
+    PSim.spawnStars(200);
+    PSim.ctx.beginPath();
+    PSim.ctx.arc(0, 0, 10 * PSim.scale * PSim.zoom, 0, dtr(360), false);
+    var sun = "#ff0";
+    PSim.ctx.shadowBlur = 8;
+    PSim.ctx.shadowColor = "#fff";
+    PSim.ctx.fillStyle = sun;
+    PSim.ctx.fill();
+    PSim.ctx.closePath();
+    PSim.ctx.shadowBlur = 0;
+    PSim.object("Mercury");
+    PSim.object("Venus");
+    PSim.object("Earth");
+    PSim.object("aster");
+}
+PSim.spawnStars = function (num) {
+    var isStarbank = PSim.starbank.length > 0;
+    num = isStarbank ? PSim.starbank.length : num;
+    for (var i=0;i<num;i++) {
+        if (isStarbank) {
+            var x = PSim.starbank[i][0];
+            var y = PSim.starbank[i][1];
+        } else {
+            var x = advRandomInt(-300, 300);
+            var y = advRandomInt(-300, 300);
+        }
+        PSim.ctx.beginPath();
+        PSim.ctx.arc(x, y, 1, 0, dtr(360), false);
+        PSim.ctx.fillStyle = "#fff";
+        PSim.ctx.fill();
+        PSim.ctx.closePath();
+        if (!isStarbank) PSim.starbank.push([x, y]);
+    }
+}
+PSim.planet = function (name) {
+    var planet = PSim.objectvars[name];
+    if (isNull(planet) || planet.type != "planet") return false;
+    var rotation = isNull(PSim.objectbank[name]) ? PSim.objectvars[name].rotation : PSim.objectbank[name][0];
+    rotation = isNull(rotation) ? 0 : rotation;
+    rotation += planet.speed * PSim.speed;
+    PSim.ctx.save();
+    PSim.ctx.beginPath();
+    PSim.ctx.fillStyle = planet.colour;
+    PSim.ctx.rotate(dtr(rotation));
+    PSim.ctx.arc(planet.distance * PSim.zoom, 0, planet.size * PSim.scale * PSim.zoom, 0, dtr(360), false);
+    PSim.ctx.fill();
+    PSim.ctx.closePath();
+    if (PSim.planetLines) {
+        PSim.ctx.beginPath();
+        PSim.ctx.strokeStyle = planet.colour;
+        PSim.ctx.moveTo(0,0);
+        PSim.ctx.lineTo(1000, 0);
+        PSim.ctx.stroke();
+        PSim.ctx.closePath();
+    }
+    PSim.ctx.restore();
+    PSim.objectbank[name] = [rotation];
+    return true;
+}
+PSim.field = function (name) {
+    var field = PSim.objectvars[name];
+    if (isNull(field) || field.type != "field") return false;
+    var rotation = isNull(PSim.objectbank[name]) ? PSim.objectvars[name].rotation : PSim.objectbank[name][1];
+    rotation = isNull(rotation) ? 0 : rotation;
+    rotation += field.speed * PSim.speed;
+    PSim.ctx.save();
+    PSim.ctx.fillStyle = field.colour;
+    PSim.ctx.rotate(dtr(rotation));
+    var isObjbank = !isNull(PSim.objectbank[name]); // [distance, size, rotation]
+    var single;
+    var fieldArr = [];
+    for (var i=0;i<field.density;i++) {
+        if (isObjbank) single = PSim.objectbank[name][0][i];
+        else single = [
+            advRandomInt(field.distance, field.distance + field.distance_range),
+            advRandomInt(field.size, field.size + field.size_range),
+            randomInt(360)];
+        PSim.ctx.save();
+        PSim.ctx.beginPath();
+        PSim.ctx.rotate(dtr(single[2]));
+        PSim.ctx.arc(single[0] * PSim.zoom, 0, single[1] * PSim.scale * PSim.zoom, 0, dtr(360), false);
+        PSim.ctx.fill();
+        PSim.ctx.closePath();
+        PSim.ctx.restore();
+        fieldArr.push(single);
+    }
+    PSim.ctx.restore();
+    PSim.objectbank[name] = [fieldArr, rotation];
+    return true;
+}
+PSim.object = function (name) {
+    if (isNull(PSim.objectvars[name])) return false;
+    if (PSim.objectvars[name].type == "planet") return PSim.planet(name);
+    else if (PSim.objectvars[name].type == "field") return PSim.field(name);
+    else return false;
+}
+$(function () {
+    PSim.init();
+    var zoomed = false,
+        scaled = false,
+        speeded = false;
+    $("#psim-zoom").mousedown(function () { zoomed = true });
+    $("#psim-zoom").mouseup(function () { zoomed = false });
+    $("#psim-zoom").mousemove(function () { if (zoomed) PSim.zoom = $("#psim-zoom").val() });
+    $("#psim-zoom-reset").click(function () { $("#psim-zoom").val(PSim.zoom = 1) });
+    $("#psim-zoom-reset").trigger("click");
+    $("#psim-scale").mousedown(function () { scaled = true });
+    $("#psim-scale").mouseup(function () { scaled = false });
+    $("#psim-scale").mousemove(function () { if (scaled) PSim.scale = $("#psim-scale").val() });
+    $("#psim-scale-reset").click(function () { $("#psim-scale").val(PSim.scale = 1) });
+    $("#psim-scale-reset").trigger("click");
+    $("#psim-speed").mousedown(function () { speeded = true });
+    $("#psim-speed").mouseup(function () { speeded = false });
+    $("#psim-speed").mousemove(function () { if (speeded) PSim.speed = Math.pow($("#psim-speed").val(), Math.E/1.2) });
+    $("#psim-speed-reset").click(function () { $("#psim-speed").val(PSim.speed = 1) });
+    $("#psim-speed-reset").trigger("click");
+    $("#psim-plines").click(function () { PSim.planetLines = this.checked });
+});

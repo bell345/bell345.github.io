@@ -1,4 +1,4 @@
-﻿// TBI.JS - V4.11
+﻿// TBI.JS - V4.11.1
 // Base functions, variables and helpers that are included and required in
 // all of my website pages.
 // START INCOMPATIBILITY CODE //
@@ -16,15 +16,15 @@ document.onreadystatechange = function () {
     }
 }
 // END INCOMPATIBILITY CODE //
-var now = new Date();
-var unqid = now.getTime();
-var query = {};
-var path = [];
-var notePrevInfo = {
-    "head" : [], 
-    "text" : [],
-    "type" : []
-};
+var now = new Date(),
+    unqid = now.getTime(),
+    query = {},
+    path = [],
+    notePrevInfo = {
+        "head" : [], 
+        "text" : [],
+        "type" : []
+    };
 // START CONSOLE NOTIFICATIONS //
 function log(message, timeout) {
     console.log(message);
@@ -85,8 +85,7 @@ function AJAX(url, func) {
 function requestManager() {
 	var search = location.search;
 	if (!isNull(location.search)) {
-		search = search.replace("?","");
-		search = search.split("&");
+		search = search.replace("?","").split("&");
 		for (var i=0;i<search.length;i++) {
 			search[i] = search[i].split("=");
 			query[search[i][0]] = search[i][1];
@@ -94,8 +93,7 @@ function requestManager() {
 	}
     var hash = location.hash;
     if (!isNull(location.hash)) {
-        hash = hash.replace("#","");
-        hash = hash.split("&");
+        hash = hash.replace("#","").split("&");
         for (var i=0;i<hash.length;i++) {
             hash[i] = hash[i].split("=");
             query[hash[i][0]] = hash[i][1];
@@ -247,6 +245,8 @@ function unixToString(date) {
 }
 // Returns a random integer.
 function randomInt(num) { return parseInt(Math.random()*num) }
+// Returns a random integer between two numbers.
+function advRandomInt(num1, num2) { return parseInt(Math.random()*(num2-num1))+num1; }
 // For legacy applications.
 function intRand(num) { return randomInt(num) }
 // Degrees to radians.
@@ -295,8 +295,7 @@ function Popup(x, y, head, text) {
 	var body = $('body');
 	var pup = "";
 	pup += "<div class='popup' style='top:"+this.y+"px;left:"+this.x+"px;'>";
-    if (!isNull(this.head))
-        pup += "<h3>"+this.head+"</h3>";
+    if (!isNull(this.head)) pup += "<h3>"+this.head+"</h3>";
 	pup += "<p class='main'>"+this.text+"</p>";
 	pup += "</div>";
 	$(".popup").remove();
@@ -407,8 +406,7 @@ function Notification(head, text, type, timeout) {
 // For Blink only.
 // Generates a desktop notification outside of the regular environment.
 function chromeNotification(img, title, desc, link) {
-    if (isNull(window.webkitNotifications))
-        return null;
+    if (isNull(window.webkitNotifications)) return null;
     var permission = window.webkitNotifications.checkPermission();
     if (permission == 0) {
         var note = window.webkitNotifications.createNotification(
