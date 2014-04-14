@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WIP</title>
+    <meta charset="utf-8" />
+    <script src="http://bell345.github.io/shared/js/jquery.min.js"></script>
+    <style>
+    * {
+        margin:0;
+        border:0;
+        padding:0;
+    }
+    .sidebar {
+        width:240px;
+        background:#333;
+        height:100%;
+        position:fixed;
+    }
+    .sidebar ul {
+        top:20px;
+        position:relative;
+    }
+    .sidebar ul li {
+        color:#eee;
+        padding:20px;
+        font-size:28px;
+        border-left:12px solid #eee;
+    }
+    #content {
+        left:240px;
+        box-shadow:-4px 0px 4px 0px #111;
+        right:0;
+        top:0;
+        bottom:0;
+        position:absolute;
+        background:#aaa;
+    }
+    header {
+        width:100%;
+    }
+    .sectnav {
+        width:100%;
+        position:relative;
+        top:20px;
+        height:180px;
+        background:#ccc;
+        box-shadow:4px 0px 4px 4px #777;
+        margin-bottom:20px;
+        overflow:hidden;
+    }
+    .sectnav button {
+        height:100%;
+        background:#eee;
+        width:40px;
+        position:absolute;
+        color:#555;
+        font-size:24px;
+        z-index:2;
+    }
+    .sncontent {
+        width:9999px;
+        height:100%;
+        overflow:hidden;
+        left:40px;
+        position:absolute;
+    }
+    .snitem {
+        width:300px;
+        height:100%;
+        background:rgba(0,0,0,0.3);
+        display:inline-block;
+    }
+    .snitem h3 {
+        background:rgba(0,0,0,0.5);
+        color:#eee;
+        padding:6px;
+    }
+    h1 {
+        padding:16px;
+        text-align:center;
+        color:#eee;
+        border-bottom:2px dotted #555;
+    }
+    .left { left:0; }
+    .right { right:0; }
+    #snitemcal {
+        background-image:url(SkyDrive/Personal/Code/GitHub/bell345.github.io/shared/img/01.png);
+        background-size:cover;
+        background-repeat:no-repeat;
+    }
+    </style>
+    <script>
+    var slideTransform = 0;
+    $(".sectnav .left").click(function () {
+        if (slideTransform < 1)
+            slideTransform+=1;
+        $(".sncontent")[0].style.webkitTransform = "transformX("+slideTransform+"px)";
+    });
+    $(".sectnav .right").click(function () {
+        if (slideTransform > -200)
+            slideTransform-=1;
+        $(".sncontent")[0].style.webkitTransform = "transformX("+slideTransform+"px)";
+    });
+    </script>
+</head>
+<body>
+    <div class="sidebar">
+        <ul>
+            <li>Home</li>
+            <li>Work</li>
+            <li>About</li>
+        </ul>
+    </div>
+    <div id="content">
+        <header>
+            <nav class="sectnav">
+                <button class="left">&lt;</button>
+                <button class="right">></button>
+                <div class="sncontent">
+                    <div class="snitem" id="snitemcal">
+                        <h3>Calendar</h3>
+                    </div>
+                    <div class="snitem">
+                        <h3>Calculator</h3>
+                    </div>
+                    <div class="snitem">
+                        <h3>cDown</h3>
+                    </div>
+                    <div class="snitem">
+                        <h3>Grid</h3>
+                    </div>
+                    <div class="snitem">
+                        <h3>tXtEng</h3>
+                    </div>
+                </div>
+            </nav>
+            <h1>Hi</h1>
+        </header>
+        <div id="maincontent">
+        </div>
+    </div>
+</body>
+</html>

@@ -1,107 +1,71 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Thomas's WebSite</title>
+    <title>Thomas Bell - About</title>
     <meta charset="utf-8" />
     <link rel="shortcut icon" href="/favicon.png" />
-    <link rel="stylesheet" href="/shared/css/sheet.css" />
-    <link rel="stylesheet" href="/shared/css/jquery-ui.css" />
-    <script src="/shared/js/jquery2.min.js"></script>
-    <script src="/shared/js/jquery-ui.min.js"></script>
-    <script src="/shared/js/tbi.js"></script>
+    <link rel="stylesheet" href="/assets/css/jquery-ui.css" />
+    <link rel="stylesheet" href="/assets/css/sheet.css" />
+    <script src="/assets/js/jquery2.min.js"></script>
+    <script src="/assets/js/jquery-ui.min.js"></script>
+    <script src="/assets/js/tbi.js"></script>
+    <script>$(function(){for(var i=0;i<$(".email-link").length;i++)Popup.registry.add($(".email-link")[i],"","tom.aus@outlook.com")})</script>
 </head>
 <body>
-    <div id="navigation">
-        <header>
-            <h1>Thomas's WebSite</h1>
-        </header>
-        <nav>
-        </nav>
-    </div>
+    <div id="navigation"></div>
     <div id="content">
         <div id="maincontent">
-            <h1>About Me</h1>
-			<figure class="img-viewport-inline">
-				<img src="/shared/img/me.jpg" alt="Me, Thomas Bell." width="180" />
-			</figure>
-            <p class="main">
-                I am a 13-year-old high school student from Australia. I love technology and everything 
-                digital. I browse the internet and procrastinate way more than I need to. I tend to browse 
-                <a href="//reddit.com/u/isurvived12">Reddit</a> a lot and code for fun.
+            <h1>About</h1>
+            <h2>Who I Am</h2>
+            <p>
+                I am a thirteen year old hobbyist web developer / high school student highly interested in
+                computer science and information technology. Most of the time, when I'm not at school, I 
+                browse the Internet and develop websites and web applications. I don't believe in using 
+                templates or "cheating" to get ahead - when I do something, I tend to do it from scratch. I 
+                fuss over projects, making sure they not only meet their standards, but mine as well. I am 
+                very excited for the future of both myself and technology in general.
             </p>
             <h2>Feedback</h2>
-            <p class="main">
-                If you have any suggestions on how to improve the site, or would like to contribute, either 
-                send off an email to <a href="mailto:tom.aus@outlook.com">tom.aus@outlook.com</a> outlining your 
-                suggestion or make a commit on GitHub at 
-                <a href="//github.com/bell345/bell345.github.io">github.com/bell345/bell345.github.io</a>.
-                All suggestions will be read, but not guaranteed to be acted upon.
+            <p>
+                This site is proudly hosted by GitHub; a web interface for the popular version control system, Git. 
+                If you know what all of those words mean, you can fork my <a href="//github.com/bell345/bell345.github.io">
+                repository</a> on GitHub. If you have any questions or inquiries about my work or what I do, send me an 
+                <a href="mailto:tom.aus@outlook.com" class="email-link">email</a>!
             </p>
             <h2>Contact</h2>
-            <p class="main">
-                Wanna catch up? I would prefer to be sent an <a href="mailto:tom.aus@outlook.com">email</a> or a PM on 
-                <a href="//twitter.com/1betaTB">Twitter</a>. However I do turn away a lot of requests by people that 
-                I've never met properly.
+            <p>
+                Since I am generally not very outgoing, it may be a little difficult for you to contact me. I'll most likely 
+                get back to you if you <a href="mailto:tom.aus@outlook.com" class="email-link">email</a> me,
+                however.
             </p>
-            <h1>About the Website</h1>
-            <p class="main">
-                This website started as a school IT project in mid-late 2013. At the time, we were being taught the 
-                basics of HTML coding and how to make a functional website. I had skipped ahead and started learning 
-                more on my own, building a more and more impressive website looked towards by peers. Using my coding 
-                experience, I took a foray into JavaScript and programming in general. The rest is history.
+            <h2>Content</h2>
+            <p>
+                All content on this website, unless explicitly mentioned below, is licensed under the 
+                <a href="//creativecommons.org/licenses/by-sa/4.0">Creative Commons Attribution-ShareAlike 4.0 International license - (CC)BY-SA</a>, 
+                and is available for free reuse in any project and for any purpose, under the following conditions:
             </p>
-            <h2>Version History</h2>
-            <h3 class="main"><a href="javascript:void(0)" class="switch" for="wsimg01">01</a></h3>
-            <figure class="img-viewport" id="wsimg01">
-                <img src="/shared/img/01.png" alt="01" class="centered" />
-                <figcaption class="centered">01 is accented with a welcoming tone of blue-green.</figcaption>
-            </figure>
-            <p class="main">
-                This was my first website. Upon this, I had developed my coding skills and programming basics. After 
-                learning how to host the website on a local server (IIS), I setup PHP and added a server-side include 
-                system. There consisted of a blog, gaming news page, and a math page, where I wrote my first 
-                JavaScript. At this point, I was experimenting with quite a few web technologies including ASP.NET, 
-                XML and HTML5.
+            <ul class="main">
+                <li>The work in question <em>must</em> include a link back to this website and a mention of my name. Example: 
+                    <em>(CC)BY-SA Thomas Bell &lt;http://bell345.github.io&gt; 2014</em>.
+                </li>
+                <li>You must distribute your work under this license.</li>
+            </ul>
+            <h3>Graphics</h3>
+            <p>
+                The icons you see up the top are courtesy of <a href="//iconmonstr.com">iconmonstr.com</a>. Use is bound under their 
+                <a href="//iconmonstr.com/license/">terms and conditions</a>.
             </p>
-            <h3 class="main"><a href="javascript:void(0)" class="switch" for="wsimg02">02</a></h3>
-            <figure class="img-viewport" id="wsimg02">
-                <img src="/shared/img/02.png" alt="02" class="centered" />
-                <figcaption class="centered">Similar in style to 01, but with purpose.</figcaption>
-            </figure>
-            <p class="main">
-                Being my first practical website project, it had a proper purpose - it was to be a web technology tutorial 
-                site called TBTutorials. This one was also hosted locally, so I had a chance to play around with PHP - 
-                even incorporating a file upload feature, effectively turning my computer into a HTTP and FTP server. 
-                This one was to be submitted as a task to the IT teacher, so for the final copy of 02, all the absolute 
-                links were to be changed; and a few features, most notably PHP, had to be scrapped. This copy was 02Submit. 
-                I recieved excellent marks for the website, however was criticised on not following procedure.
+            <h3>Code</h3>
+            <p>
+                The <a href="//jquery.com">jQuery</a> and <a href="//jqueryui.com">jQuery UI</a> JavaScript libraries are used throughout 
+                the site and all of the prototypes to make it go round. <a href="//sylvester.jcoglan.com/">Sylvester</a> and 
+                <a href="//code.google.com/p/gew/source/browse/trunk/Sample/Utils/glUtils.js?r=13">GLUtils</a> were used for the 
+                <a href="/proto/#gl">WebGL prototype</a>. <a href="//github.com/douglascrockford/JSON-js">json2.js</a> is a data storage utility 
+                library embedded in my main script file for a reduced header. All of the above are available under their respective licenses.
             </p>
-            <h3 class="main"><a href="javascript:void(0)" class="switch" for="wsimg03">03</a></h3>
-            <figure class="img-viewport" id="wsimg03">
-                <img src="/shared/img/03.png" alt="03" class="centered" />
-                <figcaption class="centered">The dark industrial style of 03.</figcaption>
-            </figure>
-            <p class="main">
-                Now that I had no project I had to hand in, I decided to further my skills by creating another personal website. 
-                I didn't have any restrictions, so I started developing quite a few JavaScript prototype things. In addition, 
-                a few parts of my website were being run by AJAX. Most important of these was the blog. Around the same time 
-                I was playing around with Linux, so I also hosted it on Apache as well as IIS.
-            </p>
-            <h3 class="main"><a href="javascript:void(0)" class="switch" for="wsimg04">04</a></h3>
-            <figure class="img-viewport" id="wsimg04">
-                <img src="/shared/img/04.png" alt="04" class="centered" />
-                <figcaption class="centered">Current layout.</figcaption>
-            </figure>
-            <p class="main">
-                This is the current revision of the website. The industrialised and dark theme of 03 was contrasted by a 
-                more minimal and open theme of this website. I continued development on more JavaScript prototypes - one I worked 
-                on for a long time would be the countdown widget. Eventually, I heard of GitHub Pages. I moved 04 to the web finally.
-            </p>
-            <footer>
-            </footer>
         </div>
-        <div id="sidebar">
-        </div>
+        <div id="sidebar"></div>
+        <div id="footer"></div>
     </div>
 </body>
 </html>

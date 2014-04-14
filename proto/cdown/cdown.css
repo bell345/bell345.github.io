@@ -28,6 +28,30 @@ body {
     color:#eee;
     text-align:center;
 }
+.cdown button {
+    color:#333;
+    margin:0 6px;
+    padding:8px 12px;
+    transition:0.2s all;
+    box-shadow:none;
+    font-size:18px;
+}
+.cdown button:hover, .cdown button.toggle-on:hover:after {
+    box-shadow:inset 0px -4px 0px rgba(0,0,0,0.1);
+}
+.cdown button:active, .cdown button.toggle-on:active:after {
+    box-shadow:inset 0px 4px 0px rgba(0,0,0,0.1);
+}
+.cdown button.toggle:after {
+    padding:8px 12px;
+    left:12px;
+}
+.cdown h3 {
+    text-align:center;
+    font-size:36px;
+    display:inline-block;
+    padding:0 12px;
+}
 .cdown h3 a {
     color:#5df;
 }
@@ -44,6 +68,11 @@ body {
     background:#333;
     padding:12px;
 }
+.cdset input {
+    width:64px;
+    height:32px;
+    font-size:20px;
+}
 #cdset {
     background:#333;
     padding:8px;
@@ -52,6 +81,9 @@ body {
     background:#333;
     padding:8px;
     margin-top:0;
+}
+#cd-fn-set input:not(#cdfn-name) {
+    width:100px;
 }
 #cd-fn-set h3 {
     text-align:left;
@@ -66,7 +98,6 @@ body {
 }
 #cd-controls button {
     font-size:18px;
-    padding:8px 12px;
 }
 #cdtext-share {
     display:none;

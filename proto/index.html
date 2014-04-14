@@ -1,41 +1,36 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Thomas's WebSite</title>
+    <title>Thomas Bell - Prototypes</title>
     <meta charset="utf-8" />
 	<link rel="shortcut icon" href="/favicon.png" />
-    <link rel="stylesheet" href="/shared/css/jquery-ui.css" />
-    <link rel="stylesheet" href="/shared/css/sheet.css" />
-    <link rel="stylesheet" href="/shared/css/spectrum.css" />
-    <script src="/shared/js/jquery2.min.js"></script>
-    <script src="/shared/js/jquery-ui.min.js"></script>
-    <script src="/shared/js/spectrum.min.js"></script>
-    <script src="/shared/js/tbi.js"></script>
-    <script src="/shared/js/proto.js"></script>
+    <link rel="stylesheet" href="/assets/css/jquery-ui.css" />
+    <link rel="stylesheet" href="/assets/css/sheet.css" />
+    <link rel="stylesheet" href="/assets/css/proto.css" />
+    <script src="/assets/js/jquery2.min.js"></script>
+    <script src="/assets/js/jquery-ui.min.js"></script>
+    <script src="/assets/js/gldepend.js"></script>
+    <script src="/assets/js/tbi.js"></script>
+    <script src="/assets/js/proto.js"></script>
 </head>
 <body>
     <div id="navigation">
-        <header>
-            <h1>Thomas's WebSite</h1>
-        </header>
-        <nav>
-        </nav>
     </div>
     <div id="content">
         <div id="maincontent">
             <h1>Prototypes</h1>
-            <p class="main">
+            <p>
                 These are programs and code snippets that I have on display 
                 for infinite free use and reuse by anybody for any purpose.
             </p>
             <h2 id="anchor2" class="proto">Grid JavaScript Test</h2>
-            <h3 class="main version">Version 1.5</h3>
+            <h3 class="version">Version 1.5</h3>
             <div class="proto-main">
-                <p class="main">
+                <p>
                     This is a test for creating multiple elements in a grid that can be manipulated by CSS,
                     jQuery and JavaScript. More of a proof-of-concept than an actual working program.
                 </p>
-                <p class="main">
+                <p>
                     BUGS/ISSUES:
                 </p><ul class="main">
                     <li>Not all of the UI is there yet</li>
@@ -46,7 +41,7 @@
                 <div id="gridcontrolscont">
                 <div id="gridcontrols">
                     <h3>Grid Statistics</h3>
-                    <p class="main">
+                    <p>
                         <b>Grid dimensions: </b><span id="gridx"></span>px X <span id="gridy"></span>px<br />
                         <span id="cellstats">
                         <b>Cell dimensions: </b><span id="cellx"></span>px X <span id="celly"></span>px<br />
@@ -55,23 +50,23 @@
                         <b>Current colour: </b><br /><span id="gcurrcolour"><input type="text" id="gdrawcolour" /></span></span>
                     </p>
                     <h3>Main</h3>
-                    <p class="main">
+                    <p>
                         <button id="gridset" class="gridcont">Set grid</button>
                         <input id="gridsetnum" class="gridcont" type="text" /> X <span id="gsnxt"></span><br />
                     </p>
                     <h3>Animation</h3>
-                    <p class="main"></p>
+                    <p></p>
                     <h3>Borders</h3>
-                    <p class="main"></p>
+                    <p></p>
                 </div>
                 <div id="gridcontrols2">
                     <h3>Clear</h3>
-                    <p class="main">
+                    <p>
                         <button id="gclearcells">Clear cells</button>
                         <button id="gcleargrid">Clear grid</button>
                     </p>
                     <h3>Draw</h3>
-                    <p class="main">
+                    <p>
                         <button id="gdrawpencil">Pencil</button>
                         <button id="gdrawbrush">Brush</button>
                         <button id="gdrawerase">Eraser</button>
@@ -83,25 +78,25 @@
 					</div><br />
                     </p>
                     <h3>Layer</h3>
-                    <p class="main"></p>
+                    <p></p>
                     <h3>Modify</h3>
-                    <p class="main"></p>
+                    <p></p>
                 </div></div>
             </div>
             <h2 id="anchor3" class="proto">JavaScript Calendar</h2>
-            <h3 class="main version">Version 0.5</h3>
+            <h3 class="version">Version 0.5</h3>
             <div class="proto-main">
-                <p class="main">
-                This calendar is going to contain a lot of features, including the ability to set your own events! It's an
-                ambitious project for sure, but it'll keep me on my toes.
+                <p>
+                    This calendar is going to contain a lot of features, including the ability to set your own events! It's an
+                    ambitious project for sure, but it'll keep me on my toes.
                 </p>
-                <p class="main">
-                BUGS/ISSUES:
+                <p>
+                    BUGS/ISSUES:
                 </p><ul class="main">
                     <li>Styling is not quite right when the number of weeks displayed is 6.</li>
                 </ul>
-                <p class="main">
-                PLANNED:
+                <p>
+                    PLANNED:
                 </p><ul class="main">
                     <li>Events</li>
                     <li>More buttons!</li>
@@ -136,9 +131,9 @@
                 </div>
             </div>
             <h2 id="anchor4" class="proto">tXtEng</h2>
-            <h3 class="main version">Version 0.2.1</h3>
+            <h3 class="version">Version 0.2.1</h3>
             <div class="proto-main">
-                <p class="main">
+                <p>
                     After seeing the joy of command line interface games and controls, I decided to create a platform
                     that would make it easier to develop these kind of programs for the Web. At the moment, it is in
                     <i>early</i> alpha, so it's featureless. At the moment (v0.2.1), I have implemented:
@@ -151,7 +146,7 @@
                     <li>Framework for programs (run command) and a test program (flip)</li>
                     <li>A few other utility commands (cl, help)</li>
                 </ul>
-                <p class="main">
+                <p>
                     NOTES:
                 </p><ul class="main">
                     <li>Unlikely to ever be worked upon again, due to the relative difficulty and undesirability.</li>
@@ -160,14 +155,14 @@
                 <input type="text" id="txtengin" class="proto" />
             </div>
             <h2 id="anchor5" class="proto">Countdown</h2>
-            <h3 class="main version">Version 2.2</h3>
+            <h3 class="version">Version 2.2</h3>
             <div class="proto-main">
-                <p class="main">
+                <p>
                     This is a widget based off of my countdown blog posts. You can set it to 
                     count down towards a specific date in the future, or to a duration from now 
                     onwards. <br />
                     <strong>This is not the full application. Click on the title to go there.</strong>
-                </p><p class="main">
+                </p><p>
                     PLANNED:
                 </p><ul class="main">
                     <li>Theming</li>
@@ -190,18 +185,18 @@
 					<input type="text" id="cdfn-day" value="Days" /><input type="text" id="cdfn-hour" value="Hours" />
 					<input type="text" id="cdfn-minute" value="Minutes" /><input type="text" id="cdfn-second" value="Seconds" />
 				</div>
-                    <h2 id="cdown-count">Countdown over!!!</h2>
+                    <h2 id="cdown-count" class="span">Countdown over!!!</h2>
                 </div>
             </div>
             <h2 id="anchor6" class="proto">Calculator</h2>
-            <h3 class="main version">Version 0.4</h3>
+            <h3 class="version">Version 0.4</h3>
             <div class="proto-main">
-                <p class="main">
-                    Originally one of my first JavaScript projects, this calculator will support 
-                    chained equations and different modes. The greatest difference is that it will 
-                    look like an actual calculator!
+                <p>
+                    Originally one of my first JavaScript projects, this calculator supports
+                    chained equations and different modes. The greatest difference is that it 
+                    looks like an actual calculator!
                 </p>
-                <p class="main">
+                <p>
                     BUGS:
                     </p><ul class="main">
                         <li>Concerning the keyboard input mode: 
@@ -211,7 +206,8 @@
                                 <li>Doesn't support any advanced mode features.</li>
                             </ul>
                         </li>
-                    </ul><p class="main">
+                        <li>Unexpected chained equation behaviour</li>
+                    </ul><p>
                     PLANNED:
                     </p><ul class="main">
                         <li>More functions</li>
@@ -284,9 +280,9 @@
                 </div>
             </div>
         <h2 id="anchor8" class="proto">Canvas</h2>
-        <h3 class="main version"></h3>
+        <h3 class="version"></h3>
         <div class="proto-main">
-            <p class="main">
+            <p>
                 Hooray! Canvas things! Not really a thing yet, just messing around.
             </p>
             <div class="proto">
@@ -317,31 +313,31 @@
                     </div>
                 </div>
                 <canvas id="cvs" width="750" height="750" style="border:2px solid #000">
-                    <p class="main">
+                    <p>
                         Your browser doesn't seem to support the HTML5 &lt;canvas&gt; element.
                     </p>
                 </canvas>
             </div>
         </div>
         <h2 id="anchor9" class="proto">TimeTable</h2>
-        <h3 class="main version"></h3>
+        <h3 class="version"></h3>
         <div class="proto-main">
-            <p class="main">
+            <p>
                 This may look like nothing, but it is not! Instead, it is a timetable, which loads 
                 the information to fill the table from a JSON file in the local storage of 
                 the browser! All of the variables (days, number of periods, info, colours) 
                 are defined in the data to be as extensible as possible. Press the buttons below for a preview: 
             </p>
-            <p class="main">
+            <p>
                 <button id="ttb-test">Test timetable</button>
                 <button id="ttb-clear">Clear timetable</button>
             </p>
-            <p class="main">
+            <p>
                 Okay, so I've given up on creating a UI for this, as its extensibility leads to lots of 
                 problems and useless classes and IDs that I'm beginning to hate. Now it's simply a JSON 
                 editor.
             </p>
-            <p class="main">
+            <p>
                 PLANNED: 
                 </p><ul class="main">
                     <li>Theming</li>
@@ -364,14 +360,14 @@
             </div>
         </div>
         <h2 id="anchor10" class="proto">WebGL Test</h2>
-        <h3 class="main version"></h3>
+        <h3 class="version"></h3>
         <div class="proto-main">
-            <p class="main">
+            <p>
                 Moving on from <a href="#canvas">2D</a> graphics, it's time to test 3D graphics!
             </p>
             <div class="proto">
                 <canvas id="gl-test" width="600" height="600">
-                    <p class="main">
+                    <p>
                     You silly sod. Your browser is too crap to recognise the &lt;canvas&gt; tag.
                     </p>
                 </canvas>
@@ -394,10 +390,94 @@
                 </script>
             </div>
         </div>
-        <h2 class="proto"><a href="http://gabrielecirulli.github.io/2048/">2048</a> clone</h2>
-		<h3 class="main version"></h3>
+        <h2 class="proto">Planetarium</h2>
+        <h3 class="version"></h3>
         <div class="proto-main">
-            <p class="main">
+            <p>
+                An accurate 2D rendering of the Solar System with adjustable controls for time, 
+                size and scale. Fully customisable and currently supports: 
+            </p><ul class="main">
+                <li>Realistic, proportionate planet sizes</li>
+                <li>Satellites can orbit planets</li>
+                <li>Options for orbit, location and label visibility</li>
+                <li>Debug mode</li>
+                <li>Rings around planets</li>
+                <li>Planet focusing to view satellites</li>
+                <li>Controls for zoom, scale and speed</li>
+                <li>Stars with a parallax effect</li>
+            </ul>
+            <div class="proto">
+                <canvas id="psim-canvas" height="600" width="600">
+                    <p>
+                        You silly sod. Your browser is too crap to recognise the &lt;canvas&gt; tag.
+                    </p>
+                </canvas>
+                <div class="psim-control">
+                    <span class="main">Zoom</span>
+                    <span class="help" id="psim-zoom-help"></span><br />
+                    <input type="range" min="0.2" max="2" val="0.5" step="0.005" id="psim-zoom" />
+                </div>
+                <div class="psim-control">
+                    <span class="main">Scale</span>
+                    <span class="help" id="psim-scale-help"></span>
+                    <button id="psim-scale-reset">Reset</button><br />
+                    <input type="range" min="1" max="8" val="1" step="0.05" id="psim-scale" />
+                </div>
+                <div class="psim-control">
+                    <span class="main">Speed</span>
+                    <span class="help" id="psim-speed-help"></span>
+                    <button id="psim-speed-reset">Reset</button><br />
+                    <input type="range" min="0" max="30" val="1" step="0.2" id="psim-speed" />
+                </div>
+                <div class="psim-control">
+                    <input type="checkbox" id="psim-plines" />
+                    <label for="psim-plines" class="main">Show planet location lines</label>
+                </div>
+                <div class="psim-control">
+                    <input type="checkbox" checked id="psim-porbits" />
+                    <label for="psim-porbits" class="main">Show planet orbits</label>
+                </div>
+                <div class="psim-control">
+                    <input type="checkbox" checked id="psim-plabels" />
+                    <label for="psim-plabels" class="main">Show planet labels</label>
+                </div>
+                <div class="psim-control">
+                    <input type="checkbox" id="psim-debug" />
+                    <label for="psim-debug" class="main">Debug mode</label>
+                </div>
+                <div class="psim-control">
+                    <button id="psim-reset">Reset simulation</button>
+                </div>
+            </div>
+        </div>
+	    <h1 id="anchor7">Games</h1>
+		<p>
+		    As you can see, I've been playing with web apps made with JavaScript, learning things along 
+		    the way. Nothing wrong with that - it's just the way I code. But recently I have been 
+		    running out of ideas for web apps. They've all been done! So I decided to experiment with 
+		    games - specifically the programming of them. At the moment, my eyes are focused upon 
+		    Java and various engines (Java3D) and Unity, both of which I enjoy immensely.
+		</p>
+		<h2 class="main proto"><a href="spaceshooter">Space Shooter</a></h2>
+        <h3 class="version">Version 1.0</h3>
+        <div class="proto-main">
+            <p>
+                Using the free version of <a href="http://unity3d.com/unity/download">Unity Editor</a>, I 
+                followed a basic tutorial to make a top-down space shoot-em-up, to get a feel for Unity and 
+                how it works.
+            </p>
+            <p>
+                About the game: WASD to move, Left-Click to fire, and R to restart once you explode. 
+                Simple and fun (to make, at least). I must note that this is at <em>least</em> 20 times 
+                better looking, more workable and more fun to play with than my most advanced 
+                <a href="http://yoyogames.com/studio/download">Game Maker</a> game. Bear in mind - I <em>had the 
+                same budget.</em>
+            </p>
+        </div>
+        <h2 class="proto"><a href="http://gabrielecirulli.github.io/2048/">2048</a> clone</h2>
+		<h3 class="version"></h3>
+        <div class="proto-main">
+            <p>
                 This is a clone of the addictive online block sliding game, 2048. It has a few bugs, one
                 of which is the lose condition is a browser hang; but other than that it works fine.
             </p>
@@ -434,64 +514,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-        <h2 class="proto">Planetarium</h2>
-        <h3 class="main version"></h3>
-        <div class="proto-main">
-            <p class="main">
-                An accurate 2D rendering of the Solar System with adjustable controls for time, 
-                size and scale.
-            </p>
-            <div class="proto">
-                <canvas id="psim-canvas" height="600" width="600">
-                    <p class="main">
-                        You silly sod. Your browser is too crap to recognise the &lt;canvas&gt; tag.
-                    </p>
-                </canvas>
-                <div class="psim-control">
-                    <span class="main">Zoom</span>
-                    <button id="psim-zoom-reset">Reset</button><br />
-                    <input type="range" min="0.0001" max="5" val="1" step="0.05" id="psim-zoom" />
-                </div>
-                <div class="psim-control">
-                    <span class="main">Scale</span>
-                    <button id="psim-scale-reset">Reset</button><br />
-                    <input type="range" min="0.0001" max="5" val="1" step="0.05" id="psim-scale" />
-                </div>
-                <div class="psim-control">
-                    <span class="main">Speed</span>
-                    <button id="psim-speed-reset">Reset</button><br />
-                    <input type="range" min="0" max="20" val="1" step="0.2" id="psim-speed" />
-                </div>
-                <div class="psim-control">
-                    <label for="psim-plines" class="main">Show planet location lines</label>
-                    <input type="checkbox" id="psim-plines" />
-                </div>
-            </div>
-        </div>
-	    <h2 id="anchor7">Games</h2>
-		<p class="main">
-		    As you can see, I've been playing with web apps made with JavaScript, learning things along 
-		    the way. Nothing wrong with that - it's just the way I code. But recently I have been 
-		    running out of ideas for web apps. They've all been done! So I decided to experiment with 
-		    games - specifically the programming of them. At the moment, my eyes are focused upon 
-		    Java and various engines (Java3D) and Unity, both of which I enjoy immensely.
-		</p>
-		<h3 class="main proto"><a href="spaceshooter">Space Shooter</a></h3>
-        <h3 class="main version">Version 1.0</h3>
-        <div class="proto-main">
-            <p class="main">
-                Using the free version of <a href="http://unity3d.com/unity/download">Unity Editor</a>, I 
-                followed a basic tutorial to make a top-down space shoot-em-up, to get a feel for Unity and 
-                how it works.
-            </p>
-            <p class="main">
-                About the game: WASD to move, Left-Click to fire, and R to restart once you explode. 
-                Simple and fun (to make, at least). I must note that this is at <em>least</em> 20 times 
-                better looking, more workable and more fun to play with than my most advanced 
-                <a href="http://yoyogames.com/studio/download">Game Maker</a> game. Bear in mind - I <em>had the 
-                same budget.</em>
-            </p>
         </div>
             <footer>
             </footer>

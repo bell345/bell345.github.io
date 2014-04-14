@@ -3,25 +3,25 @@
 <head>
     <title>CountDown</title>
     <meta charset="utf-8" />
-	<link rel="shortcut icon" href="/shared/res/clock.png" />
-    <link rel="stylesheet" href="/shared/css/sheet.css" />
+	<link rel="shortcut icon" href="/assets/res/icons/clock.png" />
+    <link rel="stylesheet" href="/assets/css/sheet.css" />
     <link rel="stylesheet" href="./cdown.css" />
-    <script src="/shared/js/jquery2.min.js"></script>
-    <script src="/shared/js/jquery-ui.min.js"></script>
+    <script src="/assets/js/jquery2.min.js"></script>
+    <script src="/assets/js/jquery-ui.min.js"></script>
     <script src="./cdown.js"></script>
 </head>
 <body>
     <div id="cdown-full" class="cdown cdset">
         <div id="cd-controls">
             <h3>Countdown</h3>
-            <button class="gridcont toggle" onclick="Cdown.expand = !Cdown.expand">Shorten</button>
-            <button class="gridcont" onclick="eraseCookie('cDown');Cdown.check(false);Cdown.bypass = true">Reset</button>
-            <button class="gridcont toggle" id="cd-share">Share</button>
-            <button class="gridcont" onclick="window.open('../')">Back to website</button>
+            <button class="toggle" onclick="Cdown.expand = !Cdown.expand">Shorten</button>
+            <button onclick="eraseCookie('cDown');Cdown.check(false);Cdown.bypass = true">Reset</button>
+            <button class="toggle" id="cd-share">Share</button>
+            <button onclick="window.open('../')">Back to website</button>
         </div>
         <h3 id="cd-set-title">Countdown</h3>
-        <button class="gridcont" onclick="Cdown.check(true)" id="cdset-sub">Submit</button>
-        <button class="gridcont" onclick="window.open('../')" id="cdset-web">Back to website</button><br />
+        <button onclick="Cdown.check(true)" id="cdset-sub">Submit</button>
+        <button onclick="window.open('../')" id="cdset-web">Back to website</button><br />
 		<div id="cdset">
 			<input type="text" id="cdsetname" value="Name" class="inactive" /><br />
         	<input type="text" id="cdsetyear" value="YYYY" />-<input type="text" id="cdsetmonth" value="MM" />-
@@ -30,7 +30,7 @@
         </div>
 		<div id="cd-fn-set">
 			<h3>From Now</h3>
-            <button class="gridcont" onclick="Cdown.checkfn();Cdown.check(false);">Submit</button><br />
+            <button onclick="Cdown.checkfn();Cdown.check(false);">Submit</button><br />
             <input type="text" id="cdfn-name" value="Name" class="inactive" /><br />
 			<input type="text" id="cdfn-year" value="Years" /><input type="text" id="cdfn-month" value="Months" />
 			<input type="text" id="cdfn-day" value="Days" /><input type="text" id="cdfn-hour" value="Hours" />
@@ -38,7 +38,7 @@
 		</div>
         <div id="countup-set">
             <h3>Timer</h3>
-            <button class="gridcont" onclick="Cdown.upCheck();Cdown.check(false);">Start Now</button><br />
+            <button onclick="Cdown.upCheck();Cdown.check(false);">Start Now</button><br />
             <input type="text" id="cup-name" value="Name" class="inactive" /><br />
         </div>
         <div id="cd-text-container">

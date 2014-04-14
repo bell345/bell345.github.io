@@ -1,0 +1,197 @@
+{
+    "objects" : {
+        "Mercury" : {
+            "distance" : 0.387098,
+            "speed" : 47.87,
+            "size" : 2439.7,
+            "colour" : "#eee",
+            "type" : "planet"
+        },
+        "Venus" : {
+            "distance" : 0.723327,
+            "speed" : 35.02,
+            "size" : 6051.8,
+            "colour" : "#ff6",
+            "type" : "planet"
+        },
+        "Earth" : {
+            "distance" : 1,
+            "speed" : 29.78,
+            "size" : 6371.0,
+            "colour" : "#55f",
+            "type" : "planet",
+            "satellites" : {
+                "Moon" : {
+                    "distance" : 0.00257,
+                    "speed" : 1.022,
+                    "size" : 1737.1,
+                    "colour" : "#ccc"
+                },
+                "ISS" : {
+                    "distance" : 0.00005,
+                    "speed" : 0.00766,
+                    "size" : 0.8,
+                    "colour" : "#dee"
+                }
+            }
+        },
+        "Mars" : {
+            "distance" : 1.523679,
+            "speed" : 24.077,
+            "size" : 3389.5,
+            "colour" : "#d00",
+            "type" : "planet",
+            "satellites" : {
+                "Phobos" : {
+                    "distance" : 0.00006267379679144385,
+                    "speed" : 2.138,
+                    "size" : 22,
+                    "colour" : "#ddd"
+                },
+                "Deimos" : {
+                    "distance" : 0.00015683957219251338,
+                    "speed" : 1.3513,
+                    "size" : 6,
+                    "colour" : "#ccc"
+                }
+            }
+        },
+        "aster" : {
+            "distance" : 3,
+            "distance_range" : 1,
+            "density" : 200,
+            "speed" : 0.022,
+            "size" : 0.06,
+            "size_range" : 0.4,
+            "colour" : "#999",
+            "type" : "field"
+        },
+        "Jupiter" : {
+            "distance" : 5.204267,
+            "speed" : 13.07,
+            "size" : 69911,
+            "colour" : "#faa",
+            "type" : "planet",
+            "rings" : {
+                "min_distance" : 0.0008188502673796791,
+                "max_distance" : 0.0008622994652406417,
+                "colour" : "rgba(255, 255, 230, 0.4)"
+            },
+            "satellites" : {
+                "Io" : {
+                    "distance" : 0.002819,
+                    "speed" : 17.334,
+                    "size" : 1821.6,
+                    "colour" : "#ffa"
+                },
+                "Europa" : {
+                    "distance" : 0.004484625668449198,
+                    "speed" : 13.740,
+                    "size" : 1560.8,
+                    "colour" : "#fdd"
+                },
+                "Ganymede" : {
+                    "distance" : 0.007155080213903743,
+                    "speed" : 10.880,
+                    "size" : 2634.1,
+                    "colour" : "#888"
+                },
+                "Callisto" : {
+                    "distance" : 0.012584893048128343,
+                    "speed" : 8.204,
+                    "size" : 2410.3,
+                    "colour" : "#755"
+                }
+            }
+        },
+        "Saturn" : {
+            "distance" : 9.582017,
+            "speed" : 9.69,
+            "size" : 58232,
+            "colour" : "#ffd",
+            "type" : "planet",
+            "rings" : {
+                "min_distance" : 0.0004979946524064171,
+                "max_distance" : 0.0009372994652406417,
+                "colour" : "rgba(255, 255, 200, 0.6)"
+            },
+            "satellites" : {
+                "Enceladus" : {
+                    "distance" : 0.001590561497326203,
+                    "speed" : 12.628696213958493,
+                    "size" : 252.1,
+                    "colour" : "#999"
+                },
+                "Tethys" : {
+                    "distance" : 0.0019693783422459893,
+                    "speed" : 11.349335516765823,
+                    "size" : 531.1,
+                    "colour" : "#cba"
+                },
+                "Dione" : {
+                    "distance" : 0.0025227005347593584,
+                    "speed" : 10.027717923063802,
+                    "size" : 561.4,
+                    "colour" : "#aaa"
+                },
+                "Rhea" : {
+                    "distance" : 0.0035234491978609625,
+                    "speed" : 8.483970091120733,
+                    "size" : 763.8,
+                    "colour" : "#bbb"
+                },
+                "Titan" : {
+                    "distance" : 0.008167580213903743,
+                    "speed" : 5.572712065261606,
+                    "size" : 2576,
+                    "colour" : "#dd9"
+                },
+                "Iapetus" : {
+                    "distance" : 0.023802272727272727,
+                    "speed" : 3.2645643084821727,
+                    "size" : 734.5,
+                    "colour" : "#555"
+                }
+            }
+        },
+        "Uranus" : {
+            "distance" : 19.22941,
+            "speed" : 6.81,
+            "size" : 25362,
+            "colour" : "#ccf",
+            "type" : "planet"
+        },
+        "Neptune" : {
+            "distance" : 30.10366,
+            "speed" : 5.43,
+            "size" : 24622,
+            "colour" : "#22f",
+            "type" : "planet"
+        }
+    },
+    "list" : [
+        { "type" : "planet", "name" : "Mercury" },
+        { "type" : "planet", "name" : "Venus" },
+        { "type" : "planet", "name" : "Earth" },
+        { "type" : "satellite", "parent" : "Earth", "name" : "Moon" },
+        { "type" : "satellite", "parent" : "Earth", "name" : "ISS" },
+        { "type" : "planet", "name" : "Mars" },
+        { "type" : "satellite", "parent" : "Mars", "name" : "Phobos" },
+        { "type" : "satellite", "parent" : "Mars", "name" : "Deimos" },
+        { "type" : "field", "name" : "aster" },
+        { "type" : "planet", "name" : "Jupiter" },
+        { "type" : "satellite", "parent" : "Jupiter", "name" : "Io" },
+        { "type" : "satellite", "parent" : "Jupiter", "name" : "Europa" },
+        { "type" : "satellite", "parent" : "Jupiter", "name" : "Ganymede" },
+        { "type" : "satellite", "parent" : "Jupiter", "name" : "Callisto" },
+        { "type" : "planet", "name" : "Saturn" },
+        { "type" : "satellite", "parent" : "Saturn", "name" : "Enceladus" },
+        { "type" : "satellite", "parent" : "Saturn", "name" : "Tethys" },
+        { "type" : "satellite", "parent" : "Saturn", "name" : "Dione" },
+        { "type" : "satellite", "parent" : "Saturn", "name" : "Rhea" },
+        { "type" : "satellite", "parent" : "Saturn", "name" : "Titan" },
+        { "type" : "satellite", "parent" : "Saturn", "name" : "Iapetus" },
+        { "type" : "planet", "name" : "Uranus" },
+        { "type" : "planet", "name" : "Neptune" }
+    ]
+}

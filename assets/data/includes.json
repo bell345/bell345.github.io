@@ -1,0 +1,12 @@
+{
+    "includes" : [
+        {
+            "source" : "/assets/html/header.htm",
+            "insert" : "#navigation"
+        }, 
+        {
+            "source" : "/assets/html/sidebar.htm",
+            "insert" : "#sidebar"
+        }
+    ]
+}

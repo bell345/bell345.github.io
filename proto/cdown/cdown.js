@@ -172,7 +172,7 @@ Cdown.main = function (enddate, dest) {
         this.active = false;
 		eraseCookie("cDown");
 		Cdown.check(false);
-        chromeNotification("http://localhost:83/shared/res/clock.png","Countdown over!!!", Cdown.name);
+        chromeNotification("/assets/res/icons/clock.png","Countdown over!!!", Cdown.name);
         document.title = "CountDown";
     }
 }
