@@ -1,3 +1,195 @@
+var now = new Date();
+var unqid = now.getTime();
+var notePrevInfo = {
+    "head" : [], 
+    "text" : [],
+    "type" : []
+};
+// START CONSOLE NOTIFICATIONS //
+function log(message, timeout) {
+    console.log(message);
+    timeout = isNull(timeout) ? 30000 : timeout;
+    new Notification("Log", message, 0, timeout);
+}
+function warn(message, timeout) {
+    console.warn(message);
+    timeout = isNull(timeout) ? 40000 : timeout;
+    new Notification("Warning", message, 0, timeout);
+}
+function error(message, timeout) {
+    console.error(message);
+    if (typeof(message) == "object")
+        message = message.message;
+    timeout = isNull(timeout) ? 50000 : timeout;
+    new Notification("Error", message, 1, timeout);
+}
+// Shorthand for getElementById.
+function gebi(element) { return document.getElementById(element); }
+// Appends HTML to an element.
+function modifyHtml(id, mod) {
+	var thing = gebi(id);
+	thing.innerHTML += mod;
+}
+// Shortens a string by an index.
+function shorten(str, index) {
+    var tempstr = [];
+    if (str.length > 0 && !isNull(str)) {
+        for (var i = 0; i < str.length; i++) {
+            if (i < index)
+                tempstr.push(str[i]);
+            else if (i == index)
+                return tempstr.join("");
+        }
+    }
+}
+// Determines whether or not a number is even.
+function isEven(num) { return (num % 2 == 0); }
+// Determines whether or not a variable is nothing at all.
+function isNull(thing) {
+    if (thing instanceof Array) {
+        for (var i=0;i<thing.length;i++)
+            if (thing[i] == undefined || thing[i] === "" || thing[i] == null || thing.toString() == "NaN")
+                return true;
+        return (thing.length == 0)
+    }
+    return (thing == undefined || thing === "" || thing == null || thing.toString() == "NaN")
+}
+// An externally edited replacement for setInterval.
+function timerSet(timer, seconds, func) {
+    if (typeof (func) == "function") {
+        $(document).on(timer + "_timer" + "trig", func);
+        window[timer + "_timer"] = setInterval(function () {
+            $(document).trigger(timer + "_timer" + "trig");
+        }, seconds);
+    }
+    else {
+        $(document).on(timer + "_timer" + "trig", function () { return null; });
+        window[timer + "_timer"] = setInterval(function () {
+            $(document).trigger(timer + "_timer" + "trig");
+        }, seconds);
+    }
+}
+// Clears a timerSet.
+function timerClear(timer) {
+    if (window[timer + "_timer"]) {
+        clearInterval(window[timer + "_timer"]);
+        window[timer + "_timer"] = undefined;
+        $(document).off(timer + "_timertrig")
+    }
+}
+// Returns a preformatted array of the date object specified.
+function unixToString(date) {
+	if (date.getMonth() == 0) {var month=1}
+	else {var month = date.getMonth()+1};
+	var day = date.getDate();
+	var hour = date.getHours();
+	var minute = date.getMinutes();
+	var second = date.getSeconds();
+	month = zeroPrefix(month);
+	day = zeroPrefix(day);
+	hour = zeroPrefix(hour);
+	minute = zeroPrefix(minute);
+	second = zeroPrefix(second);
+	return [date.getTime(), date.getFullYear(), month, day, hour, minute, second];
+}
+// Returns a random integer.
+function randomInt(num) { return parseInt(Math.random()*num) }
+// For legacy applications.
+function intRand(num) { return randomInt(num) }
+// Degrees to radians.
+function dtr(deg) { return (Math.PI/180)*deg }
+// For keypress events.
+// Converts a keypress event keycode into the character typed.
+// Returns null when an invisible character is typed (shift, alt, etc.)
+function convertKeyDown(event) {
+    var which = event.which;
+    if (which>47&&which<91) {
+        if (event.shiftKey)
+            var chars = ")!@#$%^&*(ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        else
+            var chars = "0123456789abcdefghijklmnopqrstuvwxyz";
+        return chars[which%48];
+    } else if (which>95&&which<112) {
+        var chars = "0123456789*+ -./";
+        return chars[which%96];
+    } else if (which>185&&which<193) {
+        if (event.shiftKey)
+            var chars = ":+<_>?~";
+        else
+            var chars = ";=,-./`";
+        return chars[which%186];
+    } else if (which>218&&which<223) {
+        if (event.shiftKey)
+            var chars = "{|}\"";
+        else
+            var chars = "[\\]'";
+        return chars[which%219];
+    } else return null;
+}
+// Creates a customizable, absolutely positioned popup element.
+// There can only be one at a time.
+Popup.registry = [];
+function Popup(x, y, head, text) {
+	this.x = x;
+	this.y = y;
+	this.head = head;
+	this.text = text;
+	var body = $('body');
+	var pup = "";
+	pup += "<div class='popup' style='top:"+this.y+"px;left:"+this.x+"px;'>";
+    if (!isNull(this.head))
+        pup += "<h3>"+this.head+"</h3>";
+	pup += "<p class='main'>"+this.text+"</p>";
+	pup += "</div>";
+	$(".popup").remove();
+	body.append(pup);
+    if (parseInt($(".popup").css("width"))+parseInt($(".popup").css("left"))+120 > window.innerWidth) {
+        $(".popup").attr("class", $(".popup").attr("class") + " right");
+        $(".popup").css("left", (parseInt($(".popup").css("left")) - parseInt($(".popup").css("width")) - 40) + "px");
+    }
+    if (parseInt($(".popup").css("height"))+parseInt($(".popup").css("top"))+120 > window.innerHeight) {
+        $(".popup").attr("class", $(".popup").attr("class") + " bottom");
+        $(".popup").css("top", (parseInt($(".popup").css("top")) - parseInt($(".popup").css("height")) - 40) + "px");
+    }
+}
+// Adds a popup when hovering over a specified element.
+Popup.registry.add = function (element, head, text) {
+    if (true) {
+        Popup.registry.push([element, head, text]);
+        $(element).off("mousemove");
+        $(element).mousemove(function (event) {
+            var thisReg = [];
+            for (var i=0;i<Popup.registry.length;i++)
+                if (Popup.registry[i][0] == $(this)[0])
+                    thisReg = Popup.registry[i];
+        new Popup(event.clientX+20, event.clientY+20, thisReg[1], thisReg[2]);
+        });
+        $(element).mouseleave(function () {
+            $('.popup').remove();
+        });
+    } else {
+        throw new Error("Supplied element is invalid.");
+    }
+}
+// Removes an element from the registry.
+Popup.registry.remove = function (element) {
+    for (var i=0;i<Popup.registry.length;i++) 
+        if (Popup.registry[i][0] == $(element)[0])
+            Popup.registry[i] = undefined;
+    $(element).off("mousemove");
+}
+$(function () {
+    $("button.toggle").click(function () {
+        var a = " toggle-on";
+        var c = this.className;
+        this.className=c.search(a)!=-1?c.replace(a,""):c+a;
+    });
+    $(".switch").click(function () {
+        var toSwitch = $("#"+$(this).attr("for"));
+        if (toSwitch.length > 0)
+            toSwitch.fadeToggle();
+    });
+});
 Calc = {};
 Calc.nanRegex = /[^0-9\.-]/;
 Calc.funcRegex = /[\+\-\*\/(pow)]/;
@@ -167,15 +359,15 @@ Calc.setUp = function () {
     });
     $("#calcmode").click(function () {
         Calc.mode = !Calc.mode;
-        if (Calc.mode)
+        if (Calc.mode) {
             $(".calcadvonly").show();
-        else
+            window.resizeTo(368, 565);
+		} else {
             $(".calcadvonly").hide();
+            window.resizeTo(368, 457);
+        }
     });
     $("#calcshift").click(function () { Calc.shift = !Calc.shift });
-    $("#calcpop").click(function () {
-        
-    });
 }
 Calc.equate = function (bool) {
     if (bool == undefined) bool = false;

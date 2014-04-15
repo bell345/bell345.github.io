@@ -65,7 +65,7 @@ Grid.set = function (height) {
 Grid.altColours = function (colour1, colour2) {
     if (this.hasSet) {
         for (i = 0; i < this.count; i++) {
-            if (i % 2 == 0) {
+            if (isEven(i)) {
                 $("#gridcell" + i).css("backgroundColor", colour1);
             }
             else {
@@ -77,7 +77,7 @@ Grid.altColours = function (colour1, colour2) {
 // Sets width, height, rows and columns all at once.
 // Called when grid is created.
 Grid.setProperties = function () {
-    if (Grid.heightQuant % 2 != 0) {
+    if (!isEven(Grid.heightQuant)) {
         Grid.center = Math.floor(Grid.count / 2);
     }
     for (i = 0; i < Grid.colcount; i++) {
@@ -178,7 +178,7 @@ Grid.Modify.all = function (colour1) {
 // Creates an alternating colour scale around the top and left sides.
 Grid.Modify.scale = function (colour1, colour2) {
     for (i = 0; i < Grid.colcount; i++) {
-        if (i % 2 == 0) {
+        if (isEven(i)) {
             Grid.Modify.single(Grid.rows[0][i], colour1);
         }
         else {
@@ -186,7 +186,7 @@ Grid.Modify.scale = function (colour1, colour2) {
         }
     }
     for (i = 0; i < Grid.colcount; i++) {
-        if (i % 2 == 0) {
+        if (isEven(i)) {
             Grid.Modify.single(Grid.columns[0][i], colour1);
         }
         else {
@@ -459,7 +459,7 @@ Grid.Draw.brush = function (pageX, pageY, diameter) {
         var relative = [Math.floor(adjust[0]/ Grid.cell), Math.floor(adjust[1] / Grid.cell)];
         if (Grid.columns[relative[0]]) { var index = Grid.columns[relative[0]][relative[1]]; }
         var radius = Math.floor(diameter / 2);
-        if (diameter % 2 != 0) {
+        if (!isEven(diameter)) {
             Grid.Modify.rect(relative[0] - radius, relative[1] - radius, relative[0] + (radius), relative[1] + (radius), Grid.Draw.colour);
         }
         else {
@@ -475,7 +475,7 @@ Grid.Draw.inspect = function (x, y) {
 	var index = Grid.coords(relative[0], relative[1]);
 	if (index != undefined || index != null) {
 		var colour = $("#gridcell"+index).css("backgroundColor");
-		new Popup(x+20,y+20,"Index: "+index,"Colour: "+colour)
+		new TBI.Popup(x+20,y+20,"Index: "+index,"Colour: "+colour)
 	}
 }
 Grid.Draw.updatePrevColours = function () {
@@ -601,7 +601,7 @@ $(function () {
 			Grid.set(num);
 	    }
 	});
-	timerSet("gsn", 50, function () {
+	TBI.timerSet("gsn", 50, function () {
 	    $("#gsnxt").html($("#gridsetnum").val());
 		$("#gcurrcolour").css("background", Grid.Draw.colour);
 	});
@@ -1174,7 +1174,7 @@ txteng.Program.battleship = function () {
         });
     })
 }
-timerSet("motd", 1000, function () { $("#txtengarea").val(""); txteng.motdEcho(); timerClear("motd"); });
+TBI.timerSet("motd", 1000, function () { $("#txtengarea").val(""); txteng.motdEcho(); TBI.timerClear("motd"); });
 $(function () {
 	$("#txtengin").keydown(function (event) {
 	    if (event.which == 13) {
@@ -1263,7 +1263,7 @@ Cdown.main = function (enddate, dest) {
     this.dbugTime[2] = nStr;
     this.prevSec = cStr[6];
 }
-timerSet("nw", 100, function () { Cdown.rightNow = new Date() });
+TBI.timerSet("nw", 100, function () { Cdown.rightNow = new Date() });
 Cdown.verifyInput = function () {
     var inYear = $("#cdsetyear"),
         inMonth = $("#cdsetmonth"),
@@ -1338,14 +1338,14 @@ Cdown.reset = function () {
 		$("#cd-fn-set").css("display", "inline-block");
         $("#cdown-count").css("display", "none");
         $("#cdown-full h3")[0].innerHTML = "Countdown";
-        timerClear("cDown");
+        TBI.timerClear("cDown");
 }
 Cdown.set = function (out) {
     $("#cdown-full").attr("class", "cdown proto");
     $("#cdset").css("display", "none");
 	$("#cd-fn-set").css("display", "none");
     $("#cdown-count").css("display", "inline-block");
-    timerSet("cDown", 50, function () { Cdown.main(out, "cdown-count") });
+    TBI.timerSet("cDown", 50, function () { Cdown.main(out, "cdown-count") });
     if (!isNull(Cdown.name) && !isNull(gebi("cdown-full")))
         $("#cdown-full h3")[0].innerHTML = "Countdown - " + Cdown.name;
 }
@@ -1382,7 +1382,7 @@ Cdown.checkfn = function () {
 }
 $(function () {
 	var cdInputs = $("#cdown-full input");
-	timerSet("cdInputs",100,function () {
+	TBI.timerSet("cdInputs",100,function () {
 		for (i=1;i<cdInputs.length;i++) {
 			if (isNaN($(cdInputs[i]).val())) {
 				cdInputs[i].className = "inactive";
@@ -1436,13 +1436,13 @@ Calc.answer;
 Calc.prevNum;
 
 Calc.setUp = function () {
-    timerSet("calcwindow",1000,function () {
+    TBI.timerSet("calcwindow",1000,function () {
         if ($($("#calcwindow span")[0]).css("color")=="rgba(0, 0, 0, 0)")
             $($("#calcwindow span")[0]).css("color", "#3AACFF");
         else
             $($("#calcwindow span")[0]).css("color", "transparent");
     });
-    timerSet("calcstring",4,function () {
+    TBI.timerSet("calcstring",4,function () {
         if (Calc.inputMode)
             $($("#calcwindow input")[0]).val(Calc.string);
         else
@@ -1450,7 +1450,7 @@ Calc.setUp = function () {
         if (Calc.statusLog.length > 20)
             Calc.statusLog.shift();
     });
-    timerSet("calcstatuswindow",1000,function () {
+    TBI.timerSet("calcstatuswindow",1000,function () {
         if ($($("#calcstatus span")[0]).css("color")=="rgba(0, 0, 0, 0)")
             $($("#calcstatus span")[0]).css("color", "#3AACFF");
         else
@@ -1504,7 +1504,7 @@ Calc.setUp = function () {
             this.innerText = "Keyboard Input";
             if (Calc.string == "") {
                 Calc.string = "_";
-                timerSet("calcwindow",1000,function () {
+                TBI.timerSet("calcwindow",1000,function () {
                     if ($($("#calcwindow span")[0]).css("color")=="rgba(0, 0, 0, 0)")
                         $($("#calcwindow span")[0]).css("color", "#3AACFF");
                     else
@@ -1512,7 +1512,7 @@ Calc.setUp = function () {
                 });
             }
         } else {
-            timerClear("calcwindow");
+            TBI.timerClear("calcwindow");
             $($("#calcwindow span")[0]).hide();
             $($("#calcwindow input")[0]).show();
             Calc.inputMode = 1;
@@ -1547,7 +1547,7 @@ Calc.setUp = function () {
         Calc.numbers = [];
         if (!Calc.inputMode && isNull(calcwindow_timer)) { 
             Calc.string = "_";
-            timerSet("calcwindow",1000,function () {
+            TBI.timerSet("calcwindow",1000,function () {
                 if ($($("#calcwindow span")[0]).css("color")=="rgba(0, 0, 0, 0)") {
                     $($("#calcwindow span")[0]).css("color", "#3AACFF");
                 } else {
@@ -1741,7 +1741,7 @@ Calc.handleKeyDown = function (event) {
 Calc.addDigit = function (digit) {
     var calcWindow = $($("#calcwindow span")[0]);
     if (calcWindow.text().search(Calc.nanRegex)!=-1) {
-        timerClear("calcwindow");
+        TBI.timerClear("calcwindow");
         $($("#calcwindow span")[0]).css("color", "#3AACFF");
         Calc.string = "";
     }
@@ -1763,14 +1763,14 @@ Calc.addDigit = function (digit) {
         Calc.workingNum+=digit;
 }
 Calc.statusPrint = function (message) {
-    timerClear("calcstatuswindow");
+    TBI.timerClear("calcstatuswindow");
     $($("#calcstatus span")[0]).html(message);
     $($("#calcstatus span")[0]).css("color","#3AACFF");
-    timerClear("statusReset");
-    timerSet("statusReset",10000,function () {
+    TBI.timerClear("statusReset");
+    TBI.timerSet("statusReset",10000,function () {
         $($("#calcstatus span")[0]).html("_");
-        timerClear("statusReset");
-        timerSet("calcstatuswindow",1000,function () {
+        TBI.timerClear("statusReset");
+        TBI.timerSet("calcstatuswindow",1000,function () {
             if ($($("#calcstatus span")[0]).css("color")=="rgba(0, 0, 0, 0)")
                 $($("#calcstatus span")[0]).css("color", "#3AACFF");
             else
@@ -2000,7 +2000,7 @@ $(function () {
     $("#ttb-test").click(function () {
         if ((isNull(TTBL.data) && isNull(localStorage.TTBL2)) || 
         (!isNull(localStorage.TTBL2) && confirm("Do you want to overwrite your current timetable?"))) {
-            var xhr = new AJAX("/assets/data/ttb1.json", function () {
+            var xhr = new TBI.AJAX("/assets/data/ttb1.json", function () {
                 localStorage.TTBL2 = xhr.response;
                 TTBL.data = localStorage.TTBL2;
                 TTBL.setup();
@@ -2019,14 +2019,14 @@ $(function () {
             $("#ttb-test").css("visibility","visible");
         }, 10000);
     });
-    Popup.registry.add($("#ttb-clear")[0], "Clear timetable", 
+    TBI.Popup.registry.add($("#ttb-clear")[0], "Clear timetable", 
     "The 'Test timetable' button will be unavailable for a few seconds");
     $(".ttbs-mode").buttonset();
     if (!isNull(localStorage.TTBL2)) {
         try {
             $(".ttb-set textarea").val(JSON.stringify($.parseJSON(localStorage.TTBL2), null, 4));
         } catch (e) {
-            new error("Error: "+e.message);
+            new TBI.error("Error: "+e.message);
             localStorage.removeItem("TTBL2");
         }
     }
@@ -2043,7 +2043,7 @@ $(function () {
                 localStorage.TTBL2 = JSON.stringify($.parseJSON($(".ttb-set textarea").val()));
                 TTBL.setup();
             } catch (e) {
-                error(e);
+                TBI.error(e);
                 localStorage.TTBL2 = localStorage.TTBL4;
                 localStorage.removeItem("TTBL4");
             }
@@ -2283,7 +2283,7 @@ GLTest.shaderInit = function (gl) {
     gl.attachShader(GLTest.program, fragShader);
     gl.linkProgram(GLTest.program);
     if (!gl.getProgramParameter(GLTest.program, gl.LINK_STATUS))
-        error("Init shader error.");
+        TBI.error("Init shader error.");
     gl.useProgram(GLTest.program);
     GLTest.vtxPosAttribute = gl.getAttribLocation(GLTest.program, "aVertexPosition");
     gl.enableVertexAttribArray(GLTest.vtxPosAttribute);
@@ -2308,7 +2308,7 @@ GLTest.shaderGet = function (gl, id) {
     gl.shaderSource(shader, src);
     gl.compileShader(shader);
     if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-        error("Shader error: "+gl.getShaderInfoLog(shader));
+        TBI.error("Shader error: "+gl.getShaderInfoLog(shader));
         return null;
     }
     return shader;
@@ -2377,7 +2377,7 @@ GLTest.mvPushMtx = function (m) {
     } else GLTest.mvMtxStack.push(GLTest.mvMatrix.dup());
 }
 GLTest.mvPopMtx = function () {
-    if (!GLTest.mvMtxStack.length) error("Empty matrix stack.");
+    if (!GLTest.mvMtxStack.length) TBI.error("Empty matrix stack.");
     GLTest.mvMatrix = GLTest.mvMtxStack.pop();
     return GLTest.mvMatrix;
 }
@@ -2471,7 +2471,7 @@ TWF8.moveTileDown = function (sx, sy) {
     }
 }
 TWF8.spawnTile = function (dx, dy, val) {
-    if (isNull(dx) || isNull(dy) || isNull(val)) return error("TWF8: Tile spawning failed: Insufficient values");
+    if (isNull(dx) || isNull(dy) || isNull(val)) return TBI.error("TWF8: Tile spawning failed: Insufficient values");
     if ($("#twf8-pos-"+dx+dy).length < 1 && dx > -1 && dy > -1 && dx < 4 && dy < 4)
         $("#twf8-tiles").append("<div class='twf8-tile twf8-val-"+val+"' id='twf8-pos-"+dx+dy+"'></div>");
 }
@@ -2515,15 +2515,15 @@ $(document).keyup(function (event) {
     else if (key == "down" && determined) TWF8.moveAllDown();
     else if (key != "left" || key != "right" || key != "up" || key != "down") return null;
     if (!TWF8.determine("left") && !TWF8.determine("right") && !TWF8.determine("up") && !TWF8.determine("down")) {
-        log("TWF8: Game Over!");
+        TBI.log("TWF8: Game Over!");
     }
     if (TWF8.moved.length > 0) {
-        timerSet("twf8spawn", 200, function () {
+        TBI.timerSet("twf8spawn", 200, function () {
             do { var randLocation = [randomInt(4), randomInt(4)]; }
             while ($("#twf8-pos-"+randLocation[0]+randLocation[1]).length > 0)
             var num = Math.random() < 0.8 ? 2 : 4;
             TWF8.spawnTile(randLocation[0], randLocation[1], num);
-            timerClear("twf8spawn");
+            TBI.timerClear("twf8spawn");
         });
     }
     TWF8.moved = [];
@@ -2563,13 +2563,13 @@ PSim.init = function () {
     PSim.selected = null;
     PSim.objectvars = {};
     PSim.objects = [];
-    timerClear("PSim");
-    var xhr = new AJAX("/assets/data/psim.json", function () {
+    TBI.timerClear("PSim");
+    var xhr = new TBI.AJAX("/assets/data/psim.json", function () {
         try { PSim.objectvars = $.parseJSON(xhr.response).objects; PSim.objects = $.parseJSON(xhr.response).list } 
-        catch (e) { e.message = "Planetarium load error: "+ e.message; error(e) }
-        timerSet("PSim", PSim.ms, function () {
+        catch (e) { e.message = "Planetarium load error: "+ e.message; TBI.error(e) }
+        TBI.timerSet("PSim", PSim.ms, function () {
             try { PSim.simulate() }
-            catch (e) { e.message = "Planetarium error: " + e.message; error(e) }
+            catch (e) { e.message = "Planetarium error: " + e.message; TBI.error(e) }
         });
     });
 }
@@ -2632,7 +2632,7 @@ PSim.planet = function (name) {
     var planet = PSim.objectvars[name];
     if (isNull(planet) || planet.type != "planet") return false;
     var rotation = isNull(PSim.objectbank[name]) ? PSim.objectvars[name].rotation : PSim.objectbank[name][0];
-    rotation = isNull(rotation) ? randomInt(360) : rotation;
+    rotation = isNull(rotation) ? randomInt(360) : rotation % 360;
     rotation += (360 / ((planet.distance * PSim.AU * 2 * Math.PI) / planet.speed)) / PSim.fps * PSim.speed;
     PSim.ctx.save();
     PSim.ctx.translate(PSim.pan[0] * (PSim.zoom * PSim.PF), PSim.pan[1] * (PSim.zoom * PSim.PF));
@@ -2827,8 +2827,8 @@ PSim.cursor = function () {
         PSim.selected = null;
         for (var i = 0; i < PSim.labels.length; i++) {
             var label = PSim.labels[i];
-            if (x > label.location[0] && x < label.location[0] + label.dimensions[0] &&
-                y > label.location[1] && y < label.location[1] + label.dimensions[1] &&
+            if ((x > label.location[0] && x < label.location[0] + label.dimensions[0] &&
+                y > label.location[1] && y < label.location[1] + label.dimensions[1]) &&
                 label.name != PSim.selected) {
                 PSim.focus(label.name);
                 PSim.speed = 1;
@@ -2863,7 +2863,7 @@ $(function () {
     $("#psim-zoom").mouseup(function () { zoomed = false });
     $("#psim-zoom").mousemove(function () { if (zoomed) PSim.zoom = +Math.pow($("#psim-zoom").val(), 8).toFixed(6) });
     $("#psim-zoom").val(PSim.zoom = 1);
-    Popup.registry.add(gebi("psim-zoom-help"), "Zoom", "Zooms in and out relative to the simulation's center point.<br /><em>\
+    TBI.Popup.registry.add(gebi("psim-zoom-help"), "Zoom", "Zooms in and out relative to the simulation's center point.<br /><em>\
     The sun stops zooming out when it appears to be around 4 pixels wide.</em>");
     // Scale
     $("#psim-scale").mousedown(function () { scaled = true });
@@ -2871,17 +2871,17 @@ $(function () {
     $("#psim-scale").mousemove(function () { if (scaled) PSim.scale = +Math.pow($("#psim-scale").val(), 4).toFixed(6) });
     $("#psim-scale-reset").click(function () { $("#psim-scale").val(PSim.scale = 1) });
     $("#psim-scale-reset").trigger("click");
-    Popup.registry.add(gebi("psim-scale-help"), "Scale", "Scales the planet sizes to make them more easily visible.<br /><em>Does not \
+    TBI.Popup.registry.add(gebi("psim-scale-help"), "Scale", "Scales the planet sizes to make them more easily visible.<br /><em>Does not \
     increase the size of the Sun.</em>");
-    Popup.registry.add(gebi("psim-scale-reset"), "Scale Reset", "Resets the planet sizes to realistic values.");
+    TBI.Popup.registry.add(gebi("psim-scale-reset"), "Scale Reset", "Resets the planet sizes to realistic values.");
     // Speed
     $("#psim-speed").mousedown(function () { speeded = true });
     $("#psim-speed").mouseup(function () { speeded = false });
     $("#psim-speed").mousemove(function () { if (speeded) PSim.speed = +Math.pow($("#psim-speed").val(), 6).toFixed(6) });
     $("#psim-speed-reset").click(function () { $("#psim-speed").val(PSim.speed = 1) });
     $("#psim-speed-reset").trigger("click");
-    Popup.registry.add(gebi("psim-speed-help"), "Speed", "Speeds up or pauses the simulation.");
-    Popup.registry.add(gebi("psim-speed-reset"), "Speed Reset", "Resets the simulation speed to realistic values.");
+    TBI.Popup.registry.add(gebi("psim-speed-help"), "Speed", "Speeds up or pauses the simulation.");
+    TBI.Popup.registry.add(gebi("psim-speed-reset"), "Speed Reset", "Resets the simulation speed to realistic values.");
     // Checkboxes / Boolean values
     $("#psim-plines").click(function () { PSim.planetLines = this.checked });
     $("#psim-porbits").click(function () { PSim.planetOrbits = this.checked });

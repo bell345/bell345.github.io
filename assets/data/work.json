@@ -45,7 +45,7 @@
         {
             "id" : "psim",
             "name" : "Planetarium",
-            "version" : "0.9"
+            "version" : "0.9.1"
         },
         {
             "id" : "spaceshooter",

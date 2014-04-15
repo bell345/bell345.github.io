@@ -45,23 +45,14 @@ function isNull(thing) {
     return (thing == undefined || thing === "" || thing == null)
 }
 function chromeNotification(img, title, desc, link) {
-    if (isNull(window.webkitNotifications))
-        return null;
-    var permission = window.webkitNotifications.checkPermission();
-    if (permission == 0) {
-        var note = window.webkitNotifications.createNotification(
-            img, title, desc
-        );
-        if (!isNull(link)) {
-            note.onclick = function () {
-                window.open(link);
-                note.close();
-            }
+    if (isNull(window.Notification)) return null;
+    var note = {title:title,body:desc,icon:img,lang:"en"};
+    if (!isNull(link))
+        note.onclick = function () {
+            window.open(link);
+            note.close();
         }
-        note.show();
-    } else {
-        window.webkitNotifications.requestPermission();
-    }
+    new Notification(title, note);
 }
 var query = {};
 function queryManager() {
@@ -172,7 +163,7 @@ Cdown.main = function (enddate, dest) {
         this.active = false;
 		eraseCookie("cDown");
 		Cdown.check(false);
-        chromeNotification("/assets/res/icons/clock.png","Countdown over!!!", Cdown.name);
+        chromeNotification("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAMAAABrrFhUAAAABGdBTUEAALGPC/xhBQAAAwBQTFRFAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAszD0iAAAAQB0Uk5T////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////AFP3ByUAAAAJcEhZcwAADsIAAA7CARUoSoAAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjExR/NCNwAABU5JREFUeF7t0DGq7UgQRMHZ/6b/OEF6yeOqnUbKcArEUSHVf/8+bgcwP2sHMD9rBzA/awcwP2sHMD9rBzA/awcwP2sHMOO/l/ObsQOYoXstvxk7gBm61/KbsQOYoXstvxk7gBm61/KbsQOYoXstvxk7gBm61/KbsQOYoXstvxk7gBm61/KbsQOYoXstvxk7gBm61/KbsQOYoXstvxk7gBm61/KbsQOYoXstvxk7gBm61/KbsQOYoXstvxk7gBm6SnYtn1nJYgcwQ1fJruUzK1nsAGboKtm1fGYlix3ADF0lu5bPrGSxA5ihq2THrAuPj1lXyWIHMENXyY5ZFx4fs66SxQ5ghq6SHbMuPD5mXSWLHcAMXSU7Zl14fMy6ShY7gBm6SnbMuvD4mHWVLHYAM3SV7Jh14fEx6ypZ7ABm6CrZMevC42PWVbLYAczQVbJj1oXHx6yrZLEDmKGrZMesC4+PWVfJYgcwQ1fJjlkXHh+zrpLFDmCGrpIdsy48PmZdJYsdwAxdJTtmXXh8zLpKFjuAGbpKdsy68PiYdZUsdgAzdJXsmHXh8THrKlnsAGboKtkx68LjY9ZVstgBzNBVsmPWhcfHrKtksQOYoatkx6wLj49ZV8liBzBDV8mOWRceH7OuksUOYIaukh2zLjw+Zl0lix3ADF0lO2ZdeHzMukoWO4AZukp2zLrw+Jh1lSx2ADN0leyYdeHxMesqWewAZugq2THrwuNj1lWy2AHM0FWyY9aFx8esq2SxA5ihq2THrAuPj1lXyWIHMENXyY5ZFx4fs66SxQ5ghq6SHbMuPD5mXSWLHcAMXSU7Zl14fMy6ShY7gBm6SvaYNZXsMWsqWewAZugq2WPWVLLHrKlksQOYoatkj1lTyR6zppLFDmCGrpI9Zk0le8yaShY7gBm6SvaYNT/z+p/klSx2ADN0lewxa37m9T/JK1nsAGboKtlj1vzM63+SV7LYAczQVbLHrPmZ1/8kr2SxA5ihq2SPWfMzr/9JXsliBzBDV8kes+ZnXv+TvJLFDmCGrpI9Zs3PvP4neSWLHcAMXSV7zJqfef1P8koWO4AZukr2mDWV7DFrKlnsAGboKtlj1lSyx6ypZLEDmKGrZI9ZU8kes6aSxQ5ghq6SPWZNJXvMmkoWO4AZukp2LZ9ZyWIHMENXya7lMytZ7ABm6CrZtXxmJYsdwAxdJbuWz6xksQOYoatk1/KZlSx2ADN0lexaPrOSxQ5ghq6SXctnVrLYAczQVbJr+cxKFjuAGbpKdi2fWcliBzBDV8mu5TMrWewAZugq2bV8ZiWLHcAMXSW7ls+sZLEDmKGrZNfymZUsdgAzdJXsWj6zksUOYIaukl3LZ1ay2AHM0FWya/nMShY7gBm6SnYtn1nJYgcwQ1fJruUzK1nsAGboKtm1fGYlix3ADF0lu5bPrGSxA5ihq2TX8pmVLHYAM3SV7Fo+s5LFDmCGrpJdy2dWstgBzNBVsmv5zEoWO4AZukp2LZ9ZyWIHMENXya7lMytZ7ABm6CrZtXxmJYsdwAxdJbuWz6xksQOYoatk1/KZlSx2ADN0lexaPrOSxQ5ghq6SXctnVrLYAczQVbJr+cxKFjuAGbrX8puxA5ihey2/GTuAGbrX8puxA5ihey2/GTuAGbrX8puxA5ihey2/GTuAGbrX8puxA5ihey2/GTuAGbrX8puxA5ihey2/GTuAGbrX8puxA5ihey2/GTuAGbrX8puxA5ihey2/GTuAGbrX8puxA5ihey2/GTuA+Vk7gPlZO4D5WTuA+Vk7gPlZO4D5WTuA+Vk7gPlZHz/Av3//A6rtccuagqYxAAAAAElFTkSuQmCC","Countdown over!!!", Cdown.name);
         document.title = "CountDown";
     }
 }
@@ -303,7 +294,6 @@ Cdown.check = function (bool) {
             Cdown.name = decodeURI(query["n"]);
         }
         out.setTime(parseInt(query["t"]));
-        console.log(out);
         if (isNull(query["m"]) || query["m"] == "0") {
             if (parseInt(query["t"]) > Cdown.rightNow.getTime()) {
                 Cdown.set(out);

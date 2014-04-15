@@ -1,4 +1,4 @@
-﻿// TBI.JS - V5.1
+﻿// TBI.JS - V6.0
 // Base functions, variables and helpers that are included and required in
 // all of my website pages.
 // START INCOMPATIBILITY CODE //
@@ -16,6 +16,7 @@ document.onreadystatechange = function () {
     }
 }
 // END INCOMPATIBILITY CODE //
+var TBI = {};
 var now = new Date(),
     unqid = now.getTime(),
     query = {},
@@ -28,17 +29,17 @@ var now = new Date(),
     navbase = [],
     ASCII = "         \t\n\f\r                    !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
 // START CONSOLE NOTIFICATIONS //
-function log(message, timeout) {
+TBI.log = function (message, timeout) {
     console.log(message);
     timeout = isNull(timeout) ? 30000 : timeout;
-    new Notification("Log", message, 0, timeout);
+    new TBI.Notification("Log", message, 0, timeout);
 }
-function warn(message, timeout) {
+TBI.warn = function (message, timeout) {
     console.warn(message);
     timeout = isNull(timeout) ? 40000 : timeout;
-    new Notification("Warning", message, 0, timeout);
+    new TBI.Notification("Warning", message, 0, timeout);
 }
-function error(message, timeout) {
+TBI.error = function (message, timeout) {
     console.error(message);
     var orig = message;
     if (typeof(message) == "object")
@@ -46,12 +47,12 @@ function error(message, timeout) {
     timeout = isNull(timeout) ? 50000 : timeout;
     var onclick = "$($(this).parent()[0].getElementsByTagName(\"div\")[0]).slideToggle()";
     if (typeof(orig) == "object")
-        new Notification("Error", 
+        new TBI.Notification("Error", 
             orig.message+"<button onclick='"+onclick+"'>Show/Hide Stack</button><div style='display:none'>"+orig.stack+"</div>", 
             1, 
             timeout);
     else
-        new Notification("Error", message, 1, timeout);
+        new TBI.Notification("Error", message, 1, timeout);
 }
 // END CONSOLE NOTIFICATIONS //
 $(function () {
@@ -69,10 +70,10 @@ function gebi(element) { return document.getElementById(element); }
 // Checks the state of an XHR.
 function checkState(request) { return (request.readyState == 4); }
 // A XMLHttpRequest object constructor.
-function XHR() { return window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP"); }
+TBI.XHR = function () { return window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP"); }
 // An AJAX (Asynchronous JavaScript And XML) GET request constructor.
-function AJAX(url, func) {
-    var xhr = new XHR();
+TBI.AJAX = function (url, func) {
+    var xhr = new TBI.XHR();
     xhr.open("GET",url,true);
     xhr.send();
     xhr.onreadystatechange = function () {
@@ -86,7 +87,7 @@ function AJAX(url, func) {
     return xhr;
 }
 // Sets up the query variable with the search criteria.
-function requestManager() {
+TBI.requestManager = function () {
 	var search = location.search;
 	if (!isNull(location.search)) {
 		search = search.replace("?","").split("&");
@@ -114,7 +115,7 @@ function requestManager() {
 		path = pathname.split("/");
 	}
 }
-function navMoveTo(el) {
+TBI.navMoveTo = function (el) {
     if ($(el).length < 1) return false;
     var pad = parseInt($(el).css("paddingLeft"))*2;
     var loc = $(el).offset().left + (parseInt($(el).css("width"))+pad)/2;
@@ -129,7 +130,7 @@ function navMoveTo(el) {
     $("#top-ind div").css("boxShadow", "0px 4px 0px 0px #09d");
     $("#top-ind div").css("transition", "0.4s all");
 }
-function checkNav() {
+TBI.checkNav = function () {
     $("#top>div:not(.nav-ind)").off("mousemove");
     $("#top>div:not(.nav-ind)").mousemove(function (event) {
         var width = parseInt($("#top-ind div").css("width"));
@@ -147,9 +148,9 @@ function checkNav() {
         $("#top-ind div").css("transition","0s all");
     });
     $("#top>div:not(.nav-ind)").off("mouseleave");
-    $("#top>div:not(.nav-ind)").mouseleave(function () { navMoveTo("#curr") });
-    $("#top").mouseleave(function () { navMoveTo("#curr") });
-    if ($("#top").length > 0) navMoveTo("#curr");
+    $("#top>div:not(.nav-ind)").mouseleave(function () { TBI.navMoveTo("#curr") });
+    $("#top").mouseleave(function () { TBI.navMoveTo("#curr") });
+    if ($("#top").length > 0) TBI.navMoveTo("#curr");
     $(".nav-proto .inner-nav").empty();
     for (var i=0;i<Prototypes.length;i++)
         $(".nav-proto .inner-nav").append(
@@ -167,7 +168,7 @@ function checkNav() {
             navbase[i] = [$(parent)[0], $(child)[0]];
             $(parent).off("mouseover");
             $(parent).mouseover(function () {
-                var child = searchNavbase(this);
+                var child = TBI.searchNavbase(this);
                 if (isNull(child)) return false;
                 $(child).show();
                 var width = parseInt($(child).css("width"));
@@ -175,14 +176,14 @@ function checkNav() {
                 $(child).css("left", (-(width/2) + (link/2)) + "px");
                 $(child).mouseenter(function () {
                     $($(child).parent()).off("mousemove");
-                    $(child).mousemove(function () { navMoveTo(child) });
-                    updateLinks();
+                    $(child).mousemove(function () { TBI.navMoveTo(child) });
+                    TBI.updateLinks();
                 });
-                $(child).mouseleave(function () { checkNav() });
+                $(child).mouseleave(function () { TBI.checkNav() });
             });
             $(parent).off("mouseleave");
             $(parent).mouseleave(function () {
-                var child = searchNavbase(this);
+                var child = TBI.searchNavbase(this);
                 if (child == null) return false;
                 $(child).hide();
             });
@@ -192,7 +193,7 @@ function checkNav() {
     else $(".nav-top").slideUp();
 }
 // Returns first-level elements in an XML index.
-function findIndex(file, name) {
+TBI.findIndex = function (file, name) {
     if (navigator.userAgent.search(/MSIE [0-9]/) != -1)
         var xml = $.parseXML(file.responseText);
     if (navigator.userAgent.indexOf("Trident") != -1)
@@ -202,25 +203,20 @@ function findIndex(file, name) {
     return xml.getElementsByTagName(name);
 }
 // Appends HTML to an element.
-function modifyHtml(id, mod) {
-	var thing = gebi(id);
-	thing.innerHTML += mod;
-}
+function modifyHtml(id, mod) { gebi(id).innerHTML += mod }
 // Shortens a string by an index.
 function shorten(str, index) {
     var tempstr = [];
     if (str.length > 0 && !isNull(str)) {
         for (var i = 0; i < str.length; i++) {
-            if (i < index)
-                tempstr.push(str[i]);
-            else if (i == index)
-                return tempstr.join("");
+            if (i < index) tempstr.push(str[i]);
+            else if (i == index) return tempstr.join("");
         }
     }
 }
 function zeroPrefix(num) { return (num<10?"0":"")+num; }
 // Highlights a nav link to the same page.
-function findPage() {
+TBI.findPage = function () {
     var curr = path[0];
 	if (isNull(curr)) curr = "";
     var nav = "#top>div:not(.nav-ind)";
@@ -231,7 +227,7 @@ function findPage() {
             $(navbar[i]).attr("id","curr");
 }
 // Determines whether or not a number is even.
-function isEven(num) { return (num % 2 == 0); }
+function isEven(num) {return num%2==0 }
 // Determines whether or not a variable is nothing at all.
 function isNull(thing) {
     if (thing instanceof Array) {
@@ -293,7 +289,7 @@ var binToStr = translateBinary,
     binToDec = binToDec,
     decToStr = function(d){return ASCII[d]};
 // An externally edited replacement for setInterval.
-function timerSet(timer, seconds, func) {
+TBI.timerSet = function (timer, seconds, func) {
     if (typeof (func) == "function") {
         $(document).on(timer + "_timer" + "trig", func);
         window[timer + "_timer"] = setInterval(function () {
@@ -308,7 +304,7 @@ function timerSet(timer, seconds, func) {
     }
 }
 // Clears a timerSet.
-function timerClear(timer) {
+TBI.timerClear = function (timer) {
     if (window[timer + "_timer"]) {
         clearInterval(window[timer + "_timer"]);
         window[timer + "_timer"] = undefined;
@@ -343,6 +339,10 @@ function circlePoint(a, r, x, y) {
     x=isNull(x)?0:x;
     y=isNull(y)?0:y;
     return [x+r*Math.cos(dtr(a)),y+r*Math.sin(dtr(a))];
+}
+function circum(r) { return 2*Math.PI*r }
+function squareDim(x,y,r) {
+    return [x-r,y-r,r*2,r*2];
 }
 function mean(list) {
     var total = 0;
@@ -384,8 +384,7 @@ function convertKeyDown(event) {
 }
 // Creates a customizable, absolutely positioned popup element.
 // There can only be one at a time.
-Popup.registry = [];
-function Popup(x, y, head, text) {
+TBI.Popup = function (x, y, head, text) {
 	this.x = x;
 	this.y = y;
 	this.head = head;
@@ -407,17 +406,18 @@ function Popup(x, y, head, text) {
         $(".popup").css("top", (parseInt($(".popup").css("top")) - parseInt($(".popup").css("height")) - 40) + "px");
     }
 }
+TBI.Popup.registry = [];
 // Adds a popup when hovering over a specified element.
-Popup.registry.add = function (element, head, text) {
+TBI.Popup.registry.add = function (element, head, text) {
     if (true) {
-        Popup.registry.push([element, head, text]);
+        TBI.Popup.registry.push([element, head, text]);
         $(element).off("mousemove");
         $(element).mousemove(function (event) {
             var thisReg = [];
-            for (var i=0;i<Popup.registry.length;i++)
-                if (Popup.registry[i][0] == $(this)[0])
-                    thisReg = Popup.registry[i];
-        new Popup(event.clientX+20, event.clientY+20, thisReg[1], thisReg[2]);
+            for (var i=0;i<TBI.Popup.registry.length;i++)
+                if (TBI.Popup.registry[i][0] == $(this)[0])
+                    thisReg = TBI.Popup.registry[i];
+        new TBI.Popup(event.clientX+20, event.clientY+20, thisReg[1], thisReg[2]);
         });
         $(element).mouseleave(function () {
             $('.popup').remove();
@@ -427,15 +427,15 @@ Popup.registry.add = function (element, head, text) {
     }
 }
 // Removes an element from the registry.
-Popup.registry.remove = function (element) {
-    for (var i=0;i<Popup.registry.length;i++) 
-        if (Popup.registry[i][0] == $(element)[0])
-            Popup.registry[i] = undefined;
+TBI.Popup.registry.remove = function (element) {
+    for (var i=0;i<TBI.Popup.registry.length;i++) 
+        if (TBI.Popup.registry[i][0] == $(element)[0])
+            TBI.Popup.registry[i] = undefined;
     $(element).off("mousemove");
 }
 // A predefined popup element that can be added to by using the same header.
 // There can only be one notification type, but multiple messages and instances of messages.
-function Notification(head, text, type, timeout) {
+TBI.Notification = function (head, text, type, timeout) {
     this.type = isNull(type) ? 0 : type;
     timeout = isNull(timeout) ? 10000 : timeout;
     var states = ["ui-state-highlight", "ui-state-error"];
@@ -480,9 +480,9 @@ function Notification(head, text, type, timeout) {
             }
         }
     }
-    timerClear("noteRemove");
+    TBI.timerClear("noteRemove");
     var timerCount = 0;
-    timerSet("noteRemove",500,function () {
+    TBI.timerSet("noteRemove",500,function () {
         if (timerCount >= timeout)
             $(".notification").hide();
         if ($($(".notification")[0]).css("display")=="none") {
@@ -492,7 +492,7 @@ function Notification(head, text, type, timeout) {
                 "text" : [],
                 "type" : []
             };
-            timerClear("noteRemove");
+            TBI.timerClear("noteRemove");
             timerCount = 0;
         }
         timerCount+=500;
@@ -501,21 +501,16 @@ function Notification(head, text, type, timeout) {
     notePrevInfo["text"].push(this.text);
     notePrevInfo["type"].push(this.type);
 }
-// For Blink only.
 // Generates a desktop notification outside of the regular environment.
-function chromeNotification(img, title, desc, link) {
-    if (isNull(window.webkitNotifications)) return null;
-    var permission = window.webkitNotifications.checkPermission();
-    if (permission == 0) {
-        var note = window.webkitNotifications.createNotification(
-            img, title, desc
-        );
-        if (!isNull(link))
-            note.onclick = function () {
-                window.open(link);
-            }
-        note.show();
-    } else window.webkitNotifications.requestPermission();
+function Note(img, title, desc, link) {
+    if (isNull(window.Notification)) return null;
+    var note = {title:title,body:desc,icon:img,lang:"en"};
+    if (!isNull(link))
+        note.onclick = function () {
+            window.open(link);
+            note.close();
+        }
+    new Notification(title, note);
 }
 // A 2D canvas context constructor.
 function Canvas2D(id) {
@@ -532,7 +527,7 @@ Canvas2D.inspector = function (context) {
     $(cvs).off("mousemove");
     if (context.inspector) {
         $(cvs).mousemove(function (event) {
-            new Popup(
+            new TBI.Popup(
                 event.clientX + 20,
                 event.clientY + 20,
                 "Canvas Inspector",
@@ -585,7 +580,7 @@ function updateHeight() {
 		$("footer nav a").show();
 }
 // Designates outgoing links. */
-function updateLinks() {
+TBI.updateLinks = function () {
     for (var i = 0; i < $("a[href]").length; i++) {
         if ($("a[href]:nth("+i+")").attr("href").search(/((http|https|mailto|news):|\/\/)/) == 0) {
             $("a[href]:nth("+i+")").attr("target", "_blank");
@@ -595,16 +590,16 @@ function updateLinks() {
     }
     $("#navigation a").click(function () {
         if (!isNull(location.hash) && !isNull($(location.hash))) {
-            timerSet("scroll",10,function () {
+            TBI.timerSet("scroll",10,function () {
                 if (!isNull($(location.hash).offset())) {
                     $(document).scrollTop(parseInt($(location.hash).offset().top - 57));
-                    timerClear("scroll");
+                    TBI.timerClear("scroll");
                 }
             });
         }
     });
 }
-function searchNavbase(s) {
+TBI.searchNavbase = function (s) {
     for (var i=0;i<navbase.length;i++) 
         if (navbase[i] != undefined && navbase[i][0] == s) 
             return navbase[i][1];
@@ -618,7 +613,7 @@ HTMLIncludes.info = [];
 HTMLIncludes.getDone = [];
 HTMLIncludes.includes = [];
 HTMLIncludes.getIndex = function () {
-    var xhr = new AJAX("/assets/data/includes.json", function () {
+    var xhr = new TBI.AJAX("/assets/data/includes.json", function () {
         HTMLIncludes.info = $.parseJSON(xhr.response).includes;
         HTMLIncludes.get();
     });
@@ -626,14 +621,14 @@ HTMLIncludes.getIndex = function () {
 HTMLIncludes.get = function () {
     var curr = 0;
     for (var i = 0; i < HTMLIncludes.info.length; i++) HTMLIncludes.getDone[i] = false;
-    timerSet("includes", 200, function () {
+    TBI.timerSet("includes", 200, function () {
         if (!HTMLIncludes.getDone[curr]) {
             HTMLIncludes.getDone[curr] = true;
-            var xhr = new AJAX(HTMLIncludes.info[curr].source, function () {
+            var xhr = new TBI.AJAX(HTMLIncludes.info[curr].source, function () {
                 HTMLIncludes.includes[curr] = xhr.response;
                 $(HTMLIncludes.info[curr].insert).html(HTMLIncludes.includes[curr]);
                 if (curr == HTMLIncludes.getDone.length - 1) {
-                    timerClear("includes");
+                    TBI.timerClear("includes");
                     $(document).trigger("pageload");
                 } else curr++;
             });
@@ -652,17 +647,17 @@ if (!Array.prototype.indexOf) {
 }
 var Prototypes = [];
 var Work = [];
-function fetchProtoIndex() {
-    var xhr = new AJAX("/assets/data/work.json", function () {
+TBI.fetchProtoIndex = function () {
+    var xhr = new TBI.AJAX("/assets/data/work.json", function () {
         Prototypes = $.parseJSON(xhr.response).prototypes;
         Work = $.parseJSON(xhr.response).work;
-        if (path[0] == "proto") setupPrototypes();
-        if (path[0] == "work") setupWork();
-        checkNav();
-        updateLinks();
+        if (path[0] == "proto") TBI.setupPrototypes();
+        if (path[0] == "work") TBI.setupWork();
+        TBI.checkNav();
+        TBI.updateLinks();
     });
 }
-function setupPrototypes() {
+TBI.setupPrototypes = function () {
     for (var i=0;i<Prototypes.length;i++) {
         var titleText = "";
         if (!isNull(Prototypes[i].link))
@@ -679,7 +674,7 @@ function setupPrototypes() {
         $($(".version")[i]).html(Prototypes[i].version + toggleHTML);
     }
 }
-function setupWork() {
+TBI.setupWork = function () {
     for (var i=0;i<Work.length;i++) {
         var titleText = "";
         if (!isNull(Work[i].link)) titleText += "<a href='"+Work[i].link+"'>";
@@ -690,23 +685,23 @@ function setupWork() {
     }
 }
 $(document).on("pageload", function () {
-    fetchProtoIndex();
-    findPage();
-    checkNav();
-    updateLinks();
+    TBI.fetchProtoIndex();
+    TBI.findPage();
+    TBI.checkNav();
+    TBI.updateLinks();
     if (!isNull(location.hash) && !isNull($(location.hash))) {
-        timerSet("scroll",10,function () {
+        TBI.timerSet("scroll",10,function () {
             if (!isNull($(location.hash).offset())) {
                 $(document).scrollTop(parseInt($(location.hash).offset().top - 57));
-                timerClear("scroll");
+                TBI.timerClear("scroll");
             }
         });
     }
 });
 $(function () {
-	requestManager();
-    checkNav();
-    $(document).scroll(function () { checkNav() });
+	TBI.requestManager();
+    TBI.checkNav();
+    $(document).scroll(function () { TBI.checkNav() });
     HTMLIncludes.getIndex();
     $(document).resize(function () { updateHeight(); });
     $("button.toggle").click(function () {

@@ -1,0 +1,213 @@
+/* START AT RULES */
+@font-face {
+    font-family:'Oswald';
+    font-weight:400;
+    font-style:normal;
+    src:local("Oswald"), url(/shared/res/fonts/Oswald.woff) format("woff");
+}
+@font-face {
+    font-family:'Open Sans';
+    font-weight:400;
+    font-style:normal;
+    src:local("Open Sans"), local("OpenSans"), url(/shared/res/fonts/OpenSans.woff) format("woff");
+}
+@font-face {
+    font-family: 'Montserrat';
+    font-weight:400;
+    font-style:normal;
+    src: local('Montserrat-Regular'), url(/shared/res/fonts/Montserrat.woff) format('woff');
+}
+@font-face {
+    font-family:'Righteous';
+    font-style:normal;
+    font-weight:400;
+    src: local("Righteous"), local("Righteous-Regular"), url(/shared/res/fonts/Righteous.woff) format("woff");
+}
+/* END AT RULES */
+/* START GLOBAL STYLE */
+* {
+    margin:0;
+    padding:0;
+    border:0;
+}
+body {
+    background:#aaa;
+    font-family:"Open Sans", Calibri, sans-serif;
+}
+button:focus, input[type]:focus, input[type="file"]::-webkit-file-upload-button:focus {
+	outline:2px solid #0094ff;
+}
+button:active {
+	background-color:rgba(0,0,0,0.2);
+    position:relative;
+    top:2px;
+    outline:0;
+}
+input[type="text"]:active, input[type="text"]:focus, 
+textarea:active, textarea:focus,
+*[contenteditable]:active, *[contenteditable]:focus {
+	outline:2px solid #0094ff;
+}
+h3.main {
+    color:#333;
+    font-family:'Montserrat',Calibri,sans-serif;
+    font-size:24px;
+    padding-left:30px;
+    padding-top:0;
+}
+p {
+    text-align:left;
+}
+div a {
+    color:#09f;
+    text-decoration:none;
+}
+div a:hover {
+    color:#aaa;
+}
+button, input[type="file"]::-webkit-file-upload-button, input[type="button"] {
+    font-family:'Open Sans',Calibri,sans-serif;
+    font-size:14px;
+    padding:4px;
+    padding-left:8px;
+    padding-right:8px;
+	background-color:#eee;
+    border:0;
+}
+button:not(.calcnum):not(.toggle-on):hover,
+input[type="file"]::-webkit-file-upload-button:hover,
+input[type="button"]:hover {
+    background-color:#e2e2e2;
+}
+button:not(.calcnum):not(.toggle-on):active,
+input[type="file"]::-webkit-file-upload-button:hover,
+input[type="button"]:active {
+    background-color:#dadada;
+}
+input[type="text"], input {
+    font-family:'Open Sans',Calibri,sans-serif;
+    font-size:14px;
+    padding:4px;
+    padding-left:8px;
+    padding-right:8px;
+    margin:4px;
+}
+/* END GLOBAL STYLE */
+#calculator {
+    width:368px;
+    box-shadow:5px 5px 5px #555;
+}
+#calcwindow {
+    background:#333;
+    color:#0f0;
+    padding:12px;
+    text-align:right;
+    overflow:hidden;
+}
+#calcwindow span {
+    font-family:"Consolas",monospace;
+    font-size:36px;
+    color:#3AACFF;
+    text-align:right;
+    overflow:hidden;
+	-webkit-user-select:initial;
+	user-select:initial;
+	cursor:text;
+}
+#calcwindow input {
+    font-family:"Consolas",monospace;
+    font-size:36px;
+    color:#3AACFF;
+    padding:0;
+    margin:0;
+    background:rgba(255,255,255,0.2);
+    width:100%;
+    text-align:right;
+}
+#calcstatus {
+    background:#444;
+    padding:6px;
+    text-align:right;
+}
+#calcstatus span {
+    font-family:"Consolas",monospace;
+    font-size:14px;
+    color:#3AACFF;
+    text-align:right;
+}
+.calcbuttons {
+    padding:16px;
+    background:#aaa;
+}
+.calcrow, .calcrowside {
+    text-align:center;
+}
+.calcrow {
+    margin-bottom:16px;
+}
+.calcrowmajor, .calcrowside {
+    display:inline-block;
+}
+.calcrowside {
+    float:right;
+}
+
+.calcrowmajor > button {
+    font-size:36px;
+    text-align:center;
+    width:64px;
+    margin-bottom:4px;
+}
+.calcrowside > button {
+    font-size:36px;
+    text-align:center;
+    width:64px;
+    margin-bottom:4px;
+}
+.calcrowminor > button {
+    font-size:20px;
+    text-align:center;
+    width:52px;
+    margin-bottom:4px;
+}
+.calcrowminor {
+    text-align:center;
+}
+.calcbuttonvert {
+    height:118px;
+    margin-left:4px;
+}
+button.calcbuttonhorz {
+    width:132px;
+}
+button.calctext {
+    font-size:24px;
+}
+button.calcnum, #calcdot {
+    background-color:#555;
+    color:#eee;
+}
+#calcequals {
+    background-color:#0094ff;
+    color:#eee;
+}
+#calcallclear {
+    background-color:#f00;
+    color:#eee;
+}
+.calcadvonly {
+    display:none;
+}
+sup.no-break {
+    vertical-align:inherit;
+    position:relative;
+    bottom:8px;
+    font-size:small;
+}
+button.toggle-on {
+    background-color:rgba(0,0,0,0.2);
+    position:relative;
+    top:2px;
+    outline:0;
+    color:#eee;
+}
