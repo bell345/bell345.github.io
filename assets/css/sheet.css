@@ -100,20 +100,46 @@ div.nav {
 }
 div.nav>div:not(.nav-ind) {
     height:52px;
-    width:48px;
+    min-width:48px;
     padding:0px 8px;
     display:inline-block;
     position:relative;
+    background-origin:content-box;
+    background-position:left;
 }
 div.nav>div>a {
     height:48px;
-    width:48px;
     display:inline-block;
     position:relative;
     right:8px;
     padding:0px 8px;
+    line-height:52px;
+    font-size:24px;
+    vertical-align:top;
+    text-decoration:none;
+    max-width:32px;
+    transition:0.4s all;
+    overflow:hidden;
+    color:#555;
+    font-weight:bold;
+    font-family:"Raleway", "Calibri", sans-serif;
 }
-#curr, #navigation>.nav>div:not(.nav-ind):hover {
+div.nav>div:hover a {
+    max-width:240px;
+}
+div.nav>div>a:before {
+    height:48px;
+    width:48px;
+    content:"";
+    display:inline-block;
+    padding:0px 8px;
+    right:8px;
+    position:relative;
+}
+#curr {
+    background-color:rgba(0,0,0,0.05);
+}
+#navigation>.nav>div:not(.nav-ind):hover {
     background-color:rgba(0,0,0,0.1);
 }
 .nav-ind {
@@ -139,6 +165,7 @@ ul.inner-nav {
     color:#333;
     min-width:200px;
     box-shadow:4px 4px 0px rgba(0,0,0,0.1);
+    left:0;
 }
 ul.inner-nav li {
     display:block;
@@ -157,12 +184,13 @@ ul.inner-nav li:hover {
 ul.inner-nav li a {
     display:block;
 }
-.nav-home { background:url(/assets/res/icons/home48.png) center no-repeat; }
-.nav-proto { background:url(/assets/res/icons/proto48.png) center no-repeat; }
-.nav-about { background:url(/assets/res/icons/about48.png) center no-repeat; }
-.nav-work { background:url(/assets/res/icons/work48.png) center no-repeat; }
+.nav-home { background:url(/assets/res/icons/home48.png) no-repeat; }
+.nav-proto { background:url(/assets/res/icons/proto48.png) no-repeat; }
+.nav-about { background:url(/assets/res/icons/about48.png) no-repeat; }
+.nav-work { background:url(/assets/res/icons/work48.png) no-repeat; }
 #navigation>.nav>div.nav-top { 
-    background:url(/assets/res/icons/arrow48.png) center no-repeat;
+    background:url(/assets/res/icons/arrow48.png) left no-repeat;
+    background-origin:content-box;
     position:fixed;
     top:0;
     right:0;
@@ -371,6 +399,9 @@ sup.no-break {
 }
 .popup h3 {
     padding-bottom:0;
+}
+div.popup ul {
+    margin-bottom:0;
 }
 .notification {
     position:absolute;

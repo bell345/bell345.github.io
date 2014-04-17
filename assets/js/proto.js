@@ -1545,7 +1545,7 @@ Calc.setUp = function () {
     $("#calcallclear").click(function () {
         Calc.workingNum = "";
         Calc.numbers = [];
-        if (!Calc.inputMode && isNull(calcwindow_timer)) { 
+        if (!Calc.inputMode && isNull(Timers.calcwindow)) { 
             Calc.string = "_";
             TBI.timerSet("calcwindow",1000,function () {
                 if ($($("#calcwindow span")[0]).css("color")=="rgba(0, 0, 0, 0)") {
@@ -2708,7 +2708,7 @@ PSim.satellite = function (parent, name) {
     var satellite = planet.satellites[name];
     var parentRotation = PSim.objectbank[parent][0];
     var rotation = isNull(PSim.objectbank[name]) ? PSim.objectvars[parent].satellites[name].rotation : PSim.objectbank[name][0];
-    rotation = isNull(rotation) ? randomInt(360) : rotation;
+    rotation = isNull(rotation) ? randomInt(360) : rotation % 360;
     rotation += (360 / ((satellite.distance * PSim.AU * 2 * Math.PI) / satellite.speed)) / PSim.fps * PSim.speed;
     PSim.ctx.save();
     PSim.ctx.translate(PSim.pan[0] * (PSim.zoom * PSim.PF), PSim.pan[1] * (PSim.zoom * PSim.PF));
@@ -2822,6 +2822,9 @@ PSim.cursor = function () {
     var y = PSim.overlay.pageY - $("#psim-canvas").offset().top - 300.5;
     Canvas2D.path(PSim.ctx, {type:"stroke",style:"white",path:[[x,y],[x+10,y],[x,y],[x-10,y],[x,y],[x,y+10],[x,y],[x,y-10]]});
     if (PSim.clicked == 1) {
+        var zoom = PSim.zoom;
+        PSim.zoom = zoom>1?1:zoom;
+        if (zoom>1) { $("#psim-zoom").val(1) }
         PSim.clicked = 2;
         PSim.pan = [0, 0];
         PSim.selected = null;
@@ -2834,6 +2837,7 @@ PSim.cursor = function () {
                 PSim.speed = 1;
                 $("#psim-speed").val(1);
                 PSim.selected = label.name;
+                PSim.zoom = zoom;
                 return true;
             }
         }
@@ -2877,11 +2881,16 @@ $(function () {
     // Speed
     $("#psim-speed").mousedown(function () { speeded = true });
     $("#psim-speed").mouseup(function () { speeded = false });
-    $("#psim-speed").mousemove(function () { if (speeded) PSim.speed = +Math.pow($("#psim-speed").val(), 6).toFixed(6) });
+    $("#psim-speed").mousemove(function () { 
+        if (speeded && !isNegative($("#psim-speed").val())) PSim.speed = +Math.pow($("#psim-speed").val(), 6).toFixed(6)
+        else if (speeded) PSim.speed = -Math.pow($("#psim-speed").val(), 6).toFixed(6)
+    });
     $("#psim-speed-reset").click(function () { $("#psim-speed").val(PSim.speed = 1) });
+    $("#psim-speed-pause").click(function () { $("#psim-speed").val(PSim.speed = 0) });
     $("#psim-speed-reset").trigger("click");
     TBI.Popup.registry.add(gebi("psim-speed-help"), "Speed", "Speeds up or pauses the simulation.");
     TBI.Popup.registry.add(gebi("psim-speed-reset"), "Speed Reset", "Resets the simulation speed to realistic values.");
+    TBI.Popup.registry.add(gebi("psim-speed-pause"), "Speed Pause", "Stops the simulation completely.");
     // Checkboxes / Boolean values
     $("#psim-plines").click(function () { PSim.planetLines = this.checked });
     $("#psim-porbits").click(function () { PSim.planetOrbits = this.checked });

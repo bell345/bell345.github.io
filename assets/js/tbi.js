@@ -117,11 +117,9 @@ TBI.requestManager = function () {
 }
 TBI.navMoveTo = function (el) {
     if ($(el).length < 1) return false;
-    var pad = parseInt($(el).css("paddingLeft"))*2;
-    var loc = $(el).offset().left + (parseInt($(el).css("width"))+pad)/2;
-    var half = parseInt($("#top-ind div").css("width"))/2;
+    var loc = $(el).offset().left;
     var off = $("#top-ind").offset().left;
-    var alg = loc-half-off;
+    var alg = loc-off;
     if(alg<0)alg=0;
     else if(alg+parseInt($("#top-ind div").css("width"))>window.innerWidth)
         alg=parseInt(window.innerWidth-$("#top-ind div").css("width"));
@@ -139,26 +137,37 @@ TBI.checkNav = function () {
         var alg = event.clientX-half-off;
         var page = parseInt($("body").css("width"));
         if(alg<0)alg=0;
-        else if(alg+off+width>page) {
-            alg=page-width-off;
-        }
+        else if(alg+off+width>page) alg=page-width-off;
         $("#top-ind div").css("left", alg+"px");
         $("#top-ind div").css("backgroundColor", "#5dd");
         $("#top-ind div").css("boxShadow", "0px 4px 0px 0px #3bb");
         $("#top-ind div").css("transition","0s all");
     });
     $("#top>div:not(.nav-ind)").off("mouseleave");
-    $("#top>div:not(.nav-ind)").mouseleave(function () { TBI.navMoveTo("#curr") });
-    $("#top").mouseleave(function () { TBI.navMoveTo("#curr") });
-    if ($("#top").length > 0) TBI.navMoveTo("#curr");
+    $("#top>div:not(.nav-ind)").mouseleave(function () { 
+        TBI.timerClear("curr");
+        TBI.timerSet("curr", 500, function () { TBI.navMoveTo("#curr"); TBI.timerClear("curr") });
+    });
+    $("#top").mouseleave(function () { 
+        TBI.timerClear("curr");
+        TBI.timerSet("curr", 500, function () { TBI.navMoveTo("#curr"); TBI.timerClear("curr") }); 
+    });
+    if ($("#top").length > 0) { 
+        TBI.timerClear("curr");
+        TBI.timerSet("curr", 500, function () { TBI.navMoveTo("#curr"); TBI.timerClear("curr") });
+    }
+    /** Fill the prototypes menu */
     $(".nav-proto .inner-nav").empty();
     for (var i=0;i<Prototypes.length;i++)
         $(".nav-proto .inner-nav").append(
             "<li><a href='/proto/#"+Prototypes[i].id+"'>"+Prototypes[i].name+"</a></li>"
         );
+    
+    /** Fill the work menu */
     $(".nav-work .inner-nav").empty();
     for (var i=0;i<Work.length;i++) 
         $(".nav-work .inner-nav").append("<li><a href='/work/#"+Work[i].id+"'>"+Work[i].name+"</a></li>");
+    
     var nv = "#top>div:not(.nav-ind)";
     navbase = new Array($(nv).length);
     for (var i=0;i<$(nv).length;i++) {
@@ -171,12 +180,9 @@ TBI.checkNav = function () {
                 var child = TBI.searchNavbase(this);
                 if (isNull(child)) return false;
                 $(child).show();
-                var width = parseInt($(child).css("width"));
-                var link = parseInt($(this).css("width"))+parseInt($(this).css("paddingLeft"))*2;
-                $(child).css("left", (-(width/2) + (link/2)) + "px");
                 $(child).mouseenter(function () {
                     $($(child).parent()).off("mousemove");
-                    $(child).mousemove(function () { TBI.navMoveTo(child) });
+                    $(child).mousemove(function () { TBI.navMoveTo($($(child).parent())) });
                     TBI.updateLinks();
                 });
                 $(child).mouseleave(function () { TBI.checkNav() });
@@ -288,26 +294,27 @@ var binToStr = translateBinary,
     strToDec = function(b){return parseInt(b,2)},
     binToDec = binToDec,
     decToStr = function(d){return ASCII[d]};
+var Timers = {};
 // An externally edited replacement for setInterval.
 TBI.timerSet = function (timer, seconds, func) {
     if (typeof (func) == "function") {
-        $(document).on(timer + "_timer" + "trig", func);
-        window[timer + "_timer"] = setInterval(function () {
-            $(document).trigger(timer + "_timer" + "trig");
+        $(document).on(timer + "_timertrig", func);
+        Timers[timer] = setInterval(function () {
+            $(document).trigger(timer + "_timertrig");
         }, seconds);
     }
     else {
-        $(document).on(timer + "_timer" + "trig", function () { return null; });
-        window[timer + "_timer"] = setInterval(function () {
-            $(document).trigger(timer + "_timer" + "trig");
+        $(document).on(timer + "_timertrig", function () { return null });
+        Timers[timer] = setInterval(function () {
+            $(document).trigger(timer + "_timertrig");
         }, seconds);
     }
 }
 // Clears a timerSet.
 TBI.timerClear = function (timer) {
-    if (window[timer + "_timer"]) {
-        clearInterval(window[timer + "_timer"]);
-        window[timer + "_timer"] = undefined;
+    if (!isNull(Timers[timer])) {
+        clearInterval(Timers[timer]);
+        Timers[timer] = undefined;
         $(document).off(timer + "_timertrig")
     }
 }
@@ -341,9 +348,7 @@ function circlePoint(a, r, x, y) {
     return [x+r*Math.cos(dtr(a)),y+r*Math.sin(dtr(a))];
 }
 function circum(r) { return 2*Math.PI*r }
-function squareDim(x,y,r) {
-    return [x-r,y-r,r*2,r*2];
-}
+function squareDim(x,y,r) { return [x-r,y-r,r*2,r*2] }
 function mean(list) {
     var total = 0;
     for (var i=0;i<list.length;i++) total += list[i]
@@ -443,7 +448,7 @@ TBI.Notification = function (head, text, type, timeout) {
 	this.text = text;
     this.noteNum = $(".notification").length;
     if (notePrevInfo["head"].indexOf(this.head)!=-1
-    && !isNull(noteRemove_timer) 
+    && !isNull(Timers.noteRemove) 
     && notePrevInfo["text"].indexOf(this.text)==-1) {
         for (var i=0;i<this.noteNum;i++) {
             if ($($(".notification h3")[i]).text() == this.head) {
@@ -688,6 +693,7 @@ $(document).on("pageload", function () {
     TBI.fetchProtoIndex();
     TBI.findPage();
     TBI.checkNav();
+    TBI.navMoveTo($("#curr"));
     TBI.updateLinks();
     if (!isNull(location.hash) && !isNull($(location.hash))) {
         TBI.timerSet("scroll",10,function () {
