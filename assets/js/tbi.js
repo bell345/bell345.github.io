@@ -88,14 +88,14 @@ TBI.AJAX = function (url, func) {
 }
 // Sets up the query variable with the search criteria.
 TBI.requestManager = function () {
-	var search = location.search;
-	if (!isNull(location.search)) {
-		search = search.replace("?","").split("&");
-		for (var i=0;i<search.length;i++) {
-			search[i] = search[i].split("=");
-			query[search[i][0]] = search[i][1];
-		}
-	}
+    var search = location.search;
+    if (!isNull(location.search)) {
+        search = search.replace("?","").split("&");
+        for (var i=0;i<search.length;i++) {
+            search[i] = search[i].split("=");
+            query[search[i][0]] = search[i][1];
+        }
+    }
     var hash = location.hash;
     if (!isNull(location.hash)) {
         hash = hash.replace("#","").split("&");
@@ -105,15 +105,15 @@ TBI.requestManager = function () {
         }
     }
     if (location.pathname.length > 1) {
-		var pathname = location.pathname;
-		if (pathname.indexOf("/") == 0) {
-			pathname = pathname.slice(1);
-		}
-		if (pathname.lastIndexOf("/") == pathname.length-1) {
-			pathname = shorten(pathname, pathname.length-1);
-		}
-		path = pathname.split("/");
-	}
+        var pathname = location.pathname;
+        if (pathname.indexOf("/") == 0) {
+            pathname = pathname.slice(1);
+        }
+        if (pathname.lastIndexOf("/") == pathname.length-1) {
+            pathname = shorten(pathname, pathname.length-1);
+        }
+        path = pathname.split("/");
+    }
 }
 TBI.navMoveTo = function (el) {
     if ($(el).length < 1) return false;
@@ -224,9 +224,9 @@ function zeroPrefix(num) { return (num<10?"0":"")+num; }
 // Highlights a nav link to the same page.
 TBI.findPage = function () {
     var curr = path[0];
-	if (isNull(curr)) curr = "";
+    if (isNull(curr)) curr = "";
     var nav = "#top>div:not(.nav-ind)";
-	var navbar = $(nav);
+    var navbar = $(nav);
     var links = $("#top>div:not(.nav-ind)>a");
     for (var i = 0; i < links.length; i++)
         if ($(links[i]).attr("href").split("/")[1] == curr)
@@ -246,6 +246,15 @@ function isNull(thing) {
 }
 // Determines whether a number is negative.
 function isNegative(num) { return (Math.abs(num) != num); }
+// Determines whether an array is equal to another.
+function isEqual(arr1, arr2) {
+    if (arr1.length != arr2.length || !(arr1 instanceof Array) || !(arr2 instanceof Array)) return false;
+    for (var i=0;i<arr1.length;i++) {
+        if (!(arr1[i] instanceof Array) && !(arr2[i] instanceof Array) && arr1[i] != arr2[i]) return false;
+        else if (arr1[i] instanceof Array && arr2[i] instanceof Array && !isEqual(arr1[i], arr2[i])) return false;
+    }
+    return true;
+}
 // Returns the numbers that go into the specified number.
 function divisors(num) {
     var divisors=[];
@@ -320,18 +329,18 @@ TBI.timerClear = function (timer) {
 }
 // Returns a preformatted array of the date object specified.
 function unixToString(date) {
-	if (date.getMonth() == 0) {var month=1}
-	else {var month = date.getMonth()+1};
-	var day = date.getDate();
-	var hour = date.getHours();
-	var minute = date.getMinutes();
-	var second = date.getSeconds();
-	month = zeroPrefix(month);
-	day = zeroPrefix(day);
-	hour = zeroPrefix(hour);
-	minute = zeroPrefix(minute);
-	second = zeroPrefix(second);
-	return [date.getTime(), date.getFullYear(), month, day, hour, minute, second];
+    if (date.getMonth() == 0) {var month=1}
+    else {var month = date.getMonth()+1};
+    var day = date.getDate();
+    var hour = date.getHours();
+    var minute = date.getMinutes();
+    var second = date.getSeconds();
+    month = zeroPrefix(month);
+    day = zeroPrefix(day);
+    hour = zeroPrefix(hour);
+    minute = zeroPrefix(minute);
+    second = zeroPrefix(second);
+    return [date.getTime(), date.getFullYear(), month, day, hour, minute, second];
 }
 // Returns a random integer.
 function randomInt(num) { return parseInt(Math.random()*num) }
@@ -354,54 +363,55 @@ function mean(list) {
     for (var i=0;i<list.length;i++) total += list[i]
     return total / list.length;
 }
-// For keypress events.
+Math.root = function (num, pow) {
+    try {
+        var negate = pow % 2 == 1 && pow < 0;
+        if (negate) pow = -pow;
+        var poss = Math.pow(num, 1/pow);
+        num = Math.pow(poss, num);
+        return negate ? -poss : poss;
+    } catch (e) { return TBI.error("Error in Math.root("+num+", "+pow+"): " + e.message); }
+}
 // Converts a keypress event keycode into the character typed.
-// Returns null when an invisible character is typed (shift, alt, etc.)
 function convertKeyDown(event) {
     var which = event.which;
-    if (which>8&&which<47) {
-        var chars = ["backspace","tab","","","","return","","","shift","control","alt","pause","caps",
-            "","","","","","","escape","","","","","","page up","page down","end","home","left","up","right",
-            "down","","","","","insert","delete"];
-        return chars[which-8];
-    } else if (which>47&&which<91) {
-        if (event.shiftKey)
-            var chars = ")!@#$%^&*(ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        else
-            var chars = "0123456789abcdefghijklmnopqrstuvwxyz";
-        return chars[which%48];
-    } else if (which>95&&which<112) {
-        var chars = "0123456789*+ -./";
-        return chars[which%96];
-    } else if (which>185&&which<193) {
-        if (event.shiftKey)
-            var chars = ":+<_>?~";
-        else
-            var chars = ";=,-./`";
-        return chars[which%186];
-    } else if (which>218&&which<223) {
-        if (event.shiftKey)
-            var chars = "{|}\"";
-        else
-            var chars = "[\\]'";
-        return chars[which%219];
-    } else return null;
+    var chars = ([" "," "," "," "," "," "," "," ","backspace","tab"," "," "," ","enter"," "," ","shift","control","alt","pause",
+        "caps"," "," "," "," "," "," ","escape"," "," "," "," "," ","page up","page down","end","home","left","up","right","down",
+        " "," "," "," ","insert","delete"," "]+",01234567890,".split("")+[" "," "," "," "," "," "]+
+        ",abcdefghijklmnopqrstuvwxyz,".split("")+["super","right super","select"," "," "]+",01234567890,".split("")+
+        ["*","+","-",".","/","f1","f2","f3","f4","f5","f6","f7","f8","f9","f10","f11","f12"," "," "," "," "," "," "," "," "," "," ",
+        " "," "," "," "," "," "," "," "," "," ","num","scroll"," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," ",
+        " "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," ",";","=","comma","-",".","/",
+        "`"," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," ",
+        "[","\\","]","'"]).split(/,{1,}/);
+    var capchars = ([" "," "," "," "," "," "," "," ","backspace","tab"," "," "," ","enter"," "," ","shift","control","alt","pause",
+        "caps"," "," "," "," "," "," ","escape"," "," "," "," "," ","page up","page down","end","home","left","up","right","down",
+        " "," "," "," ","insert","delete"," "]+",!@#$%^&*(),".split("")+[" "," "," "," "," "," "]+
+        ",ABCDEFGHIJKLMNOPQRSTUVWXYZ,".split("")+["super","right super","select"," "," "]+",01234567890,".split("")+
+        ["*","+","-",".","/","f1","f2","f3","f4","f5","f6","f7","f8","f9","f10","f11","f12"," "," "," "," "," "," "," "," "," "," ",
+        " "," "," "," "," "," "," "," "," "," ","num","scroll"," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," ",
+        " "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," ",":","+","<","_",">","?","~",
+        " "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," ",
+        "{","|","}","\" "]).split(/,{1,}/);
+    if (which == 32) return " ";
+    else if (event.shiftKey) return capchars[which];
+    else return chars[which];
 }
 // Creates a customizable, absolutely positioned popup element.
 // There can only be one at a time.
 TBI.Popup = function (x, y, head, text) {
-	this.x = x;
-	this.y = y;
-	this.head = head;
-	this.text = text;
-	var body = $('body');
-	var pup = "";
-	pup += "<div class='popup' style='top:"+this.y+"px;left:"+this.x+"px;'>";
+    this.x = x;
+    this.y = y;
+    this.head = head;
+    this.text = text;
+    var body = $('body');
+    var pup = "";
+    pup += "<div class='popup' style='top:"+this.y+"px;left:"+this.x+"px;'>";
     if (!isNull(this.head)) pup += "<h3>"+this.head+"</h3>";
-	pup += "<p class='main'>"+this.text+"</p>";
-	pup += "</div>";
-	$(".popup").remove();
-	body.append(pup);
+    pup += "<p class='main'>"+this.text+"</p>";
+    pup += "</div>";
+    $(".popup").remove();
+    body.append(pup);
     if (parseInt($(".popup").css("width"))+parseInt($(".popup").css("left"))+120 > window.innerWidth) {
         $(".popup").attr("class", $(".popup").attr("class") + " right");
         $(".popup").css("left", (parseInt($(".popup").css("left")) - parseInt($(".popup").css("width")) - 40) + "px");
@@ -444,15 +454,15 @@ TBI.Notification = function (head, text, type, timeout) {
     this.type = isNull(type) ? 0 : type;
     timeout = isNull(timeout) ? 10000 : timeout;
     var states = ["ui-state-highlight", "ui-state-error"];
-	this.head = head;
-	this.text = text;
+    this.head = head;
+    this.text = text;
     this.noteNum = $(".notification").length;
     if (notePrevInfo["head"].indexOf(this.head)!=-1
     && !isNull(Timers.noteRemove) 
     && notePrevInfo["text"].indexOf(this.text)==-1) {
         for (var i=0;i<this.noteNum;i++) {
             if ($($(".notification h3")[i]).text() == this.head) {
-                $($(".notification ul.main")[i]).append("<li>"+this.text+"</li>");
+                $($(".notification ul")[i]).append("<li>"+this.text+"</li>");
             }
         }
     } else if (notePrevInfo["text"].indexOf(this.text)==-1 && notePrevInfo["head"].indexOf(this.head)==-1) {
@@ -461,25 +471,21 @@ TBI.Notification = function (head, text, type, timeout) {
         var pup = "";
         pup += "<div class='notification "+states[this.type]+" ui-corner-all'>";
         pup += "<h3>"+this.head+"</h3>";
-        pup += "<ul class='main'><li>"+this.text+"</li></ul>";
+        pup += "<ul><li>"+this.text+"</li></ul>";
         pup += "</div>";
         body.append(pup);
     } else if (notePrevInfo["head"].indexOf(this.head)!=-1 && notePrevInfo["text"].indexOf(this.text)!=-1) {
         for (var i=0;i<this.noteNum;i++) {
             if ($($(".notification h3")[i]).text() == this.head) {
-                var lines = $(".notification ul.main").children();
+                var lines = $(".notification ul").children();
                 for (var j=0;j<lines.length;j++) {
                     if ($(lines[j]).text() == this.text) {
                         var prevNum = 0;
                         notePrevInfo["text"].forEach(function (el) {
-                            if (el == text)
-                                prevNum++;
+                            if (el == text) prevNum++;
                         });
-                        var divStart = "<div class='list-num list-num-";
-                        if (prevNum >= 9)
-                            $(lines[j]).html(divStart+"plus'></div>"+$(lines[j]).text());
-                        else 
-                            $(lines[j]).html(divStart+(prevNum+1)+"'></div>"+$(lines[j]).text());
+                        if (prevNum >= 9) $(lines[j]).attr("class", "list-plus")
+                        else $(lines[j]).attr("class", "list-"+(++prevNum));
                     }
                 }
             }
@@ -493,9 +499,9 @@ TBI.Notification = function (head, text, type, timeout) {
         if ($($(".notification")[0]).css("display")=="none") {
             $(".notification").remove();
             notePrevInfo = {
-                "head" : [], 
-                "text" : [],
-                "type" : []
+                "head": [], 
+                "text": [],
+                "type": []
             };
             TBI.timerClear("noteRemove");
             timerCount = 0;
@@ -505,6 +511,21 @@ TBI.Notification = function (head, text, type, timeout) {
     notePrevInfo["head"].push(this.head);
     notePrevInfo["text"].push(this.text);
     notePrevInfo["type"].push(this.type);
+}
+TBI.dialog = function (head, body, func, nfunc) {
+    $("#dialog-yes").off("click");
+    $("#dialog-no").off("click");
+    this.head = head;
+    this.body = body;
+    $(".dialog").remove();
+    var dia = "<div class='dialog'><h2>"+this.head+"</h2><p>"+this.body+"</p>";
+    dia += "<div class='dialog-action'><button id='dialog-yes'>Confirm</button>";
+    dia += "<button id='dialog-no' class='dialog-right'>Cancel</button></div></div>";
+    $("body").append(dia);
+    func = typeof(func) == "undefined" ? function () {} : func;
+    $("#dialog-yes").click(function () { $("#dialog-yes").off("click"); $("#dialog-no").off("click"); $(".dialog").remove(); func(); });
+    nfunc = typeof(nfunc) == "undefined" ? function () {} : nfunc;
+    $("#dialog-no").click(function () { $("#dialog-yes").off("click"); $("#dialog-no").off("click"); $(".dialog").remove(); nfunc(); });
 }
 // Generates a desktop notification outside of the regular environment.
 function Note(img, title, desc, link) {
@@ -579,10 +600,10 @@ function Canvas3D(cvs) {
 }
 /* Updates the footer element based on the window size.
 function updateHeight() {
-	if ($("#maincontent").length > 0 && $("#maincontent").height() - $("#maincontent").offset().top < innerHeight)
-		$("footer nav a").hide();
-	else
-		$("footer nav a").show();
+    if ($("#maincontent").length > 0 && $("#maincontent").height() - $("#maincontent").offset().top < innerHeight)
+        $("footer nav a").hide();
+    else
+        $("footer nav a").show();
 }
 // Designates outgoing links. */
 TBI.updateLinks = function () {
@@ -612,7 +633,6 @@ TBI.searchNavbase = function (s) {
 }
 // START INCLUDE CODE //
 // Code for implementing a client-side HTML includes system.
-// An alternative to PHP includes.
 var HTMLIncludes = {};
 HTMLIncludes.info = [];
 HTMLIncludes.getDone = [];
@@ -705,7 +725,7 @@ $(document).on("pageload", function () {
     }
 });
 $(function () {
-	TBI.requestManager();
+    TBI.requestManager();
     TBI.checkNav();
     $(document).scroll(function () { TBI.checkNav() });
     HTMLIncludes.getIndex();

@@ -468,36 +468,36 @@ Grid.Draw.brush = function (pageX, pageY, diameter) {
     }
 }
 Grid.Draw.inspect = function (x, y) {
-	var topOffset = $(".grid").offset().top;
-	var leftOffset = $(".grid").offset().left;
-	var adjust = [x - leftOffset, y - topOffset];
-	var relative = [Math.floor(adjust[0]/ Grid.cell), Math.floor(adjust[1] / Grid.cell)];
-	var index = Grid.coords(relative[0], relative[1]);
-	if (index != undefined || index != null) {
-		var colour = $("#gridcell"+index).css("backgroundColor");
-		new TBI.Popup(x+20,y+20,"Index: "+index,"Colour: "+colour)
-	}
+    var topOffset = $(".grid").offset().top;
+    var leftOffset = $(".grid").offset().left;
+    var adjust = [x - leftOffset, y - topOffset];
+    var relative = [Math.floor(adjust[0]/ Grid.cell), Math.floor(adjust[1] / Grid.cell)];
+    var index = Grid.coords(relative[0], relative[1]);
+    if (index != undefined || index != null) {
+        var colour = $("#gridcell"+index).css("backgroundColor");
+        new TBI.Popup(x+20,y+20,"Index: "+index,"Colour: "+colour)
+    }
 }
 Grid.Draw.updatePrevColours = function () {
-	var divs = [$("#gdrc0"),$("#gdrc1"),$("#gdrc2"),$("#gdrc3")];
-	var pColours = Grid.Draw.prevColours;
-	var len = pColours.length;
-	setTimeout(function () {
-	    if (len < 1) { return 0; }
-	    if (len == 5) { Grid.Draw.prevColours.shift(1); len = 4; pColours = Grid.Draw.prevColours; }
-	    if (len >= 1) { divs[3].css("background", pColours[len - 1]); divs[3].attr("title", pColours[len - 1]) }
-	    if (len >= 2) { divs[2].css("background", pColours[len - 2]); divs[2].attr("title", pColours[len - 2]) }
-	    if (len >= 3) { divs[1].css("background", pColours[len - 3]); divs[1].attr("title", pColours[len - 3]) }
-	    if (len >= 4) { divs[0].css("background", pColours[len - 4]); divs[0].attr("title", pColours[len - 4]) }
-	}, 100);
-	$(".gdrawrc").off();
-	$(".gdrawrc").click(function () {
-	    if (Grid.Draw.prevColours.indexOf(Grid.Draw.colour) == -1 &&(Grid.Draw.colour != "transparent"||Grid.Draw.colour != "rgba(0,0,0,0)"))
-	        Grid.Draw.prevColours.push(Grid.Draw.colour);
-	    Grid.Draw.colour = $(this).attr("title");
-	    $("#gdrawcolour").val(Grid.Draw.colour);
-	    Grid.Draw.updatePrevColours();
-	});
+    var divs = [$("#gdrc0"),$("#gdrc1"),$("#gdrc2"),$("#gdrc3")];
+    var pColours = Grid.Draw.prevColours;
+    var len = pColours.length;
+    setTimeout(function () {
+        if (len < 1) { return 0; }
+        if (len == 5) { Grid.Draw.prevColours.shift(1); len = 4; pColours = Grid.Draw.prevColours; }
+        if (len >= 1) { divs[3].css("background", pColours[len - 1]); divs[3].attr("title", pColours[len - 1]) }
+        if (len >= 2) { divs[2].css("background", pColours[len - 2]); divs[2].attr("title", pColours[len - 2]) }
+        if (len >= 3) { divs[1].css("background", pColours[len - 3]); divs[1].attr("title", pColours[len - 3]) }
+        if (len >= 4) { divs[0].css("background", pColours[len - 4]); divs[0].attr("title", pColours[len - 4]) }
+    }, 100);
+    $(".gdrawrc").off();
+    $(".gdrawrc").click(function () {
+        if (Grid.Draw.prevColours.indexOf(Grid.Draw.colour) == -1 &&(Grid.Draw.colour != "transparent"||Grid.Draw.colour != "rgba(0,0,0,0)"))
+            Grid.Draw.prevColours.push(Grid.Draw.colour);
+        Grid.Draw.colour = $(this).attr("title");
+        $("#gdrawcolour").val(Grid.Draw.colour);
+        Grid.Draw.updatePrevColours();
+    });
 }
 // Erases all cells.
 Grid.Clear.stage = function () {
@@ -584,91 +584,91 @@ Grid.Status.print = function (message) {
     box.val(box.val() + message + "\n");
 }
 $(function () {
-	$("#gridset").click(function () {
-	    var num = Grid.width/$("#gridsetnum").val();
-	    if (num == undefined || num.toString() == "") {
-	        num = 50;
-	    }
-	    if (num < 10) {
-	        if (confirm("Are you sure? If the grid is particularly large, any operations carried out may be dangerous.")) {
-	            if (Grid.hasSet) Grid.Clear.stage();
-				Grid.set(num);
-	        }
-			else return 0;
-	    }
-	    else {
-	        if (Grid.hasSet) Grid.Clear.stage();
-			Grid.set(num);
-	    }
-	});
-	TBI.timerSet("gsn", 50, function () {
-	    $("#gsnxt").html($("#gridsetnum").val());
-		$("#gcurrcolour").css("background", Grid.Draw.colour);
-	});
+    $("#gridset").click(function () {
+        var num = Grid.width/$("#gridsetnum").val();
+        if (num == undefined || num.toString() == "") {
+            num = 50;
+        }
+        if (num < 10) {
+            if (confirm("Are you sure? If the grid is particularly large, any operations carried out may be dangerous.")) {
+                if (Grid.hasSet) Grid.Clear.stage();
+                Grid.set(num);
+            }
+            else return 0;
+        }
+        else {
+            if (Grid.hasSet) Grid.Clear.stage();
+            Grid.set(num);
+        }
+    });
+    TBI.timerSet("gsn", 50, function () {
+        $("#gsnxt").html($("#gridsetnum").val());
+        $("#gcurrcolour").css("background", Grid.Draw.colour);
+    });
     Grid.width = parseInt($(".grid").css("width"));
     Grid.height = parseInt(Grid.width);
     $("#gridx").text(Grid.width);
     $("#gridy").text(Grid.height);
-	$("#gridaltcolourset").click(function () {
-	    var colour1 = $("#gdaltcl1").val().toString();
-	    var colour2 = $("#gdaltcl2").val().toString();
-	    if (colour1 == "") {
-	        if (colour2 == "") {
-	            return 0;
-	        }
-	        else {
-	            colour2 = colour1;
-	        }
-	    }
-	    else if (colour2 == "") {
-	        colour2 = colour1;
-	    }
-	    Grid.altColours(colour1, colour2);
-	});
-	$(".grid").mousedown(function (event) {
-	    Grid.Draw.canDraw = true;
-	});
-	$(".grid").mouseup(function () {
-	    Grid.Draw.canDraw = false;
-	    clearInterval(Grid.Draw.interval);
-	});
-	$(".grid").mousemove(function (event) {
-	    if (Grid.Draw.canDraw && Grid.hasSet) {
-	        Grid.Draw.brush(event.pageX, event.pageY, Grid.Draw.diameter);
-	    }
-		else if (Grid.hasSet && Grid.Draw.tool == "inspect") {
-			Grid.Draw.inspect(event.pageX, event.pageY);
-		}
-	});
-	$("#gclearcells").click(function () { Grid.Clear.cells() });
-	$("#gcleargrid").click(function () { Grid.Clear.stage() });
-	$("#gdrawpencil").click(function () { 
-		Grid.Draw.prevDiam = Grid.Draw.diameter; 
-		Grid.Draw.diameter = 1; 
-		$("#gdrawdiam").val("1");
-		Grid.Draw.tool = "";
-	});
-	$("#gdrawbrush").click(function () { 
-		Grid.Draw.diameter = Grid.Draw.prevDiam; 
-		$("#gdrawdiam").val(Grid.Draw.prevDiam); 
-		Grid.Draw.tool = "";
-	});
-	$("#gdrawerase").click(function () { Grid.Draw.colour = "transparent"; Grid.Draw.tool = ""; });
-	$("#gdrawinspc").click(function () { Grid.Draw.tool = "inspect" });
-	$("#gdrawdiam").mouseleave(function () {
-	    if (!isNaN($("#gdrawdiam").val())&&$("#gdrawdiam").val()!="") {
-	        Grid.Draw.diameter = $("#gdrawdiam").val()
-	    }
-	});
-	$("#gcurrcolour").keydown(function (event) {
-		if (event.which == 13) {
-			var pColours = Grid.Draw.prevColours;
-			if (pColours.indexOf(Grid.Draw.colour)==-1) 
-				Grid.Draw.prevColours.push(Grid.Draw.colour);
-			Grid.Draw.updatePrevColours();
-			Grid.Draw.colour = $("#gdrawcolour").val();
-		}
-	});
+    $("#gridaltcolourset").click(function () {
+        var colour1 = $("#gdaltcl1").val().toString();
+        var colour2 = $("#gdaltcl2").val().toString();
+        if (colour1 == "") {
+            if (colour2 == "") {
+                return 0;
+            }
+            else {
+                colour2 = colour1;
+            }
+        }
+        else if (colour2 == "") {
+            colour2 = colour1;
+        }
+        Grid.altColours(colour1, colour2);
+    });
+    $(".grid").mousedown(function (event) {
+        Grid.Draw.canDraw = true;
+    });
+    $(".grid").mouseup(function () {
+        Grid.Draw.canDraw = false;
+        clearInterval(Grid.Draw.interval);
+    });
+    $(".grid").mousemove(function (event) {
+        if (Grid.Draw.canDraw && Grid.hasSet) {
+            Grid.Draw.brush(event.pageX, event.pageY, Grid.Draw.diameter);
+        }
+        else if (Grid.hasSet && Grid.Draw.tool == "inspect") {
+            Grid.Draw.inspect(event.pageX, event.pageY);
+        }
+    });
+    $("#gclearcells").click(function () { Grid.Clear.cells() });
+    $("#gcleargrid").click(function () { Grid.Clear.stage() });
+    $("#gdrawpencil").click(function () { 
+        Grid.Draw.prevDiam = Grid.Draw.diameter; 
+        Grid.Draw.diameter = 1; 
+        $("#gdrawdiam").val("1");
+        Grid.Draw.tool = "";
+    });
+    $("#gdrawbrush").click(function () { 
+        Grid.Draw.diameter = Grid.Draw.prevDiam; 
+        $("#gdrawdiam").val(Grid.Draw.prevDiam); 
+        Grid.Draw.tool = "";
+    });
+    $("#gdrawerase").click(function () { Grid.Draw.colour = "transparent"; Grid.Draw.tool = ""; });
+    $("#gdrawinspc").click(function () { Grid.Draw.tool = "inspect" });
+    $("#gdrawdiam").mouseleave(function () {
+        if (!isNaN($("#gdrawdiam").val())&&$("#gdrawdiam").val()!="") {
+            Grid.Draw.diameter = $("#gdrawdiam").val()
+        }
+    });
+    $("#gcurrcolour").keydown(function (event) {
+        if (event.which == 13) {
+            var pColours = Grid.Draw.prevColours;
+            if (pColours.indexOf(Grid.Draw.colour)==-1) 
+                Grid.Draw.prevColours.push(Grid.Draw.colour);
+            Grid.Draw.updatePrevColours();
+            Grid.Draw.colour = $("#gdrawcolour").val();
+        }
+    });
 });
 // END GRID CODE //
 // START CALENDAR CODE //
@@ -737,7 +737,7 @@ Calendar.generate = function (year, month) {
     $(".calendar").css("height",((Calendar.width*0.8)+"px"));
     Calendar.height = parseInt($("#calinner").css("height"));
     Calendar.cellWidth = Calendar.width / 7;
-	Calendar.weeks = Math.ceil((Calendar.firstDay+Calendar.monthLength)/7);
+    Calendar.weeks = Math.ceil((Calendar.firstDay+Calendar.monthLength)/7);
     Calendar.cellHeight = parseInt(Calendar.height/Calendar.weeks);
     var count = 0;
     for (i = 0; i < 7; i++) {
@@ -827,8 +827,8 @@ Calendar.generate = function (year, month) {
     }
     Calendar.items.push(tempItemRow);
     Calendar.calcSet = true;
-	$($("#calstatus p")[0]).text(Calendar.months[Calendar.month]+" "+Calendar.year);
-	$(".calweekday").css("width",parseInt(Calendar.cellWidth));
+    $($("#calstatus p")[0]).text(Calendar.months[Calendar.month]+" "+Calendar.year);
+    $(".calweekday").css("width",parseInt(Calendar.cellWidth));
     $(".calcell").click(function (event) {
         var isSelected = (this.className.search("calselect")!=-1);
         if ($(".calselect").length == 0 && !isSelected)
@@ -902,27 +902,27 @@ $(function () {
     $(document).on("pageload", function () {
         Calendar.generate();
     });
-	$("#calcchangeup").click(function () {
-		if (Calendar.month == 1) {
-			var newMonth = 12;
-			var newYear = Calendar.year-1;
-		} else {
-			var newMonth = Calendar.month-1;
-			var newYear = Calendar.year;
-		}
-		Calendar.generate(newYear, newMonth);
-	});
-	$("#calcchangedown").click(function () {
-		if (Calendar.month == 12) {
-			var newMonth = 1;
-			var newYear = Calendar.year+1;
-		} else {
-			var newMonth = Calendar.month+1;
-			var newYear = Calendar.year;
-		}
-		Calendar.generate(newYear, newMonth);
-	});
-	$("#calconttoday").click(function () { Calendar.findToday(); });
+    $("#calcchangeup").click(function () {
+        if (Calendar.month == 1) {
+            var newMonth = 12;
+            var newYear = Calendar.year-1;
+        } else {
+            var newMonth = Calendar.month-1;
+            var newYear = Calendar.year;
+        }
+        Calendar.generate(newYear, newMonth);
+    });
+    $("#calcchangedown").click(function () {
+        if (Calendar.month == 12) {
+            var newMonth = 1;
+            var newYear = Calendar.year+1;
+        } else {
+            var newMonth = Calendar.month+1;
+            var newYear = Calendar.year;
+        }
+        Calendar.generate(newYear, newMonth);
+    });
+    $("#calconttoday").click(function () { Calendar.findToday(); });
 });
 // END CALENDAR CODE //
 // START TXTENG CODE //
@@ -1176,11 +1176,11 @@ txteng.Program.battleship = function () {
 }
 TBI.timerSet("motd", 1000, function () { $("#txtengarea").val(""); txteng.motdEcho(); TBI.timerClear("motd"); });
 $(function () {
-	$("#txtengin").keydown(function (event) {
-	    if (event.which == 13) {
-	        txteng.command();
-	    }
-	});
+    $("#txtengin").keydown(function (event) {
+        if (event.which == 13) {
+            txteng.command();
+        }
+    });
 });
 // END TXTENG CODE //
 // START COUNTDOWN CODE //
@@ -1255,8 +1255,8 @@ Cdown.main = function (enddate, dest) {
     else {
         $("#" + dest).html("Countdown over!!!");
         this.active = false;
-		eraseCookie("cDown");
-		Cdown.check(false);
+        eraseCookie("cDown");
+        Cdown.check(false);
     }
     this.dbugTime[0] = cStr;
     this.dbugTime[1] = bStr;
@@ -1324,9 +1324,9 @@ Cdown.check = function (bool) {
             Cdown.reset();
     }
     if (readCookie("cDown")) {
-		var cookie = readCookie("cDown").split(",");
+        var cookie = readCookie("cDown").split(",");
         out.setTime(cookie[0]);
-		Cdown.name = cookie[1];
+        Cdown.name = cookie[1];
         Cdown.set(out);
     }
     else
@@ -1335,7 +1335,7 @@ Cdown.check = function (bool) {
 Cdown.reset = function () {
     $("#cdown-full").attr("class", "cdown cdset proto");
         $("#cdset").css("display", "inline");
-		$("#cd-fn-set").css("display", "inline-block");
+        $("#cd-fn-set").css("display", "inline-block");
         $("#cdown-count").css("display", "none");
         $("#cdown-full h3")[0].innerHTML = "Countdown";
         TBI.timerClear("cDown");
@@ -1343,19 +1343,19 @@ Cdown.reset = function () {
 Cdown.set = function (out) {
     $("#cdown-full").attr("class", "cdown proto");
     $("#cdset").css("display", "none");
-	$("#cd-fn-set").css("display", "none");
+    $("#cd-fn-set").css("display", "none");
     $("#cdown-count").css("display", "inline-block");
     TBI.timerSet("cDown", 50, function () { Cdown.main(out, "cdown-count") });
     if (!isNull(Cdown.name) && !isNull(gebi("cdown-full")))
         $("#cdown-full h3")[0].innerHTML = "Countdown - " + Cdown.name;
 }
 Cdown.checkfn = function () {
-	var fnYear = $("#cdfn-year"),
-		fnMonth = $("#cdfn-month"),
-		fnDay = $("#cdfn-day"),
-		fnHour = $("#cdfn-hour"),
-		fnMinute = $("#cdfn-minute"),
-		fnSecond = $("#cdfn-second"),
+    var fnYear = $("#cdfn-year"),
+        fnMonth = $("#cdfn-month"),
+        fnDay = $("#cdfn-day"),
+        fnHour = $("#cdfn-hour"),
+        fnMinute = $("#cdfn-minute"),
+        fnSecond = $("#cdfn-second"),
         fnArr = [fnYear, fnMonth, fnDay, fnHour, fnMinute, fnSecond];
         fnArrValues = [fnYear.val(), fnMonth.val(), fnDay.val(), fnHour.val(), fnMinute.val(), fnSecond.val()];
     for (i=0;i<fnArr.length;i++)
@@ -1365,52 +1365,52 @@ Cdown.checkfn = function () {
         alert("The values are invalid.");
         return null;
     }
-	else {
-		var mLength = Calendar.monthLengths[parseInt(unixToString(Cdown.rightNow)[2])];
-		var out = 0;
-		out += fnSecond.val()*1000;
-		out += fnMinute.val()*1000*60;
-		out += fnHour.val()*1000*60*60;
-		out += fnDay.val()*1000*60*60*24;
-		out += fnMonth.val()*1000*60*60*24*mLength;
-		out += fnYear.val()*1000*60*60*24*mLength*12;
-		out += Cdown.rightNow.getTime();
-		Cdown.name = $("#cdsetname").val();
-		eraseCookie("cDown")
-		createCookie("cDown", out+","+Cdown.name, 365);
-	}
+    else {
+        var mLength = Calendar.monthLengths[parseInt(unixToString(Cdown.rightNow)[2])];
+        var out = 0;
+        out += fnSecond.val()*1000;
+        out += fnMinute.val()*1000*60;
+        out += fnHour.val()*1000*60*60;
+        out += fnDay.val()*1000*60*60*24;
+        out += fnMonth.val()*1000*60*60*24*mLength;
+        out += fnYear.val()*1000*60*60*24*mLength*12;
+        out += Cdown.rightNow.getTime();
+        Cdown.name = $("#cdsetname").val();
+        eraseCookie("cDown")
+        createCookie("cDown", out+","+Cdown.name, 365);
+    }
 }
 $(function () {
-	var cdInputs = $("#cdown-full input");
-	TBI.timerSet("cdInputs",100,function () {
-		for (i=1;i<cdInputs.length;i++) {
-			if (isNaN($(cdInputs[i]).val())) {
-				cdInputs[i].className = "inactive";
-			}
-			else {
-				cdInputs[i].className = "";;
-				$(cdInputs[i]).off();
-			}
-		}
-		$(".inactive").click(function () {
-			$(this).val("");
-		});
-		$("#cdsetname").click(function () {
-			$("#cdsetname").off();
-			$("#cdsetname").attr("class","");
-			gebi("cdsetname").attributes[3] = undefined;
-		});
-		$(".cdset").keydown(function (event) {
-			if (event.which == 13)
-				Cdown.check(true);
-		});
-		$(".cd-fn-set").keydown(function (event) {
-			if (event.which == 13) {
-				Cdown.checkfn();
-				Cdown.check(false);
-			}
-		});
-	});
+    var cdInputs = $("#cdown-full input");
+    TBI.timerSet("cdInputs",100,function () {
+        for (i=1;i<cdInputs.length;i++) {
+            if (isNaN($(cdInputs[i]).val())) {
+                cdInputs[i].className = "inactive";
+            }
+            else {
+                cdInputs[i].className = "";;
+                $(cdInputs[i]).off();
+            }
+        }
+        $(".inactive").click(function () {
+            $(this).val("");
+        });
+        $("#cdsetname").click(function () {
+            $("#cdsetname").off();
+            $("#cdsetname").attr("class","");
+            gebi("cdsetname").attributes[3] = undefined;
+        });
+        $(".cdset").keydown(function (event) {
+            if (event.which == 13)
+                Cdown.check(true);
+        });
+        $(".cd-fn-set").keydown(function (event) {
+            if (event.which == 13) {
+                Cdown.checkfn();
+                Cdown.check(false);
+            }
+        });
+    });
     Cdown.check(false);
 });
 // END COUNTDOWN CODE //
@@ -2077,22 +2077,6 @@ $(function () {
         $("#cvs-mode").text(modes[mode]);
         context.mode = mode;
     }
-/*  ctx.beginPath();
-    ctx.strokeStyle = "#f77";
-    ctx.arc(120,140,80,0,(Math.PI/180)*300,false);
-    ctx.bezierCurveTo(70,120,80,130,230,240);
-    ctx.stroke();
-    ctx.fillStyle = "#51e";
-    ctx.beginPath();
-    ctx.moveTo(85,40);
-    ctx.bezierCurveTo(75,38,70,25,50,25);
-    ctx.bezierCurveTo(20,25,20,62.5,20,62.5);
-    ctx.bezierCurveTo(20,80,40,102,75,120);
-    ctx.bezierCurveTo(110,200,130,80,130,62.5);
-    ctx.bezierCurveTo(130,62.5,130,25,100,25);
-    ctx.bezierCurveTo(85,25,75,37,75,40);
-    ctx.closePath();
-    ctx.fill(); */
     var hx = "0123456789abcdef";
     var h = [];
     for (var i=0;i<16;i++) { for (var j=0;j<16;j++) { h.push(hx[i]+hx[j]); } }
@@ -2110,16 +2094,7 @@ $(function () {
         ctx.closePath();
         ctx.fill();
     }}}
-    ctx.globalCompositeOperation = "source-over";/*
-    ctx.fillStyle = "rgba(200,235,255,0.5)";
-    ctx.beginPath();
-    ctx.rect(100,90,300,40);
-    ctx.closePath();
-    ctx.fill();
-    
-    ctx.fillStyle = "black";
-    ctx.font = "32px Open Sans";
-    ctx.fillText("Hello to Canvas!",120,120); */
+    ctx.globalCompositeOperation = "source-over";
     var isFirst = true;
     var isControl = false;
     var stroke = true;
@@ -2513,7 +2488,7 @@ $(document).keyup(function (event) {
     else if (key == "right" && determined) TWF8.moveAllRight();
     else if (key == "up" && determined) TWF8.moveAllUp();
     else if (key == "down" && determined) TWF8.moveAllDown();
-    else if (key != "left" || key != "right" || key != "up" || key != "down") return null;
+    else if (key != /(left|right|up|down)/) return null;
     if (!TWF8.determine("left") && !TWF8.determine("right") && !TWF8.determine("up") && !TWF8.determine("down")) {
         TBI.log("TWF8: Game Over!");
     }
@@ -2529,8 +2504,8 @@ $(document).keyup(function (event) {
     TWF8.moved = [];
 });
 $(function () {
-    $("#twf8-board").mouseenter(function () { TWF8.enabled = true; });
-    $("#twf8-board").mouseleave(function () { TWF8.enabled = false; });
+    $("#twf8-game").mouseenter(function () { TWF8.enabled = true; });
+    $("#twf8-game").mouseleave(function () { TWF8.enabled = false; });
 });
 /**
 *   PLANETARIUM SIMULATION
@@ -2633,19 +2608,23 @@ PSim.planet = function (name) {
     if (isNull(planet) || planet.type != "planet") return false;
     var rotation = isNull(PSim.objectbank[name]) ? PSim.objectvars[name].rotation : PSim.objectbank[name][0];
     rotation = isNull(rotation) ? randomInt(360) : rotation % 360;
-    rotation += (360 / ((planet.distance * PSim.AU * 2 * Math.PI) / planet.speed)) / PSim.fps * PSim.speed;
+    rotation += (360 / (planet.distance * PSim.AU * 2 * Math.PI / planet.speed)) / PSim.fps * PSim.speed;
+    var distance = planet.distance * PSim.AU / PSim.LF * PSim.zoom;
+    var size = planet.size / PSim.LF * PSim.scale * PSim.zoom;
+    var panX = PSim.pan[0] * PSim.zoom * PSim.PF;
+    var panY = PSim.pan[1] * PSim.zoom * PSim.PF;
     PSim.ctx.save();
-    PSim.ctx.translate(PSim.pan[0] * (PSim.zoom * PSim.PF), PSim.pan[1] * (PSim.zoom * PSim.PF));
+    PSim.ctx.translate(panX, panY);
     PSim.ctx.beginPath();
     PSim.ctx.fillStyle = planet.colour;
     PSim.ctx.rotate(dtr(rotation));
-    PSim.ctx.arc((planet.distance * PSim.AU/PSim.LF) * PSim.zoom, 0,  (planet.size / PSim.LF) * PSim.scale * PSim.zoom, 0, dtr(360), false);
+    PSim.ctx.arc(distance, 0, size, 0, dtr(360), false);
     PSim.ctx.fill();
     PSim.ctx.closePath();
     if (PSim.selected == name) {
         PSim.ctx.save();
         PSim.ctx.rotate(-dtr(rotation));
-        var a = circlePoint(rotation, (planet.distance * PSim.AU / PSim.LF) * PSim.zoom);
+        var a = circlePoint(rotation, distance);
         var x = a[0], y = a[1];
         Canvas2D.path(PSim.ctx, {type:"stroke",style:"#09f",path:[[x,y],[x+10,y],[x,y],[x-10,y],[x,y],[x,y+10],[x,y],[x,y-10]]});
         PSim.ctx.restore();
@@ -2655,23 +2634,22 @@ PSim.planet = function (name) {
         PSim.ctx.beginPath();
         PSim.ctx.strokeStyle = planet.rings.colour;
         PSim.ctx.lineWidth = (planet.rings.max_distance*PSim.AU/PSim.LF)*PSim.zoom-(planet.rings.min_distance*PSim.AU/PSim.LF)*PSim.zoom;
-        var distance = mean([planet.rings.min_distance, planet.rings.max_distance]);
-        PSim.ctx.arc((planet.distance * PSim.AU / PSim.LF) * PSim.zoom, 0, (distance * PSim.AU / PSim.LF) * PSim.zoom, 0, dtr(360), false);
+        var ringDistance = mean([planet.rings.min_distance, planet.rings.max_distance]);
+        PSim.ctx.arc(distance, 0, (ringDistance * PSim.AU / PSim.LF) * PSim.zoom, 0, dtr(360), false);
         PSim.ctx.stroke();
         PSim.ctx.closePath();
         PSim.ctx.restore();
     }
-    if (PSim.planetLabels && (planet.distance * PSim.AU / PSim.LF) * PSim.zoom > 1) {
+    if (PSim.planetLabels && distance > 1) {
         PSim.ctx.save();
         PSim.ctx.rotate(-dtr(rotation));
         PSim.ctx.font = "12px Raleway";
-        var loc = circlePoint(rotation, (planet.distance * PSim.AU / PSim.LF) * PSim.zoom);
+        var loc = circlePoint(rotation, distance);
         PSim.ctx.fillStyle = "rgba(0, 0, 0, 0.4)";
         PSim.ctx.fillRect(loc[0]-2, loc[1]-8, 70, 20);
         PSim.labels[PSim.labelFind(name)] = {
             "name":name,
-            "location":[loc[0]-2+PSim.pan[0] * (PSim.zoom * PSim.PF), 
-                loc[1]-8+PSim.pan[1] * (PSim.zoom * PSim.PF)],
+            "location":[loc[0]-2+panX, loc[1]-8+panY],
             "dimensions":[70,20]
         };
         PSim.ctx.fillStyle = "white";
@@ -2691,15 +2669,15 @@ PSim.planet = function (name) {
         PSim.ctx.moveTo(0,0);
         PSim.ctx.beginPath();
         PSim.ctx.strokeStyle = planet.colour;
-        PSim.ctx.arc(0, 0, (planet.distance * PSim.AU / PSim.LF) * PSim.zoom, 0, dtr(360), false);
+        PSim.ctx.arc(0, 0, distance, 0, dtr(360), false);
         PSim.ctx.stroke();
         PSim.ctx.closePath();
     }
     PSim.ctx.restore();
     PSim.objectbank[name] = [
         rotation, 
-        (planet.distance * PSim.AU / PSim.LF) * PSim.zoom, 
-        (planet.size / PSim.LF) * PSim.scale * PSim.zoom
+        distance, 
+        size
     ];
     return true;
 }
@@ -2707,25 +2685,30 @@ PSim.satellite = function (parent, name) {
     var planet = PSim.objectvars[parent];
     var satellite = planet.satellites[name];
     var parentRotation = PSim.objectbank[parent][0];
+    var parentDistance = planet.distance * PSim.AU / PSim.LF * PSim.zoom;
     var rotation = isNull(PSim.objectbank[name]) ? PSim.objectvars[parent].satellites[name].rotation : PSim.objectbank[name][0];
     rotation = isNull(rotation) ? randomInt(360) : rotation % 360;
-    rotation += (360 / ((satellite.distance * PSim.AU * 2 * Math.PI) / satellite.speed)) / PSim.fps * PSim.speed;
+    rotation += (360 / (satellite.distance * PSim.AU * 2 * Math.PI / satellite.speed)) / PSim.fps * PSim.speed;
+    var distance = satellite.distance * PSim.AU / PSim.LF * PSim.zoom;
+    var size = satellite.size / PSim.LF * PSim.scale * PSim.zoom;
+    var panX = PSim.pan[0] * PSim.zoom * PSim.PF;
+    var panY = PSim.pan[1] * PSim.zoom * PSim.PF;
     PSim.ctx.save();
-    PSim.ctx.translate(PSim.pan[0] * (PSim.zoom * PSim.PF), PSim.pan[1] * (PSim.zoom * PSim.PF));
+    PSim.ctx.translate(panX, panY);
     PSim.ctx.beginPath();
-    var position = circlePoint(parentRotation, (planet.distance * PSim.AU / PSim.LF) * PSim.zoom);
+    var position = circlePoint(parentRotation, parentDistance);
     PSim.ctx.fillStyle = satellite.colour;
     PSim.ctx.translate(position[0], position[1]);
     PSim.ctx.rotate(dtr(rotation));
-    PSim.ctx.arc((satellite.distance*PSim.AU/PSim.LF)*PSim.zoom, 0, (satellite.size/PSim.LF)*PSim.scale*PSim.zoom, 0, dtr(360), false);
+    PSim.ctx.arc(distance, 0, size, 0, dtr(360), false);
     PSim.ctx.fill();
     PSim.ctx.closePath();
-    if (PSim.planetLabels && (satellite.distance * PSim.AU / PSim.LF) * PSim.zoom > 1) {
+    if (PSim.planetLabels && distance > 1) {
         PSim.ctx.save();
         PSim.ctx.rotate(-dtr(rotation));
         PSim.ctx.font = "8px Raleway";
         PSim.ctx.fillStyle = "white";
-        var loc = circlePoint(rotation, (satellite.distance * PSim.AU / PSim.LF) * PSim.zoom);
+        var loc = circlePoint(rotation, distance);
         PSim.ctx.fillText(name, loc[0]+6, loc[1]+4);
         PSim.ctx.restore();
     }
@@ -2741,7 +2724,7 @@ PSim.satellite = function (parent, name) {
         PSim.ctx.moveTo(0,0);
         PSim.ctx.beginPath();
         PSim.ctx.strokeStyle = satellite.colour;
-        PSim.ctx.arc(0, 0, (satellite.distance * PSim.AU / PSim.LF) * PSim.zoom, 0, dtr(360), false);
+        PSim.ctx.arc(0, 0, distance, 0, dtr(360), false);
         PSim.ctx.stroke();
         PSim.ctx.closePath();
     }
@@ -2805,7 +2788,7 @@ PSim.statistics = function () {
     PSim.ctx.fillText("Statistics", -285, -275);
     PSim.ctx.font = "normal 12px Open Sans";
     var y = -275;
-    PSim.ctx.fillText("Zoom: "+Math.log(PSim.zoom)+"x", -280, y += 16);
+    PSim.ctx.fillText("Zoom: "+PSim.zoom+"x", -280, y += 16);
     PSim.ctx.fillText("Scale: "+PSim.scale+"x", -280, y += 16);
     PSim.ctx.fillText("Speed: "+PSim.speed+"x", -280, y += 16);
     var panx = PSim.pan[0].toFixed(8);
@@ -2901,5 +2884,249 @@ $(function () {
     $("#psim-canvas").mouseleave(function (event) { PSim.overlay = null; PSim.clicked = 0 });
     $("#psim-canvas").mousedown(function () { PSim.clicked = 1 });
     $("#psim-canvas").mouseup(function () { PSim.clicked = 0 });
-    $("#psim-reset").click(function () { PSim.init() });
+    $("#psim-reset").click(function () { if (confirm("Are you sure? The current position will be reset.")) PSim.init() });
+});
+var QDR = {};
+    QDR.totalTime = 0;
+// Quadrominoes are based upon a 4x4 grid system. 
+// The rotate() function allows for rotation of these pieces within the 4x4 grid.
+QDR.PIECES = [
+    [[1,1,1,1],[0,0,0,0],[0,0,0,0],[0,0,0,0]], // I piece
+    [[1,1,1,0],[0,1,0,0],[0,0,0,0],[0,0,0,0]], // T piece
+    [[0,1,0,0],[1,1,0,0],[1,0,0,0],[0,0,0,0]], // Z piece
+    [[1,0,0,0],[1,1,0,0],[0,1,0,0],[0,0,0,0]], // S piece
+    [[1,1,1,0],[1,0,0,0],[0,0,0,0],[0,0,0,0]], // L piece
+    [[1,1,1,0],[0,0,1,0],[0,0,0,0],[0,0,0,0]], // Reverse L piece
+    [[1,1,0,0],[1,1,0,0],[0,0,0,0],[0,0,0,0]]  // Box piece
+];
+QDR.init = function () {
+    QDR.size = 24; // Size of the blocks (px).
+    QDR.interval = 500; // Interval between ticks (ms).
+    QDR.screen = 0; // Which screen is being displayed.
+    QDR.time = new Date().getTime();
+    QDR.$ = new Canvas2D("qdr-canvas");
+    QDR.width = parseInt($("#qdr-canvas").css('width'));
+    QDR.height = parseInt($("#qdr-canvas").css('height'));
+    QDR.score = 0;
+    QDR.added = 0;
+    QDR.placed = -1;
+    QDR.current = null;
+    QDR.next = null;
+    QDR.active = false;
+    QDR.over = false; // Game Over or not?
+    QDR.limits = [QDR.height/QDR.size, 12]; // limits = [height, width]
+    QDR.board = []; // The blocks that have already been placed.
+    for (var i=0;i<QDR.limits[0];i++) {                       //
+        var tempArr = [];                                     // Filling board[] with empty
+        for (var j=0;j<QDR.limits[1];j++) tempArr.push(null); // values, representing clear space.
+        QDR.board.push(tempArr);                              //
+    }
+    QDR.blockground = new Image(); // The block textures.
+    QDR.blockground.src = "data:image/png;base64,\
+iVBORw0KGgoAAAANSUhEUgAAAHAAAAAQCAIAAABBdmxGAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAWdEVYdFNvZnR3YXJlAHBhaW5\
+0Lm5ldCA0LjA76PVpAAAAx0lEQVRYR+3YvQ3CUAxFYe9AiQQ9FQ1LpGeAdGxA6ZYhMoXn8FDk5fdFSO9e11j6JjjlEZNbiNg5xExi5BMiFvSyEOskpARVuZCWoHpiTUFVWXNQlZ60BN\
+WeNQftlDUF1QdrD+pyhw5B/YpVQd2xOqjLAB2C+oDVQd+OVUH9iWVQJIMCGbQtgwIZFMmgbRm0LYMiGRTIoG0ZFMigyD8HJe1BSWtQ0haUtAclbUFJa1DSEjSkBI0ojUJ+Bl1baRQyB\
+o0YGwV08gWxbsYGqFRypAAAAABJRU5ErkJggg==";
+    TBI.timerClear("qdr");
+    TBI.timerSet("qdr", 500, function () {
+        QDR.loop(); // Main loop.
+    });
+}
+QDR.loop = function () {
+    QDR.$.clearRect(0,0,1000,1000);
+    QDR.totalTime+=500;
+    switch (QDR.screen) {
+        case 0: QDR.title(); break;
+        case 1: QDR.play(); break;
+        case 2: QDR.end(); break;
+    }
+}
+QDR.title = function () {
+    QDR.$.beginPath();
+    QDR.$.fillStyle = "#333";
+    QDR.$.font = "38px Raleway";
+    QDR.$.textAlign = "center";
+    QDR.$.fillText("Quadrominoes", QDR.width/2, QDR.height/12);
+    QDR.$.closePath();
+}
+QDR.checkRows = function () {
+    var checked = new Array(QDR.board.length);
+    var total = 0;
+    for (var i=0;i<QDR.board.length;i++) {
+        checked[i] = true;
+        for (var j=0;j<QDR.board[i].length;j++) if (isNull(QDR.board[i][j])) checked[i] = false
+        if (checked[i]) { QDR.removeRow(i); QDR.score += 1 }
+    }
+    return true;
+}
+QDR.removeRow = function (row) {
+    QDR.board[row] = [QDR.limits[1]];
+    for (var i=row;i>0;i--) QDR.board[i] = QDR.board[i-1];
+    return true;
+}
+QDR.fall = function () {
+    for (var i=QDR.current.y;i<QDR.limits[0];i++) if (!QDR.checkPiece(QDR.current.piece, QDR.current.x, QDR.current.y+1)) QDR.current.y+=1;
+    return true;
+}
+QDR.move = function (direction) {
+    if (direction.search(/[wasd]/) == -1 || isNull(QDR.current)) return false;
+    var curr = QDR.current;
+    var dim = QDR.findHW(curr.piece);
+    if (direction == "a" && curr.x > 0 && !QDR.checkPiece(curr.piece, curr.x-1, curr.y)) QDR.current.x--;
+    else if (direction == "d" && curr.x+1 < QDR.limits[1] && !QDR.checkPiece(curr.piece, curr.x+1, curr.y)) QDR.current.x++;
+    else if (direction == "w" && !QDR.checkPiece(QDR.rotate(curr.piece, 1), curr.x, curr.y)) curr.piece = QDR.rotate(curr.piece, 1);
+    else if (direction == "s") QDR.fall();
+    TBI.timerClear("qdr-flash");
+    gebi("qdr-controls").className = direction;
+    TBI.timerSet("qdr-flash", 200, function () {
+        gebi("qdr-controls").className = "";
+        TBI.timerClear("qdr-flash");
+    });
+    return true;
+}
+QDR.background = function () {
+    QDR.$.fillStyle = "rgba(0,0,0,0.04)";
+    for (var i=0;i<QDR.limits[1];i++)
+        if (Math.floor(i/3)%2==0) QDR.$.fillRect(i*QDR.size, 0, QDR.size, 1000);
+    return true;
+}
+QDR.drawNext = function () {
+    QDR.$.save();
+    QDR.$.fillStyle = "rgba(0,0,0,0.2)";
+    var x = QDR.width-110;
+    var y = 250;
+    QDR.$.fillRect(x, 0, 110, QDR.height);
+    QDR.$.font = "36px Raleway";
+    QDR.$.fillStyle = "#fff";
+    QDR.$.fillText("Next", x+55, y);
+    QDR.$.fillStyle = "rgba(255,255,255,0.3)";
+    QDR.$.fillRect(x, y+=18, 110, 110);
+    var px = x+8;
+    var py = y+8;
+    var piece = QDR.PIECES[QDR.next];
+    var dim = QDR.findHW(piece);
+    py += Math.abs(dim[0]-4)*12;
+    px += Math.abs(dim[1]-4)*12;
+    var s = 24;
+    for (var i=0;i<4;i++)
+        for (var j=0;j<4;j++)
+            if (piece[i][j]) QDR.$.drawImage(QDR.blockground, 16*QDR.next, 0, 16, 16, px+j*s, py+i*s, s, s);
+    QDR.$.fillStyle = "#fff";
+    QDR.$.fillText("Score", x+55, y+=150);
+    QDR.$.font = "48px bold Raleway";
+    QDR.$.fillText(QDR.score, x+55, y+=50);
+    QDR.$.restore();
+    return true;
+}
+QDR.findHW = function (p) {
+    for (var i=0,c=0,a=[];i<4;i++) {
+        for (var j=0,t=0;j<4;j++) if (p[i][j]) t=j+1;
+        if (t>0) {
+            c++;
+            a.push(t)
+        }
+    }
+    return [c, a.sort()[a.length-1]]
+}
+QDR.rotate = function (piece, num) {
+    var dim = QDR.findHW(piece);
+    var nw = [];
+    for (var i=0;i<4;i++) nw[i] = ([0,0,0,0]);
+    for (var i=0;i<dim[0];i++)
+        for (var j=0,k=dim[1]-1;j<dim[1];j++,k--)
+            nw[j][i] = piece[i][k];
+    if (!isNull(num) && num > 0) return QDR.rotate(nw, --num);
+    else if (num == 0) return piece;
+    else return nw;
+}
+QDR.drawBlock = function (index, x, y) {
+    QDR.$.drawImage(QDR.blockground, 16*index, 0, 16, 16, x*QDR.size, y*QDR.size, QDR.size, QDR.size);
+    return true;
+}
+QDR.drawPiece = function (piece, index, x, y) {
+    for (var i=0;i<4;i++)
+        for (var j=0;j<4;j++)
+            if (piece[i][j]) QDR.drawBlock(index, i+x, j+y);
+    return true;
+}
+QDR.boardAdd = function (piece, index, x, y) {
+    for (var i=0;i<4;i++)
+        for (var j=0;j<4;j++)
+            if (piece[i][j] && QDR.added++ < 4) QDR.board[j+y][i+x] = index;
+    TBI.log("Placed one more piece: #"+ ++QDR.placed);
+}
+QDR.play = function () {
+    QDR.background();
+    var time = new Date().getTime();
+    var step = Math.floor(time/QDR.interval) != Math.floor(QDR.time/QDR.interval);
+    step = true;
+    if (step) QDR.time = time;
+    if (!QDR.active) step = false;
+    if (!QDR.over) {
+        if (isNull(QDR.next)) QDR.next = randomInt(QDR.PIECES.length);
+        if (isNull(QDR.current)) {
+            QDR.checkRows();
+            var curr = QDR.next;
+            QDR.next = randomInt(QDR.PIECES.length);
+            var dim = QDR.findHW(QDR.PIECES[curr]);
+            QDR.current = {piece:QDR.PIECES[curr],index:curr,x:Math.floor(QDR.limits[1]/2)-Math.ceil(dim[0]/2),y:0};
+            var current = QDR.current;
+            if (QDR.checkPiece(current.piece, current.x, current.y)) QDR.over = true;
+            QDR.added = 0;
+        }
+        var current = QDR.current;
+        if (!step || !QDR.checkPiece(current.piece, current.x, current.y+1))
+            QDR.drawPiece(current.piece, current.index, current.x, current.y+=step?1:0);
+        else if (step) {
+            QDR.boardAdd(current.piece, current.index, current.x, current.y);
+            QDR.current = null;
+        }
+        QDR.drawNext();
+    }
+    for (var i=0;i<QDR.limits[0];i++) 
+        for (var j=0;j<QDR.limits[1];j++)
+            if (!isNull(QDR.board[i][j])) QDR.drawBlock(QDR.board[i][j], j, i);
+    if (QDR.over) {
+        $("#qdr-overlay").show();
+        $("#qdr-score").html(QDR.score);
+    } else if (!QDR.active) {
+        $("#qdr-pause").show();
+    } else { 
+        $("#qdr-pause").hide();
+        $("#qdr-overlay").hide();
+    }
+}
+QDR.end = function () {
+    $("#qdr-pause").hide();
+    $("#qdr-side").hide();
+    $("#qdr-overlay").hide();
+    $("#qdr-title").show();
+    QDR.screen = 0;
+    QDR.init();
+}
+QDR.checkBlock = function (x, y) { 
+    if (x >= QDR.limits[1] || y >= QDR.limits[0] || x < 0 || y < 0) return true
+    else return !isNull(QDR.board[y][x])
+}
+QDR.checkPiece = function (piece, x, y) {
+    for (var i=0;i<4;i++)
+        for (var j=0;j<4;j++)
+            if (piece[i][j] && (x+i >= QDR.limits[1] || y+j >= QDR.limits[0] || x+i < 0 || y+j < 0 || QDR.checkBlock(x+i, y+j))) return true
+    return false
+}
+$(function () {
+    QDR.init();
+    $("#qdr-start").click(function (event) {
+        $("#qdr-title").hide();
+        $("#qdr-side").show();
+        QDR.screen = 1;
+    });
+    $(document).keydown(function (event) {
+        if (!QDR.active) return null;
+        QDR.move(convertKeyDown(event));
+    });
+    $("#qdr-game").mouseenter(function () { QDR.active = true });
+    $("#qdr-game").mousemove(function () { QDR.active = true });
+    $("#qdr-game").mouseleave(function () { QDR.active = false });
+    $("#qdr-retry").click(function () { QDR.screen = 2 });
 });

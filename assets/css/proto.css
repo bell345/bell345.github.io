@@ -636,19 +636,97 @@ button.calcnum, #calcdot {
 .psim-control input[type="range"] {
     width:300px;
 }
-#psim-pan {
-    height:240px;
-    width:240px;
-    background:rgba(0,0,0,0.1);
-    position:relative;
-    cursor:move;
+/* ============ */
+/* QUADROMINOES */
+/* ============ */
+#qdr-canvas {
+    background:#ddd;
 }
-#psim-pan-nub {
+#qdr-gui, #qdr-title, #qdr-overlay, #qdr-pause {
+    width:400px;
+    height:600px;
     position:absolute;
-    height:6px;
-    width:6px;
-    background:black;
-    top:calc(50% - 3px);
-    left:calc(50% - 3px);
-    cursor:move;
+    vertical-align:middle;
+    text-align:center;
 }
+#qdr-overlay, #qdr-pause {
+    z-index:9;
+    pointer-events:none;
+    display:none;
+    background:rgba(0,0,0,0.2);
+}
+#qdr-gui * {
+    position:absolute;
+}
+#qdr-overlay * {
+    position:relative;
+    text-align:center;
+    right:0;
+    top:20px;
+    color:#eee;
+    box-shadow:none;
+    font-weight:normal;
+}
+#qdr-pause * {
+    position:relative;
+    text-align:center;
+    right:55px;
+    top:20px;
+    color:#eee;
+    box-shadow:none;
+    font-weight:normal;
+}
+#qdr-side {
+    width:110px;
+    height:600px;
+    position:relative;
+    float:right;
+    vertical-align:middle;
+    text-align:center;
+    display:none;
+    background:rgba(0,0,0,0.1);
+}
+#qdr-start {
+    top:calc(50% - 24px);
+    left:calc(50% - 60px);
+    height:48px;
+    width:120px;
+    font-size:28px;
+}
+#qdr-score {
+    font-size:24px;
+    font-weight:bold;
+}
+#qdr-retry {
+    top:64px;
+    height:48px;
+    width:160px;
+    font-size:28px;
+    color:#333;
+    pointer-events:auto;
+}
+#qdr-controls {
+    top:80px;
+    width:calc(32px * 3);
+    right:8px;
+    height:128px;
+    font-size:0;
+}
+#qdr-controls div {
+    display:inline-block;
+    width:32px;
+    height:32px;
+    background:#444;
+    box-shadow:2px 2px 0px 0px #333;
+    color:#eee;
+    position:relative;
+    font-size:18px;
+    line-height:32px;
+}
+#qdr-controls div.qdr-cont-empty {
+    display:none;
+}
+#qdr-controls.w div:nth-child(1) { background:#eee; color:#444; box-shadow:2px 2px 0px 0px #555 }
+#qdr-controls.a div:nth-child(3) { background:#eee; color:#444; box-shadow:2px 2px 0px 0px #555 }
+#qdr-controls.s div:nth-child(4) { background:#eee; color:#444; box-shadow:2px 2px 0px 0px #555 }
+#qdr-controls.d div:nth-child(5) { background:#eee; color:#444; box-shadow:2px 2px 0px 0px #555 }
