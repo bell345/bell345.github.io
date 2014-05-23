@@ -124,6 +124,10 @@ div.nav>div>a {
     font-weight:bold;
     font-family:"Raleway", "Calibri", sans-serif;
 }
+body.gecko div.nav>div>a {
+    height:72px;
+    bottom:14px;
+}
 div.nav>div:hover a {
     max-width:240px;
 }
@@ -148,7 +152,7 @@ div.nav>div>a:before {
     position:absolute;
     bottom:0;
 }
-.nav-indin {
+.nav-ind div {
     height:100%;
     width:64px;
     background:#2bf;
@@ -166,6 +170,9 @@ ul.inner-nav {
     min-width:200px;
     box-shadow:4px 4px 0px rgba(0,0,0,0.1);
     left:0;
+}
+body:not(.webkit) ul.inner-nav {
+    top:48px;
 }
 ul.inner-nav li {
     display:block;
@@ -386,6 +393,21 @@ sup.no-break {
 .toggle-on:active:after {
     background:#07c;
     box-shadow:inset 0px 2px 0px rgba(0,0,0,0.1);
+}
+/* ===== */
+/* LINKS */
+/* ===== */
+a.link-pdf:before {
+    width:48px;
+    height:48px;
+    vertical-align:bottom;
+    background:url(/assets/res/icons/pdf48.png);
+    content:"";
+    display:inline-block;
+}
+a.link-pdf {
+    font-size:24px;
+    line-height:48px;
 }
 /* ============= */
 /* MISCELLANEOUS */

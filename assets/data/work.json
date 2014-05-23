@@ -30,7 +30,7 @@
         {
             "id" : "canvas",
             "name" : "Canvas",
-            "version" : "1.0"
+            "version" : "1.0.1"
         },
         {
             "id" : "ttbl",
@@ -67,7 +67,7 @@
         {
             "id" : "treeh",
             "name" : "Treehouse",
-            "version" : "0.0.1",
+            "version" : "0.2",
             "link" : "/proto/treehouse/"
         }
     ],

@@ -2102,7 +2102,7 @@ $(function () {
     var click = 0;
     ctx.beginPath();
     ctx.mode = "";
-    if (navigator.userAgent.search("MSIE") == -1) ctx.setLineWidth(4);
+    ctx.lineWidth = 4;
     ctx.radius = 10;
     $("#cvs").click(function (event) {
         switch (ctx.mode) {
@@ -2205,8 +2205,8 @@ $(function () {
     $("#cvs-style-0").keyup(function () { ctx.strokeStyle = $(this).val(); });
     $("#cvs-style-1").keyup(function () { ctx.fillStyle = $(this).val(); });
     $("#cvs-width").spinner();
-    $("#cvs-width").keyup(function () { if (!isNaN($(this).val())) ctx.setLineWidth($(this).val()) });
-    $("#cvs-width").mouseup(function () { if (!isNaN($(this).val())) ctx.setLineWidth($(this).val()) });
+    $("#cvs-width").keyup(function () { if (!isNaN($(this).val())) ctx.lineWidth = $(this).val() });
+    $("#cvs-width").mouseup(function () { if (!isNaN($(this).val())) ctx.lineWidth = $(this).val() });
     $("#cvs-bwid").spinner();
     $("#cvs-bwid").keyup(function () { if (!isNaN($(this).val())) ctx.radius = $(this).val() });
     $("#cvs-bwid").mouseup(function () { if (!isNaN($(this).val())) ctx.radius = $(this).val() });
@@ -2891,13 +2891,13 @@ var QDR = {};
 // Quadrominoes are based upon a 4x4 grid system. 
 // The rotate() function allows for rotation of these pieces within the 4x4 grid.
 QDR.PIECES = [
-    [[1,1,1,1],[0,0,0,0],[0,0,0,0],[0,0,0,0]], // I piece
-    [[1,1,1,0],[0,1,0,0],[0,0,0,0],[0,0,0,0]], // T piece
-    [[0,1,0,0],[1,1,0,0],[1,0,0,0],[0,0,0,0]], // Z piece
-    [[1,0,0,0],[1,1,0,0],[0,1,0,0],[0,0,0,0]], // S piece
-    [[1,1,1,0],[1,0,0,0],[0,0,0,0],[0,0,0,0]], // L piece
-    [[1,1,1,0],[0,0,1,0],[0,0,0,0],[0,0,0,0]], // Reverse L piece
-    [[1,1,0,0],[1,1,0,0],[0,0,0,0],[0,0,0,0]]  // Box piece
+    [[true,true,true,true],[false,false,false,false],[false,false,false,false],[false,false,false,false]], // I piece
+    [[true,true,true,false],[false,true,false,false],[false,false,false,false],[false,false,false,false]], // T piece
+    [[false,true,false,false],[true,true,false,false],[true,false,false,false],[false,false,false,false]], // Z piece
+    [[true,false,false,false],[true,true,false,false],[false,true,false,false],[false,false,false,false]], // S piece
+    [[true,true,true,false],[true,false,false,false],[false,false,false,false],[false,false,false,false]], // L piece
+    [[true,true,true,false],[false,false,true,false],[false,false,false,false],[false,false,false,false]], // Reverse L piece
+    [[true,true,false,false],[true,true,false,false],[false,false,false,false],[false,false,false,false]]  // Box piece
 ];
 QDR.init = function () {
     QDR.size = 24; // Size of the blocks (px).
@@ -2928,7 +2928,7 @@ iVBORw0KGgoAAAANSUhEUgAAAHAAAAAQCAIAAABBdmxGAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
 WeNQftlDUF1QdrD+pyhw5B/YpVQd2xOqjLAB2C+oDVQd+OVUH9iWVQJIMCGbQtgwIZFMmgbRm0LYMiGRTIoG0ZFMigyD8HJe1BSWtQ0haUtAclbUFJa1DSEjSkBI0ojUJ+Bl1baRQyB\
 o0YGwV08gWxbsYGqFRypAAAAABJRU5ErkJggg==";
     TBI.timerClear("qdr");
-    TBI.timerSet("qdr", 500, function () {
+    TBI.timerSet("qdr", 10, function () {
         QDR.loop(); // Main loop.
     });
 }
@@ -3050,16 +3050,20 @@ QDR.drawPiece = function (piece, index, x, y) {
     return true;
 }
 QDR.boardAdd = function (piece, index, x, y) {
+	var prevBoard = QDR.board;
     for (var i=0;i<4;i++)
         for (var j=0;j<4;j++)
             if (piece[i][j] && QDR.added++ < 4) QDR.board[j+y][i+x] = index;
+	var tolerance = 0;
+	for (var i=0;i<prevBoard.length;i++)
+		for (var j=0;j<prevBoard[0].length;j++)
+			if (prevBoard[i][j] != QDR.board[i][j] && tolerance++ >= 4) throw new Error("Tower blocks created");
     TBI.log("Placed one more piece: #"+ ++QDR.placed);
 }
 QDR.play = function () {
     QDR.background();
     var time = new Date().getTime();
     var step = Math.floor(time/QDR.interval) != Math.floor(QDR.time/QDR.interval);
-    step = true;
     if (step) QDR.time = time;
     if (!QDR.active) step = false;
     if (!QDR.over) {

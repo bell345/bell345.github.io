@@ -16,11 +16,26 @@ pre ul li {
     display:inline-block;
     margin-left:0;
 }
-pre ul li:after {
+pre ul li:before {
     content:", ";
 }
-pre ul li:last-child:after {
+pre ul li:last-child:before {
+    content:" and ";
+}
+pre ul li:first-child:before {
     content:"";
+}
+.stat-upghouse:before {
+    font-weight:bold;
+    content:"Treehouse: ";
+}
+.stat-upgstand:before {
+    font-weight:bold;
+    content:"Stand: ";
+}
+#stat-upgavail li span, #stat-upgunavail li span {
+    text-decoration:underline;
+    cursor:pointer;
 }
 /* ====== */
 /* LAYOUT */

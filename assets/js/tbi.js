@@ -8,7 +8,6 @@ document.onreadystatechange = function () {
         incompat += "<DIV style='width:100%;height:100%;background-color:#fff;color:#000;font-size:24px;padding:16px;'>";
         incompat += "<H1 style='font-size:64px;font-family:monospace;color:#000;margin-bottom:48px;'>Your browser is unsupported.</H1>";
         incompat += "<P style='text-align:center;margin:0 200px 0 200px;'>Your browser is too out of date to view the website content properly. ";
-        incompat += "";
         incompat += "Please upgrade your browser, preferably to either <A href='http://google.com/chrome'>Google Chrome</A> ";
         incompat += "or <A href='http://firefox.com'>Mozilla Firefox</A>.</P>";
         incompat += "</DIV>";
@@ -42,8 +41,7 @@ TBI.warn = function (message, timeout) {
 TBI.error = function (message, timeout) {
     console.error(message);
     var orig = message;
-    if (typeof(message) == "object")
-        message = message.message;
+    if (typeof(message) == "object") message = message.message;
     timeout = isNull(timeout) ? 50000 : timeout;
     var onclick = "$($(this).parent()[0].getElementsByTagName(\"div\")[0]).slideToggle()";
     if (typeof(orig) == "object")
@@ -51,8 +49,7 @@ TBI.error = function (message, timeout) {
             orig.message+"<button onclick='"+onclick+"'>Show/Hide Stack</button><div style='display:none'>"+orig.stack+"</div>", 
             1, 
             timeout);
-    else
-        new TBI.Notification("Error", message, 1, timeout);
+    else new TBI.Notification("Error", message, 1, timeout);
 }
 // END CONSOLE NOTIFICATIONS //
 $(function () {
@@ -63,25 +60,24 @@ $(function () {
     else if (navigator.userAgent.search(/[Tt]rident/)!=-1)
         document.body.className = "trident";
     else if (navigator.userAgent.search(/MSIE/)!=-1)
-        document.body.className = "ie"
+        document.body.className = "ie";
 });
-// Shorthand for getElementById.
+// Shorthand for document.getElementById.
 function gebi(element) { return document.getElementById(element); }
 // Checks the state of an XHR.
 function checkState(request) { return (request.readyState == 4); }
 // A XMLHttpRequest object constructor.
 TBI.XHR = function () { return window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP"); }
 // An AJAX (Asynchronous JavaScript And XML) GET request constructor.
+// When the infomation referred to in the url variable is loaded, func() is called.
 TBI.AJAX = function (url, func) {
     var xhr = new TBI.XHR();
-    xhr.open("GET",url,true);
+    xhr.open("GET", url, true);
     xhr.send();
     xhr.onreadystatechange = function () {
         if (checkState(xhr)) {
-            if (isNull(xhr.response))
-                xhr.response = xhr.responseText;
-            if (func instanceof Function)
-                func();
+            if (isNull(xhr.response)) xhr.response = xhr.responseText;
+            if (func instanceof Function) func();
         }
     }
     return xhr;
@@ -106,15 +102,21 @@ TBI.requestManager = function () {
     }
     if (location.pathname.length > 1) {
         var pathname = location.pathname;
-        if (pathname.indexOf("/") == 0) {
+        if (pathname.indexOf("/") == 0)
             pathname = pathname.slice(1);
-        }
-        if (pathname.lastIndexOf("/") == pathname.length-1) {
+        if (pathname.lastIndexOf("/") == pathname.length-1)
             pathname = shorten(pathname, pathname.length-1);
-        }
         path = pathname.split("/");
     }
 }
+// Searches the navbar menu item database.
+TBI.searchNavbase = function (s) {
+    for (var i=0;i<navbase.length;i++) 
+        if (!isNull(navbase[i]) && navbase[i][0] == s) 
+            return navbase[i][1];
+    return null;
+}
+// Moves the navbar indicator to the specified element.
 TBI.navMoveTo = function (el) {
     if ($(el).length < 1) return false;
     var loc = $(el).offset().left;
@@ -128,8 +130,10 @@ TBI.navMoveTo = function (el) {
     $("#top-ind div").css("boxShadow", "0px 4px 0px 0px #09d");
     $("#top-ind div").css("transition", "0.4s all");
 }
+// A blanket function that handles the navbar indicator behaviour and when and where to place the sub-menus.
 TBI.checkNav = function () {
     $("#top>div:not(.nav-ind)").off("mousemove");
+    /** When mouse is moving on the navbar, move to its position. */
     $("#top>div:not(.nav-ind)").mousemove(function (event) {
         var width = parseInt($("#top-ind div").css("width"));
         var half = width/2;
@@ -143,11 +147,13 @@ TBI.checkNav = function () {
         $("#top-ind div").css("boxShadow", "0px 4px 0px 0px #3bb");
         $("#top-ind div").css("transition","0s all");
     });
+    /** When leaving or creating the navbar, move the indicator to the current menu item after 500ms. */
     $("#top>div:not(.nav-ind)").off("mouseleave");
     $("#top>div:not(.nav-ind)").mouseleave(function () { 
         TBI.timerClear("curr");
         TBI.timerSet("curr", 500, function () { TBI.navMoveTo("#curr"); TBI.timerClear("curr") });
     });
+    $("#top").off("mouseleave");
     $("#top").mouseleave(function () { 
         TBI.timerClear("curr");
         TBI.timerSet("curr", 500, function () { TBI.navMoveTo("#curr"); TBI.timerClear("curr") }); 
@@ -156,18 +162,18 @@ TBI.checkNav = function () {
         TBI.timerClear("curr");
         TBI.timerSet("curr", 500, function () { TBI.navMoveTo("#curr"); TBI.timerClear("curr") });
     }
-    /** Fill the prototypes menu */
+    
+    /** Fill the prototypes menu. */
     $(".nav-proto .inner-nav").empty();
     for (var i=0;i<Prototypes.length;i++)
-        $(".nav-proto .inner-nav").append(
-            "<li><a href='/proto/#"+Prototypes[i].id+"'>"+Prototypes[i].name+"</a></li>"
-        );
+        $(".nav-proto .inner-nav").append("<li><a href='/proto/#"+Prototypes[i].id+"'>"+Prototypes[i].name+"</a></li>");
     
-    /** Fill the work menu */
+    /** Fill the work menu. */
     $(".nav-work .inner-nav").empty();
     for (var i=0;i<Work.length;i++) 
         $(".nav-work .inner-nav").append("<li><a href='/work/#"+Work[i].id+"'>"+Work[i].name+"</a></li>");
     
+    /** A complicated for loop that handles the indicator behaviour relating to submenus. */
     var nv = "#top>div:not(.nav-ind)";
     navbase = new Array($(nv).length);
     for (var i=0;i<$(nv).length;i++) {
@@ -182,19 +188,22 @@ TBI.checkNav = function () {
                 $(child).show();
                 $(child).mouseenter(function () {
                     $($(child).parent()).off("mousemove");
-                    $(child).mousemove(function () { TBI.navMoveTo($($(child).parent())) });
+                    TBI.timerClear("curr");
+                    TBI.navMoveTo($($(child).parent()));
+                    $(child).mouseenter(function () { TBI.navMoveTo($($(child).parent())) });
                     TBI.updateLinks();
                 });
-                $(child).mouseleave(function () { TBI.checkNav() });
+                $(child).mouseleave(function () { TBI.checkNav(); TBI.timerClear("curr"); });
             });
             $(parent).off("mouseleave");
             $(parent).mouseleave(function () {
                 var child = TBI.searchNavbase(this);
-                if (child == null) return false;
+                if (isNull(child)) return false;
                 $(child).hide();
             });
         }
     }
+    /** Whether or not to show the "to top" menu item. */
     if (window.scrollY > 0) $(".nav-top").slideDown();
     else $(".nav-top").slideUp();
 }
@@ -210,30 +219,36 @@ TBI.findIndex = function (file, name) {
 }
 // Appends HTML to an element.
 function modifyHtml(id, mod) { gebi(id).innerHTML += mod }
-// Shortens a string by an index.
-function shorten(str, index) {
+// Returns a string from the start of str that is num characters long.
+function shorten(str, num) {
     var tempstr = [];
     if (str.length > 0 && !isNull(str)) {
         for (var i = 0; i < str.length; i++) {
-            if (i < index) tempstr.push(str[i]);
-            else if (i == index) return tempstr.join("");
+            if (i < num) tempstr.push(str[i]);
+            else if (i == num) return tempstr.join("");
         }
     }
 }
+// Pads num with a zero if it is a single digit.
 function zeroPrefix(num) { return (num<10?"0":"")+num; }
-// Highlights a nav link to the same page.
+// Highlights the current navbar menu item.
 TBI.findPage = function () {
     var curr = path[0];
     if (isNull(curr)) curr = "";
     var nav = "#top>div:not(.nav-ind)";
     var navbar = $(nav);
     var links = $("#top>div:not(.nav-ind)>a");
-    for (var i = 0; i < links.length; i++)
-        if ($(links[i]).attr("href").split("/")[1] == curr)
+    for (var i = 0; i < links.length; i++) {
+        if ($(links[i]).attr("href").split("/")[1] == curr) {
             $(navbar[i]).attr("id","curr");
+            return true;
+        }
+    }
+    $(".nav-home").attr("id","curr");
+    return true;
 }
 // Determines whether or not a number is even.
-function isEven(num) {return num%2==0 }
+function isEven(n) { return n%2==0 }
 // Determines whether or not a variable is nothing at all.
 function isNull(thing) {
     if (thing instanceof Array) {
@@ -246,14 +261,17 @@ function isNull(thing) {
 }
 // Determines whether a number is negative.
 function isNegative(num) { return (Math.abs(num) != num); }
-// Determines whether an array is equal to another.
+// Determines whether a one level array is equal to another.
 function isEqual(arr1, arr2) {
-    if (arr1.length != arr2.length || !(arr1 instanceof Array) || !(arr2 instanceof Array)) return false;
+    if (arr1.length != arr2.length || !(arr1 instanceof Array) || !(arr2 instanceof Array)) return arr1 == arr2;
     for (var i=0;i<arr1.length;i++) {
         if (!(arr1[i] instanceof Array) && !(arr2[i] instanceof Array) && arr1[i] != arr2[i]) return false;
         else if (arr1[i] instanceof Array && arr2[i] instanceof Array && !isEqual(arr1[i], arr2[i])) return false;
     }
     return true;
+}
+function isPresent(arr, item) {
+    for (var i=0;i<arr.length;i++) if (isEqual(arr[i], item)) return true; return false;
 }
 // Returns the numbers that go into the specified number.
 function divisors(num) {
@@ -264,6 +282,7 @@ function divisors(num) {
     divisors.push(num);
     return divisors;
 }
+// Translate a constant string of ASCII encoded octet-sized characters.
 function translateBinary(bin) { 
     var barr = [], 
         bstr = ""; 
@@ -274,6 +293,7 @@ function translateBinary(bin) {
     for (var i=0;i<barr.length;i++) bstr += ASCII[parseInt(barr[i],2)];
     return bstr;
 }
+// Changes a decimal number to a binary octet.
 function decimalToBinary(dec) {
     dec++;
     var maxPower = 0;
@@ -289,6 +309,7 @@ function decimalToBinary(dec) {
     while (binStr.length < 8) { binStr = "0" + binStr; }
     return binStr;
 }
+// Translates a string of characters to an ASCII encoded octet stream.
 function stringToBinary(str) {
     var binstr = "";
     for (var i=0;i<str.length;i++) { 
@@ -297,11 +318,12 @@ function stringToBinary(str) {
     }
     return binstr;
 }
+// Aliases for the above functions.
 var binToStr = translateBinary,
     decToBin = decimalToBinary,
     strToBin = stringToBinary,
     strToDec = function(b){return parseInt(b,2)},
-    binToDec = binToDec,
+    binToDec = function(b){return strToDec(b.toString())},
     decToStr = function(d){return ASCII[d]};
 var Timers = {};
 // An externally edited replacement for setInterval.
@@ -329,8 +351,7 @@ TBI.timerClear = function (timer) {
 }
 // Returns a preformatted array of the date object specified.
 function unixToString(date) {
-    if (date.getMonth() == 0) {var month=1}
-    else {var month = date.getMonth()+1};
+    var month = date.getMonth()+1;
     var day = date.getDate();
     var hour = date.getHours();
     var minute = date.getMinutes();
@@ -342,7 +363,7 @@ function unixToString(date) {
     second = zeroPrefix(second);
     return [date.getTime(), date.getFullYear(), month, day, hour, minute, second];
 }
-// Returns a random integer.
+// Returns a random positive integer below the specified number.
 function randomInt(num) { return parseInt(Math.random()*num) }
 // Returns a random integer between two numbers.
 function advRandomInt(num1, num2) { return parseInt(Math.random()*(num2-num1))+num1; }
@@ -350,27 +371,78 @@ function advRandomInt(num1, num2) { return parseInt(Math.random()*(num2-num1))+n
 function intRand(num) { return randomInt(num) }
 // Degrees to radians.
 function dtr(deg) { return (Math.PI/180)*deg }
+// Radians to degrees.
+function rtd(rad) { return (180/Math.PI)*rad }
 // Location of a point on a circle's circumference.
 function circlePoint(a, r, x, y) {
     x=isNull(x)?0:x;
     y=isNull(y)?0:y;
     return [x+r*Math.cos(dtr(a)),y+r*Math.sin(dtr(a))];
 }
+// Formula for the circumference of a circle with the specified radius r.
 function circum(r) { return 2*Math.PI*r }
+// Formula for calculating the hypotenuse of a right angled triangle, given sides a and b.
+function pythagoras(a,b) { return Math.sqrt((a*a)+(b*b)); }
+// Returns the dimensions of a square with the centre (x,y) and radius r.
 function squareDim(x,y,r) { return [x-r,y-r,r*2,r*2] }
+// Splices an element and returns the array while preserving the original.
+function splice(list, index, howMany) {
+    var newlist = [];
+    for (var i=0;i<list.length;i++)
+        if (!(i >= index && i < index+howMany)) newlist.push(list[i]);
+    return newlist;
+}
+// Sorts a number list in ascending order.
+function sort(list) {
+    var min = Infinity,
+        max = -Infinity;
+    for (var i=0;i<list.length;i++) {
+        if (list[i] < min) min = list[i];
+        if (list[i] > max) max = list[i];
+    }
+    list = splice(list, list.indexOf(min), 1);
+    list = splice(list, list.indexOf(max), 1);
+    if (list.length == 0) return [min,max];
+    else if (list.length == 1) return [min,list[0],max];
+    else {
+        var newarr = sort(list);
+        newarr.push(max);
+        newarr.unshift(min);
+        return newarr;
+    }
+}
+// Finds the mean of a list.
 function mean(list) {
     var total = 0;
-    for (var i=0;i<list.length;i++) total += list[i]
-    return total / list.length;
+    for (var i=0;i<list.length;i++) 
+        total += list[i];
+    return total/list.length;
 }
-Math.root = function (num, pow) {
-    try {
-        var negate = pow % 2 == 1 && pow < 0;
-        if (negate) pow = -pow;
-        var poss = Math.pow(num, 1/pow);
-        num = Math.pow(poss, num);
-        return negate ? -poss : poss;
-    } catch (e) { return TBI.error("Error in Math.root("+num+", "+pow+"): " + e.message); }
+// Finds the median of a list.
+function median(list) {
+    list = sort(list);
+    var length = list.length;
+    if (length % 2 == 0) return mean([list[length/2], list[(length/2)-1]]);
+    else return list[(length-1)/2];
+}
+// Finds the mode of a list.
+function mode(list) {
+    var freq = {},
+        max = 0,
+        modes = [];
+    for (var i=0;i<list.length;i++) {
+        if (freq[list[i]] == undefined) freq[list[i]] = 0;
+        freq[list[i]]++;
+    }
+    for (var i=0;i<Object.keys(freq).length;i++) if (freq[Object.keys(freq)[i]] > max) max = freq[Object.keys(freq)[i]];
+    for (var i=0;i<Object.keys(freq).length;i++) if (freq[Object.keys(freq)[i]] == max) modes.push(parseInt(Object.keys(freq)[i]));
+    if (max == 1) return "none";
+    return modes.length == 1?modes[0]:modes;
+}
+// Finds the range of a list.
+function range(list) {
+    list = sort(list);
+    return list[list.length-1]-list[0];
 }
 // Converts a keypress event keycode into the character typed.
 function convertKeyDown(event) {
@@ -381,8 +453,8 @@ function convertKeyDown(event) {
         ",abcdefghijklmnopqrstuvwxyz,".split("")+["super","right super","select"," "," "]+",01234567890,".split("")+
         ["*","+","-",".","/","f1","f2","f3","f4","f5","f6","f7","f8","f9","f10","f11","f12"," "," "," "," "," "," "," "," "," "," ",
         " "," "," "," "," "," "," "," "," "," ","num","scroll"," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," ",
-        " "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," ",";","=","comma","-",".","/",
-        "`"," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," ",
+        " "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," ",";","=",",",",","-",".","/",
+        "`"," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," ",
         "[","\\","]","'"]).split(/,{1,}/);
     var capchars = ([" "," "," "," "," "," "," "," ","backspace","tab"," "," "," ","enter"," "," ","shift","control","alt","pause",
         "caps"," "," "," "," "," "," ","escape"," "," "," "," "," ","page up","page down","end","home","left","up","right","down",
@@ -392,7 +464,7 @@ function convertKeyDown(event) {
         " "," "," "," "," "," "," "," "," "," ","num","scroll"," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," ",
         " "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," ",":","+","<","_",">","?","~",
         " "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," ",
-        "{","|","}","\" "]).split(/,{1,}/);
+        "{","|","}","\""]).split(/,{1,}/);
     if (which == 32) return " ";
     else if (event.shiftKey) return capchars[which];
     else return chars[which];
@@ -512,6 +584,7 @@ TBI.Notification = function (head, text, type, timeout) {
     notePrevInfo["text"].push(this.text);
     notePrevInfo["type"].push(this.type);
 }
+// A dialog which displays a yes/no prompt and can provide functions when an option is chosen.
 TBI.dialog = function (head, body, func, nfunc) {
     $("#dialog-yes").off("click");
     $("#dialog-no").off("click");
@@ -523,9 +596,9 @@ TBI.dialog = function (head, body, func, nfunc) {
     dia += "<button id='dialog-no' class='dialog-right'>Cancel</button></div></div>";
     $("body").append(dia);
     func = typeof(func) == "undefined" ? function () {} : func;
-    $("#dialog-yes").click(function () { $("#dialog-yes").off("click"); $("#dialog-no").off("click"); $(".dialog").remove(); func(); });
+    $("#dialog-yes").click(function () { func(); $("#dialog-yes").off("click"); $("#dialog-no").off("click"); $(".dialog").remove(); });
     nfunc = typeof(nfunc) == "undefined" ? function () {} : nfunc;
-    $("#dialog-no").click(function () { $("#dialog-yes").off("click"); $("#dialog-no").off("click"); $(".dialog").remove(); nfunc(); });
+    $("#dialog-no").click(function () { nfunc(); $("#dialog-yes").off("click"); $("#dialog-no").off("click"); $(".dialog").remove(); });
 }
 // Generates a desktop notification outside of the regular environment.
 function Note(img, title, desc, link) {
@@ -588,6 +661,7 @@ Canvas2D.dot = function (x, y, colour) {
     $("body").append("<div class='cvs-dot' style='background:"+colour+";left:"+
         x+"px;top:"+y+"px;visibility:"+v+";'></div>");
 }
+// A WebGL canvas constructor.
 function Canvas3D(cvs) {
     var gl = null;
     try { gl = cvs.getContext("webgl") || cvs.getContext("experimental-webgl"); }
@@ -598,14 +672,7 @@ function Canvas3D(cvs) {
     }
     return gl;
 }
-/* Updates the footer element based on the window size.
-function updateHeight() {
-    if ($("#maincontent").length > 0 && $("#maincontent").height() - $("#maincontent").offset().top < innerHeight)
-        $("footer nav a").hide();
-    else
-        $("footer nav a").show();
-}
-// Designates outgoing links. */
+// Designates outgoing links.
 TBI.updateLinks = function () {
     for (var i = 0; i < $("a[href]").length; i++) {
         if ($("a[href]:nth("+i+")").attr("href").search(/((http|https|mailto|news):|\/\/)/) == 0) {
@@ -624,12 +691,6 @@ TBI.updateLinks = function () {
             });
         }
     });
-}
-TBI.searchNavbase = function (s) {
-    for (var i=0;i<navbase.length;i++) 
-        if (navbase[i] != undefined && navbase[i][0] == s) 
-            return navbase[i][1];
-    return null;
 }
 // START INCLUDE CODE //
 // Code for implementing a client-side HTML includes system.
@@ -661,7 +722,7 @@ HTMLIncludes.get = function () {
     });
 }
 // END INCLUDE CODE //
-// For *special* browsers.
+// indexOf polyfill.
 if (!Array.prototype.indexOf) {
     Array.prototype.indexOf = function (obj, start) {
         for (var i = (start || 0), j = this.length; i < j; i++) {
@@ -715,7 +776,7 @@ $(document).on("pageload", function () {
     TBI.checkNav();
     TBI.navMoveTo($("#curr"));
     TBI.updateLinks();
-    if (!isNull(location.hash) && !isNull($(location.hash))) {
+    if (!isNull(location.hash) && !isNull($(location.hash.toString()))) {
         TBI.timerSet("scroll",10,function () {
             if (!isNull($(location.hash).offset())) {
                 $(document).scrollTop(parseInt($(location.hash).offset().top - 57));
@@ -729,7 +790,6 @@ $(function () {
     TBI.checkNav();
     $(document).scroll(function () { TBI.checkNav() });
     HTMLIncludes.getIndex();
-    $(document).resize(function () { updateHeight(); });
     $("button.toggle").click(function () {
         var a = " toggle-on";
         var c = this.className;
@@ -775,21 +835,29 @@ f(this.getUTCDate())+'T'+
 f(this.getUTCHours())+':'+
 f(this.getUTCMinutes())+':'+
 f(this.getUTCSeconds())+'Z':null;};String.prototype.toJSON=Number.prototype.toJSON=Boolean.prototype.toJSON=function(){return this.valueOf();};}
-var cx,escapable,gap,indent,meta,rep;function quote(string){escapable.lastIndex=0;return escapable.test(string)?'"'+string.replace(escapable,function(a){var c=meta[a];return typeof c==='string'?c:'\\u'+('0000'+a.charCodeAt(0).toString(16)).slice(-4);})+'"':'"'+string+'"';}
+var cx,escapable,gap,indent,meta,rep;function quote(string){escapable.lastIndex=0;return escapable.test(string)?'"'+string.replace(escapable,function(a){
+var c=meta[a];return typeof c==='string'?c:'\\u'+('0000'+a.charCodeAt(0).toString(16)).slice(-4);})+'"':'"'+string+'"';}
 function str(key,holder){var i,k,v,length,mind=gap,partial,value=holder[key];if(value&&typeof value==='object'&&typeof value.toJSON==='function'){value=value.toJSON(key);}
 if(typeof rep==='function'){value=rep.call(holder,key,value);}
-switch(typeof value){case'string':return quote(value);case'number':return isFinite(value)?String(value):'null';case'boolean':case'null':return String(value);case'object':if(!value){return'null';}
+switch(typeof value){case'string':return quote(value);case'number':return isFinite(value)?String(value):'null';case'boolean':case'null':return String(value);case'object':if(!value)
+{return'null';}
 gap+=indent;partial=[];if(Object.prototype.toString.apply(value)==='[object Array]'){length=value.length;for(var i=0;i<length;i+=1){partial[i]=str(i,value)||'null';}
 v=partial.length===0?'[]':gap?'[\n'+gap+partial.join(',\n'+gap)+'\n'+mind+']':'['+partial.join(',')+']';gap=mind;return v;}
-if(rep&&typeof rep==='object'){length=rep.length;for(var i=0;i<length;i+=1){if(typeof rep[i]==='string'){k=rep[i];v=str(k,value);if(v){partial.push(quote(k)+(gap?': ':':')+v);}}}}else{for(k in value){if(Object.prototype.hasOwnProperty.call(value,k)){v=str(k,value);if(v){partial.push(quote(k)+(gap?': ':':')+v);}}}}
+if(rep&&typeof rep==='object'){length=rep.length;for(var i=0;i<length;i+=1){if(typeof rep[i]==='string'){k=rep[i];v=str(k,value);if(v){partial.push(quote(k)+(gap?': ':':')+v);}}}}
+else{for(k in value){if(Object.prototype.hasOwnProperty.call(value,k)){v=str(k,value);if(v){partial.push(quote(k)+(gap?': ':':')+v);}}}}
 v=partial.length===0?'{}':gap?'{\n'+gap+partial.join(',\n'+gap)+'\n'+mind+'}':'{'+partial.join(',')+'}';gap=mind;return v;}}
-if(typeof JSON.stringify!=='function'){escapable=/[\\\"\x00-\x1f\x7f-\x9f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g;meta={'\b':'\\b','\t':'\\t','\n':'\\n','\f':'\\f','\r':'\\r','"':'\\"','\\':'\\\\'};JSON.stringify=function(value,replacer,space){var i;gap='';indent='';if(typeof space==='number'){for(var i=0;i<space;i+=1){indent+=' ';}}else if(typeof space==='string'){indent=space;}
+if(typeof JSON.stringify!=='function'){escapable=/[\\\"\x00-\x1f\x7f-\x9f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g;meta={
+'\b':'\\b','\t':'\\t','\n':'\\n','\f':'\\f','\r':'\\r','"':'\\"','\\':'\\\\'};JSON.stringify=function(value,replacer,space){var i;gap='';indent='';if(typeof space==='number'){
+for(var i=0;i<space;i+=1){indent+=' ';}}else if(typeof space==='string'){indent=space;}
 rep=replacer;if(replacer&&typeof replacer!=='function'&&(typeof replacer!=='object'||typeof replacer.length!=='number')){throw new Error('JSON.stringify');}
 return str('',{'':value});};}
-if(typeof JSON.parse!=='function'){cx=/[\u0000\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g;JSON.parse=function(text,reviver){var j;function walk(holder,key){var k,v,value=holder[key];if(value&&typeof value==='object'){for(k in value){if(Object.prototype.hasOwnProperty.call(value,k)){v=walk(value,k);if(v!==undefined){value[k]=v;}else{delete value[k];}}}}
+if(typeof JSON.parse!=='function'){cx=/[\u0000\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g;
+JSON.parse=function(text,reviver){var j;function walk(holder,key){var k,v,value=holder[key];if(value&&typeof value==='object'){for(k in value){
+if(Object.prototype.hasOwnProperty.call(value,k)){v=walk(value,k);if(v!==undefined){value[k]=v;}else{delete value[k];}}}}
 return reviver.call(holder,key,value);}
 text=String(text);cx.lastIndex=0;if(cx.test(text)){text=text.replace(cx,function(a){return'\\u'+
 ('0000'+a.charCodeAt(0).toString(16)).slice(-4);});}
-if(/^[\],:{}\s]*$/.test(text.replace(/\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g,'@').replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g,']').replace(/(?:^|:|,)(?:\s*\[)+/g,''))){j=eval('('+text+')');return typeof reviver==='function'?walk({'':j},''):j;}
+if(/^[\],:{}\s]*$/.test(text.replace(/\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g,'@').replace(
+/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g,']').replace(/(?:^|:|,)(?:\s*\[)+/g,''))){j=eval('('+text+')');return typeof reviver==='function'?walk({'':j},''):j;}
 throw new SyntaxError('JSON.parse');};}}());
 // END JSON2.JS //
