@@ -1,4 +1,4 @@
-﻿// START GRID CODE //
+﻿// START GRID CODE // 1-673 = 673 lines // LAST UPDATED: 2014-05-25 22:07 +08:00
 /**
 *   GRID JAVASCRIPT PROTOTYPE
 */
@@ -670,8 +670,8 @@ $(function () {
         }
     });
 });
-// END GRID CODE //
-// START CALENDAR CODE //
+// END GRID CODE // 1-673 = 673 lines
+// START CALENDAR CODE // 674-927 = 254 lines
 /**
 *   CALENDAR
 */
@@ -924,8 +924,8 @@ $(function () {
     });
     $("#calconttoday").click(function () { Calendar.findToday(); });
 });
-// END CALENDAR CODE //
-// START TXTENG CODE //
+// END CALENDAR CODE // 674-927 = 253 lines
+// START TXTENG CODE // 928-1185 = 258 lines
 /**
 *   TXTENG: JAVASCRIPT TERMINAL EMULATOR
 */
@@ -1182,8 +1182,8 @@ $(function () {
         }
     });
 });
-// END TXTENG CODE //
-// START COUNTDOWN CODE //
+// END TXTENG CODE // 928-1185 = 258 lines
+// START COUNTDOWN CODE // 1186-1416 = 231 lines
 /**
 *   CDOWN: COUNTDOWN WIDGET/APPLICATION
 */
@@ -1413,8 +1413,8 @@ $(function () {
     });
     Cdown.check(false);
 });
-// END COUNTDOWN CODE //
-// START CALC CODE //
+// END COUNTDOWN CODE // 1186-1416 = 231 lines
+// START CALC CODE // 1417-1785 = 369 lines
 /**
 *   JAVASCRIPT ADVANCED CALCULATOR
 */
@@ -1782,8 +1782,8 @@ Calc.statusPrint = function (message) {
 $(function () {
     Calc.setUp();
 });
-// END CALC CODE //
-// START TTBL CODE //
+// END CALC CODE // 1417-1785 = 369 lines
+// START TTBL CODE // 1786-2058 = 273 lines
 /**
 *   TTBL: TIMETABLE PARSER
 */
@@ -2055,10 +2055,10 @@ $(function () {
     });
     if (!isNull(localStorage.TTBL4)) $("#ttbs-hlnow").trigger("click");
 });
-// END TTBL CODE //
-// START CANVAS CODE //
+// END TTBL CODE // 1786-2058 = 273 lines
+// START CANVAS CODE // 2059-2225 = 167 lines
 /**
-*   CANVAS TEST
+*   CANVAS PAINT PROGRAM TEST
 */
 $(function () {
     var ctx = new Canvas2D("cvs");
@@ -2222,8 +2222,8 @@ $(function () {
         $(".cvs-dot").css("visibility", (Canvas2D.dotEnabled ? "visible" : "hidden"));
     });
 });
-// END CANVAS CODE //
-// START GL CODE //
+// END CANVAS CODE // 2059-2225 = 167 lines
+// START GL CODE // 2226-2365 = 140 lines
 /**
 *   WEBGL TEST
 */
@@ -2362,8 +2362,8 @@ GLTest.mvRotate = function (angle, v) {
     GLTest.mvMatrix = GLTest.mvMatrix.x(m);
 }
 $(function () { GLTest.init() });
-// END GL CODE //
-// START TWF8 CODE //
+// END GL CODE // 2226-2365 = 140 lines
+// START TWF8 CODE // 2366-2510 = 145 lines
 /**
 *   2048 GAME CLONE
 */
@@ -2507,6 +2507,8 @@ $(function () {
     $("#twf8-game").mouseenter(function () { TWF8.enabled = true; });
     $("#twf8-game").mouseleave(function () { TWF8.enabled = false; });
 });
+// END TWF8 CODE // 2366-2510 = 145 lines
+// START PSIM CODE // 2511-2891 = 381 lines
 /**
 *   PLANETARIUM SIMULATION
 */
@@ -2634,7 +2636,7 @@ PSim.planet = function (name) {
         PSim.ctx.beginPath();
         PSim.ctx.strokeStyle = planet.rings.colour;
         PSim.ctx.lineWidth = (planet.rings.max_distance*PSim.AU/PSim.LF)*PSim.zoom-(planet.rings.min_distance*PSim.AU/PSim.LF)*PSim.zoom;
-        var ringDistance = mean([planet.rings.min_distance, planet.rings.max_distance]);
+        var ringDistance = Math.mean([planet.rings.min_distance, planet.rings.max_distance]);
         PSim.ctx.arc(distance, 0, (ringDistance * PSim.AU / PSim.LF) * PSim.zoom, 0, dtr(360), false);
         PSim.ctx.stroke();
         PSim.ctx.closePath();
@@ -2875,10 +2877,10 @@ $(function () {
     TBI.Popup.registry.add(gebi("psim-speed-reset"), "Speed Reset", "Resets the simulation speed to realistic values.");
     TBI.Popup.registry.add(gebi("psim-speed-pause"), "Speed Pause", "Stops the simulation completely.");
     // Checkboxes / Boolean values
-    $("#psim-plines").click(function () { PSim.planetLines = this.checked });
-    $("#psim-porbits").click(function () { PSim.planetOrbits = this.checked });
-    $("#psim-debug").click(function () { PSim.debug = this.checked });
-    $("#psim-plabels").click(function () { PSim.planetLabels = this.checked });
+    $("#psim-plines").click(function () { PSim.planetLines = TBI.isButtonToggled(this); });
+    $("#psim-porbits").click(function () { PSim.planetOrbits = TBI.isButtonToggled(this); });
+    $("#psim-debug").click(function () { PSim.debug = TBI.isButtonToggled(this); });
+    $("#psim-plabels").click(function () { PSim.planetLabels = TBI.isButtonToggled(this); });
     // Canvas
     $("#psim-canvas").mousemove(function (event) { PSim.overlay = event });
     $("#psim-canvas").mouseleave(function (event) { PSim.overlay = null; PSim.clicked = 0 });
@@ -2886,6 +2888,8 @@ $(function () {
     $("#psim-canvas").mouseup(function () { PSim.clicked = 0 });
     $("#psim-reset").click(function () { if (confirm("Are you sure? The current position will be reset.")) PSim.init() });
 });
+// END PSIM CODE // 2511-2891 = 381 lines
+// START QDR CODE // 2892-3141 = 249 lines
 var QDR = {};
     QDR.totalTime = 0;
 // Quadrominoes are based upon a 4x4 grid system. 
@@ -2929,7 +2933,8 @@ WeNQftlDUF1QdrD+pyhw5B/YpVQd2xOqjLAB2C+oDVQd+OVUH9iWVQJIMCGbQtgwIZFMmgbRm0LYMiGR
 o0YGwV08gWxbsYGqFRypAAAAABJRU5ErkJggg==";
     TBI.timerClear("qdr");
     TBI.timerSet("qdr", 10, function () {
-        QDR.loop(); // Main loop.
+        try { QDR.loop(); }
+        catch (e) { TBI.error(e) }
     });
 }
 QDR.loop = function () {
@@ -3134,3 +3139,302 @@ $(function () {
     $("#qdr-game").mouseleave(function () { QDR.active = false });
     $("#qdr-retry").click(function () { QDR.screen = 2 });
 });
+// END QDR CODE // 2892-3141 = 249 lines
+// START FRACTAL CODE // 3142-3398 = 256 lines
+var Complex = function (real, imaginary) { this.real = real; this.imaginary = imaginary; }
+Complex.prototype.add = function (cNum) { return new Complex(this.real + cNum.real, this.imaginary + cNum.imaginary); }
+Complex.prototype.multiply = function (c0) {
+    return new Complex(this.real*c0.real - this.imaginary*c0.imaginary, 
+            this.real*c0.imaginary + this.imaginary*c0.real);
+}
+var CmpCvs = {};
+CmpCvs.setup = function () {
+    CmpCvs.HEIGHT = 300;
+    CmpCvs.WIDTH = 300;
+    CmpCvs.BOUNDARY = 600;
+    CmpCvs.hue = 60;
+    CmpCvs.roughness = 2;
+    CmpCvs.mode = 1;
+    CmpCvs.UPSCALE = 2;
+    CmpCvs.$ = new Canvas2D("cmp-canvas");
+    CmpCvs.$.translate(300, 300);
+    CmpCvs.$_ = new Canvas2D("cmp-mouse");
+    CmpCvs.$_.translate(300, 300);
+    $("#cmp-factor").spinner({step:0.5,min:1,page:2});
+    $("#cmp-maxiter").spinner({step:10,min:30,page:20});
+    TBI.buttonToggle($("#cmp-tracking")[0], true);
+    $(".cmp-jonly").hide();
+}
+CmpCvs.reset = function () {
+    CmpCvs.asisIncrement = 1;
+    CmpCvs.maxIter = 30;
+    CmpCvs.factor = 110;
+    CmpCvs.pan = [-0.75, 0];
+    CmpCvs.spinners = true;
+    TBI.buttonToggle($("#cmp-spinners")[0], CmpCvs.spinners);
+    CmpCvs.tracking = true;
+    TBI.buttonToggle($("#cmp-tracking")[0], CmpCvs.tracking);
+    CmpCvs.jfunc = new Complex(0.3, 0.25);
+    $("#cmp-asisinc").val(CmpCvs.asisIncrement);
+    $("#cmp-maxiter").val(CmpCvs.maxIter);
+    $("#cmp-factor").val(CmpCvs.factor.toString().length-1);
+    $("#cmp-panx").val(CmpCvs.pan[0]);
+    $("#cmp-pany").val(CmpCvs.pan[1]);
+    $("#cmp-jreal").val(CmpCvs.jfunc.real);
+    $("#cmp-jimaginary").val(CmpCvs.jfunc.imaginary);
+    $("#cmp-panx").spinner({step:Math.pow(10,-(parseInt($("#cmp-factor").val())-1)),min:-2,max:2});
+    $("#cmp-pany").spinner({step:Math.pow(10,-(parseInt($("#cmp-factor").val())-1)),min:-2,max:2});
+}
+CmpCvs.init = function () {
+    CmpCvs.location = [0,0];
+    CmpCvs.$.clearRect(-600, -600, 1200, 1200);
+    if (Math.pow(10,-parseInt($("#cmp-factor").val())) <= 1e-6 && $("#cmp-pany").data("ui-spinner")) {
+        $("#cmp-panx").spinner("destroy");
+        $("#cmp-pany").spinner("destroy");
+    } else if ($("#cmp-pany").data("ui-spinner") && CmpCvs.spinners) {
+        $("#cmp-panx").spinner("option","step",Math.pow(10,-parseInt($("#cmp-factor").val())));
+        $("#cmp-pany").spinner("option","step",Math.pow(10,-parseInt($("#cmp-factor").val())));
+    } else if (CmpCvs.spinners) {
+        $("#cmp-panx").spinner({step:Math.pow(10,-parseInt($("#cmp-factor").val())),min:-2,max:2});
+        $("#cmp-pany").spinner({step:Math.pow(10,-parseInt($("#cmp-factor").val())),min:-2,max:2});
+    }
+    CmpCvs.analyse();
+    TBI.timerClear("cmpPlane");
+    TBI.timerSet("cmpPlane", 50, CmpCvs.loop);
+    return new Date().getTime();
+}
+CmpCvs.loop = function () {
+    CmpCvs.$_.clearRect(-600, -600, 1200, 1200);
+    if (!CmpCvs.tracking) return false;
+    CmpCvs.drawAxis();
+    var f = CmpCvs.factor;
+    if (CmpCvs.mode == 1) {
+        var func = function (cmpvalue, comp) { return cmpvalue.multiply(cmpvalue).add(comp); }
+        var cmp = new Complex(CmpCvs.location[0]/f, CmpCvs.location[1]/f);
+        var fate = new Complex(0,0);
+        CmpCvs.plot(fate, func(fate, cmp));
+        for (var i=0;i<CmpCvs.maxIter;i++) {
+            fate = func(fate, cmp);
+            CmpCvs.plot(fate, func(fate, cmp));
+        }
+    } else {
+        var cmp = new Complex(CmpCvs.location[0]/f, CmpCvs.location[1]/f);
+        CmpCvs.plot(cmp, CmpCvs.func(cmp));
+        for (var i=0;i<CmpCvs.maxIter;i++) {
+            cmp = CmpCvs.func(cmp);
+            CmpCvs.plot(cmp, CmpCvs.func(cmp));
+        }
+    }
+    CmpCvs.drawCentre();
+}
+CmpCvs.drawAxis = function () {
+    CmpCvs.$_.save();
+    CmpCvs.$_.lineWidth = 2;
+    var p = CmpCvs.pan, u = CmpCvs.UPSCALE;
+    Canvas2D.path(CmpCvs.$_, {type:"stroke",style:"#333",path:[[-300,-p[1]*u],[300,-p[1]*u]]});
+    Canvas2D.path(CmpCvs.$_, {type:"stroke",style:"#333",path:[[-p[0]*u,-300],[-p[0]*u,300]]});
+    CmpCvs.$_.restore();
+}
+CmpCvs.drawCentre = function () {
+    CmpCvs.$_.beginPath();
+    CmpCvs.$_.fillStyle = "#333";
+    CmpCvs.$_.arc(0,0,3,0,dtr(360),false);
+    CmpCvs.$_.fill();
+    CmpCvs.$_.closePath();
+    CmpCvs.$_.beginPath();
+    CmpCvs.$_.fillStyle = "#eee";
+    CmpCvs.$_.arc(0,0,1,0,dtr(360), false);
+    CmpCvs.$_.fill();
+    CmpCvs.$_.closePath();
+    CmpCvs.$.beginPath();
+    CmpCvs.$.fillStyle = "#333";
+    CmpCvs.$.arc(0,0,3,0,dtr(360),false);
+    CmpCvs.$.fill();
+    CmpCvs.$.closePath();
+    CmpCvs.$.beginPath();
+    CmpCvs.$.fillStyle = "#eee";
+    CmpCvs.$.arc(0,0,1,0,dtr(360), false);
+    CmpCvs.$.fill();
+    CmpCvs.$.closePath();
+}
+CmpCvs.plot = function (cmp, cmp2) {
+    CmpCvs.$_.lineWidth = 1;
+    var f = CmpCvs.factor, p = CmpCvs.pan, u = CmpCvs.UPSCALE;
+    var colour = "hsl("+((new Date().getTime()/8)%360)+",100%,50%)";
+    Canvas2D.path(CmpCvs.$_,{type:"stroke",style:"#eee",path:[[(cmp.real*f-p[0])*u,(cmp.imaginary*f-p[1])*u],[(cmp2.real*f-p[0])*u,(cmp2.imaginary*f-p[1])*u]]});
+}
+CmpCvs.func = function (cmp) { 
+    return cmp.multiply(cmp).add(CmpCvs.jfunc);
+}
+CmpCvs.conditions = function (cmp) {
+    switch (CmpCvs.mode) {
+        case 0: return CmpCvs.julia(cmp);
+        case 1: return CmpCvs.mandelbrot(cmp);
+    }
+}
+CmpCvs.isBounded = function (cmp) {
+    if (isNaN(cmp.real)||isNaN(cmp.imaginary)) var result = false;
+    else var result = !(Math.abs(cmp.real)>CmpCvs.BOUNDARY||Math.abs(cmp.imaginary)>CmpCvs.BOUNDARY);
+    return result;
+}
+CmpCvs.mandelbrot = function (cmp) {
+    var func = function (cmpvalue, comp) { return cmpvalue.multiply(cmpvalue).add(comp); };
+    var fate = new Complex(0,0);
+    for (var i=0;i<CmpCvs.maxIter;i++) {
+        fate = func(fate, cmp);
+        if (!CmpCvs.isBounded(fate)) return i;
+    }
+    return null;
+}
+CmpCvs.julia = function (cmp) {
+    for (var i=0;i<CmpCvs.maxIter;i++) {
+        cmp = CmpCvs.func(cmp);
+        if (!CmpCvs.isBounded(cmp)) return i;
+    }
+    return null;
+}
+CmpCvs.analyse = function () {
+    var f = CmpCvs.factor,
+        h = CmpCvs.HEIGHT,
+        w = CmpCvs.WIDTH,
+        p = CmpCvs.pan,
+        r = CmpCvs.hue,
+        y = CmpCvs.roughness,
+        a = CmpCvs.asisIncrement,
+        u = CmpCvs.UPSCALE;
+    p[0]*=f;
+    p[1]*=f;
+    for (var i=-h/2+p[0];i<h/2+p[0];i+=a) {
+        for (var j=-w/2+p[1];j<w/2+p[1];j+=a) {
+            var result = CmpCvs.conditions(new Complex(i/f,j/f));
+            if (!isNull(result)) CmpCvs.$.fillStyle = "hsl("+-parseInt(((result+r)%360)*y)+",100%,50%)";
+            else CmpCvs.$.fillStyle = "#000";
+            CmpCvs.$.beginPath();
+            CmpCvs.$.arc(i*u-p[0]*u,j*u-p[1]*u,a<1?1:a,0,dtr(360),false);
+            CmpCvs.$.fill();
+            CmpCvs.$.closePath();
+        }
+    }
+    CmpCvs.drawCentre();
+}
+CmpCvs.validate = function () {
+    var asisinc = $("#cmp-asisinc").val(),
+        maxiter = $("#cmp-maxiter").val(),
+        factor = $("#cmp-factor").val(),
+        panx = $("#cmp-panx").val(),
+        pany = $("#cmp-pany").val(),
+        real = $("#cmp-jreal").val(),
+        imaginary = $("#cmp-jimaginary").val(),
+        code = 0,
+        prefix = "Complex Plane validation error: ";
+    if (isNull(asisinc) || isNull(maxiter) || isNull(factor) || isNull(panx) || isNull(pany) || (CmpCvs.mode == 0 && isNull(real) || isNull(imaginary))) code = 1;
+    else if (isNaN(asisinc) || isNaN(maxiter) || isNaN(factor) || isNaN(panx) || isNaN(pany) || (CmpCvs.mode == 0 && isNaN(real) || isNaN(imaginary))) code = 2;
+    else if (asisinc <= 0 || maxiter <= 0 || factor <= 0) code = 3;
+    else if (asisinc < 0.3 || maxiter > 300 || factor > 15) code = 4;
+    else if (asisinc > 10) code = 5;
+    else if (parseInt(maxiter) != maxiter) code = 6;
+    switch (code) {
+        case 0: return true; break;
+        case 1: TBI.error(prefix+"Null values are not allowed."); break;
+        case 2: TBI.error(prefix+"Values have to be numbers."); break;
+        case 3: TBI.error(prefix+"The increment, max iteration and factor have to be positive."); break;
+        case 4: TBI.error(prefix+"The work required is too large."); break;
+        case 5: TBI.error(prefix+"The analysis increment is too large for proper resolution."); break;
+        case 6: TBI.error(prefix+"The maximum iteration has to be a positive integer."); break;
+        default: TBI.error(prefix+"Unhandled exception."); break;
+    }
+    CmpCvs.reset();
+    return false;
+}
+CmpCvs.generate = function (asis, maxiter, factor, panx, pany, real, imaginary) {
+    CmpCvs.asisIncrement = asis;
+    CmpCvs.maxIter = maxiter;
+    CmpCvs.factor = factor;
+    CmpCvs.pan[0] = panx;
+    CmpCvs.pan[1] = pany;
+    CmpCvs.jfunc.real = real;
+    CmpCvs.jfunc.imaginary = imaginary;
+    var beginTime = new Date().getTime();
+    $("#cmp-generate").html("Generating...");
+    TBI.timerSet("cmp-generation", 10, function () {
+        try {
+            var endTime = CmpCvs.init();
+            var finalTime = endTime-beginTime;
+            if (CmpCvs.mode == 1) $("#cmp-generate").html("Generate Mandelbrot Set");
+            else $("#cmp-generate").html("Generate Julia Set");
+            TBI.log("Completed in "+finalTime+"ms.");
+        } catch (e) { TBI.error(e); }
+        finally { TBI.timerClear("cmp-generation"); }
+    });
+}
+$(function () {
+    CmpCvs.setup();
+    CmpCvs.reset();
+    $("#cmp-mouse").mousemove(function (event) {
+        var f = CmpCvs.factor, u = CmpCvs.UPSCALE;
+        CmpCvs.location = [(event.offsetX-300+(CmpCvs.pan[0]*u))/u, (event.offsetY-300+(CmpCvs.pan[1]*u))/u];
+    });
+    $("#cmp-mouse").click(function () {
+        var f = CmpCvs.factor;
+        TBI.buttonToggle($("#cmp-spinners")[0],false);
+        CmpCvs.spinners = false;
+        $("#cmp-panx").val(CmpCvs.location[0]/f);
+        $("#cmp-pany").val(CmpCvs.location[1]/f);
+        if (!CmpCvs.validate()) return false;
+        else CmpCvs.generate(parseFloat($("#cmp-asisinc").val()),
+                parseInt($("#cmp-maxiter").val()),
+                Math.pow(10,parseFloat($("#cmp-factor").val())),
+                parseFloat($("#cmp-panx").val()),
+                parseFloat($("#cmp-pany").val()),
+                parseFloat($("#cmp-jreal").val()),
+                parseFloat($("#cmp-jimaginary").val()));
+    });
+    $("#cmp-lquality").click(function () { $("#cmp-asisinc").val("1"); });
+    $("#cmp-mquality").click(function () { $("#cmp-asisinc").val("0.6"); });
+    $("#cmp-hquality").click(function () { $("#cmp-asisinc").val("0.3"); });
+    $("#cmp-ldetail").click(function () { $("#cmp-maxiter").val("20"); });
+    $("#cmp-mdetail").click(function () { $("#cmp-maxiter").val("50"); });
+    $("#cmp-hdetail").click(function () { $("#cmp-maxiter").val("80"); });
+    $("#cmp-tracking").click(function () { CmpCvs.tracking = TBI.isButtonToggled(this); });
+    $("#cmp-spinners").click(function () {
+        CmpCvs.spinners = TBI.isButtonToggled(this);
+        if (!isNull($("#cmp-maxiter").data("ui-spinner")) && !CmpCvs.spinners) $("#cmp-maxiter").spinner("destroy");
+        else if (CmpCvs.spinners) $("#cmp-maxiter").spinner({step:10,min:30,page:20});
+        if (!isNull($("#cmp-factor").data("ui-spinner")) && !CmpCvs.spinners) $("#cmp-factor").spinner("destroy");
+        else if (CmpCvs.spinners) $("#cmp-factor").spinner({step:0.5,min:1,page:2});
+        if (!isNull($("#cmp-panx").data("ui-spinner")) && !CmpCvs.spinners) $("#cmp-panx").spinner("destroy");
+        else if (CmpCvs.spinners && Math.pow(10,-parseInt($("#cmp-factor").val())) > 1e-6) 
+            $("#cmp-panx").spinner({step:Math.pow(10,-parseInt($("#cmp-factor").val())),min:-2,max:2});
+        if (!isNull($("#cmp-pany").data("ui-spinner")) && !CmpCvs.spinners) $("#cmp-pany").spinner("destroy");
+        else if (CmpCvs.spinners && Math.pow(10, -parseInt($("#cmp-factor").val())) > 1e-6)
+            $("#cmp-pany").spinner({step:Math.pow(10,-parseInt($("#cmp-factor").val())),min:-2,max:2});
+    });
+    $("#cmp-mode").click(function () {
+        CmpCvs.mode = CmpCvs.mode==0?1:0; 
+        if (CmpCvs.mode == 0) {
+            $(".cmp-jonly").show();
+            $("#cmp-generate").html("Generate Julia Set");
+            CmpCvs.reset();
+            $("#cmp-panx").val(CmpCvs.pan[0] = 0);
+        }
+        else {
+            $(".cmp-jonly").hide();
+            $("#cmp-generate").html("Generate Mandelbrot Set");
+            CmpCvs.reset();
+        }
+    });
+    $("#cmp-generate").click(function () {
+        if (!CmpCvs.validate()) return false;
+        else CmpCvs.generate(parseFloat($("#cmp-asisinc").val()),
+                parseInt($("#cmp-maxiter").val()),
+                Math.pow(10,parseFloat($("#cmp-factor").val())),
+                parseFloat($("#cmp-panx").val()),
+                parseFloat($("#cmp-pany").val()),
+                parseFloat($("#cmp-jreal").val()),
+                parseFloat($("#cmp-jimaginary").val()));
+    });
+    $("#cmp-reset").click(function () {
+        CmpCvs.reset();
+    });
+});
+// END FRACTAL CODE //

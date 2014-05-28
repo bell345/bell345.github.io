@@ -730,3 +730,19 @@ button.calcnum, #calcdot {
 #qdr-controls.a div:nth-child(3) { background:#eee; color:#444; box-shadow:2px 2px 0px 0px #555 }
 #qdr-controls.s div:nth-child(4) { background:#eee; color:#444; box-shadow:2px 2px 0px 0px #555 }
 #qdr-controls.d div:nth-child(5) { background:#eee; color:#444; box-shadow:2px 2px 0px 0px #555 }
+/* ============= */
+/* COMPLEX PLANE */
+/* ============= */
+.cmp-control input[type="text"] {
+    width:134px;
+}
+.cmp-buttonr {
+    margin:4px;
+}
+.cmp-control span.main {
+    vertical-align:middle;
+}
+#cmp-mouse {
+    position:absolute;
+    left:24px;
+}

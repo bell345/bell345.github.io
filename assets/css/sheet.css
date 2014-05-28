@@ -254,9 +254,9 @@ ul.inner-nav li a {
 .img-viewport-inline img {
     margin:auto;
 }
-/* ================== */
-/* HEADERS/PARAGRAPHS */
-/* ================== */
+/* ==== */
+/* TEXT */
+/* ==== */
 h1, h1 * {
     font-size:52px;
     font-family:"Righteous","Georgia",sans-serif;
@@ -326,29 +326,42 @@ ul.light a, ul.main a {
 /* ============ */
 /* INPUTS/FORMS */
 /* ============ */
-button {
+button, input[type="button"], input[type="submit"] {
     padding:4px 8px;
     background:#e5e5e5;
     transition:0.2s all;
     font-size:14px;
 }
-button:hover {
+button:hover, input[type="button"]:hover {
     background:#eee;
     box-shadow:inset 0px -2px 0px rgba(0,0,0,0.1);
 }
-button:active {
+button:active, input[type="button"]:active {
     background:#ddd;
     outline:0;
     box-shadow:inset 0px 2px 0px rgba(0,0,0,0.1);
 }
-button:focus { outline:0 }
+button:focus, input[type="text"]:focus, input[type="button"]:focus, input[type="submit"]:focus { outline:0 }
 input[type="text"], *[contenteditable] {
     padding:4px 8px;
     font-size:14px;
     margin:4px;
 }
-input[type="text"]:focus {
-    outline:0;
+.ui-widget input[type="text"] {
+    margin:0;
+}
+.ui-spinner {
+    margin:4px;
+}
+button.major, input[type="submit"] {
+    background:#08d;
+    color:#eee;
+}
+button.major:hover, input[type="submit"]:hover {
+    background:#19e;
+}
+button.major:active, input[type="submit"]:active {
+    background:#07c;
 }
 /* ======= */
 /* UTILITY */
@@ -362,6 +375,10 @@ sup.no-break {
     position:relative;
     bottom:8px;
     font-size:small;
+}
+.nb { font-size:0 }
+.nb .main {
+    font-size:initial;
 }
 .help {
     cursor:pointer;
@@ -409,9 +426,9 @@ a.link-pdf {
     font-size:24px;
     line-height:48px;
 }
-/* ============= */
-/* MISCELLANEOUS */
-/* ============= */
+/* =========== */
+/* UI ELEMENTS */
+/* =========== */
 .popup {
     background:#f2f2f2;
     box-shadow:4px 4px 0px rgba(0,0,0,0.2);

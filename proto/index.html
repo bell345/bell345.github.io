@@ -425,23 +425,76 @@
                         <input type="range" min="-30" max="30" step="0.2" id="psim-speed" />
                     </div>
                     <div class="psim-control">
-                        <input type="checkbox" id="psim-plines" />
-                        <label for="psim-plines" class="main">Show planet location lines</label>
-                    </div>
-                    <div class="psim-control">
-                        <input type="checkbox" checked id="psim-porbits" />
-                        <label for="psim-porbits" class="main">Show planet orbits</label>
-                    </div>
-                    <div class="psim-control">
-                        <input type="checkbox" checked id="psim-plabels" />
-                        <label for="psim-plabels" class="main">Show planet labels</label>
-                    </div>
-                    <div class="psim-control">
-                        <input type="checkbox" id="psim-debug" />
-                        <label for="psim-debug" class="main">Debug mode</label>
+                        <button id="psim-plines" class="toggle">Location lines</button>
+                        <button id="psim-porbits" class="toggle toggle-on">Orbits</button>
+                        <button id="psim-plabels" class="toggle toggle-on">Labels</button>
+                        <button id="psim-debug" class="toggle">Debug mode</button>
                     </div>
                     <div class="psim-control">
                         <button id="psim-reset">Reset simulation</button>
+                    </div>
+                </div>
+            </div>
+            <h2 class="main proto">Complex Plane</h2>
+            <h3 class="version"></h3>
+            <div class="proto-main">
+                <p>
+                    After watching a few introductory videos on complex numbers and how they could generate
+                    fractals, I decided to implement a few complex number functions in JavaScript. This is
+                    the result.
+                </p>
+                <div class="proto">
+                    <canvas id="cmp-canvas" height="600" width="600">
+                        Your browser is not good enough to recognise the HTML5 &lt;canvas&gt; tag. 
+                        Supported browsers include Google Chrome and Mozilla Firefox.
+                    </canvas>
+                    <canvas id="cmp-mouse" height="600" width="600"></canvas>
+                    <div class="cmp-control">
+                        <input type="text" id="cmp-asisinc" />
+                        <span class="main">Analysis Increment (resolution, &lt; is better)</span>
+                    </div>
+                    <div class="cmp-control">
+                        <input type="text" id="cmp-maxiter" />
+                        <span class="main">Maximum Iterations (detail, &gt; is better)</span>
+                    </div>
+                    <div class="cmp-control">
+                        <input type="text" id="cmp-factor" />
+                        <span class="main">Zoom Factor (zoom, &gt; is better)</span>
+                    </div>
+                    <div class="cmp-control">
+                        <input type="text" id="cmp-panx" />
+                        <span class="main">X Pan</span>
+                    </div>
+                    <div class="cmp-control">
+                        <input type="text" id="cmp-pany" />
+                        <span class="main">Y Pan</span>
+                    </div>
+                    <div class="cmp-control cmp-jonly">
+                        <input type="text" id="cmp-jreal" />
+                        <span class="main">Real component</span>
+                    </div>
+                    <div class="cmp-control cmp-jonly">
+                        <input type="text" id="cmp-jimaginary" />
+                        <span class="main">Imaginary component</span>
+                    </div>
+                    <div class="cmp-control cmp-buttonr">
+                        <button id="cmp-tracking" class="toggle">Line tracking</button>
+                        <button id="cmp-spinners" class="toggle">Spinners</button>
+                    </div>
+                    <div class="cmp-control cmp-buttonr">
+                        <button id="cmp-lquality">Low Quality</button>
+                        <button id="cmp-mquality">Medium Quality</button>
+                        <button id="cmp-hquality">High Quality</button>
+                    </div>
+                    <div class="cmp-control cmp-buttonr">
+                        <button id="cmp-ldetail">Low Detail</button>
+                        <button id="cmp-mdetail">Medium Detail</button>
+                        <button id="cmp-hdetail">High Detail</button>
+                    </div>
+                    <div class="cmp-control cmp-buttonr">
+                        <button id="cmp-reset">Reset Settings</button>
+                        <button id="cmp-mode">Switch Mode</button>
+                        <button class="major" id="cmp-generate">Generate Mandelbrot Set</button>
                     </div>
                 </div>
             </div>

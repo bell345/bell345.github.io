@@ -1,4 +1,4 @@
-﻿// TBI.JS - V6.0
+﻿// TBI.JS - V6.1
 // Base functions, variables and helpers that are included and required in
 // all of my website pages.
 // START INCOMPATIBILITY CODE //
@@ -412,21 +412,18 @@ function sort(list) {
     }
 }
 // Finds the mean of a list.
-function mean(list) {
-    var total = 0;
-    for (var i=0;i<list.length;i++) 
-        total += list[i];
-    return total/list.length;
+Math.mean = function (list) {
+    for (var i=0,t=0;i<list.length;i++) t += list[i];
+    return t/list.length;
 }
 // Finds the median of a list.
-function median(list) {
+Math.median = function (list) {
     list = sort(list);
-    var length = list.length;
-    if (length % 2 == 0) return mean([list[length/2], list[(length/2)-1]]);
-    else return list[(length-1)/2];
+    if (length % 2 == 0) return Math.mean([list[list.length/2], list[(list.length/2)-1]]);
+    else return list[(list.length-1)/2];
 }
 // Finds the mode of a list.
-function mode(list) {
+Math.mode = function (list) {
     var freq = {},
         max = 0,
         modes = [];
@@ -436,13 +433,21 @@ function mode(list) {
     }
     for (var i=0;i<Object.keys(freq).length;i++) if (freq[Object.keys(freq)[i]] > max) max = freq[Object.keys(freq)[i]];
     for (var i=0;i<Object.keys(freq).length;i++) if (freq[Object.keys(freq)[i]] == max) modes.push(parseInt(Object.keys(freq)[i]));
-    if (max == 1) return "none";
+    if (max < 2) return "none";
     return modes.length == 1?modes[0]:modes;
 }
 // Finds the range of a list.
-function range(list) {
+Math.range = function (list) {
     list = sort(list);
     return list[list.length-1]-list[0];
+}
+// Finds the upper quartile, the lower quartile and the inter-quartile range of a list.
+Math.quartiles = function (list) {
+    list = sort(list);
+    if (list.length%2!=0) list = splice(list, (list.length-1)/2, 1);
+    var up = [], lw = [];
+    for (var i=0;i<list.length;i++) i<list.length/2?lw.push(list[i]):up.push(list[i]);
+    return {lower:Math.median(lw),upper:Math.median(up),range:Math.median(up) - Math.median(lw)};
 }
 // Converts a keypress event keycode into the character typed.
 function convertKeyDown(event) {
@@ -600,6 +605,11 @@ TBI.dialog = function (head, body, func, nfunc) {
     nfunc = typeof(nfunc) == "undefined" ? function () {} : nfunc;
     $("#dialog-no").click(function () { nfunc(); $("#dialog-yes").off("click"); $("#dialog-no").off("click"); $(".dialog").remove(); });
 }
+TBI.buttonToggle = function (element, bool) {
+    if ((!isNull(bool) && !bool) || TBI.isButtonToggled(element)) element.className = element.className.replace(" toggle-on","");
+    else element.className += " toggle-on";
+}
+TBI.isButtonToggled = function (element) { return element.className.search(" toggle-on") != -1; }
 // Generates a desktop notification outside of the regular environment.
 function Note(img, title, desc, link) {
     if (isNull(window.Notification)) return null;
@@ -641,6 +651,7 @@ Canvas2D.path = function (context, obj) {
     var path = obj.path;
     var type = obj.type;
     var style = obj.style;
+    context.save();
     context[type+"Style"] = style;
     context.beginPath();
     context.moveTo(path[0][0], path[0][1]);
@@ -648,6 +659,7 @@ Canvas2D.path = function (context, obj) {
         context.lineTo(path[i][0], path[i][1]);
     context.closePath();
     context[type]();
+    context.restore();
 }
 Canvas2D.reset = function (context) {
     context.closePath();
