@@ -1,213 +1,136 @@
-/* START AT RULES */
-@font-face {
-    font-family:'Oswald';
-    font-weight:400;
-    font-style:normal;
-    src:local("Oswald"), url(/shared/res/fonts/Oswald.woff) format("woff");
-}
-@font-face {
-    font-family:'Open Sans';
-    font-weight:400;
-    font-style:normal;
-    src:local("Open Sans"), local("OpenSans"), url(/shared/res/fonts/OpenSans.woff) format("woff");
-}
-@font-face {
-    font-family: 'Montserrat';
-    font-weight:400;
-    font-style:normal;
-    src: local('Montserrat-Regular'), url(/shared/res/fonts/Montserrat.woff) format('woff');
-}
-@font-face {
-    font-family:'Righteous';
-    font-style:normal;
-    font-weight:400;
-    src: local("Righteous"), local("Righteous-Regular"), url(/shared/res/fonts/Righteous.woff) format("woff");
-}
-/* END AT RULES */
-/* START GLOBAL STYLE */
-* {
-    margin:0;
-    padding:0;
-    border:0;
-}
-body {
-    background:#aaa;
-    font-family:"Open Sans", Calibri, sans-serif;
-}
-button:focus, input[type]:focus, input[type="file"]::-webkit-file-upload-button:focus {
-	outline:2px solid #0094ff;
-}
-button:active {
-	background-color:rgba(0,0,0,0.2);
-    position:relative;
-    top:2px;
-    outline:0;
-}
-input[type="text"]:active, input[type="text"]:focus, 
-textarea:active, textarea:focus,
-*[contenteditable]:active, *[contenteditable]:focus {
-	outline:2px solid #0094ff;
-}
-h3.main {
-    color:#333;
-    font-family:'Montserrat',Calibri,sans-serif;
-    font-size:24px;
-    padding-left:30px;
-    padding-top:0;
-}
-p {
-    text-align:left;
-}
-div a {
-    color:#09f;
-    text-decoration:none;
-}
-div a:hover {
-    color:#aaa;
-}
-button, input[type="file"]::-webkit-file-upload-button, input[type="button"] {
-    font-family:'Open Sans',Calibri,sans-serif;
-    font-size:14px;
-    padding:4px;
-    padding-left:8px;
-    padding-right:8px;
-	background-color:#eee;
-    border:0;
-}
-button:not(.calcnum):not(.toggle-on):hover,
-input[type="file"]::-webkit-file-upload-button:hover,
-input[type="button"]:hover {
-    background-color:#e2e2e2;
-}
-button:not(.calcnum):not(.toggle-on):active,
-input[type="file"]::-webkit-file-upload-button:hover,
-input[type="button"]:active {
-    background-color:#dadada;
-}
-input[type="text"], input {
-    font-family:'Open Sans',Calibri,sans-serif;
-    font-size:14px;
-    padding:4px;
-    padding-left:8px;
-    padding-right:8px;
-    margin:4px;
-}
-/* END GLOBAL STYLE */
 #calculator {
-    width:368px;
-    box-shadow:5px 5px 5px #555;
+    margin-top:64px;
 }
-#calcwindow {
+#calc-out {
     background:#333;
-    color:#0f0;
     padding:12px;
     text-align:right;
     overflow:hidden;
-}
-#calcwindow span {
     font-family:"Consolas",monospace;
-    font-size:36px;
-    color:#3AACFF;
+    font-size:46px;
+    color:#EEE;
     text-align:right;
     overflow:hidden;
 	-webkit-user-select:initial;
 	user-select:initial;
 	cursor:text;
+    height:52px;
+    width:360px;
 }
-#calcwindow input {
-    font-family:"Consolas",monospace;
-    font-size:36px;
-    color:#3AACFF;
-    padding:0;
-    margin:0;
-    background:rgba(255,255,255,0.2);
-    width:100%;
-    text-align:right;
-}
-#calcstatus {
-    background:#444;
-    padding:6px;
-    text-align:right;
-}
-#calcstatus span {
-    font-family:"Consolas",monospace;
-    font-size:14px;
-    color:#3AACFF;
-    text-align:right;
-}
-.calcbuttons {
-    padding:16px;
-    background:#aaa;
-}
-.calcrow, .calcrowside {
-    text-align:center;
-}
-.calcrow {
-    margin-bottom:16px;
-}
-.calcrowmajor, .calcrowside {
+#calc-out span {
+    font-family:"Audimat Mono", "Consolas", monospace;
+    max-width:360px;
+    max-height:52px;
     display:inline-block;
+    overflow:hidden;
 }
-.calcrowside {
-    float:right;
+#calc-status {
+    background:#444;
+    padding:12px;
+    text-align:left;
+    width:360px;
+    font-size:0;
+    color:#eee;
+    height:24px;
 }
-
-.calcrowmajor > button {
-    font-size:36px;
+#calc-status span {
+    height:24px;
+    display:inline-block;
+    width:312px;
+    font-family:"Audimat Mono", "Consolas", monospace;
+    font-size:18px;
+    line-height:24px;
+}
+#calc-status span:before { content:"."; font-size:0; }
+#calc-status button {
+    position:relative;
+    bottom:2px;
+    left:10px;
+    padding:4px 6px;
+}
+#calc-keys {
+    padding:16px;
+    width:352px;
+    background:#aaa;
     text-align:center;
-    width:64px;
-    margin-bottom:4px;
+    font-size:0;
 }
-.calcrowside > button {
+.calcr { margin-bottom:14px; }
+.calcr-major > button {
     font-size:36px;
-    text-align:center;
-    width:64px;
-    margin-bottom:4px;
+    width:68px;
+    height:68px;
+    position:relative;
 }
-.calcrowminor > button {
+.calcr-major button:hover { box-shadow:inset 0px -4px 0px rgba(0,0,0,0.1); }
+.calcr-major button:active { box-shadow:inset 0px 4px 0px rgba(0,0,0,0.1); }
+.calcr-minor > button {
     font-size:20px;
-    text-align:center;
-    width:52px;
-    margin-bottom:4px;
+    width:56px;
+    position:relative;
 }
-.calcrowminor {
-    text-align:center;
-}
-.calcbuttonvert {
-    height:118px;
+.calcr button {
+    margin-right:4px;
     margin-left:4px;
+    position:relative;
 }
-button.calcbuttonhorz {
-    width:132px;
+button.calcbh {
+    width:136px;
 }
-button.calctext {
-    font-size:24px;
-}
-button.calcnum, #calcdot {
+.calcn, #calc-dot {
     background-color:#555;
     color:#eee;
 }
-#calcequals {
-    background-color:#0094ff;
+.calcn:hover, #calc-dot:hover {
+    background-color:#676767;
+    box-shadow:inset 0px -4px 0px rgba(0,0,0,0.3);
+}
+.calcn:active, #calc-dot:active {
+    background-color:#444;
+    box-shadow:inset 0px 4px 0px rgba(0,0,0,0.1);
+}
+#calc-eq {
+    background-color:#08d;
     color:#eee;
 }
-#calcallclear {
+#calc-eq:hover {
+    background-color:#19e;
+    box-shadow:inset 0px -4px 0px rgba(0,0,0,0.2);
+}
+#calc-eq:active {
+    background-color:#07c;
+    box-shadow:inset 0px 4px 0px rgba(0,0,0,0.2);
+}
+#calc-ac {
     background-color:#f00;
     color:#eee;
 }
-.calcadvonly {
+#calc-ac:hover {
+    background-color:#f22;
+    box-shadow:inset 0px -4px 0px rgba(0,0,0,0.2);
+}
+#calc-ac:active {
+    background-color:#d00;
+    box-shadow:inset 0px 4px 0px rgba(0,0,0,0.2);
+}
+.calc-adv, .calc-sh {
     display:none;
 }
-sup.no-break {
-    vertical-align:inherit;
-    position:relative;
-    bottom:8px;
-    font-size:small;
+.calc-scut {
+    position:absolute;
+    top:0;
+    right:4px;
+    font-size:8px;
+    text-align:right;
+    color:#aaa;
 }
-button.toggle-on {
-    background-color:rgba(0,0,0,0.2);
-    position:relative;
-    top:2px;
-    outline:0;
-    color:#eee;
+.calcr .calc-scut {
+    left:4px;
+    right:initial;
+}
+.calcr-major .calc-scut {
+    font-size:10px;
+}
+#calc-ac .calc-scut {
+    color:#555;
 }

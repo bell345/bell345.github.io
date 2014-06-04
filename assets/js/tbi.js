@@ -1,4 +1,4 @@
-﻿// TBI.JS - V6.1
+﻿// TBI.JS - V6.2
 // Base functions, variables and helpers that are included and required in
 // all of my website pages.
 // START INCOMPATIBILITY CODE //
@@ -63,7 +63,11 @@ $(function () {
         document.body.className = "ie";
 });
 // Shorthand for document.getElementById.
-function gebi(element) { return document.getElementById(element); }
+function gebi(id) { return document.getElementById(id); }
+// Shorthand for document.getElementsByClassName.
+function gecn(className) { return document.getElementsByClassName(className); }
+// Shorthand for document.getElementsByTagName.
+function getn(tagName) { return document.getElementsByTagName(tagName); }
 // Checks the state of an XHR.
 function checkState(request) { return (request.readyState == 4); }
 // A XMLHttpRequest object constructor.
@@ -382,7 +386,11 @@ function circlePoint(a, r, x, y) {
 // Formula for the circumference of a circle with the specified radius r.
 function circum(r) { return 2*Math.PI*r }
 // Formula for calculating the hypotenuse of a right angled triangle, given sides a and b.
-function pythagoras(a,b) { return Math.sqrt((a*a)+(b*b)); }
+Math.pythagoras = function (arg0, arg1, mode) { 
+    if (mode && arg0 > arg1) return Math.sqrt((arg0*arg0)-(arg1*arg1));
+    else if (mode && arg0 < arg1) return Math.sqrt((arg1*arg1)-(arg0*arg0));
+    else return Math.sqrt((arg0*arg0)+(arg1*arg1));
+}
 // Returns the dimensions of a square with the centre (x,y) and radius r.
 function squareDim(x,y,r) { return [x-r,y-r,r*2,r*2] }
 // Splices an element and returns the array while preserving the original.
@@ -411,15 +419,19 @@ function sort(list) {
         return newarr;
     }
 }
+Math.total = function (list) {
+    var total = 0;
+    for (var i=0;i<list.length;i++) total += list[i];
+    return total;
+}
 // Finds the mean of a list.
 Math.mean = function (list) {
-    for (var i=0,t=0;i<list.length;i++) t += list[i];
-    return t/list.length;
+    return Math.total(list) / list.length;
 }
 // Finds the median of a list.
 Math.median = function (list) {
     list = sort(list);
-    if (length % 2 == 0) return Math.mean([list[list.length/2], list[(list.length/2)-1]]);
+    if (list.length % 2 == 0) return Math.mean([list[list.length/2], list[(list.length/2)-1]]);
     else return list[(list.length-1)/2];
 }
 // Finds the mode of a list.
@@ -441,38 +453,76 @@ Math.range = function (list) {
     list = sort(list);
     return list[list.length-1]-list[0];
 }
-// Finds the upper quartile, the lower quartile and the inter-quartile range of a list.
+// Finds the upper quartile, the lower quartile, median and the inter-quartile range of a list.
 Math.quartiles = function (list) {
     list = sort(list);
-    if (list.length%2!=0) list = splice(list, (list.length-1)/2, 1);
+    var med = Math.median(list);
+    while (list.indexOf(med) != -1) list = splice(list, list.indexOf(med), 1);
     var up = [], lw = [];
     for (var i=0;i<list.length;i++) i<list.length/2?lw.push(list[i]):up.push(list[i]);
-    return {lower:Math.median(lw),upper:Math.median(up),range:Math.median(up) - Math.median(lw)};
+    return {lower:Math.median(lw),median:med,upper:Math.median(up),range:Math.median(up) - Math.median(lw)};
+}
+Math.factorial = function (num) {
+    for (var i=0,t=1;i<num;i++) t *= i+1;
+    return t;
+}
+Math.eratosthenes = function (num) {
+    var sqrt = Math.sqrt(num),
+        nums = [];
+    for (var i=0;i<num;i++) 
+        nums.push(true);
+    for (var i=2;i<sqrt;i++)
+        if (nums[i])
+            for (var j=i*i;j<num;j+=i)
+                nums[j] = false;
+    return nums;
+}
+Math.newValueForMean = function (list, num) {
+    return num * (list.length + 1) - Math.total(list);
 }
 // Converts a keypress event keycode into the character typed.
 function convertKeyDown(event) {
-    var which = event.which;
-    var chars = ([" "," "," "," "," "," "," "," ","backspace","tab"," "," "," ","enter"," "," ","shift","control","alt","pause",
-        "caps"," "," "," "," "," "," ","escape"," "," "," "," "," ","page up","page down","end","home","left","up","right","down",
-        " "," "," "," ","insert","delete"," "]+",01234567890,".split("")+[" "," "," "," "," "," "]+
-        ",abcdefghijklmnopqrstuvwxyz,".split("")+["super","right super","select"," "," "]+",01234567890,".split("")+
-        ["*","+","-",".","/","f1","f2","f3","f4","f5","f6","f7","f8","f9","f10","f11","f12"," "," "," "," "," "," "," "," "," "," ",
-        " "," "," "," "," "," "," "," "," "," ","num","scroll"," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," ",
-        " "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," ",";","=",",",",","-",".","/",
-        "`"," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," ",
-        "[","\\","]","'"]).split(/,{1,}/);
-    var capchars = ([" "," "," "," "," "," "," "," ","backspace","tab"," "," "," ","enter"," "," ","shift","control","alt","pause",
-        "caps"," "," "," "," "," "," ","escape"," "," "," "," "," ","page up","page down","end","home","left","up","right","down",
-        " "," "," "," ","insert","delete"," "]+",!@#$%^&*(),".split("")+[" "," "," "," "," "," "]+
-        ",ABCDEFGHIJKLMNOPQRSTUVWXYZ,".split("")+["super","right super","select"," "," "]+",01234567890,".split("")+
-        ["*","+","-",".","/","f1","f2","f3","f4","f5","f6","f7","f8","f9","f10","f11","f12"," "," "," "," "," "," "," "," "," "," ",
-        " "," "," "," "," "," "," "," "," "," ","num","scroll"," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," ",
-        " "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," ",":","+","<","_",">","?","~",
-        " "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," ",
-        "{","|","}","\""]).split(/,{1,}/);
-    if (which == 32) return " ";
-    else if (event.shiftKey) return capchars[which];
-    else return chars[which];
+    var chars = {
+        32:" ",27:"esc",112:"f1",113:"f2",114:"f3",115:"f4",116:"f5",117:"f6",118:"f7",119:"f8",120:"f9",
+        121:"f10",122:"f11",123:"f12",36:"home",35:"end",45:"insert",46:"delete",192:"`",48:"0",49:"1",
+        50:"2",51:"3",52:"4",53:"5",54:"6",55:"7",56:"8",57:"9",65:"a",66:"b",67:"c",68:"d",69:"e",70:"f",
+        71:"g",72:"h",73:"i",74:"j",75:"k",76:"l",77:"m",78:"n",79:"o",80:"p",81:"q",82:"r",83:"s",84:"t",
+        85:"u",86:"v",87:"w",88:"x",89:"y",90:"z",189:"-",187:"=",219:"[",220:"\\",221:"]",222:"'",186:";",
+        188:",",190:".",191:"/",17:"ctrl",18:"alt",16:"shift",9:"tab",20:"caps",33:"pgup",34:"pgdn",
+        91:"super",38:"up",40:"down",37:"left",39:"right",13:"enter",8:"backspace",103:"7",104:"8",105:"9",
+        100:"4",101:"5",102:"6",97:"1",98:"2",99:"3",96:"0",110:".",111:"/",106:"*",109:"-",107:"+"
+    };
+    if (event.shiftKey && event.which != 16) return shiftUp(event.which, true);
+    else return chars[event.which];
+}
+// Converts a normal key press into a shifted one. 
+// Only works on US keyboard layouts (no pounds or funny euroes)
+function shiftUp(key, isKeyDown) { 
+    if (isKeyDown) {
+        var chars = {
+            49:'!',50:'@',51:'#',52:'$',53:'%',54:'^',55:'&',56:'*',57:'(',48:')',189:'_',187:'+',192:'~',219:'{',
+            221:'}',220:'|',186:':',222:'"',188:'<',190:'>',111:'?'
+        };
+        if (isNull(chars[key])) return key.toString();
+        else return chars[key.toString()];
+    } else {
+        var chars = {
+            '1':'!','2':'@','3':'#','4':'$','5':'%','6':'^','7':'&','8':'*','9':'(','0':')','-':'_','=':'+','`':'~','[':'{',
+            ']':'}','\\':'|',';':':','\'':'"',',':'<','.':'>','/':'?'
+        };
+        if (key.search(/[a-z]/) != -1 && key.length == 1) return key.toUpperCase(); 
+        else if (isNull(chars[key])) return key.toString();
+        else return chars[key.toString()];s
+    }
+}
+function shiftDown(key) {
+    var chars = {
+        '!':'1','@':'2','#':'3','$':'4','%':'5','^':'6','&':'7','*':'8','(':'9',')':'0','_':'-','+':'=','~':'`','{':'[',
+        '}':']','|':'\\',':':';','"':'\'','<':',','>':'.','?':'/'
+    };
+    if (key.search(/[A-Z]/) != -1 && key.length == 1) return key.toLowerCase();
+    else if (isNull(chars[key])) return key.toString();
+    else return chars[key.toString()];
 }
 // Creates a customizable, absolutely positioned popup element.
 // There can only be one at a time.
@@ -485,7 +535,7 @@ TBI.Popup = function (x, y, head, text) {
     var pup = "";
     pup += "<div class='popup' style='top:"+this.y+"px;left:"+this.x+"px;'>";
     if (!isNull(this.head)) pup += "<h3>"+this.head+"</h3>";
-    pup += "<p class='main'>"+this.text+"</p>";
+    pup += this.text;
     pup += "</div>";
     $(".popup").remove();
     body.append(pup);
@@ -493,9 +543,9 @@ TBI.Popup = function (x, y, head, text) {
         $(".popup").attr("class", $(".popup").attr("class") + " right");
         $(".popup").css("left", (parseInt($(".popup").css("left")) - parseInt($(".popup").css("width")) - 40) + "px");
     }
-    if (parseInt($(".popup").css("height"))+parseInt($(".popup").css("top"))+20 > window.innerHeight) {
+    if (parseInt($(".popup").css("height"))+parseInt($(".popup").css("top"))+120 > window.innerHeight) {
         $(".popup").attr("class", $(".popup").attr("class") + " bottom");
-        $(".popup").css("top", (parseInt($(".popup").css("top")) - parseInt($(".popup").css("height")) - 40) + "px");
+        $(".popup").css("top", (parseInt($(".popup").css("top")) - parseInt($(".popup").css("height")) - 80) + "px");
     }
 }
 TBI.Popup.registry = [];
@@ -608,6 +658,7 @@ TBI.dialog = function (head, body, func, nfunc) {
 TBI.buttonToggle = function (element, bool) {
     if ((!isNull(bool) && !bool) || TBI.isButtonToggled(element)) element.className = element.className.replace(" toggle-on","");
     else element.className += " toggle-on";
+    return TBI.isButtonToggled(element);
 }
 TBI.isButtonToggled = function (element) { return element.className.search(" toggle-on") != -1; }
 // Generates a desktop notification outside of the regular environment.
@@ -646,19 +697,35 @@ Canvas2D.inspector = function (context) {
         $(cvs).mouseleave(function () { $('.popup').remove() });
     } else return null;
 }
+Canvas2D.set = function (context, type, style, width) {
+    isNull(width)?1:width;
+    switch (type) {
+        case "stroke": context.strokeStyle = style; context.lineWidth = width; break;
+        case "fill": context.fillStyle = style; break;
+        case "font": context.font = style; break;
+    }
+}
 // Processes a string of canvas commands.
 Canvas2D.path = function (context, obj) {
     var path = obj.path;
     var type = obj.type;
     var style = obj.style;
     context.save();
-    context[type+"Style"] = style;
+    switch (type) { 
+        case "stroke": context.strokeStyle = style; break; 
+        case "fill": context.fillStyle = style; break; 
+        default: return false;
+    }
     context.beginPath();
     context.moveTo(path[0][0], path[0][1]);
-    for (var i = 1; i < path.length; i++)
+    for (var i = 1; i < path.length; i++) 
         context.lineTo(path[i][0], path[i][1]);
     context.closePath();
-    context[type]();
+    switch (type) {
+        case "stroke": context.stroke(); break;
+        case "fill": context.fill(); break;
+        default: return false;
+    }
     context.restore();
 }
 Canvas2D.reset = function (context) {
@@ -719,7 +786,7 @@ HTMLIncludes.getIndex = function () {
 HTMLIncludes.get = function () {
     var curr = 0;
     for (var i = 0; i < HTMLIncludes.info.length; i++) HTMLIncludes.getDone[i] = false;
-    TBI.timerSet("includes", 200, function () {
+    TBI.timerSet("includes", 0, function () {
         if (!HTMLIncludes.getDone[curr]) {
             HTMLIncludes.getDone[curr] = true;
             var xhr = new TBI.AJAX(HTMLIncludes.info[curr].source, function () {

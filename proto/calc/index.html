@@ -4,74 +4,109 @@
     <title>Thomas's WebSite</title>
     <meta charset="utf-8" />
 	<link rel="shortcut icon" href="/favicon.png" />
-    <link rel="stylesheet" href="/assets/css/jquery-ui.css" />
+    <link rel="stylesheet" href="/assets/css/sheet.css" />
     <link rel="stylesheet" href="./calc.css" />
     <script src="/assets/js/jquery2.min.js"></script>
-    <script src="/assets/js/jquery-ui.min.js"></script>
+    <script src="/assets/js/tbi.js"></script>
     <script src="./calc.js"></script>
 </head>
 <body>
+    <div id="navigation"></div>
     <div id="calculator">
-        <div id="calcwindow">
-            <span style="color: rgb(58, 172, 255);">_</span>
-            <input type="text" style="display:none">
+        <div id="calc-out"><span></span></div>
+        <div id="calc-status" class="calc-adv">
+            <span></span>
+            <button id="calc-statusp">&lt;</button>
+            <button id="calc-statusn">&gt;</button>
         </div>
-        <div id="calcstatus" class="calcadvonly">
-            <span style="color: rgb(58, 172, 255);">_</span>
-        </div>
-        <div class="calcbuttons" id="calcsimple">
-            <div class="calcrow">
-                <button id="calcinput">Keyboard Input</button>
-                <button id="calcmode">Change Mode</button>
-                <button id="calcpop">Pop Out</button>
+        <div id="calc-keys">
+            <div class="calcr">
+                <button id="calc-mode" class="toggle">Advanced<span class="calc-scut">a</span></button>
+                <button id="calc-sctg" class="toggle toggle-on">Show shortcuts</button>
             </div>
-            <div class="calcrow">
-                <button id="calcbackspace">Backspace</button>
-                <button id="calcdelete">Delete</button>
-                <button id="calcshift" class="calcadvonly toggle">Shift</button>
+            <div class="calcr calc-adv">
+                <button id="calc-deg" class="toggle">Degrees<span class="calc-scut">d</span></button>
+                <button id="calc-shift" class="toggle">Shift</button>
             </div>
-            <div class="calcrowminor calcadvonly">
-                <button id="calcpower">x<sup class="no-break">y</sup></button>
-                <button id="calcpower2">x<sup class="no-break">2</sup></button>
-                <button id="calcsin" title="Sine">sin</button>
-                <button id="calccos" title="Cosine">cos</button>
-                <button id="calctan" title="Tangent">tan</button>
-                <button id="calcconstpi" title="Pi">π</button>
+            <div class="calcr">
+                <button id="calc-back">&larr;</button>
+                <button id="calc-del">&rarr;</button>
             </div>
-            <div class="calcrowminor calcadvonly">
-                <button id="calcrand" title="Random Float">Rnd</button>
-                <button id="calcrandint" title="Random Integer">RInt</button>
-                <button id="calcpower3">x<sup class="no-break">3</sup></button>
-                <button id="calcfactorial" title="Factorial">x!</button>
-                <button id="calc10power">10<sup class="no-break">x</sup></button>
-                <button id="calcconste">e</button>
+            <div class="calcr-minor calc-adv">
+                <button id="calc-pow">
+                    <span class="calc-nsh" title="Exponentation">x<sup class="no-break">y</sup></span>
+                    <span class="calc-sh" title="Factorial">x!</span>
+                    <span class="calc-scut">u</span>
+                </button>
+                <button id="calc-pow2">
+                    <span class="calc-nsh">x<sup class="no-break">2</sup></span>
+                    <span class="calc-sh">x<sup class="no-break">3</sup></span>
+                    <span class="calc-scut">i</span>
+                </button>
+                <button id="calc-pi">
+                    <span class="calc-nsh" title="Pi">π</span>
+                    <span class="calc-sh" title="Euler's Identity">e</span>
+                    <span class="calc-scut">o</span>
+                </button>
+                <button id="calc-10pow">
+                    <span class="calc-nsh">10<sup class="no-break">x</sup></span>
+                    <span class="calc-sh">e<sup class="no-break">x</sup></span>
+                    <span class="calc-scut">p</span>
+                </button>
             </div>
-            <div class="calcrowmajor">
-                <button class="calcnum">7</button>
-                <button class="calcnum">8</button>
-                <button class="calcnum">9</button>
-                <button id="calcsign">+/-</button>
-                <button id="calcsqrt">√</button>
+            <div class="calcr-minor calc-adv">
+                <button id="calc-sin">
+                    <span class="calc-nsh" title="Sine">sin</span>
+                    <span class="calc-sh" title="Arcsine">asin</span>
+                    <span class="calc-scut">h</span>
+                </button>
+                <button id="calc-cos">
+                    <span class="calc-nsh" title="Cosine">cos</span>
+                    <span class="calc-sh" title="Arccosine">acos</span>
+                    <span class="calc-scut">j</span>
+                </button>
+                <button id="calc-tan">
+                    <span class="calc-nsh" title="Tangent">tan</span>
+                    <span class="calc-sh" title="Arctangent">atan</span>
+                    <span class="calc-scut">k</span>
+                </button>
+                <button id="calc-rnd" title="Random Float">
+                    <span class="calc-nsh">Rnd</span>
+                    <span class="calc-sh">RInt</span>
+                    <span class="calc-scut">l</span>
+                </button>
+                <button id="calc-ln" title="Logarithm">ln<span class="calc-scut">;</span></button>
             </div>
-            <div class="calcrowmajor">
-                <button class="calcnum">4</button>
-                <button class="calcnum">5</button>
-                <button class="calcnum">6</button>
-                <button id="calctimes">*</button>
-                <button id="calcdivide">/</button>
+            <div class="calcr-major">
+                <button class="calcn">7</button>
+                <button class="calcn">8</button>
+                <button class="calcn">9</button>
+                <button id="calc-sign">+/-<span class="calc-scut final">underscore</span></button>
+                <button id="calc-sqrt">√<span class="calc-scut">r</span></button>
             </div>
-            <div class="calcrowmajor">
-                <button class="calcnum">1</button>
-                <button class="calcnum">2</button>
-                <button class="calcnum">3</button>
-                <button id="calcplus">+</button>
-                <button id="calcminus">-</button>
+            <div class="calcr-major">
+                <button class="calcn">4</button>
+                <button class="calcn">5</button>
+                <button class="calcn">6</button>
+                <button id="calc-mul">*</button>
+                <button id="calc-div">/</button>
             </div>
-            <div class="calcrowmajor">
-                <button id="calcallclear">AC</button>
-                <button class="calcnum">0</button>
-                <button id="calcdot">.</button>
-                <button class="calcbuttonhorz" id="calcequals">=</button>
+            <div class="calcr-major">
+                <button class="calcn">1</button>
+                <button class="calcn">2</button>
+                <button class="calcn">3</button>
+                <button id="calc-add">+</button>
+                <button id="calc-sub">-</button>
+            </div>
+            <div class="calcr-major">
+                <button id="calc-ac">
+                    <span class="calc-nsh">C</span>
+                    <span class="calc-sh">AC</span>
+                    <span class="calc-scut">c</span>
+                </button>
+                <button class="calcn">0</button>
+                <button id="calc-dot">.</button>
+                <button class="calcbh" id="calc-eq">=</button>
             </div>
         </div>
     </div>

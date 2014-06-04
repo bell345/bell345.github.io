@@ -376,6 +376,16 @@ sup.no-break {
     bottom:8px;
     font-size:small;
 }
+sup.frac {
+    vertical-align:inherit;
+    position:relative;
+    bottom:8px;
+}
+sub.frac {
+    vertical-align:inherit;
+    position:relative;
+    top:2px;
+}
 .nb { font-size:0 }
 .nb .main {
     font-size:initial;
@@ -435,9 +445,13 @@ a.link-pdf {
     position:fixed;
     z-index:10;
     padding:12px 18px;
+    max-width:500px;
 }
 .popup h3 {
     padding-bottom:0;
+}
+div.popup > ul {
+    margin-bottom:0;
 }
 div.popup ul {
     margin-bottom:0;
@@ -503,8 +517,8 @@ div.popup ul {
 }
 .dialog {
     position:fixed;
-    top:calc(50% - 100px);
-    left:calc(50% - 200px);
+    top:calc(50%- 100px);
+    left:calc(50%- 200px);
     background:#f2f2f2;
     height:200px;
     width:400px;

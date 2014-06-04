@@ -1419,368 +1419,173 @@ $(function () {
 *   JAVASCRIPT ADVANCED CALCULATOR
 */
 Calc = {};
-Calc.nanRegex = /[^0-9\.-]/;
-Calc.funcRegex = /[\+\-\*\/(pow)]/;
-Calc.functions = ["+","-","*","/","sqrt","sin","cos","tan","pow","x^2","x^3","10^x","rint"];
-Calc.numbers = [];
-Calc.statusLog = [];
-Calc.string = "_";
-Calc.workingNum = "";
-Calc.currentFunc = 0;
-Calc.inputMode = 0;
-Calc.mode = 0;
-Calc.answerShown = false;
-Calc.funcShown = false;
-Calc.shift = false;
-Calc.answer;
-Calc.prevNum;
-
-Calc.setUp = function () {
-    TBI.timerSet("calcwindow",1000,function () {
-        if ($($("#calcwindow span")[0]).css("color")=="rgba(0, 0, 0, 0)")
-            $($("#calcwindow span")[0]).css("color", "#3AACFF");
-        else
-            $($("#calcwindow span")[0]).css("color", "transparent");
-    });
-    TBI.timerSet("calcstring",4,function () {
-        if (Calc.inputMode)
-            $($("#calcwindow input")[0]).val(Calc.string);
-        else
-            $($("#calcwindow span")[0]).html(Calc.string);
-        if (Calc.statusLog.length > 20)
-            Calc.statusLog.shift();
-    });
-    TBI.timerSet("calcstatuswindow",1000,function () {
-        if ($($("#calcstatus span")[0]).css("color")=="rgba(0, 0, 0, 0)")
-            $($("#calcstatus span")[0]).css("color", "#3AACFF");
-        else
-            $($("#calcstatus span")[0]).css("color", "transparent");
-    });
-    $("#calcplus").click(function () { Calc.runFunction("+") });
-    $("#calcminus").click(function () { Calc.runFunction("-") });
-    $("#calctimes").click(function () { Calc.runFunction("*") });
-    $("#calcdivide").click(function () { Calc.runFunction("/") });
-    $("#calcsqrt").click(function () { Calc.runFunction("sqrt") });
-    $("#calccos").click(function () { Calc.runFunction("cos") });
-    $("#calctan").click(function () { Calc.runFunction("tan") });
-    $("#calcsin").click(function () { Calc.runFunction("sin") });
-    $("#calcpower").click(function () { Calc.runFunction("pow") });
-    $("#calcpower2").click(function () { Calc.runFunction("x^2") });
-    $("#calcpower3").click(function () { Calc.runFunction("x^3") });
-    $("#calc10power").click(function () { Calc.runFunction("10^x") });
-    $("#calcrandint").click(function () { Calc.runFunction("rint") });
-    for (i=0;i<$(".calcnum").length;i++) {
-        $($(".calcnum")[i]).click(function () { Calc.addDigit($(this).text()) });
-    }
-    $("#calcdot").click(function () { 
-        if (Calc.workingNum.indexOf(".")==-1)
-            Calc.addDigit(".");
-     });
-    $("#calcconstpi").click(function () { 
-        Calc.string = "";
-        Calc.workingNum = "";
-        Calc.addDigit(Math.PI.toString());
-    });
-    $("#calcconste").click(function () { 
-        Calc.string = "";
-        Calc.workingNum = "";
-        Calc.addDigit(Math.E.toString());
-    });
-    $("#calcrand").click(function () {
-        Calc.string = "";
-        Calc.workingNum = "";
-        Calc.addDigit(Math.random());
-    });
-    $("#calcequals").click(function () {
-        if (!isNull(Calc.workingNum) && !isNaN(Calc.workingNum))
-            Calc.numbers.push(parseFloat(Calc.workingNum));
-        Calc.equate(isNull(Calc.workingNum));
-    });
-    $("#calcinput").click(function () {
-        if (Calc.inputMode == 1) {
-            $($("#calcwindow span")[0]).show();
-            $($("#calcwindow input")[0]).hide();
-            Calc.inputMode = 0;
-            this.innerText = "Keyboard Input";
-            if (Calc.string == "") {
-                Calc.string = "_";
-                TBI.timerSet("calcwindow",1000,function () {
-                    if ($($("#calcwindow span")[0]).css("color")=="rgba(0, 0, 0, 0)")
-                        $($("#calcwindow span")[0]).css("color", "#3AACFF");
-                    else
-                        $($("#calcwindow span")[0]).css("color", "transparent");
-                });
-            }
-        } else {
-            TBI.timerClear("calcwindow");
-            $($("#calcwindow span")[0]).hide();
-            $($("#calcwindow input")[0]).show();
-            Calc.inputMode = 1;
-            if (Calc.string == "_") Calc.string = "";
-            this.innerText = "Button Input";
-        }
-    });
-    $("#calcbackspace").click(function () {
-        if (!isNull(Calc.string)) {
-            Calc.string = shorten(Calc.string.toString(), Calc.string.toString().length-1);
-            Calc.workingNum = Calc.string;
-        }
-    });
-    $("#calcdelete").click(function () {
-        if (!isNull(Calc.string)) {
-            var stringArr = Calc.string.toString().split("");
-            stringArr.shift();
-            Calc.string = stringArr.join("");
-            Calc.workingNum = Calc.string;
-        }
-    });
-    $($("#calcwindow input")[0]).keydown(function (event) {
-        Calc.handleKeyDown(event);
-    });
-    $("#calcclear").click(function () {
-        Calc.workingNum = "";
-        Calc.string = "";
-        Calc.answerShown = false;
-    });
-    $("#calcallclear").click(function () {
-        Calc.workingNum = "";
+Calc.setup = function () {
+    Calc.dialogShown = false;
+    Calc.degrees = false;
+    Calc.statusLog = [];
+    Calc.statusCurr = null;
+    Calc.shift = false;
+    Calc.mouse = false;
+}
+Calc.init = function () {
+    Calc.numbers = [];
+    Calc.cfunc = "";
+    Calc.update("", true);
+}
+Calc.shorten = function (num) {
+    num = num.toString();
+    if (num.length > 15) do {
+        if (num.search("e") != -1) {
+            var nums = num.split("e");
+            num = nums[0].substring(0, nums[0].length-1) + "e" + nums[1];
+        } else num = num.substring(0, num.length-1);
+    } while (num.length > 15)
+    return num;
+}
+Calc.update = function (string, fsh) {
+    fsh == undefined ? false : fsh;
+    string = Calc.shorten(string);
+    Calc.string = string;
+    Calc.working = string;
+    if (string.toString() == "NaN") Calc.update("Math Error", true);
+    else $("#calc-out span").html(string);
+    Calc.fshown = fsh;
+    return string;
+}
+Calc.digit = function (digit) {
+    if (Calc.fshown) Calc.update(digit.toString(), false);
+    else Calc.update(Calc.string.toString() + digit.toString());
+}
+Calc.args = function (f) {
+    if (f.search(/[\+\-\*\/\^]/) != -1) return 2;
+    else if (f.search(/(sqrt|squared|cubed|tento|sin|cos|tan|ln|rint|exp|factorial)/) != -1) return 1;
+}
+Calc.sign = function () {
+    if (!isNull(Calc.working)) Calc.update(-parseFloat(Calc.working));
+    else return null;
+}
+Calc.func = function (f) {
+    if (f == "=") {
+        Calc.numbers.push(Calc.working);
+        Calc.update(Calc.compute(Calc.cfunc).toString(), true);
         Calc.numbers = [];
-        if (!Calc.inputMode && isNull(Timers.calcwindow)) { 
-            Calc.string = "_";
-            TBI.timerSet("calcwindow",1000,function () {
-                if ($($("#calcwindow span")[0]).css("color")=="rgba(0, 0, 0, 0)") {
-                    $($("#calcwindow span")[0]).css("color", "#3AACFF");
-                } else {
-                    $($("#calcwindow span")[0]).css("color", "transparent");
-                }
-            });
-        }
-        Calc.prevNum = null;
-        Calc.answerShown = false;
-    });
-    $("#calcsign").click(function () {
-        if (Calc.answerShown) {
-            Calc.workingNum = "";
-            Calc.string = "";
-            Calc.numbers = [];
-            Calc.prevNum = "";
-            Calc.answerShown = false;
-        }
-        if (!isNull(Calc.string)&&!isNaN(Calc.string)) {
-            var newStringArr = [];
-            var oldString = Calc.string.toString().split("");
-            if (oldString[0] != "-") {
-                newStringArr.push("-");
-                for (i=0;i<oldString.length;i++) {
-                    newStringArr.push(oldString[i]);
-                }
-            } else {
-                for (i=1;i<oldString.length;i++) {
-                    newStringArr.push(oldString[i]);
-                }
-            }
-            Calc.string = newStringArr.join("");
-            Calc.workingNum = Calc.string;
-            Calc.prevNum = "";
-            
-        }
-    });
-    $("#calcmode").click(function () {
-        Calc.mode = !Calc.mode;
-        if (Calc.mode)
-            $(".calcadvonly").show();
-        else
-            $(".calcadvonly").hide();
-    });
-    $("#calcshift").click(function () { Calc.shift = !Calc.shift });
+        Calc.cfunc = "";
+    } else if (!isNull(Calc.working)) {
+        Calc.numbers.push(Calc.working);
+        if (Calc.args(f) == 1 || Calc.numbers.length != 1) Calc.numbers = [Calc.compute(f)];
+        if (Calc.args(f) == 2 && Calc.numbers.length == 1) {
+            Calc.update(f, true);
+            Calc.status(Calc.numbers[0].toString(), false);
+        } else Calc.update(Calc.numbers[0].toString(), true);
+        Calc.cfunc = f;
+    } else return false;
 }
-Calc.equate = function (bool) {
-    if (bool == undefined) bool = false;
-    if (Calc.numbers.length > 1 || (Calc.numbers.length == 1 && bool)) {
-        if (bool && !isNull(Calc.prevNum))
-            var secondNum = Calc.prevNum;
-        else
-            var secondNum = Calc.numbers[1];
-        switch (Calc.currentFunc) {
-            case (Calc.functions.indexOf("+")):
-                Calc.answer = Calc.numbers[0]+secondNum;
-                break;
-            case (Calc.functions.indexOf("-")):
-                Calc.answer = Calc.numbers[0]-secondNum;
-                break;
-            case (Calc.functions.indexOf("*")):
-                Calc.answer = Calc.numbers[0]*secondNum;
-                break;
-            case (Calc.functions.indexOf("/")):
-                Calc.answer = Calc.numbers[0]/secondNum;
-                break;
-            case (Calc.functions.indexOf("pow")):
-                Calc.answer = Math.pow(Calc.numbers[0], secondNum);
-                break;
-            default:
-                Calc.answer = Calc.numbers[0];
-        }
-        if (Calc.answer.toString().length>16) {
-            Calc.answer = parseFloat(shorten((Calc.answer+0.00000000000001).toString(),16));
-        }
-        var firstNum = Calc.numbers[0];
-        Calc.string = Calc.answer;
-        Calc.workingNum = "";
-        Calc.prevNum = secondNum;
-        Calc.numbers = [Calc.answer];
-        Calc.answerShown = true;
-        Calc.statusPrint(firstNum+" "+Calc.functions[Calc.currentFunc]+" "+secondNum+" = "+Calc.answer);
-    } else if (Calc.functions[Calc.currentFunc].search(Calc.funcRegex)==-1) {
-        if (isNull(Calc.prevNum))
-            var prevNum = Calc.numbers[0];
-        else
-            var prevNum = Calc.prevNum;
-        switch (Calc.currentFunc) {
-            case (Calc.functions.indexOf("sqrt")):
-                Calc.answer = Math.sqrt(Calc.numbers[0]);
-                break;
-            case (Calc.functions.indexOf("sin")):
-                Calc.answer = Math.sin(Calc.numbers[0]);
-                break;
-            case (Calc.functions.indexOf("tan")):
-                Calc.answer = Math.tan(Calc.numbers[0]);
-                break;
-            case (Calc.functions.indexOf("cos")):
-                Calc.answer = Math.cos(Calc.numbers[0]);
-                break;
-            case (Calc.functions.indexOf("x^2")):
-                Calc.answer = Math.pow(Calc.numbers[0], 2);
-                break;
-            case (Calc.functions.indexOf("x^3")):
-                Calc.answer = Math.pow(Calc.numbers[0], 3);
-                break;
-            case (Calc.functions.indexOf("10^x")):
-                Calc.answer = Math.pow(10, Calc.numbers[0]);
-                break;
-            case (Calc.functions.indexOf("rint")):
-                Calc.answer = randomInt(prevNum);
-                break;
-            default:
-                Calc.answer = Calc.numbers[0];
-        }
-        if (Calc.answer.toString().length>14) {
-            Calc.answer = parseFloat(shorten((Calc.answer+0.000000000001).toString(),13));
-        }
-        var firstNum = Calc.numbers[0];
-        Calc.string = Calc.answer;
-        Calc.workingNum = "";
-        Calc.numbers = [Calc.answer];
-        Calc.answerShown = true;
-        Calc.statusPrint(Calc.functions[Calc.currentFunc]+"("+firstNum+") = "+Calc.answer);
-        if (isNull(Calc.prevNum))
-            Calc.prevNum = Calc.numbers[0]
-        else
-            Calc.prevNum = prevNum;
-    }
+Calc.compute = function (f) {
+    var result = 0;
+    if (Calc.numbers.length == 0) return false;
+    else if (Calc.args(f) == 1 && Calc.numbers.length > 0) with (Math) switch (f) {
+        case "sqrt": result = sqrt(Calc.numbers[0]); break;
+        case "squared": result = pow(Calc.numbers[0], 2); break;
+        case "cubed": result = pow(Calc.numbers[0], 3); break;
+        case "factorial": result = factorial(Calc.numbers[0]); break;
+        case "sin": result = Calc.degrees ? rtd(sin(Calc.numbers[0])) : sin(Calc.numbers[0]); break;
+        case "cos": result = Calc.degrees ? rtd(cos(Calc.numbers[0])) : cos(Calc.numbers[0]); break;
+        case "tan": result = Calc.degrees ? rtd(tan(Calc.numbers[0])) : tan(Calc.numbers[0]); break;
+        case "asin": result = Calc.degrees ? rtd(asin(Calc.numbers[0])) : asin(Calc.numbers[0]); break;
+        case "acos": result = Calc.degrees ? rtd(acos(Calc.numbers[0])) : acos(Calc.numbers[0]); break;
+        case "atan": result = Calc.degrees ? rtd(atan(Calc.numbers[0])) : atan(Calc.numbers[0]); break;
+        case "tento": result = pow(10, Calc.numbers[0]); break;
+        case "rint": result = randomInt(Calc.numbers[0]); break;
+        case "ln": result = log(Calc.numbers[0]); break;
+        case "exp": result = pow(E, Calc.numbers[0]); break;
+        default: result = 0; break;
+    } else if (Calc.args(f) == 2 && Calc.numbers.length > 1) with (Math) switch (f) {
+        case "+": result = parseFloat(Calc.numbers[0]) + parseFloat(Calc.numbers[1]); break;
+        case "-": result = parseFloat(Calc.numbers[0]) - parseFloat(Calc.numbers[1]); break;
+        case "*": result = parseFloat(Calc.numbers[0]) * parseFloat(Calc.numbers[1]); break;
+        case "/": result = parseFloat(Calc.numbers[0]) / parseFloat(Calc.numbers[1]); break;
+        case "^": result = pow(parseFloat(Calc.numbers[0]), parseFloat(Calc.numbers[1])); break;
+        default: result = 0; break;
+    } else result = 0;
+    result = Calc.shorten(result);
+    if (Calc.args(f) == 1) Calc.status(f+"("+Calc.numbers[0]+") = "+result, true);
+    else if (Calc.args(f) == 2) Calc.status(Calc.numbers[0]+" "+f+" "+Calc.numbers[1]+" = "+result, true);
+    return result;
 }
-Calc.runFunction = function (funcStr) {
-    if (Calc.string.toString().search(Calc.nanRegex)==-1) {
-        Calc.currentFunc = Calc.functions.indexOf(funcStr);
-        if (!isNull(Calc.workingNum)) {
-            Calc.numbers.push(parseFloat(Calc.workingNum));
-            if (funcStr.search(Calc.funcRegex)!=-1)
-                Calc.statusPrint(Calc.workingNum+" "+funcStr);
-            else
-                Calc.statusPrint(funcStr+"("+Calc.workingNum+")");
-        }
-        Calc.string = funcStr;
-        Calc.workingNum = "";
-        Calc.answerShown = false;
-        if (!(Calc.inputMode&&Calc.answerShown))
-            Calc.equate();
-        else {
-            Calc.string = "";
-            Calc.workingNum = "";
-        }
-        Calc.funcShown = true;
+Calc.status = function (message, store) {
+    $("#calc-status span").html(message);
+    if (store) {
+        Calc.statusLog.push(message);
+        Calc.statusCurr = Calc.statusLog.length-1;
     }
-};
-Calc.handleKeyDown = function (event) {
-    var character = convertKeyDown(event);
-    if (!isNull(Calc.string)&&Calc.string.toString().search(Calc.nanRegex)!=-1)
-        Calc.string = "";
-    if (event.which==8 && !isNull(Calc.string)) {
-        Calc.string = shorten(Calc.string, Calc.string.length-1);
-        Calc.workingNum = Calc.string;
-    } else if (event.which==46 && !isNull(Calc.string)) {
-        var stringArr = Calc.string.toString().split("");
-        stringArr.shift();
-        Calc.string = stringArr.join("");
-        Calc.workingNum = Calc.string;
-    }
-    if (!isNaN(character)&&!isNull(character)) {
-            if (Calc.answerShown) {
-                Calc.workingNum = "";
-                Calc.string = "";
-                Calc.numbers = [];
-                Calc.prevNum = "";
-                Calc.answerShown = false;
-            }
-            Calc.string+=character;
-            if (isNull(Calc.workingNum))
-                Calc.workingNum = Calc.string;
-            else
-                Calc.workingNum+=character;
-    } else if (Calc.functions.indexOf(character)!=-1) {
-        Calc.runFunction(character);
-    } else if (character == ".") {
-        Calc.workingNum += ".";
-        Calc.string += ".";
-    } else if (event.which == 13) {
-        if (!isNull(Calc.workingNum) && !isNaN(Calc.workingNum)) {
-            Calc.numbers.push(parseFloat(Calc.workingNum));
-        }
-        Calc.equate(isNull(Calc.workingNum));
-    }
-}
-Calc.addDigit = function (digit) {
-    var calcWindow = $($("#calcwindow span")[0]);
-    if (calcWindow.text().search(Calc.nanRegex)!=-1) {
-        TBI.timerClear("calcwindow");
-        $($("#calcwindow span")[0]).css("color", "#3AACFF");
-        Calc.string = "";
-    }
-    if (Calc.answerShown) {
-        Calc.workingNum = "";
-        Calc.string = "";
-        Calc.prevNum = "";
-        Calc.answerShown = false;
-    } else if (Calc.funcShown) {
-        Calc.workingNum = "";
-        Calc.string = "";
-        Calc.funcShown = false;
-        Calc.prevNum = "";
-    }
-    Calc.string+=digit;
-    if (isNull(Calc.workingNum))
-        Calc.workingNum = Calc.string;
-    else
-        Calc.workingNum+=digit;
-}
-Calc.statusPrint = function (message) {
-    TBI.timerClear("calcstatuswindow");
-    $($("#calcstatus span")[0]).html(message);
-    $($("#calcstatus span")[0]).css("color","#3AACFF");
-    TBI.timerClear("statusReset");
-    TBI.timerSet("statusReset",10000,function () {
-        $($("#calcstatus span")[0]).html("_");
-        TBI.timerClear("statusReset");
-        TBI.timerSet("calcstatuswindow",1000,function () {
-            if ($($("#calcstatus span")[0]).css("color")=="rgba(0, 0, 0, 0)")
-                $($("#calcstatus span")[0]).css("color", "#3AACFF");
-            else
-                $($("#calcstatus span")[0]).css("color", "transparent");
-        });
-    });
-    Calc.statusLog.push(message);
 }
 $(function () {
-    Calc.setUp();
+    Calc.setup();
+    Calc.init();
+    $(".calcn").click(function () { Calc.digit(parseInt($(this).html())); });
+    $("#calc-dot").click(function () { Calc.digit("."); });
+    $("#calc-m").click(function () { Calc.func("*"); });
+    $("#calc-a").click(function () { Calc.func("+"); });
+    $("#calc-s").click(function () { Calc.func("-"); });
+    $("#calc-d").click(function () { Calc.func("/"); });
+    $("#calc-pow").click(function () { Calc.shift ? Calc.func("factorial") : Calc.func("^"); });
+    $("#calc-eq").click(function () { Calc.func("="); });
+    $("#calc-ac").click(function () { Calc.init(); });
+    $("#calc-sqrt").click(function () { Calc.func("sqrt"); });
+    $("#calc-pow2").click(function () { Calc.shift ? Calc.func("cubed") : Calc.func("squared"); });
+    $("#calc-10pow").click(function () { Calc.shift ? Calc.func("exp") : Calc.func("tento"); });
+    $("#calc-sin").click(function () { Calc.shift ? Calc.func("asin") : Calc.func("sin"); });
+    $("#calc-cos").click(function () { Calc.shift ? Calc.func("acos") : Calc.func("cos"); });
+    $("#calc-tan").click(function () { Calc.shift ? Calc.func("atan") : Calc.func("tan"); });
+    $("#calc-ln").click(function () { Calc.func("ln"); });
+    $("#calc-pi").click(function () { Calc.shift ? Calc.digit(Math.E) : Calc.digit(Math.PI); });
+    $("#calc-rnd").click(function () { Calc.shift ? Calc.func("rint") : Calc.digit(Math.random()); });
+    $("#calc-sign").click(function () { Calc.sign(); });
+    $("#calc-back").click(function () { Calc.update(Calc.working.substring(0, Calc.working.length-1)); });
+    $("#calc-del").click(function () { Calc.update(Calc.working.substring(1)); });
+    $("#calc-mode").click(function () { TBI.isButtonToggled(this) ? $(".calc-adv").show() : $(".calc-adv").hide(); });
+    $("#calc-deg").click(function () { Calc.degrees = TBI.isButtonToggled(this); });
+    $("#calc-shift").click(function () { 
+        Calc.shift = TBI.isButtonToggled(this); 
+        if (Calc.shift) {
+            $(".calc-sh").show();
+            $(".calc-nsh").hide();
+        } else {
+            $(".calc-sh").hide();
+            $(".calc-nsh").show();
+        }
+    });
+    $("#calc-statusp").click(function () { 
+        if (Calc.statusCurr-1 < 0) return false;
+        else Calc.status(Calc.statusLog[--Calc.statusCurr]);
+    });
+    $("#calc-statusn").click(function () {
+        if (Calc.statusCurr+1 > Calc.statusLog.length-1) return false;
+        else Calc.status(Calc.statusLog[++Calc.statusCurr]);
+    });
+    $("#calculator").mouseenter(function () { Calc.mouse = true; });
+    $("#calculator").mouseleave(function () { Calc.mouse = false; });
+    $(document).keydown(function (event) {
+        if (!Calc.mouse) return true;
+        var key = convertKeyDown(event);
+        switch (key) {
+            case "0":Calc.digit(0);break;case "1":Calc.digit(1);break;case "2":Calc.digit(2);break;case "3":Calc.digit(3);break;
+            case "4":Calc.digit(4);break;case "5":Calc.digit(5);break;case "6":Calc.digit(6);break;case "7":Calc.digit(7);break;
+            case "8":Calc.digit(8);break;case "9":Calc.digit(9);break;case ".":Calc.digit(".");break;case "enter":Calc.func("=");break;
+            case "+":Calc.func("+");break;case "-":Calc.func("-");break;case "*":Calc.func("*");break;case "/":Calc.func("/");break;
+            case "delete":Calc.update(Calc.working.substring(1));break;case "_":Calc.sign();break;case "c":Calc.init();break;
+            case "shift":Calc.shift = TBI.buttonToggle($("#calc-shift")[0],true);$(".calc-sh").show();$(".calc-nsh").hide();break;
+            default:return true;
+        }
+    });
+    $(document).keyup(function (event) {
+        if (!Calc.mouse) return true;
+        var key = convertKeyDown(event);
+        switch (key) {
+            case "shift":Calc.shift = TBI.buttonToggle($("#calc-shift")[0],false);$(".calc-sh").hide();$(".calc-nsh").show();break;
+            default:return true;
+        }
+    });
 });
 // END CALC CODE // 1417-1785 = 369 lines
 // START TTBL CODE // 1786-2058 = 273 lines
@@ -2839,7 +2644,7 @@ PSim.focus = function (name) {
     var location = circlePoint(object[0] % 360, object[1]);
     PSim.pan = [-location[0]/(PSim.zoom * PSim.PF), -location[1]/(PSim.zoom * PSim.PF)];
 }
-$(function () {
+$(document).on("pageload", function () {
     PSim.ctx = new Canvas2D("psim-canvas");
     PSim.ctx.translate(300, 300);
     PSim.init();
@@ -3123,7 +2928,7 @@ QDR.checkPiece = function (piece, x, y) {
             if (piece[i][j] && (x+i >= QDR.limits[1] || y+j >= QDR.limits[0] || x+i < 0 || y+j < 0 || QDR.checkBlock(x+i, y+j))) return true
     return false
 }
-$(function () {
+$(document).on("pageload", function () {
     QDR.init();
     $("#qdr-start").click(function (event) {
         $("#qdr-title").hide();
@@ -3152,8 +2957,8 @@ CmpCvs.setup = function () {
     CmpCvs.HEIGHT = 300;
     CmpCvs.WIDTH = 300;
     CmpCvs.BOUNDARY = 600;
-    CmpCvs.hue = 60;
-    CmpCvs.roughness = 2;
+    CmpCvs.hue = 130;
+    CmpCvs.hueFreq = 1;
     CmpCvs.mode = 1;
     CmpCvs.UPSCALE = 2;
     CmpCvs.$ = new Canvas2D("cmp-canvas");
@@ -3233,6 +3038,8 @@ CmpCvs.drawAxis = function () {
     var p = CmpCvs.pan, u = CmpCvs.UPSCALE;
     Canvas2D.path(CmpCvs.$_, {type:"stroke",style:"#333",path:[[-300,-p[1]*u],[300,-p[1]*u]]});
     Canvas2D.path(CmpCvs.$_, {type:"stroke",style:"#333",path:[[-p[0]*u,-300],[-p[0]*u,300]]});
+    Canvas2D.path(CmpCvs.$_, {type:"stroke",style:"#77a",path:[[-300,0],[300,0]]});
+    Canvas2D.path(CmpCvs.$_, {type:"stroke",style:"#77a",path:[[0,-300],[0,300]]});
     CmpCvs.$_.restore();
 }
 CmpCvs.drawCentre = function () {
@@ -3243,12 +3050,12 @@ CmpCvs.drawCentre = function () {
     CmpCvs.$_.closePath();
     CmpCvs.$_.beginPath();
     CmpCvs.$_.fillStyle = "#eee";
-    CmpCvs.$_.arc(0,0,1,0,dtr(360), false);
+    CmpCvs.$_.arc(0,0,1,0,dtr(360),false);
     CmpCvs.$_.fill();
     CmpCvs.$_.closePath();
     CmpCvs.$.beginPath();
     CmpCvs.$.fillStyle = "#333";
-    CmpCvs.$.arc(0,0,3,0,dtr(360),false);
+    CmpCvs.$.arc(0,0,3,0,dtr(360), false);
     CmpCvs.$.fill();
     CmpCvs.$.closePath();
     CmpCvs.$.beginPath();
@@ -3299,7 +3106,7 @@ CmpCvs.analyse = function () {
         w = CmpCvs.WIDTH,
         p = CmpCvs.pan,
         r = CmpCvs.hue,
-        y = CmpCvs.roughness,
+        y = CmpCvs.hueFreq,
         a = CmpCvs.asisIncrement,
         u = CmpCvs.UPSCALE;
     p[0]*=f;
@@ -3307,7 +3114,7 @@ CmpCvs.analyse = function () {
     for (var i=-h/2+p[0];i<h/2+p[0];i+=a) {
         for (var j=-w/2+p[1];j<w/2+p[1];j+=a) {
             var result = CmpCvs.conditions(new Complex(i/f,j/f));
-            if (!isNull(result)) CmpCvs.$.fillStyle = "hsl("+-parseInt(((result+r)%360)*y)+",100%,50%)";
+            if (!isNull(result)) CmpCvs.$.fillStyle = "hsl("+-parseInt(((result+r/y)%360)*y)+",100%,50%)";
             else CmpCvs.$.fillStyle = "#000";
             CmpCvs.$.beginPath();
             CmpCvs.$.arc(i*u-p[0]*u,j*u-p[1]*u,a<1?1:a,0,dtr(360),false);
@@ -3330,7 +3137,7 @@ CmpCvs.validate = function () {
     if (isNull(asisinc) || isNull(maxiter) || isNull(factor) || isNull(panx) || isNull(pany) || (CmpCvs.mode == 0 && isNull(real) || isNull(imaginary))) code = 1;
     else if (isNaN(asisinc) || isNaN(maxiter) || isNaN(factor) || isNaN(panx) || isNaN(pany) || (CmpCvs.mode == 0 && isNaN(real) || isNaN(imaginary))) code = 2;
     else if (asisinc <= 0 || maxiter <= 0 || factor <= 0) code = 3;
-    else if (asisinc < 0.3 || maxiter > 300 || factor > 15) code = 4;
+    else if (asisinc < 0.3 || maxiter > 400 || factor > 15) code = 4;
     else if (asisinc > 10) code = 5;
     else if (parseInt(maxiter) != maxiter) code = 6;
     switch (code) {
@@ -3346,12 +3153,24 @@ CmpCvs.validate = function () {
     CmpCvs.reset();
     return false;
 }
+CmpCvs.setSpinners = function () {
+    if (!isNull($("#cmp-maxiter").data("ui-spinner")) && !CmpCvs.spinners) $("#cmp-maxiter").spinner("destroy");
+    else if (CmpCvs.spinners) $("#cmp-maxiter").spinner({step:10,min:30,page:20});
+    if (!isNull($("#cmp-factor").data("ui-spinner")) && !CmpCvs.spinners) $("#cmp-factor").spinner("destroy");
+    else if (CmpCvs.spinners) $("#cmp-factor").spinner({step:0.5,min:1,page:2});
+    if (!isNull($("#cmp-panx").data("ui-spinner")) && !CmpCvs.spinners) $("#cmp-panx").spinner("destroy");
+    else if (CmpCvs.spinners && Math.pow(10,-parseInt($("#cmp-factor").val())) > 1e-6) 
+        $("#cmp-panx").spinner({step:Math.pow(10,-parseInt($("#cmp-factor").val())),min:-2,max:2});
+    if (!isNull($("#cmp-pany").data("ui-spinner")) && !CmpCvs.spinners) $("#cmp-pany").spinner("destroy");
+    else if (CmpCvs.spinners && Math.pow(10, -parseInt($("#cmp-factor").val())) > 1e-6)
+        $("#cmp-pany").spinner({step:Math.pow(10,-parseInt($("#cmp-factor").val())),min:-2,max:2});
+}
 CmpCvs.generate = function (asis, maxiter, factor, panx, pany, real, imaginary) {
     CmpCvs.asisIncrement = asis;
     CmpCvs.maxIter = maxiter;
     CmpCvs.factor = factor;
     CmpCvs.pan[0] = panx;
-    CmpCvs.pan[1] = pany;
+    CmpCvs.pan[1] = -pany;
     CmpCvs.jfunc.real = real;
     CmpCvs.jfunc.imaginary = imaginary;
     var beginTime = new Date().getTime();
@@ -3367,7 +3186,7 @@ CmpCvs.generate = function (asis, maxiter, factor, panx, pany, real, imaginary) 
         finally { TBI.timerClear("cmp-generation"); }
     });
 }
-$(function () {
+$(document).on("pageload",function () {
     CmpCvs.setup();
     CmpCvs.reset();
     $("#cmp-mouse").mousemove(function (event) {
@@ -3378,8 +3197,9 @@ $(function () {
         var f = CmpCvs.factor;
         TBI.buttonToggle($("#cmp-spinners")[0],false);
         CmpCvs.spinners = false;
+        CmpCvs.setSpinners();
         $("#cmp-panx").val(CmpCvs.location[0]/f);
-        $("#cmp-pany").val(CmpCvs.location[1]/f);
+        $("#cmp-pany").val(-(CmpCvs.location[1]/f));
         if (!CmpCvs.validate()) return false;
         else CmpCvs.generate(parseFloat($("#cmp-asisinc").val()),
                 parseInt($("#cmp-maxiter").val()),
@@ -3398,16 +3218,7 @@ $(function () {
     $("#cmp-tracking").click(function () { CmpCvs.tracking = TBI.isButtonToggled(this); });
     $("#cmp-spinners").click(function () {
         CmpCvs.spinners = TBI.isButtonToggled(this);
-        if (!isNull($("#cmp-maxiter").data("ui-spinner")) && !CmpCvs.spinners) $("#cmp-maxiter").spinner("destroy");
-        else if (CmpCvs.spinners) $("#cmp-maxiter").spinner({step:10,min:30,page:20});
-        if (!isNull($("#cmp-factor").data("ui-spinner")) && !CmpCvs.spinners) $("#cmp-factor").spinner("destroy");
-        else if (CmpCvs.spinners) $("#cmp-factor").spinner({step:0.5,min:1,page:2});
-        if (!isNull($("#cmp-panx").data("ui-spinner")) && !CmpCvs.spinners) $("#cmp-panx").spinner("destroy");
-        else if (CmpCvs.spinners && Math.pow(10,-parseInt($("#cmp-factor").val())) > 1e-6) 
-            $("#cmp-panx").spinner({step:Math.pow(10,-parseInt($("#cmp-factor").val())),min:-2,max:2});
-        if (!isNull($("#cmp-pany").data("ui-spinner")) && !CmpCvs.spinners) $("#cmp-pany").spinner("destroy");
-        else if (CmpCvs.spinners && Math.pow(10, -parseInt($("#cmp-factor").val())) > 1e-6)
-            $("#cmp-pany").spinner({step:Math.pow(10,-parseInt($("#cmp-factor").val())),min:-2,max:2});
+        CmpCvs.setSpinners();
     });
     $("#cmp-mode").click(function () {
         CmpCvs.mode = CmpCvs.mode==0?1:0; 
@@ -3433,8 +3244,22 @@ $(function () {
                 parseFloat($("#cmp-jreal").val()),
                 parseFloat($("#cmp-jimaginary").val()));
     });
-    $("#cmp-reset").click(function () {
-        CmpCvs.reset();
-    });
+    $("#cmp-reset").click(function () { CmpCvs.reset(); });
+    TBI.Popup.registry.add(gebi("cmp-asisinch"), "Analysis Increment",
+            "This controls the resolution and performance of the generation. A smaller number\
+            leads to a more thorough analysis and a better looking picture. They also dramatically\
+            increase the time required to generate the image.");
+    TBI.Popup.registry.add(gebi("cmp-maxiterh"), "Maximum Iterations",
+            "This number is the number of tries each value is tested against. A higher number\
+            generates a more detailed image, but impacts performance. Increase this number when\
+            you want to see more of the fractal.");
+    TBI.Popup.registry.add(gebi("cmp-factorh"), "Zoom Factor",
+            "This is a number that controls the zoom level of the image. Increase this to see at\
+            a deeper level. This can only be increased to 15.");
+    for (var i=0;i<gecn("cmp-panh").length;i++) {
+        TBI.Popup.registry.add(gecn("cmp-panh")[i], "Pan",
+                "These values control the panning of the image. These can be set manually, or\
+                alternatively set by clicking on the image where you want it to be centered.");
+    }
 });
 // END FRACTAL CODE //

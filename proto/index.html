@@ -21,7 +21,10 @@
             <h1>Prototypes</h1>
             <p>
                 These are programs and code snippets that I have on display
-                for infinite free use and reuse by anybody for any purpose.
+                for infinite free use and reuse by anybody for any purpose 
+                under the 
+                <a href="//creativecommons.org/licenses/by-sa/4.0" class="license">(CC) BY-SA</a>
+                license.
             </p>
             <h2 id="anchor2" class="proto">Grid JavaScript Test</h2>
             <h3 class="version">Version 1.5</h3>
@@ -149,7 +152,8 @@
                 <p>
                     NOTES:
                 </p><ul class="main">
-                    <li>Unlikely to ever be worked upon again, due to the relative difficulty and undesirability.</li>
+                    <li>Unlikely to ever be worked upon again, because it's kinda hard to make a 
+                    fully functioning terminal emulator in JavaScript.</li>
                 </ul>
                 <textarea id="txtengarea" disabled="disabled" class="proto"></textarea><br />
                 <input type="text" id="txtengin" class="proto" />
@@ -194,87 +198,96 @@
                 <p>
                     Originally one of my first JavaScript projects, this calculator supports
                     chained equations and different modes. The greatest difference is that it
-                    looks like an actual calculator!
-                </p>
-                <p>
-                    BUGS:
-                </p><ul class="main">
-                    <li>
-                        Concerning the keyboard input mode:
-                        <ul class="main">
-                            <li>When pressing a key, the key is flashed, even if it is invalid.</li>
-                            <li>Some numerous issues with backspace/delete functionality.</li>
-                            <li>Doesn't support any advanced mode features.</li>
-                        </ul>
-                    </li>
-                    <li>Unexpected chained equation behaviour</li>
-                </ul><p>
+                    looks like an actual calculator! UPDATE: I've managed to remake the calculator 
+                    and it's code, even though it looks roughly the same. It now feels better to use, 
+                    has a navigable calculation log and handles a lot more functions with the shift
+                    key. In addition, the code doesn't look like a pile of spaghetti (369 lines 
+                    before to 147 lines now)!
+                </p><p>
                     PLANNED:
                 </p><ul class="main">
-                    <li>More functions</li>
-                    <li>A keyboard mode that isn't borked</li>
                     <li>An expression mode, which only processes your function when completed.</li>
                 </ul>
                 <div id="calculator" class="proto">
-                    <div id="calcwindow">
-                        <span>_</span>
-                        <input type="text" style="display:none" />
+                    <div id="calc-out"><span></span></div>
+                    <div id="calc-status" class="calc-adv">
+                        <span></span>
+                        <button id="calc-statusp">&lt;</button>
+                        <button id="calc-statusn">&gt;</button>
                     </div>
-                    <div id="calcstatus" class="calcadvonly">
-                        <span>_</span>
-                    </div>
-                    <div class="calcbuttons" id="calcsimple">
-                        <div class="calcrow">
-                            <button id="calcinput">Keyboard Input</button>
-                            <button id="calcmode">Change Mode</button>
+                    <div id="calc-keys">
+                        <div class="calcr">
+                            <button id="calc-mode" class="toggle">Advanced</button>
+                            <button id="calc-deg" class="calc-adv toggle">Degrees</button>
+                            <button id="calc-shift" class="calc-adv toggle">Shift</button>
                         </div>
-                        <div class="calcrow">
-                            <button id="calcbackspace">Backspace</button>
-                            <button id="calcdelete">Delete</button>
-                            <button id="calcshift" class="calcadvonly toggle">Shift</button>
+                        <div class="calcr">
+                            <button id="calc-back">Backspace</button>
+                            <button id="calc-del">Delete</button>
                         </div>
-                        <div class="calcrowminor calcadvonly">
-                            <button id="calcpower">x<sup class="no-break">y</sup></button>
-                            <button id="calcpower2">x<sup class="no-break">2</sup></button>
-                            <button id="calcsin" title="Sine">sin</button>
-                            <button id="calccos" title="Cosine">cos</button>
-                            <button id="calctan" title="Tangent">tan</button>
-                            <button id="calcconstpi" title="Pi">&pi;</button>
+                        <div class="calcr-minor calc-adv">
+                            <button id="calc-pow">
+                                <span class="calc-nsh" title="Exponentiation">x<sup class="no-break">y</sup></span>
+                                <span class="calc-sh" title="Factorial">x!</span>
+                            </button>
+                            <button id="calc-pow2">
+                                <span class="calc-nsh">x<sup class="no-break">2</sup></span>
+                                <span class="calc-sh">x<sup class="no-break">3</sup></span>
+                            </button>
+                            <button id="calc-pi">
+                                <span class="calc-nsh" title="Pi">π</span>
+                                <span class="calc-sh" title="Euler's Identity">e</span>
+                            </button>
+                            <button id="calc-10pow">
+                                <span class="calc-nsh">10<sup class="no-break">x</sup></span>
+                                <span class="calc-sh">e<sup class="no-break">x</sup></span>
+                            </button>
                         </div>
-                        <div class="calcrowminor calcadvonly">
-                            <button id="calcrand" title="Random Float">Rnd</button>
-                            <button id="calcrandint" title="Random Integer">RInt</button>
-                            <button id="calcpower3">x<sup class="no-break">3</sup></button>
-                            <button id="calcfactorial" title="Factorial">x!</button>
-                            <button id="calc10power">10<sup class="no-break">x</sup></button>
-                            <button id="calcconste">e</button>
+                        <div class="calcr-minor calc-adv">
+                            <button id="calc-sin">
+                                <span class="calc-nsh" title="Sine">sin</span>
+                                <span class="calc-sh" title="Arcsine">asin</span>
+                            </button>
+                            <button id="calc-cos">
+                                <span class="calc-nsh" title="Cosine">cos</span>
+                                <span class="calc-sh" title="Arccosine">acos</span>
+                            </button>
+                            <button id="calc-tan">
+                                <span class="calc-nsh" title="Tangent">tan</span>
+                                <span class="calc-sh" title="Arctangent">atan</span>
+                            </button>
+                            <button id="calc-rnd">
+                                <span class="calc-nsh" title="Random Float">Rnd</span>
+                                <span class="calc-sh" title="Random Integer">RInt</span>
+                            </button>
+                            <button id="calc-ln" title="Logarithm">ln</button>
                         </div>
-                        <div class="calcrowmajor">
-                            <button class="calcnum">7</button>
-                            <button class="calcnum">8</button>
-                            <button class="calcnum">9</button>
-                            <button id="calcsign">+/-</button>
-                            <button id="calcsqrt">&radic;</button>
+                        <div class="calcr-major">
+                            <button class="calcn">7</button>
+                            <button class="calcn">8</button>
+                            <button class="calcn">9</button>
+                            <button id="calc-sign">+/-</button>
+                            <button id="calc-sqrt">√</button>
                         </div>
-                        <div class="calcrowmajor">
-                            <button class="calcnum">4</button>
-                            <button class="calcnum">5</button>
-                            <button class="calcnum">6</button>
-                            <button id="calctimes">*</button>
-                            <button id="calcdivide">/</button>
+                        <div class="calcr-major">
+                            <button class="calcn">4</button>
+                            <button class="calcn">5</button>
+                            <button class="calcn">6</button>
+                            <button id="calc-m">*</button>
+                            <button id="calc-d">/</button>
                         </div>
-                        <div class="calcrowmajor">
-                            <button class="calcnum">1</button>
-                            <button class="calcnum">2</button>
-                            <button class="calcnum">3</button>
-                            <button id="calcplus">+</button>
-                            <button id="calcminus">-</button>
+                        <div class="calcr-major">
+                            <button class="calcn">1</button>
+                            <button class="calcn">2</button>
+                            <button class="calcn">3</button>
+                            <button id="calc-a">+</button>
+                            <button id="calc-s">-</button>
                         </div>
-                        <div class="calcrowmajor">
-                            <button id="calcallclear">AC</button>
-                            <button class="calcnum">0</button>
-                            <button id="calcdot">.</button>
-                            <button class="calcbuttonhorz" id="calcequals">=</button>
+                        <div class="calcr-major">
+                            <button id="calc-ac">AC</button>
+                            <button class="calcn">0</button>
+                            <button id="calc-dot">.</button>
+                            <button class="calcbh" id="calc-eq">=</button>
                         </div>
                     </div>
                 </div>
@@ -313,7 +326,8 @@
                         </div>
                     </div>
                     <canvas id="cvs" width="750" height="750" style="border:2px solid #000">
-                        Your browser doesn't seem to support the HTML5 &lt;canvas&gt; element.
+                        Your browser is not capable of recognising the HTML5 &lt;canvas&gt; graphics framework.
+                        Supported browsers include Google Chrome and Mozilla Firefox.
                     </canvas>
                 </div>
             </div>
@@ -365,12 +379,13 @@
                 </p>
                 <div class="proto">
                     <canvas id="gl-test" width="600" height="600">
-                        You silly sod. Your browser is too crap to recognise the &lt;canvas&gt; tag.
+                        Your browser is not capable of recognising the HTML5 &lt;canvas&gt; graphics framework.
+                        Supported browsers include Google Chrome and Mozilla Firefox.
                     </canvas>
                     <script id="shader-fs" type="x-shader/x-fragment">
                         varying lowp vec4 vColour;
                         void main(void) {
-                        gl_FragColor = vColour;
+                            gl_FragColor = vColour;
                         }
                     </script>
                     <script id="shader-vs" type="x-shader/x-vertex">
@@ -380,8 +395,8 @@
                         uniform mat4 uPMatrix;
                         varying lowp vec4 vColour;
                         void main(void) {
-                        gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
-                        vColour = aVertexColour;
+                            gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+                            vColour = aVertexColour;
                         }
                     </script>
                 </div>
@@ -404,7 +419,8 @@
                 </ul>
                 <div class="proto">
                     <canvas id="psim-canvas" height="600" width="600">
-                        Your browser is not good enough to recognise the &lt;canvas&gt; tag. Supported browsers include Google Chrome and Mozilla Firefox.
+                        Your browser is not capable of recognising the HTML5 &lt;canvas&gt; graphics framework.
+                        Supported browsers include Google Chrome and Mozilla Firefox.
                     </canvas>
                     <div class="psim-control">
                         <span class="main">Zoom</span>
@@ -445,36 +461,43 @@
                 </p>
                 <div class="proto">
                     <canvas id="cmp-canvas" height="600" width="600">
-                        Your browser is not good enough to recognise the HTML5 &lt;canvas&gt; tag. 
+                        Your browser is not capable of recognising the HTML5 &lt;canvas&gt; graphics framework.
                         Supported browsers include Google Chrome and Mozilla Firefox.
                     </canvas>
                     <canvas id="cmp-mouse" height="600" width="600"></canvas>
                     <div class="cmp-control">
                         <input type="text" id="cmp-asisinc" />
+                        <span class="help" id="cmp-asisinch"></span>
                         <span class="main">Analysis Increment (resolution, &lt; is better)</span>
                     </div>
                     <div class="cmp-control">
                         <input type="text" id="cmp-maxiter" />
+                        <span class="help" id="cmp-maxiterh"></span>
                         <span class="main">Maximum Iterations (detail, &gt; is better)</span>
                     </div>
                     <div class="cmp-control">
                         <input type="text" id="cmp-factor" />
+                        <span class="help" id="cmp-factorh"></span>
                         <span class="main">Zoom Factor (zoom, &gt; is better)</span>
                     </div>
                     <div class="cmp-control">
                         <input type="text" id="cmp-panx" />
+                        <span class="help cmp-panh"></span>
                         <span class="main">X Pan</span>
                     </div>
                     <div class="cmp-control">
                         <input type="text" id="cmp-pany" />
+                        <span class="help cmp-panh"></span>
                         <span class="main">Y Pan</span>
                     </div>
                     <div class="cmp-control cmp-jonly">
                         <input type="text" id="cmp-jreal" />
+                        <span class="help" id="cmp-jrealh"></span>
                         <span class="main">Real component</span>
                     </div>
                     <div class="cmp-control cmp-jonly">
                         <input type="text" id="cmp-jimaginary" />
+                        <span class="help" id="cmp-jimaginaryh"></span>
                         <span class="main">Imaginary component</span>
                     </div>
                     <div class="cmp-control cmp-buttonr">
@@ -507,7 +530,7 @@
                 Java and various engines (Java3D) and Unity, both of which I enjoy immensely.
             </p>
             <h2 class="main proto"><a href="spaceshooter">Space Shooter</a></h2>
-            <h3 class="version">Version 1.0</h3>
+            <h3 class="version">0</h3>
             <div class="proto-main">
                 <p>
                     Using the free version of <a href="http://unity3d.com/unity/download">Unity Editor</a>, I
@@ -525,7 +548,7 @@
                 </p>
             </div>
             <h2 class="proto"><a href="http://gabrielecirulli.github.io/2048/">2048</a> clone</h2>
-            <h3 class="version"></h3>
+            <h3 class="version">0</h3>
             <div class="proto-main">
                 <p>
                     This is a clone of the addictive online block sliding game, 2048. It has a few bugs, one
@@ -566,7 +589,7 @@
                 </div>
             </div>
             <h2 class="proto">Quadrominoes</h2>
-            <h3 class="version"></h3>
+            <h3 class="version">0</h3>
             <div class="proto-main">
                 <p>
                     Because why not.
@@ -604,12 +627,13 @@
                         </div>
                     </div>
                     <canvas id="qdr-canvas" height="600" width="400">
-                        Your browser is not good enough to recognise the &lt;canvas&gt; tag. Supported browsers include Google Chrome and Mozilla Firefox.
+                        Your browser is not capable of recognising the HTML5 &lt;canvas&gt; graphics framework.
+                        Supported browsers include Google Chrome and Mozilla Firefox.
                     </canvas>
                 </div>
             </div>
             <h2 class="proto">Treehouse</h2>
-            <h3 class="version"></h3>
+            <h3 class="version">0</h3>
             <div class="proto-main">
                 <p>
                     This is an basic simulation game in which you are a kid with a big imagination 

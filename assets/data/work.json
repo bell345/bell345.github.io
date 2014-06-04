@@ -1,87 +1,87 @@
 {
-    "prototypes" : [
+    "prototypes": [
         {
-            "id" : "grid",
-            "name" : "Grid JavaScript Test",
-            "version" : "1.5"
+            "id": "grid",
+            "name": "Grid JavaScript Test",
+            "version": "1.5"
         }, 
         {
-            "id" : "calendar",
-            "name" : "Calendar",
-            "version" : "0.6.2"
+            "id": "calendar",
+            "name": "Calendar",
+            "version": "0.6.2"
         }, 
         {
-            "id" : "txteng",
-            "name" : "tXtEng",
-            "version" : "0.2.1"
+            "id": "txteng",
+            "name": "tXtEng",
+            "version": "0.2.1"
         }, 
         {
-            "id" : "cdown",
-            "name" : "CountDown",
-            "version" : "2.6",
-            "link" : "/proto/cdown/"
+            "id": "cdown",
+            "name": "CountDown",
+            "version": "2.6",
+            "link": "/proto/cdown/"
         }, 
         {
-            "id" : "calc",
-            "name" : "Calculator",
-            "version" : "0.8.2",
-            "link" : "/proto/calc/"
+            "id": "calc",
+            "name": "Calculator",
+            "version": "2.1",
+            "link": "/proto/calc/"
         },
         {
-            "id" : "canvas",
-            "name" : "Canvas",
-            "version" : "1.0.1"
+            "id": "canvas",
+            "name": "Canvas",
+            "version": "1.0.1"
         },
         {
-            "id" : "ttbl",
-            "name" : "TimeTable",
-            "version" : "0.6.1"
+            "id": "ttbl",
+            "name": "TimeTable",
+            "version": "0.6.1"
         },
         {
-            "id" : "gl",
-            "name" : "WebGL Test",
-            "version" : "0.2"
+            "id": "gl",
+            "name": "WebGL Test",
+            "version": "0.2"
         },
         {
-            "id" : "psim",
-            "name" : "Planetarium",
-            "version" : "0.9.2"
+            "id": "psim",
+            "name": "Planetarium",
+            "version": "0.9.2"
         },
         {
-            "id" : "cvscom",
-            "name" : "Fractal Generator",
-            "version" : "1.4"
+            "id": "cvscom",
+            "name": "Fractal Generator",
+            "version": "1.4.1"
         },
         {
-            "id" : "spaceshooter",
-            "name" : "Space Shooter",
-            "version" : "1.0",
-            "link" : "/proto/spaceshooter/"
+            "id": "spaceshooter",
+            "name": "Space Shooter",
+            "version": "1.0",
+            "link": "/proto/spaceshooter/"
         },
         {
-            "id" : "twf8",
-            "name" : "2048 clone",
-            "version" : "0.9.2",
-            "link" : "http://gabrielecirulli.github.io/2048"
+            "id": "twf8",
+            "name": "2048 clone",
+            "version": "0.9.2",
+            "link": "http://gabrielecirulli.github.io/2048"
         },
         {
-            "id" : "qdr",
-            "name" : "Quadrominoes",
-            "version" : "0.4"
+            "id": "qdr",
+            "name": "Quadrominoes",
+            "version": "0.4"
         },
         {
-            "id" : "treeh",
-            "name" : "Treehouse",
-            "version" : "0.2",
-            "link" : "/proto/treehouse/"
+            "id": "treeh",
+            "name": "Treehouse",
+            "version": "0.2",
+            "link": "/proto/treehouse/"
         }
     ],
-    "work" : [
+    "work": [
         {
-            "id" : "cdown",
-            "name" : "CountDown",
-            "version" : "2.6",
-            "link" : "/proto/cdown"
+            "id": "cdown",
+            "name": "CountDown",
+            "version": "2.6",
+            "link": "/proto/cdown"
         }
     ]
 }
