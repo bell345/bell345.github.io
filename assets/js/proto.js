@@ -1543,10 +1543,10 @@ $(function () {
     $("#calc-sign").click(function () { Calc.sign(); });
     $("#calc-back").click(function () { Calc.update(Calc.working.substring(0, Calc.working.length-1)); });
     $("#calc-del").click(function () { Calc.update(Calc.working.substring(1)); });
-    $("#calc-mode").click(function () { TBI.isButtonToggled(this) ? $(".calc-adv").show() : $(".calc-adv").hide(); });
-    $("#calc-deg").click(function () { Calc.degrees = TBI.isButtonToggled(this); });
+    $("#calc-mode").click(function () { TBI.isToggled(this) ? $(".calc-adv").show() : $(".calc-adv").hide(); });
+    $("#calc-deg").click(function () { Calc.degrees = TBI.isToggled(this); });
     $("#calc-shift").click(function () { 
-        Calc.shift = TBI.isButtonToggled(this); 
+        Calc.shift = TBI.isToggled(this); 
         if (Calc.shift) {
             $(".calc-sh").show();
             $(".calc-nsh").hide();
@@ -1574,7 +1574,7 @@ $(function () {
             case "8":Calc.digit(8);break;case "9":Calc.digit(9);break;case ".":Calc.digit(".");break;case "enter":Calc.func("=");break;
             case "+":Calc.func("+");break;case "-":Calc.func("-");break;case "*":Calc.func("*");break;case "/":Calc.func("/");break;
             case "delete":Calc.update(Calc.working.substring(1));break;case "_":Calc.sign();break;case "c":Calc.init();break;
-            case "shift":Calc.shift = TBI.buttonToggle($("#calc-shift")[0],true);$(".calc-sh").show();$(".calc-nsh").hide();break;
+            case "shift":Calc.shift = TBI.toggleButton($("#calc-shift")[0],true);$(".calc-sh").show();$(".calc-nsh").hide();break;
             default:return true;
         }
     });
@@ -1582,7 +1582,7 @@ $(function () {
         if (!Calc.mouse) return true;
         var key = convertKeyDown(event);
         switch (key) {
-            case "shift":Calc.shift = TBI.buttonToggle($("#calc-shift")[0],false);$(".calc-sh").hide();$(".calc-nsh").show();break;
+            case "shift":Calc.shift = TBI.toggleButton($("#calc-shift")[0],false);$(".calc-sh").hide();$(".calc-nsh").show();break;
             default:return true;
         }
     });
@@ -2028,291 +2028,6 @@ $(function () {
     });
 });
 // END CANVAS CODE // 2059-2225 = 167 lines
-// START GL CODE // 2226-2365 = 140 lines
-/**
-*   WEBGL TEST
-*/
-var GLTest = {};
-GLTest.sqVtcBuffer = null;
-GLTest.sqVtcColBuffer = null;
-GLTest.vtxPosAttribute = null;
-GLTest.vtxColAttribute = null;
-GLTest.program = null;
-GLTest.perspMatrix = null;
-GLTest.mvMatrix = null;
-GLTest.sqRotation = 0.0;
-GLTest.mvMtxStack = [];
-GLTest.lastSqUpTime = null;
-GLTest.init = function () {
-    var gl = new Canvas3D(gebi("gl-test"));
-    if (!isNull(gl) && !isNull(gl.clearColor)) {
-        gl.clearColor(0.8, 0.8, 0.8, 1.0);
-        gl.enable(gl.DEPTH_TEST);
-        gl.depthFunc(gl.LEQUAL);
-        gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
-    } else return false;
-    GLTest.shaderInit(gl);
-    GLTest.bufferInit(gl);
-    GLTest.drawScene(gl);
-}
-GLTest.shaderInit = function (gl) {
-    var fragShader = GLTest.shaderGet(gl, "shader-fs");
-    var vtxShader = GLTest.shaderGet(gl, "shader-vs");
-    GLTest.program = gl.createProgram();
-    gl.attachShader(GLTest.program, vtxShader);
-    gl.attachShader(GLTest.program, fragShader);
-    gl.linkProgram(GLTest.program);
-    if (!gl.getProgramParameter(GLTest.program, gl.LINK_STATUS))
-        TBI.error("Init shader error.");
-    gl.useProgram(GLTest.program);
-    GLTest.vtxPosAttribute = gl.getAttribLocation(GLTest.program, "aVertexPosition");
-    gl.enableVertexAttribArray(GLTest.vtxPosAttribute);
-    GLTest.vtxColAttribute = gl.getAttribLocation(GLTest.program, "aVertexColour");
-    gl.enableVertexAttribArray(GLTest.vtxColAttribute);
-}
-GLTest.shaderGet = function (gl, id) {
-    var script = gebi(id);
-    if (isNull(script)) return null;
-    var src = "";
-    var child = script.firstChild;
-    while (child) {
-        if (child.nodeType == child.TEXT_NODE)
-            src += child.textContent;
-        child = child.nextSibling;
-    }
-    if (script.type == "x-shader/x-fragment")
-        var shader = gl.createShader(gl.FRAGMENT_SHADER);
-    else if (script.type == "x-shader/x-vertex")
-        var shader = gl.createShader(gl.VERTEX_SHADER);
-    else return null;
-    gl.shaderSource(shader, src);
-    gl.compileShader(shader);
-    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-        TBI.error("Shader error: "+gl.getShaderInfoLog(shader));
-        return null;
-    }
-    return shader;
-}
-GLTest.bufferInit = function (gl) {
-    GLTest.sqVtcBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, GLTest.sqVtcBuffer);
-    var vtc = [
-        1.0, 1.0, 0.0,
-        -1.0,1.0, 0.0,
-        1.0, -1.0,0.0,
-        -1.0,-1.0,0.0
-    ];
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vtc), gl.STATIC_DRAW);
-    var colours = [
-        1.0, 1.0, 1.0, 1.0,
-        1.0, 0.0, 0.0, 1.0,
-        0.0, 1.0, 0.0, 1.0,
-        0.0, 0.0, 1.0, 1.0
-    ];
-    GLTest.sqVtcColBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, GLTest.sqVtcColBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colours), gl.STATIC_DRAW);
-}
-GLTest.drawScene = function (gl) {
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    GLTest.perspMatrix = makePerspective(45, 600.0/600.0, 0.1, 100.0);
-    GLTest.mvMatrix = Matrix.I(4);
-    GLTest.mvMatrix = GLTest.mvMatrix.x(Matrix.Translation($V([-0.0, 0.0, -4.0]))).ensure4x4();
-    GLTest.mvPushMtx();
-    GLTest.mvRotate(dtr(40.0), [1,0,1]);
-    GLTest.mvPopMtx();
-    gl.bindBuffer(gl.ARRAY_BUFFER, GLTest.sqVtcBuffer);
-    gl.vertexAttribPointer(GLTest.vtxPosAttribute, 3, gl.FLOAT, false, 0, 0);
-    gl.bindBuffer(gl.ARRAY_BUFFER, GLTest.sqVtcColBuffer);
-    gl.vertexAttribPointer(GLTest.vtxColAttribute, 4, gl.FLOAT, false, 0, 0);
-    GLTest.setMatrixUniforms(gl);
-    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-    var currTime = new Date().getTime();
-    if (!isNull(GLTest.lastSqUpTime)) {
-        var delta = currTime - GLTest.lastSqUpTime;
-        GLTest.sqRotation += (30*delta)/1000.0;
-    }
-    GLTest.lastSqUpTime = currTime;
-    var sqOffset = [0.0, 0.0, 0.0];
-    var increment = [0.2, -0.4, 0.3];
-    sqOffset[0] += increment[0] * ((30 * delta) / 1000.0);
-    sqOffset[1] += increment[1] * ((30 * delta) / 1000.0);
-    sqOffset[2] += increment[2] * ((30 * delta) / 1000.0);
-    if (Math.abs(sqOffset[1]) > 2.5) {
-        increment[0] = -increment[0];
-        increment[1] = -increment[1];
-        increment[2] = -increment[2];
-    }
-}
-GLTest.setMatrixUniforms = function (gl) {
-    var p = gl.getUniformLocation(GLTest.program, "uPMatrix");
-    gl.uniformMatrix4fv(p, false, new Float32Array(GLTest.perspMatrix.flatten()));
-    var mv = gl.getUniformLocation(GLTest.program, "uMVMatrix");
-    gl.uniformMatrix4fv(mv, false, new Float32Array(GLTest.mvMatrix.flatten()));
-}
-GLTest.mvPushMtx = function (m) {
-    if (m) {
-        GLTest.mvMtxStack.push(m.dup());
-        GLTest.mvMatrix = m.dup();
-    } else GLTest.mvMtxStack.push(GLTest.mvMatrix.dup());
-}
-GLTest.mvPopMtx = function () {
-    if (!GLTest.mvMtxStack.length) TBI.error("Empty matrix stack.");
-    GLTest.mvMatrix = GLTest.mvMtxStack.pop();
-    return GLTest.mvMatrix;
-}
-GLTest.mvRotate = function (angle, v) {
-    var radians = dtr(angle);
-    var m = Matrix.Rotation(radians, $V([v[0], v[1], v[2]])).ensure4x4();
-    GLTest.mvMatrix = GLTest.mvMatrix.x(m);
-}
-$(function () { GLTest.init() });
-// END GL CODE // 2226-2365 = 140 lines
-// START TWF8 CODE // 2366-2510 = 145 lines
-/**
-*   2048 GAME CLONE
-*/
-var TWF8 = {};
-TWF8.moved = [];
-TWF8.enabled = false;
-TWF8.moveTile = function (sx, sy, dx, dy) {
-    $("#twf8-pos-"+sx+sy).attr("id", "twf8-pos-"+dx+dy);
-}
-TWF8.checkTile = function (x, y) {
-    try {if ($("#twf8-pos-"+x+y).length > 0) return parseInt($("#twf8-pos-"+x+y)
-        .attr("class")
-        .match(/val\-[0-9]+/)[0]
-        .match(/[0-9]+/)[0]); 
-    else return false;
-    } catch (e) { return true; }
-}
-TWF8.moveTileLeft = function (sx, sy) {
-    var val = parseInt($("#twf8-pos-"+sx+sy).attr('class').match(/val\-[0-9]+/)[0].match(/[0-9]+/)[0]);
-    while (sy > 0 && (TWF8.checkTile(sx, sy-1) == val || !TWF8.checkTile(sx, sy-1))) {
-        if (!TWF8.checkTile(sx, sy-1)) {
-            TWF8.moveTile(sx,sy,sx,sy-1);
-            sy--;
-            TWF8.moved.push(sx,sy);
-        } else if (TWF8.checkTile(sx, sy-1) == val) {
-            $("#twf8-pos-"+sx+(sy-1)).remove();
-            gebi("twf8-pos-"+sx+sy).className = gebi("twf8-pos-"+sx+sy).className.replace("twf8-val-"+val, "twf8-val-"+(val*2));
-            TWF8.moveTile(sx, sy, sx, sy-1);
-            TWF8.moved.push(sx,sy);
-            return null;
-        }
-    }
-}
-TWF8.moveTileRight = function (sx, sy) {
-    var val = parseInt($("#twf8-pos-"+sx+sy).attr('class').match(/val\-[0-9]+/)[0].match(/[0-9]+/)[0]);
-    while (sy < 3 && (TWF8.checkTile(sx, sy+1) == val || !TWF8.checkTile(sx, sy+1))) {
-        if (!TWF8.checkTile(sx, sy+1)) {
-            TWF8.moveTile(sx, sy, sx, sy+1);
-            sy++;
-            TWF8.moved.push(sx,sy);
-        } else if (TWF8.checkTile(sx, sy+1) == val) {
-            $("#twf8-pos-"+sx+(sy+1)).remove();
-            gebi("twf8-pos-"+sx+sy).className = gebi("twf8-pos-"+sx+sy).className.replace("twf8-val-"+val, "twf8-val-"+(val*2));
-            TWF8.moveTile(sx, sy, sx, sy+1);
-            TWF8.moved.push(sx,sy);
-            return null;
-        }
-    }
-}
-TWF8.moveTileUp = function (sx, sy) {
-    var val = parseInt($("#twf8-pos-"+sx+sy).attr('class').match(/val\-[0-9]+/)[0].match(/[0-9]+/)[0]);
-    while (sx > 0 && (TWF8.checkTile(sx-1, sy) == val || !TWF8.checkTile(sx-1, sy))) {
-        if (!TWF8.checkTile(sx-1, sy)) {
-            TWF8.moveTile(sx, sy, sx-1, sy);
-            sx--;
-            TWF8.moved.push(sx,sy);
-        } else if (TWF8.checkTile(sx-1, sy) == val) {
-            $("#twf8-pos-"+(sx-1)+sy).remove();
-            gebi("twf8-pos-"+sx+sy).className = gebi("twf8-pos-"+sx+sy).className.replace("twf8-val-"+val, "twf8-val-"+(val*2));
-            TWF8.moveTile(sx, sy, sx-1, sy);
-            TWF8.moved.push(sx,sy);
-            return null;
-        }
-    }
-}
-TWF8.moveTileDown = function (sx, sy) {
-    var val = parseInt($("#twf8-pos-"+sx+sy).attr('class').match(/val\-[0-9]+/)[0].match(/[0-9]+/)[0]);
-    while (sx < 3 && (TWF8.checkTile(sx+1, sy) == val || !TWF8.checkTile(sx+1, sy))) {
-        if (!TWF8.checkTile(sx+1, sy)) {
-            TWF8.moveTile(sx, sy, sx+1, sy);
-            sx++;
-            TWF8.moved.push(sx,sy);
-        } else if (TWF8.checkTile(sx+1, sy) == val) {
-            $("#twf8-pos-"+(sx+1)+sy).remove();
-            gebi("twf8-pos-"+sx+sy).className = gebi("twf8-pos-"+sx+sy).className.replace("twf8-val-"+val, "twf8-val-"+(val*2));
-            TWF8.moveTile(sx, sy, sx+1, sy);
-            TWF8.moved.push(sx,sy);
-            return null;
-        }
-    }
-}
-TWF8.spawnTile = function (dx, dy, val) {
-    if (isNull(dx) || isNull(dy) || isNull(val)) return TBI.error("TWF8: Tile spawning failed: Insufficient values");
-    if ($("#twf8-pos-"+dx+dy).length < 1 && dx > -1 && dy > -1 && dx < 4 && dy < 4)
-        $("#twf8-tiles").append("<div class='twf8-tile twf8-val-"+val+"' id='twf8-pos-"+dx+dy+"'></div>");
-}
-TWF8.moveAllLeft = function () {
-    for (var i = 0; i < 4; i++) for (var j = 0; j < 4; j++) if ($("#twf8-pos-"+i+j).length > 0) TWF8.moveTileLeft(i, j);
-}
-TWF8.moveAllRight = function () {
-    for (var i = 0; i < 4; i++) for (var j = 3; j >= 0; j--) if ($("#twf8-pos-"+i+j).length > 0) TWF8.moveTileRight(i, j);
-}
-TWF8.moveAllUp = function () {
-    for (var i = 0; i < 4; i++) for (var j = 0; j < 4; j++) if ($("#twf8-pos-"+i+j).length > 0) TWF8.moveTileUp(i, j);
-}
-TWF8.moveAllDown = function () {
-    for (var i = 3; i >= 0; i--) for (var j = 0; j < 4; j++) if ($("#twf8-pos-"+i+j).length > 0) TWF8.moveTileDown(i, j);
-}
-TWF8.determine = function (dir) {
-    var check = function (i, j) {
-        var ct = TWF8.checkTile;
-        switch (dir) {
-        case "left":return !ct(i, j-1) || (ct(i, j-1) == ct(i, j) && (ct(i, j)));
-        case "right":return !ct(i, j+1) || (ct(i, j+1) == ct(i, j) && (ct(i, j)));
-        case "up":return !ct(i-1, j) || (ct(i-1, j) == ct(i, j) && (ct(i, j)));
-        case "down":return !ct(i+1, j) || (ct(i+1, j) == ct(i, j) && (ct(i, j)));
-        default:return false;
-    }}
-    var results = [];
-    var ix = dir=="up"?1:0;
-    var iy = dir=="down"?3:4;
-    var jx = dir=="left"?1:0;
-    var jy = dir=="right"?3:4;
-    for (var i = ix; i < iy; i++) for (var j = jx; j < jy; j++) if (check(i, j)) results.push([i, j]);
-    return results.length > 0;
-}
-$(document).keyup(function (event) {
-    if (!TWF8.enabled) return null;
-    var key = convertKeyDown(event);
-    var determined = TWF8.determine(key);
-    if (key == "left" && determined) TWF8.moveAllLeft();
-    else if (key == "right" && determined) TWF8.moveAllRight();
-    else if (key == "up" && determined) TWF8.moveAllUp();
-    else if (key == "down" && determined) TWF8.moveAllDown();
-    else if (key != /(left|right|up|down)/) return null;
-    if (!TWF8.determine("left") && !TWF8.determine("right") && !TWF8.determine("up") && !TWF8.determine("down")) {
-        TBI.log("TWF8: Game Over!");
-    }
-    if (TWF8.moved.length > 0) {
-        TBI.timerSet("twf8spawn", 200, function () {
-            do { var randLocation = [randomInt(4), randomInt(4)]; }
-            while ($("#twf8-pos-"+randLocation[0]+randLocation[1]).length > 0)
-            var num = Math.random() < 0.8 ? 2 : 4;
-            TWF8.spawnTile(randLocation[0], randLocation[1], num);
-            TBI.timerClear("twf8spawn");
-        });
-    }
-    TWF8.moved = [];
-});
-$(function () {
-    $("#twf8-game").mouseenter(function () { TWF8.enabled = true; });
-    $("#twf8-game").mouseleave(function () { TWF8.enabled = false; });
-});
-// END TWF8 CODE // 2366-2510 = 145 lines
 // START PSIM CODE // 2511-2891 = 381 lines
 /**
 *   PLANETARIUM SIMULATION
@@ -2432,7 +2147,7 @@ PSim.planet = function (name) {
         PSim.ctx.save();
         PSim.ctx.rotate(-dtr(rotation));
         var a = circlePoint(rotation, distance);
-        var x = a[0], y = a[1];
+        var x = a.x, y = a.y;
         Canvas2D.path(PSim.ctx, {type:"stroke",style:"#09f",path:[[x,y],[x+10,y],[x,y],[x-10,y],[x,y],[x,y+10],[x,y],[x,y-10]]});
         PSim.ctx.restore();
     }
@@ -2453,7 +2168,7 @@ PSim.planet = function (name) {
         PSim.ctx.font = "12px Raleway";
         var loc = circlePoint(rotation, distance);
         PSim.ctx.fillStyle = "rgba(0, 0, 0, 0.4)";
-        PSim.ctx.fillRect(loc[0]-2, loc[1]-8, 70, 20);
+        PSim.ctx.fillRect(loc.x-2, loc.y-8, 70, 20);
         PSim.labels[PSim.labelFind(name)] = {
             "name":name,
             "location":[loc[0]-2+panX, loc[1]-8+panY],
@@ -2505,7 +2220,7 @@ PSim.satellite = function (parent, name) {
     PSim.ctx.beginPath();
     var position = circlePoint(parentRotation, parentDistance);
     PSim.ctx.fillStyle = satellite.colour;
-    PSim.ctx.translate(position[0], position[1]);
+    PSim.ctx.translate(position.x, position.y);
     PSim.ctx.rotate(dtr(rotation));
     PSim.ctx.arc(distance, 0, size, 0, dtr(360), false);
     PSim.ctx.fill();
@@ -2516,7 +2231,7 @@ PSim.satellite = function (parent, name) {
         PSim.ctx.font = "8px Raleway";
         PSim.ctx.fillStyle = "white";
         var loc = circlePoint(rotation, distance);
-        PSim.ctx.fillText(name, loc[0]+6, loc[1]+4);
+        PSim.ctx.fillText(name, loc.x+6, loc.y+4);
         PSim.ctx.restore();
     }
     if (PSim.planetLines) {
@@ -2647,7 +2362,6 @@ PSim.focus = function (name) {
 $(document).on("pageload", function () {
     PSim.ctx = new Canvas2D("psim-canvas");
     PSim.ctx.translate(300, 300);
-    PSim.init();
     var zoomed = false,
         scaled = false,
         speeded = false,
@@ -2682,269 +2396,22 @@ $(document).on("pageload", function () {
     TBI.Popup.registry.add(gebi("psim-speed-reset"), "Speed Reset", "Resets the simulation speed to realistic values.");
     TBI.Popup.registry.add(gebi("psim-speed-pause"), "Speed Pause", "Stops the simulation completely.");
     // Checkboxes / Boolean values
-    $("#psim-plines").click(function () { PSim.planetLines = TBI.isButtonToggled(this); });
-    $("#psim-porbits").click(function () { PSim.planetOrbits = TBI.isButtonToggled(this); });
-    $("#psim-debug").click(function () { PSim.debug = TBI.isButtonToggled(this); });
-    $("#psim-plabels").click(function () { PSim.planetLabels = TBI.isButtonToggled(this); });
+    $("#psim-plines").click(function () { PSim.planetLines = TBI.isToggled(this); });
+    $("#psim-porbits").click(function () { PSim.planetOrbits = TBI.isToggled(this); });
+    $("#psim-debug").click(function () { PSim.debug = TBI.isToggled(this); });
+    $("#psim-plabels").click(function () { PSim.planetLabels = TBI.isToggled(this); });
     // Canvas
     $("#psim-canvas").mousemove(function (event) { PSim.overlay = event });
     $("#psim-canvas").mouseleave(function (event) { PSim.overlay = null; PSim.clicked = 0 });
     $("#psim-canvas").mousedown(function () { PSim.clicked = 1 });
     $("#psim-canvas").mouseup(function () { PSim.clicked = 0 });
     $("#psim-reset").click(function () { if (confirm("Are you sure? The current position will be reset.")) PSim.init() });
+    $("#psim-power").click(function () {
+        if (TBI.isToggled(this)) PSim.init();
+        else { TBI.timerClear("PSim"); PSim.ctx.clearRect(-300,-300,600,600); }
+    });
 });
 // END PSIM CODE // 2511-2891 = 381 lines
-// START QDR CODE // 2892-3141 = 249 lines
-var QDR = {};
-    QDR.totalTime = 0;
-// Quadrominoes are based upon a 4x4 grid system. 
-// The rotate() function allows for rotation of these pieces within the 4x4 grid.
-QDR.PIECES = [
-    [[true,true,true,true],[false,false,false,false],[false,false,false,false],[false,false,false,false]], // I piece
-    [[true,true,true,false],[false,true,false,false],[false,false,false,false],[false,false,false,false]], // T piece
-    [[false,true,false,false],[true,true,false,false],[true,false,false,false],[false,false,false,false]], // Z piece
-    [[true,false,false,false],[true,true,false,false],[false,true,false,false],[false,false,false,false]], // S piece
-    [[true,true,true,false],[true,false,false,false],[false,false,false,false],[false,false,false,false]], // L piece
-    [[true,true,true,false],[false,false,true,false],[false,false,false,false],[false,false,false,false]], // Reverse L piece
-    [[true,true,false,false],[true,true,false,false],[false,false,false,false],[false,false,false,false]]  // Box piece
-];
-QDR.init = function () {
-    QDR.size = 24; // Size of the blocks (px).
-    QDR.interval = 500; // Interval between ticks (ms).
-    QDR.screen = 0; // Which screen is being displayed.
-    QDR.time = new Date().getTime();
-    QDR.$ = new Canvas2D("qdr-canvas");
-    QDR.width = parseInt($("#qdr-canvas").css('width'));
-    QDR.height = parseInt($("#qdr-canvas").css('height'));
-    QDR.score = 0;
-    QDR.added = 0;
-    QDR.placed = -1;
-    QDR.current = null;
-    QDR.next = null;
-    QDR.active = false;
-    QDR.over = false; // Game Over or not?
-    QDR.limits = [QDR.height/QDR.size, 12]; // limits = [height, width]
-    QDR.board = []; // The blocks that have already been placed.
-    for (var i=0;i<QDR.limits[0];i++) {                       //
-        var tempArr = [];                                     // Filling board[] with empty
-        for (var j=0;j<QDR.limits[1];j++) tempArr.push(null); // values, representing clear space.
-        QDR.board.push(tempArr);                              //
-    }
-    QDR.blockground = new Image(); // The block textures.
-    QDR.blockground.src = "data:image/png;base64,\
-iVBORw0KGgoAAAANSUhEUgAAAHAAAAAQCAIAAABBdmxGAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAWdEVYdFNvZnR3YXJlAHBhaW5\
-0Lm5ldCA0LjA76PVpAAAAx0lEQVRYR+3YvQ3CUAxFYe9AiQQ9FQ1LpGeAdGxA6ZYhMoXn8FDk5fdFSO9e11j6JjjlEZNbiNg5xExi5BMiFvSyEOskpARVuZCWoHpiTUFVWXNQlZ60BN\
-WeNQftlDUF1QdrD+pyhw5B/YpVQd2xOqjLAB2C+oDVQd+OVUH9iWVQJIMCGbQtgwIZFMmgbRm0LYMiGRTIoG0ZFMigyD8HJe1BSWtQ0haUtAclbUFJa1DSEjSkBI0ojUJ+Bl1baRQyB\
-o0YGwV08gWxbsYGqFRypAAAAABJRU5ErkJggg==";
-    TBI.timerClear("qdr");
-    TBI.timerSet("qdr", 10, function () {
-        try { QDR.loop(); }
-        catch (e) { TBI.error(e) }
-    });
-}
-QDR.loop = function () {
-    QDR.$.clearRect(0,0,1000,1000);
-    QDR.totalTime+=500;
-    switch (QDR.screen) {
-        case 0: QDR.title(); break;
-        case 1: QDR.play(); break;
-        case 2: QDR.end(); break;
-    }
-}
-QDR.title = function () {
-    QDR.$.beginPath();
-    QDR.$.fillStyle = "#333";
-    QDR.$.font = "38px Raleway";
-    QDR.$.textAlign = "center";
-    QDR.$.fillText("Quadrominoes", QDR.width/2, QDR.height/12);
-    QDR.$.closePath();
-}
-QDR.checkRows = function () {
-    var checked = new Array(QDR.board.length);
-    var total = 0;
-    for (var i=0;i<QDR.board.length;i++) {
-        checked[i] = true;
-        for (var j=0;j<QDR.board[i].length;j++) if (isNull(QDR.board[i][j])) checked[i] = false
-        if (checked[i]) { QDR.removeRow(i); QDR.score += 1 }
-    }
-    return true;
-}
-QDR.removeRow = function (row) {
-    QDR.board[row] = [QDR.limits[1]];
-    for (var i=row;i>0;i--) QDR.board[i] = QDR.board[i-1];
-    return true;
-}
-QDR.fall = function () {
-    for (var i=QDR.current.y;i<QDR.limits[0];i++) if (!QDR.checkPiece(QDR.current.piece, QDR.current.x, QDR.current.y+1)) QDR.current.y+=1;
-    return true;
-}
-QDR.move = function (direction) {
-    if (direction.search(/[wasd]/) == -1 || isNull(QDR.current)) return false;
-    var curr = QDR.current;
-    var dim = QDR.findHW(curr.piece);
-    if (direction == "a" && curr.x > 0 && !QDR.checkPiece(curr.piece, curr.x-1, curr.y)) QDR.current.x--;
-    else if (direction == "d" && curr.x+1 < QDR.limits[1] && !QDR.checkPiece(curr.piece, curr.x+1, curr.y)) QDR.current.x++;
-    else if (direction == "w" && !QDR.checkPiece(QDR.rotate(curr.piece, 1), curr.x, curr.y)) curr.piece = QDR.rotate(curr.piece, 1);
-    else if (direction == "s") QDR.fall();
-    TBI.timerClear("qdr-flash");
-    gebi("qdr-controls").className = direction;
-    TBI.timerSet("qdr-flash", 200, function () {
-        gebi("qdr-controls").className = "";
-        TBI.timerClear("qdr-flash");
-    });
-    return true;
-}
-QDR.background = function () {
-    QDR.$.fillStyle = "rgba(0,0,0,0.04)";
-    for (var i=0;i<QDR.limits[1];i++)
-        if (Math.floor(i/3)%2==0) QDR.$.fillRect(i*QDR.size, 0, QDR.size, 1000);
-    return true;
-}
-QDR.drawNext = function () {
-    QDR.$.save();
-    QDR.$.fillStyle = "rgba(0,0,0,0.2)";
-    var x = QDR.width-110;
-    var y = 250;
-    QDR.$.fillRect(x, 0, 110, QDR.height);
-    QDR.$.font = "36px Raleway";
-    QDR.$.fillStyle = "#fff";
-    QDR.$.fillText("Next", x+55, y);
-    QDR.$.fillStyle = "rgba(255,255,255,0.3)";
-    QDR.$.fillRect(x, y+=18, 110, 110);
-    var px = x+8;
-    var py = y+8;
-    var piece = QDR.PIECES[QDR.next];
-    var dim = QDR.findHW(piece);
-    py += Math.abs(dim[0]-4)*12;
-    px += Math.abs(dim[1]-4)*12;
-    var s = 24;
-    for (var i=0;i<4;i++)
-        for (var j=0;j<4;j++)
-            if (piece[i][j]) QDR.$.drawImage(QDR.blockground, 16*QDR.next, 0, 16, 16, px+j*s, py+i*s, s, s);
-    QDR.$.fillStyle = "#fff";
-    QDR.$.fillText("Score", x+55, y+=150);
-    QDR.$.font = "48px bold Raleway";
-    QDR.$.fillText(QDR.score, x+55, y+=50);
-    QDR.$.restore();
-    return true;
-}
-QDR.findHW = function (p) {
-    for (var i=0,c=0,a=[];i<4;i++) {
-        for (var j=0,t=0;j<4;j++) if (p[i][j]) t=j+1;
-        if (t>0) {
-            c++;
-            a.push(t)
-        }
-    }
-    return [c, a.sort()[a.length-1]]
-}
-QDR.rotate = function (piece, num) {
-    var dim = QDR.findHW(piece);
-    var nw = [];
-    for (var i=0;i<4;i++) nw[i] = ([0,0,0,0]);
-    for (var i=0;i<dim[0];i++)
-        for (var j=0,k=dim[1]-1;j<dim[1];j++,k--)
-            nw[j][i] = piece[i][k];
-    if (!isNull(num) && num > 0) return QDR.rotate(nw, --num);
-    else if (num == 0) return piece;
-    else return nw;
-}
-QDR.drawBlock = function (index, x, y) {
-    QDR.$.drawImage(QDR.blockground, 16*index, 0, 16, 16, x*QDR.size, y*QDR.size, QDR.size, QDR.size);
-    return true;
-}
-QDR.drawPiece = function (piece, index, x, y) {
-    for (var i=0;i<4;i++)
-        for (var j=0;j<4;j++)
-            if (piece[i][j]) QDR.drawBlock(index, i+x, j+y);
-    return true;
-}
-QDR.boardAdd = function (piece, index, x, y) {
-	var prevBoard = QDR.board;
-    for (var i=0;i<4;i++)
-        for (var j=0;j<4;j++)
-            if (piece[i][j] && QDR.added++ < 4) QDR.board[j+y][i+x] = index;
-	var tolerance = 0;
-	for (var i=0;i<prevBoard.length;i++)
-		for (var j=0;j<prevBoard[0].length;j++)
-			if (prevBoard[i][j] != QDR.board[i][j] && tolerance++ >= 4) throw new Error("Tower blocks created");
-    TBI.log("Placed one more piece: #"+ ++QDR.placed);
-}
-QDR.play = function () {
-    QDR.background();
-    var time = new Date().getTime();
-    var step = Math.floor(time/QDR.interval) != Math.floor(QDR.time/QDR.interval);
-    if (step) QDR.time = time;
-    if (!QDR.active) step = false;
-    if (!QDR.over) {
-        if (isNull(QDR.next)) QDR.next = randomInt(QDR.PIECES.length);
-        if (isNull(QDR.current)) {
-            QDR.checkRows();
-            var curr = QDR.next;
-            QDR.next = randomInt(QDR.PIECES.length);
-            var dim = QDR.findHW(QDR.PIECES[curr]);
-            QDR.current = {piece:QDR.PIECES[curr],index:curr,x:Math.floor(QDR.limits[1]/2)-Math.ceil(dim[0]/2),y:0};
-            var current = QDR.current;
-            if (QDR.checkPiece(current.piece, current.x, current.y)) QDR.over = true;
-            QDR.added = 0;
-        }
-        var current = QDR.current;
-        if (!step || !QDR.checkPiece(current.piece, current.x, current.y+1))
-            QDR.drawPiece(current.piece, current.index, current.x, current.y+=step?1:0);
-        else if (step) {
-            QDR.boardAdd(current.piece, current.index, current.x, current.y);
-            QDR.current = null;
-        }
-        QDR.drawNext();
-    }
-    for (var i=0;i<QDR.limits[0];i++) 
-        for (var j=0;j<QDR.limits[1];j++)
-            if (!isNull(QDR.board[i][j])) QDR.drawBlock(QDR.board[i][j], j, i);
-    if (QDR.over) {
-        $("#qdr-overlay").show();
-        $("#qdr-score").html(QDR.score);
-    } else if (!QDR.active) {
-        $("#qdr-pause").show();
-    } else { 
-        $("#qdr-pause").hide();
-        $("#qdr-overlay").hide();
-    }
-}
-QDR.end = function () {
-    $("#qdr-pause").hide();
-    $("#qdr-side").hide();
-    $("#qdr-overlay").hide();
-    $("#qdr-title").show();
-    QDR.screen = 0;
-    QDR.init();
-}
-QDR.checkBlock = function (x, y) { 
-    if (x >= QDR.limits[1] || y >= QDR.limits[0] || x < 0 || y < 0) return true
-    else return !isNull(QDR.board[y][x])
-}
-QDR.checkPiece = function (piece, x, y) {
-    for (var i=0;i<4;i++)
-        for (var j=0;j<4;j++)
-            if (piece[i][j] && (x+i >= QDR.limits[1] || y+j >= QDR.limits[0] || x+i < 0 || y+j < 0 || QDR.checkBlock(x+i, y+j))) return true
-    return false
-}
-$(document).on("pageload", function () {
-    QDR.init();
-    $("#qdr-start").click(function (event) {
-        $("#qdr-title").hide();
-        $("#qdr-side").show();
-        QDR.screen = 1;
-    });
-    $(document).keydown(function (event) {
-        if (!QDR.active) return null;
-        QDR.move(convertKeyDown(event));
-    });
-    $("#qdr-game").mouseenter(function () { QDR.active = true });
-    $("#qdr-game").mousemove(function () { QDR.active = true });
-    $("#qdr-game").mouseleave(function () { QDR.active = false });
-    $("#qdr-retry").click(function () { QDR.screen = 2 });
-});
-// END QDR CODE // 2892-3141 = 249 lines
 // START FRACTAL CODE // 3142-3398 = 256 lines
 var Complex = function (real, imaginary) { this.real = real; this.imaginary = imaginary; }
 Complex.prototype.add = function (cNum) { return new Complex(this.real + cNum.real, this.imaginary + cNum.imaginary); }
@@ -2967,7 +2434,7 @@ CmpCvs.setup = function () {
     CmpCvs.$_.translate(300, 300);
     $("#cmp-factor").spinner({step:0.5,min:1,page:2});
     $("#cmp-maxiter").spinner({step:10,min:30,page:20});
-    TBI.buttonToggle($("#cmp-tracking")[0], true);
+    TBI.toggleButton($("#cmp-tracking")[0], true);
     $(".cmp-jonly").hide();
 }
 CmpCvs.reset = function () {
@@ -2976,9 +2443,9 @@ CmpCvs.reset = function () {
     CmpCvs.factor = 110;
     CmpCvs.pan = [-0.75, 0];
     CmpCvs.spinners = true;
-    TBI.buttonToggle($("#cmp-spinners")[0], CmpCvs.spinners);
+    TBI.toggleButton($("#cmp-spinners")[0], CmpCvs.spinners);
     CmpCvs.tracking = true;
-    TBI.buttonToggle($("#cmp-tracking")[0], CmpCvs.tracking);
+    TBI.toggleButton($("#cmp-tracking")[0], CmpCvs.tracking);
     CmpCvs.jfunc = new Complex(0.3, 0.25);
     $("#cmp-asisinc").val(CmpCvs.asisIncrement);
     $("#cmp-maxiter").val(CmpCvs.maxIter);
@@ -3195,7 +2662,7 @@ $(document).on("pageload",function () {
     });
     $("#cmp-mouse").click(function () {
         var f = CmpCvs.factor;
-        TBI.buttonToggle($("#cmp-spinners")[0],false);
+        TBI.toggleButton($("#cmp-spinners")[0],false);
         CmpCvs.spinners = false;
         CmpCvs.setSpinners();
         $("#cmp-panx").val(CmpCvs.location[0]/f);
@@ -3215,9 +2682,9 @@ $(document).on("pageload",function () {
     $("#cmp-ldetail").click(function () { $("#cmp-maxiter").val("20"); });
     $("#cmp-mdetail").click(function () { $("#cmp-maxiter").val("50"); });
     $("#cmp-hdetail").click(function () { $("#cmp-maxiter").val("80"); });
-    $("#cmp-tracking").click(function () { CmpCvs.tracking = TBI.isButtonToggled(this); });
+    $("#cmp-tracking").click(function () { CmpCvs.tracking = TBI.isToggled(this); });
     $("#cmp-spinners").click(function () {
-        CmpCvs.spinners = TBI.isButtonToggled(this);
+        CmpCvs.spinners = TBI.isToggled(this);
         CmpCvs.setSpinners();
     });
     $("#cmp-mode").click(function () {

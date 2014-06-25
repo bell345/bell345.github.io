@@ -1,4 +1,10 @@
 {
+    "content": [
+        { "id": "prototypes", "name": "Prototypes", "item": "proto", "path": "proto" },
+        { "id": "games", "name": "Games", "item": "game", "path": "games" },
+        { "id": "work", "name": "Work", "item": "work", "path": "work" },
+        { "id": "test", "name": "Testing", "item": "test", "path": "test" }
+    ],
     "prototypes": [
         {
             "id": "grid",
@@ -18,8 +24,8 @@
         {
             "id": "cdown",
             "name": "CountDown",
-            "version": "2.6",
-            "link": "/proto/cdown/"
+            "version": "3.0.1",
+            "link": "/proto/cdown3/"
         }, 
         {
             "id": "calc",
@@ -38,11 +44,6 @@
             "version": "0.6.1"
         },
         {
-            "id": "gl",
-            "name": "WebGL Test",
-            "version": "0.2"
-        },
-        {
             "id": "psim",
             "name": "Planetarium",
             "version": "0.9.2"
@@ -51,12 +52,15 @@
             "id": "cvscom",
             "name": "Fractal Generator",
             "version": "1.4.1"
-        },
+        }
+
+    ],
+    "games": [
         {
             "id": "spaceshooter",
             "name": "Space Shooter",
             "version": "1.0",
-            "link": "/proto/spaceshooter/"
+            "link": "/games/spaceshooter/"
         },
         {
             "id": "twf8",
@@ -73,7 +77,7 @@
             "id": "treeh",
             "name": "Treehouse",
             "version": "0.2",
-            "link": "/proto/treehouse/"
+            "link": "/games/treehouse/"
         }
     ],
     "work": [
@@ -82,6 +86,18 @@
             "name": "CountDown",
             "version": "2.6",
             "link": "/proto/cdown"
+        }
+    ],
+    "test": [
+        {
+            "id": "scle",
+            "name": "Scale",
+            "version": "0.9"
+        },
+        {
+            "id": "crtplane",
+            "name": "Cartesian Plane",
+            "version": "0.3"
         }
     ]
 }

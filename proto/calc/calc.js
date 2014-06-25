@@ -1,6 +1,5 @@
 Calc = {};
 Calc.setup = function () {
-    Calc.dialogShown = false;
     Calc.degrees = false;
     Calc.statusLog = [];
     Calc.statusCurr = null;
@@ -57,7 +56,7 @@ Calc.func = function (f) {
         if (Calc.args(f) <= Calc.numbers.length) Calc.numbers = [Calc.compute(f)];
         if (Calc.args(f) > Calc.numbers.length) {
             Calc.update(f, true);
-            Calc.status(Calc.numbers[0].toString()+f, false);
+            Calc.status(Calc.numbers[0].toString()+" "+f, false);
         } else Calc.update(Calc.numbers[0].toString(), true);
         Calc.cfunc = f;
     } else return false;
@@ -91,7 +90,7 @@ Calc.compute = function (f) {
     } else result = 0;
     result = Calc.shorten(result);
     if (Calc.args(f) == 1) Calc.status(f+"("+Calc.numbers[0]+") = "+result, true);
-    else if (Calc.args(f) == 2) Calc.status(Calc.numbers[0]+f+Calc.numbers[1]+" = "+result, true);
+    else if (Calc.args(f) == 2) Calc.status(Calc.numbers[0]+" "+f+" "+Calc.numbers[1]+" = "+result, true);
     return result;
 }
 Calc.status = function (message, store) {
@@ -143,10 +142,10 @@ $(function () {
     $("#calc-sign").click(function () { Calc.sign(); });
     $("#calc-back").click(function () { Calc.update(Calc.working.substring(0, Calc.working.length-1)); });
     $("#calc-del").click(function () { Calc.update(Calc.working.substring(1)); });
-    $("#calc-mode").click(function () { TBI.isButtonToggled(this) ? $(".calc-adv").show() : $(".calc-adv").hide(); });
-    $("#calc-deg").click(function () { Calc.degrees = TBI.isButtonToggled(this); });
-    $("#calc-shift").click(function () { Calc.shChange(TBI.isButtonToggled(this)); });
-    $("#calc-sctg").click(function () { Calc.scutChange(TBI.isButtonToggled(this)); });
+    $("#calc-mode").click(function () { TBI.isToggled(this) ? $(".calc-adv").show() : $(".calc-adv").hide(); });
+    $("#calc-deg").click(function () { Calc.degrees = TBI.isToggled(this); });
+    $("#calc-shift").click(function () { Calc.shChange(TBI.isToggled(this)); });
+    $("#calc-sctg").click(function () { Calc.scutChange(TBI.isToggled(this)); });
     $("#calc-statusp").click(function () { 
         if (Calc.statusCurr-1 < 0) return false;
         else Calc.status(Calc.statusLog[--Calc.statusCurr]);
@@ -167,17 +166,19 @@ $(function () {
             case "enter":if (!Calc.enterPressed) { Calc.func("="); Calc.enterPressed = true; }break;
             case "+":Calc.func("+");break;case "-":Calc.func("-");break;case "*":Calc.func("*");break;case "/":Calc.func("/");break;
             case "delete":Calc.update(Calc.working.substring(1));break;case "_":Calc.sign();break;case "c":Calc.init();break;
-            case "shift":if(!Calc.shift){TBI.buttonToggle($("#calc-shift")[0],true);Calc.shChange(true);}break;
-            case "a":$("#calc-mode").click();break;case "A":$("#calc-mode").click();break;case "d":$("#calc-deg").click();break;
-            case "D":$("#calc-deg").click();break;case "u":Calc.func("^");break;case "U":Calc.func("factorial");break;
+            case "shift":if(!Calc.shift){TBI.toggleButton($("#calc-shift")[0],true);Calc.shChange(true);}break;
+            case "a":TBI.toggleButton(gebi("calc-mode"));break;case "A":TBI.toggleButton(gebi("calc-mode"));break;
+            case "d":TBI.toggleButton(gebi("calc-deg"));break;case "D":TBI.toggleButton(gebi("calc-deg"));break;
+            case "u":Calc.func("^");break;case "U":Calc.func("factorial");break;case ":":Calc.func("ln");break;
             case "i":Calc.func("squared");break;case "I":Calc.func("cubed");break;case "o":Calc.update(Math.PI);break;
             case "O":Calc.update(Math.E);break;case "p":Calc.func("tento");break;case "P":Calc.func("exp");break;
             case "h":Calc.func("sin");break;case "H":Calc.func("asin");break;case "j":Calc.func("cos");break;
             case "J":Calc.func("acos");break;case "k":Calc.func("tan");break;case "K":Calc.func("atan");break;
             case "l":Calc.update(Math.random());break;case "L":Calc.func("rint");break;case ";":Calc.func("ln");break;
-            case ":":Calc.func("ln");break;case "<":$("#calc-statusp").click();break;case ">":$("#calc-statusn").click();break;
-            case "left":Calc.update(Calc.working.substring(0, Calc.working.length-1));break;
+            case "<":TBI.toggleButton(gebi("calc-statusp"));break;case ">":TBI.toggleButton(gebi("calc-statusn"));break;
+            case "left":Calc.update(Calc.working.substring(0, Calc.working.length-1));break;case "^":Calc.func("^");break;
             case "right":Calc.update(Calc.working.substring(1));break;case "r":Calc.func("sqrt");break;case "R":Calc.func("sqrt");break;
+            case "backspace":Calc.update(Calc.working.substring(0, Calc.working.length-1));return false;break;
             default:return true;
         }
     });
@@ -185,7 +186,7 @@ $(function () {
         if (!Calc.mouse) return true;
         var key = convertKeyDown(event);
         switch (key) {
-            case "shift":if(Calc.shift){TBI.buttonToggle($("#calc-shift")[0],false);Calc.shChange(false);}break;
+            case "shift":if(Calc.shift){TBI.toggleButton($("#calc-shift")[0],false);Calc.shChange(false);}break;
             case "enter":if (Calc.enterPressed) Calc.enterPressed = false;
             default:return true;
         }

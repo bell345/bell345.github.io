@@ -8,13 +8,13 @@
 <script>
     var sidebarText = ["1betaTB", "BETA-Warrior", "bell345", "tom.aus@outlook.com"];
     for (var it = 0; it < $(".side li a").length; it++)
-        TBI.Popup.registry.add($(".side li a")[it], $(".side li a")[it].innerText, sidebarText[it]);
+        TBI.Popup.registry.add($(".side li a")[it], "", sidebarText[it]);
     for (var i=0;i<$(".license").length;i++) TBI.Popup.registry.add($(".license")[i], "License info", 
     "This work can be used for any purpose, under the following conditions: </p><ul class='main span'><li>The author is attributed</li><li>The work is shared under the same license</li></ul>");
     $("#year").html(now.getFullYear());
 </script>
 <p class="span">Version 5</p>
 <p class="small">
-    <a href="//creativecommons.org/licenses/by-sa/4.0" class="license">(CC) BY-SA</a> Thomas Bell 
+    <a href="/about/#license" class="license">(CC) BY-SA</a> Thomas Bell 
     <span id="year"></span>
 </p>

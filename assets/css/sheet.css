@@ -41,14 +41,32 @@
 body {
     background:url(/assets/res/ddd-noise.png) #ddd;
 }
+html.no-js body:before {
+    content:"This website requires JavaScript and an up-to-date web browser (Google Chrome, Mozilla Firefox) in order to function.";
+    display:block;
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:url(/assets/res/ddd-noise.png) #ddd;
+    color:#333;
+    z-index:99999999;
+    font-size:28px;
+    text-align:center;
+    padding-top:20%;
+}
+::selection {
+    background-color:rgb(15,206,199);
+    color:#eee;
+}
 /* ========== */
 /* NAVIGATION */
 /* ========== */
-#navigation {
+header, footer {
     height:40px;
     padding:6px 10px;
     left:0;
-    top:0;
     right:0;
     min-width:9999px;
     position:fixed;
@@ -57,40 +75,47 @@ body {
     font-size:0;
     z-index:10;
     box-shadow:4px 4px 0px rgba(0,0,0,0.1);
+    -webkit-user-select:none;
+    -moz-user-select:none;
+    -ms-user-select:none;
+    user-select:none;
 }
+header { top:0 }
+footer { bottom:0 }
 div.logo:before {
-    background:#0094ff;
+    background:#00b2ff;
     display:inline-block;
     content:"";
     width:10px;
+    border-left:10px solid #0094ff;
+    border-right:10px solid #555;
     height:100%;
 }
 div.logo {
-    height:40px;
-    width:30px;
-    background:#00b2ff;
+    height:34px;
+    width:182px;
     display:inline-block;
-}
-div.logo:after {
-    background:#555;
-    display:inline-block;
-    content:"";
-    height:100%;
-    width:10px;
-    float:right;
-}
-img.logo {
     position:absolute;
     top:0;
     left:4px;
+    padding:9px;
+}
+div.logo:after {
+    content:"Thomas Bell";
+    display:inline-block;
+    font-family:"Raleway",sans-serif;
+    position:absolute;
+    font-size:23px;
+    font-weight:bold;
+    left:50px;
+    line-height:34px;
+    color:#555;
 }
 .nameplate {
     width:200px;
     display:inline-block;
-    z-index:10;
-    bottom:12px;
 }
-div.nav {
+nav {
     position:relative;
     display:inline-block;
     height:52px;
@@ -98,7 +123,7 @@ div.nav {
     bottom:6px;
     color:#333;
 }
-div.nav>div:not(.nav-ind) {
+nav>div:not(.nav-ind) {
     height:52px;
     min-width:48px;
     padding:0px 8px;
@@ -107,7 +132,7 @@ div.nav>div:not(.nav-ind) {
     background-origin:content-box;
     background-position:left;
 }
-div.nav>div>a {
+nav>div>a {
     height:48px;
     display:inline-block;
     position:relative;
@@ -124,14 +149,14 @@ div.nav>div>a {
     font-weight:bold;
     font-family:"Raleway", "Calibri", sans-serif;
 }
-body.gecko div.nav>div>a {
+body:not(.webkit) div.nav>div>a {
     height:72px;
     bottom:14px;
 }
-div.nav>div:hover a {
+nav>div:hover a {
     max-width:240px;
 }
-div.nav>div>a:before {
+nav>div>a:before {
     height:48px;
     width:48px;
     content:"";
@@ -143,7 +168,7 @@ div.nav>div>a:before {
 #curr {
     background-color:rgba(0,0,0,0.05);
 }
-#navigation>.nav>div:not(.nav-ind):hover {
+nav>div:not(.nav-ind):hover {
     background-color:rgba(0,0,0,0.1);
 }
 .nav-ind {
@@ -152,13 +177,23 @@ div.nav>div>a:before {
     position:absolute;
     bottom:0;
 }
+header .nav-ind { bottom:0 }
+footer .nav-ind { top:0 }
 .nav-ind div {
     height:100%;
     width:64px;
     background:#2bf;
+    -webkit-transition:0.4s all;
     transition:0.4s all;
     position:relative;
     z-index:8;
+    box-shadow: 0px 4px 0px 0px #09D;
+}
+.nav-ind div.focus {
+    background:#5dd;
+    box-shadow:0px 4px 0px 0px #3bb;
+    -webkit-transition:0s all;
+    transition:0s all;
 }
 ul.inner-nav {
     position:absolute;
@@ -193,9 +228,10 @@ ul.inner-nav li a {
 }
 .nav-home { background:url(/assets/res/icons/home48.png) no-repeat; }
 .nav-proto { background:url(/assets/res/icons/proto48.png) no-repeat; }
+.nav-game { background:url(/assets/res/icons/games48.png) no-repeat; }
 .nav-about { background:url(/assets/res/icons/about48.png) no-repeat; }
 .nav-work { background:url(/assets/res/icons/work48.png) no-repeat; }
-#navigation>.nav>div.nav-top { 
+nav>div.nav-top { 
     background:url(/assets/res/icons/arrow48.png) left no-repeat;
     background-origin:content-box;
     position:fixed;
@@ -216,17 +252,17 @@ ul.inner-nav li a {
     width:65%;
     padding:18px 24px;
     margin-top:48px;
+    margin-bottom:48px;
     background:#f2f2f2;
     box-shadow:4px 4px 0px rgba(0,0,0,0.1);
 }
 #sidebar {
-    position:absolute;
-    right:0;
-    display:inline-block;
-    width:20%;
-    position:absolute;
+    position:fixed;
+    right:12.5%;
+    top:88px;
+    width:15%;
     padding:14px 18px;
-    margin-top:48px;
+    display:inline-block;
     background:#f2f2f2;
     box-shadow:4px 4px 0px rgba(0,0,0,0.1);
 }
@@ -274,6 +310,16 @@ h2, h2 * {
     text-shadow:2px 2px 0px rgba(0,0,0,0.1);
     text-align:left;
 }
+h2.item {
+    margin-bottom:0;
+    padding:12px 0 0;
+}
+h3.version { 
+    color:#777; 
+}
+h3.version:before {
+    content:"Version ";
+}
 h3, h3 * {
     font-size:26px;
     font-family:"Raleway","Calibri",sans-serif;
@@ -312,16 +358,8 @@ ul.light a, ul.main a {
     color:#333;
     text-decoration:none;
 }
-#content a, .inner-nav a {
-    color:#08d;
-    transition:0.2s all;
-    text-decoration:none;
-}
-#content a:hover, .inner-nav a:hover {
-    color:#2cf;
-}
-#content a:active, .inner-nav a:active {
-    color:#555;
+.sections {
+    display:none;
 }
 /* ============ */
 /* INPUTS/FORMS */
@@ -341,8 +379,8 @@ button:active, input[type="button"]:active {
     outline:0;
     box-shadow:inset 0px 2px 0px rgba(0,0,0,0.1);
 }
-button:focus, input[type="text"]:focus, input[type="button"]:focus, input[type="submit"]:focus { outline:0 }
-input[type="text"], *[contenteditable] {
+button:focus, input[type]:focus, select:focus { outline:0 }
+input[type], *[contenteditable], select {
     padding:4px 8px;
     font-size:14px;
     margin:4px;
@@ -363,6 +401,24 @@ button.major:hover, input[type="submit"]:hover {
 button.major:active, input[type="submit"]:active {
     background:#07c;
 }
+/* ====== */
+/* TABLES */
+/* ====== */
+table.main {
+    border-spacing:0;
+}
+table.main td {
+    padding:4px 8px;
+}
+table.main thead {
+    background-color:#333;
+    color:#eee;
+}
+table.main th {
+    font-family:Raleway, Georgia, serif;
+    font-size:18px;
+    padding:6px 12px;
+}
 /* ======= */
 /* UTILITY */
 /* ======= */
@@ -370,6 +426,7 @@ button.major:active, input[type="submit"]:active {
 .right { float:right }
 .span { margin-bottom:0px }
 .para { margin-bottom:8px }
+.invisible { display:none; }
 sup.no-break {
     vertical-align:inherit;
     position:relative;
@@ -400,26 +457,37 @@ sub.frac {
 .help:hover:before {
     color:#2cf;
 }
+.toggle {
+    padding-right:46px;
+    position:relative;
+}
 .toggle:after {
     content:"Off";
     background:rgba(0,0,0,0.1);
     padding:4px 8px;
-    position:relative;
-    left:8px;
+    position:absolute;
+    top:0;
+    right:0;
     transition:0.2s all;
 }
-.toggle-on:after {
+.toggle.on:after {
     content:"On";
     background:#08d;
     color:#eee;
 }
-.toggle-on:hover:after {
+.toggle.on:hover:after {
     background:#19e;
     box-shadow:inset 0px -2px 0px rgba(0,0,0,0.1);
 }
-.toggle-on:active:after {
+.toggle.on:active:after {
     background:#07c;
     box-shadow:inset 0px 2px 0px rgba(0,0,0,0.1);
+}
+.up-down:after {
+    content:" ▾";
+}
+.up-down.on:after {
+    content:" ▴";
 }
 /* ===== */
 /* LINKS */
@@ -436,6 +504,23 @@ a.link-pdf {
     font-size:24px;
     line-height:48px;
 }
+#content a, .inner-nav a {
+    color:#08d;
+    transition:0.2s all;
+    text-decoration:none;
+}
+#content a:hover, .inner-nav a:hover {
+    color:#2cf;
+}
+#content a:active, .inner-nav a:active {
+    color:#555;
+}
+/* ========== */
+/* DATA TYPES */
+/* ========== */
+.data-money:before {
+    content:"$";
+}
 /* =========== */
 /* UI ELEMENTS */
 /* =========== */
@@ -448,7 +533,7 @@ a.link-pdf {
     max-width:500px;
 }
 .popup h3 {
-    padding-bottom:0;
+    margin-bottom:0;
 }
 div.popup > ul {
     margin-bottom:0;
@@ -461,10 +546,10 @@ div.popup ul {
     right:25px;
     bottom:25px;
     padding:6px 18px;
-    box-shadow:4px 4px 0px rgba(0,0,0,0.2);
+    box-shadow:4px 4px 0px rgba(0,0,0,0.1);
     position:fixed;
-    z-index:10;
-    background:#f2f2f2;
+    z-index:9;
+    background:#eee;
 }
 .notification ul {
     display:inline-block;
@@ -517,11 +602,11 @@ div.popup ul {
 }
 .dialog {
     position:fixed;
-    top:calc(50%- 100px);
-    left:calc(50%- 200px);
+    top:calc(50% - 100px);
+    left:calc(50% - 200px);
     background:#f2f2f2;
-    height:200px;
-    width:400px;
+    min-height:200px;
+    min-width:400px;
     box-shadow:0px 0px 0px 20000px rgba(0,0,0,0.5);
     z-index:9999;
     padding:12px 16px;

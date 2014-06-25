@@ -16,6 +16,7 @@
 	cursor:text;
     height:52px;
     width:360px;
+    box-shadow:4px 4px 0px 0px rgba(0,0,0,0.1);
 }
 #calc-out span {
     font-family:"Audimat Mono", "Consolas", monospace;
@@ -32,6 +33,7 @@
     font-size:0;
     color:#eee;
     height:24px;
+    box-shadow:4px 4px 0px 0px rgba(0,0,0,0.1);
 }
 #calc-status span {
     height:24px;
@@ -49,11 +51,12 @@
     padding:4px 6px;
 }
 #calc-keys {
-    padding:16px;
+    padding:24px 16px;
     width:352px;
     background:#aaa;
     text-align:center;
     font-size:0;
+    box-shadow:4px 4px 0px 0px rgba(0,0,0,0.1);
 }
 .calcr { margin-bottom:14px; }
 .calcr-major > button {

@@ -1,53 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>CountDown</title>
+    <title>Thomas Bell - Redirection</title>
     <meta charset="utf-8" />
-	<link rel="shortcut icon" href="/assets/res/icons/clock.png" />
-    <link rel="stylesheet" href="/assets/css/sheet.css" />
-    <link rel="stylesheet" href="./cdown.css" />
-    <script src="/assets/js/jquery2.min.js"></script>
-    <script src="/assets/js/jquery-ui.min.js"></script>
-    <script src="./cdown.js"></script>
+    <meta http-equiv="refresh" content="5;url=/proto/cdown3" />
+    <script>function redirect(){setTimeout(function(){location.pathname="/proto/cdown3"},5000)}</script>
 </head>
-<body>
-    <div id="cdown-full" class="cdown cdset">
-        <div id="cd-controls">
-            <h3>Countdown</h3>
-            <button class="toggle" onclick="Cdown.expand = !Cdown.expand">Shorten</button>
-            <button onclick="eraseCookie('cDown');Cdown.check(false);Cdown.bypass = true">Reset</button>
-            <button class="toggle" id="cd-share">Share</button>
-            <button onclick="window.open('../')">Back to website</button>
-        </div>
-        <h3 id="cd-set-title">Countdown</h3>
-        <button onclick="Cdown.check(true)" id="cdset-sub">Submit</button>
-        <button onclick="window.open('../')" id="cdset-web">Back to website</button><br />
-		<div id="cdset">
-			<input type="text" id="cdsetname" value="Name" class="inactive" /><br />
-        	<input type="text" id="cdsetyear" value="YYYY" />-<input type="text" id="cdsetmonth" value="MM" />-
-        	<input type="text" id="cdsetday" value="DD" /><input type="text" id="cdsethour" value="HH" />:
-        	<input type="text" id="cdsetminute" value="M" />.<input type="text" id="cdsetsecond" value="S" /><br />
-        </div>
-		<div id="cd-fn-set">
-			<h3>From Now</h3>
-            <button onclick="Cdown.checkfn();Cdown.check(false);">Submit</button><br />
-            <input type="text" id="cdfn-name" value="Name" class="inactive" /><br />
-			<input type="text" id="cdfn-year" value="Years" /><input type="text" id="cdfn-month" value="Months" />
-			<input type="text" id="cdfn-day" value="Days" /><input type="text" id="cdfn-hour" value="Hours" />
-			<input type="text" id="cdfn-minute" value="Minutes" /><input type="text" id="cdfn-second" value="Seconds" />
-		</div>
-        <div id="countup-set">
-            <h3>Timer</h3>
-            <button onclick="Cdown.upCheck();Cdown.check(false);">Start Now</button><br />
-            <input type="text" id="cup-name" value="Name" class="inactive" /><br />
-        </div>
-        <div id="cd-text-container">
-            <h2 id="cdown-count">Countdown over!!!</h2>
-            <div id="cdtext-share">
-                <h3>Share this countdown!</h3>
-                <p class="main">Copy the URL: </p>
-            </div>
-        </div>
-    </div>
+<body onload="redirect()">
+    <p>You are now being redirected to <a href="/proto/cdown3">/proto/cdown3</a> (click link if redirection does not occur). Please use this link in future.</p>
 </body>
 </html>

@@ -1,12 +1,16 @@
 {
-    "includes" : [
+    "includes": [
         {
-            "source" : "/assets/html/header.htm",
-            "insert" : "#navigation"
+            "source": "/assets/html/header.htm",
+            "insert": "header"
         }, 
         {
-            "source" : "/assets/html/sidebar.htm",
-            "insert" : "#sidebar"
+            "source": "/assets/html/sidebar.htm",
+            "insert": "#sidebar"
+        },
+        {
+            "source": "/assets/html/footer.htm",
+            "insert": "footer"
         }
     ]
 }

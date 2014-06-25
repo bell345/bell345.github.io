@@ -2,16 +2,6 @@
 *   Licensed under Creative Commons Attribution-ShareAlike 4.0 International
 *   http://creativecommons.org/licenses/by-sa/4.0/
 *   (CC)-BY-SA 2014 Thomas Bell */
-/* ======= */
-/* GENERAL */
-/* ======= */
-h2.proto {
-    margin-bottom:0;
-    padding:12px 0 0;
-}
-h3.version:before {
-    content:"Version ";
-}
 /* ==== */
 /* GRID */
 /* ==== */
@@ -273,6 +263,7 @@ h3.version:before {
 	cursor:text;
     height:52px;
     width:360px;
+    box-shadow:4px 4px 0px 0px rgba(0,0,0,0.1);
 }
 #calc-out span {
     font-family:"Audimat Mono", "Consolas", monospace;
@@ -289,6 +280,7 @@ h3.version:before {
     font-size:0;
     color:#eee;
     height:24px;
+    box-shadow:4px 4px 0px 0px rgba(0,0,0,0.1);
 }
 #calc-status span {
     height:24px;
@@ -306,17 +298,19 @@ h3.version:before {
     padding:4px 6px;
 }
 #calc-keys {
-    padding:16px;
+    padding:24px 16px;
     width:352px;
     background:#aaa;
     text-align:center;
     font-size:0;
+    box-shadow:4px 4px 0px 0px rgba(0,0,0,0.1);
 }
 .calcr { margin-bottom:14px; }
 .calcr-major > button {
     font-size:36px;
     width:68px;
     height:68px;
+    position:relative;
 }
 .calcr-major button:hover { box-shadow:inset 0px -4px 0px rgba(0,0,0,0.1); }
 .calcr-major button:active { box-shadow:inset 0px 4px 0px rgba(0,0,0,0.1); }
@@ -328,6 +322,7 @@ h3.version:before {
 .calcr button {
     margin-right:4px;
     margin-left:4px;
+    position:relative;
 }
 button.calcbh {
     width:136px;
@@ -378,6 +373,16 @@ button.calcbh {
     font-size:8px;
     text-align:right;
     color:#aaa;
+}
+.calcr .calc-scut {
+    left:4px;
+    right:initial;
+}
+.calcr-major .calc-scut {
+    font-size:10px;
+}
+#calc-ac .calc-scut {
+    color:#555;
 }
 /* ========= */
 /* TIMETABLE */
@@ -535,192 +540,18 @@ button.calcbh {
 .ttb-highlight .ttable-cellh {
     color:#eee !important;
 }
-/* ==== */
-/* 2048 */
-/* ==== */
-#twf8-game {
-    background:#bbada0;
-    border-radius:5px;
-    width:578px;
-}
-#twf8-board {
-    position:relative;
-    font-size:0;
-}
-.twf8-row {
-    display:inline;
-}
-.twf8-cell {
-    background:rgba(238, 228, 218, 0.35);
-    color:#eee;
-    margin:12px;
-    height:120px;
-    width:120px;
-    display:inline-block;
-    border-radius:5px;
-}
-.twf8-tiles {
-    position:absolute;
-}
-.twf8-tile {
-    background:rgba(255,255,255,0.6);
-    color:#000;
-    height:120px;
-    width:120px;
-    position:absolute;
-    color:#000;
-    z-index:1;
-    font-size:48px;
-    -webkit-transition:all 0.2s;
-    border-radius:5px;
-}
-.twf8-tile:after {
-    display:block;
-    content:"";
-    text-align:center;
-    margin-top:26px;
-    color:#eee;
-    font-family:"Clear Sans";
-    font-weight:bold;
-}
-#twf8-pos-00 { -webkit-transform:translateX(12px) translateY(12px); }
-#twf8-pos-01 { -webkit-transform:translateX(156px) translateY(12px); }
-#twf8-pos-02 { -webkit-transform:translateX(300px) translateY(12px); }
-#twf8-pos-03 { -webkit-transform:translateX(444px) translateY(12px); }
-#twf8-pos-10 { -webkit-transform:translateX(12px) translateY(156px); }
-#twf8-pos-11 { -webkit-transform:translateX(156px) translateY(156px); }
-#twf8-pos-12 { -webkit-transform:translateX(300px) translateY(156px); }
-#twf8-pos-13 { -webkit-transform:translateX(444px) translateY(156px); }
-#twf8-pos-20 { -webkit-transform:translateX(12px) translateY(300px); }
-#twf8-pos-21 { -webkit-transform:translateX(156px) translateY(300px); }
-#twf8-pos-22 { -webkit-transform:translateX(300px) translateY(300px); }
-#twf8-pos-23 { -webkit-transform:translateX(444px) translateY(300px); }
-#twf8-pos-30 { -webkit-transform:translateX(12px) translateY(444px); }
-#twf8-pos-31 { -webkit-transform:translateX(156px) translateY(444px); }
-#twf8-pos-32 { -webkit-transform:translateX(300px) translateY(444px); }
-#twf8-pos-33 { -webkit-transform:translateX(444px) translateY(444px); }
-.twf8-val-2:after { content:"2"; color:#000; }
-.twf8-val-4:after { content:"4"; color:#000; }
-.twf8-val-8:after { content:"8"; color:#000; }
-.twf8-val-16:after { content:"16"; color:#000; }
-.twf8-val-32:after { content:"32"; }
-.twf8-val-64:after { content:"64"; }
-.twf8-val-128:after { content:"128"; }
-.twf8-val-256:after { content:"256" }
-.twf8-val-512:after { content:"512" }
-.twf8-val-1024:after { content:"1024" }
-.twf8-val-2048:after { content:"2048"; color:#555; }
-.twf8-val-2 { background:#eee4da; color:#776E65; }
-.twf8-val-4 { background:beige; color:#776E65; }
-.twf8-val-8 { background:yellow; color:#776E65; }
-.twf8-val-16 { background:orange; color:#eee; }
-.twf8-val-32 { background:red; color:#eee; }
-.twf8-val-64 { background:maroon; color:#eee; }
-.twf8-val-128 { background:purple; color:#eee; box-shadow: 0px 0px 5px 2px purple; }
-.twf8-val-256 { background:sienna; color:#eee; box-shadow: 0px 0px 6px 4px sienna; }
 /* =========== */
 /* PLANETARIUM */
 /* =========== */
 #psim-canvas {
     background:#003;
 }
+.psim-control {
+    margin-bottom:12px;
+}
 .psim-control input[type="range"] {
     width:300px;
 }
-/* ============ */
-/* QUADROMINOES */
-/* ============ */
-#qdr-canvas {
-    background:#ddd;
-}
-#qdr-gui, #qdr-title, #qdr-overlay, #qdr-pause {
-    width:400px;
-    height:600px;
-    position:absolute;
-    vertical-align:middle;
-    text-align:center;
-}
-#qdr-overlay, #qdr-pause {
-    z-index:9;
-    pointer-events:none;
-    display:none;
-    background:rgba(0,0,0,0.2);
-}
-#qdr-gui * {
-    position:absolute;
-}
-#qdr-overlay * {
-    position:relative;
-    text-align:center;
-    right:0;
-    top:20px;
-    color:#eee;
-    box-shadow:none;
-    font-weight:normal;
-}
-#qdr-pause * {
-    position:relative;
-    text-align:center;
-    right:55px;
-    top:20px;
-    color:#eee;
-    box-shadow:none;
-    font-weight:normal;
-}
-#qdr-side {
-    width:110px;
-    height:600px;
-    position:relative;
-    float:right;
-    vertical-align:middle;
-    text-align:center;
-    display:none;
-    background:rgba(0,0,0,0.1);
-}
-#qdr-start {
-    top:calc(50% - 24px);
-    left:calc(50% - 60px);
-    height:48px;
-    width:120px;
-    font-size:28px;
-}
-#qdr-score {
-    font-size:24px;
-    font-weight:bold;
-}
-#qdr-retry {
-    top:64px;
-    height:48px;
-    width:160px;
-    font-size:28px;
-    color:#333;
-    pointer-events:auto;
-}
-#qdr-controls {
-    top:80px;
-    width:calc(32px * 3);
-    right:8px;
-    height:128px;
-    font-size:0;
-}
-#qdr-controls div {
-    display:inline-block;
-    width:32px;
-    height:32px;
-    background:#444;
-    box-shadow:2px 2px 0px 0px #333;
-    color:#eee;
-    position:relative;
-    font-size:18px;
-    line-height:32px;
-}
-#qdr-controls div.qdr-cont-empty {
-    display:none;
-}
-#qdr-controls.w div:nth-child(1) { background:#eee; color:#444; box-shadow:2px 2px 0px 0px #555 }
-#qdr-controls.a div:nth-child(3) { background:#eee; color:#444; box-shadow:2px 2px 0px 0px #555 }
-#qdr-controls.s div:nth-child(4) { background:#eee; color:#444; box-shadow:2px 2px 0px 0px #555 }
-#qdr-controls.d div:nth-child(5) { background:#eee; color:#444; box-shadow:2px 2px 0px 0px #555 }
 /* ============= */
 /* COMPLEX PLANE */
 /* ============= */

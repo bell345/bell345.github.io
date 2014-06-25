@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Thomas Bell - Games</title>
+    <meta charset="utf-8" />
+    <link rel="shortcut icon" href="/favicon.png" />
+    <link rel="stylesheet" href="/assets/css/jquery-ui.css" />
+    <link rel="stylesheet" href="/assets/css/sheet.css" />
+    <link rel="stylesheet" href="/assets/css/games.css" />
+    <script src="/assets/js/jquery2.min.js"></script>
+    <script src="/assets/js/jquery-ui.min.js"></script>
+    <script src="/assets/js/tbi.js"></script>
+    <script src="/assets/js/games.js"></script>
+</head>
+<body>
+    <header></header>
+    <div id="content">
+        <div id="maincontent">
+            <h1>Games</h1>
+            <p>
+                As you can see, I've been playing with web apps made with JavaScript, learning things along
+                the way. Nothing wrong with that - it's just the way I code. But recently I have been
+                running out of ideas for web apps. They've all been done! So I decided to experiment with
+                games - specifically the programming of them. At the moment, my eyes are focused upon
+                Java and various engines (Java3D) and Unity, both of which I enjoy immensely.
+            </p>
+            <h2 class="main item"><a href="spaceshooter">Space Shooter</a></h2>
+            <h3 class="version">0</h3>
+            <div class="item-main">
+                <p>
+                    Using the free version of <a href="http://unity3d.com/unity/download">Unity Editor</a>, I
+                    followed a basic tutorial to make a top-down space shoot-em-up, to get a feel for Unity and
+                    how it works.
+                </p>
+                <p>
+                    About the game: WASD to move, Left-Click to fire, and R to restart once you explode.
+                    Simple and fun (to make, at least). I must note that this is at <em>least</em> 20 times
+                    better looking, more workable and more fun to play with than my most advanced
+                    <a href="http://yoyogames.com/studio/download">Game Maker</a> game. Bear in mind - I <em>
+                        had the
+                        same budget.
+                    </em>
+                </p>
+            </div>
+            <h2 class="item"><a href="http://gabrielecirulli.github.io/2048/">2048</a> clone</h2>
+            <h3 class="version">0</h3>
+            <div class="item-main">
+                <p>
+                    This is a clone of the addictive online block sliding game, 2048. It has a few bugs, one
+                    of which is the lose condition is a browser hang; but other than that it works fine.
+                </p>
+                <div class="item">
+                    <div id="twf8-game">
+                        <div id="twf8-tiles">
+                            <div class="twf8-tile twf8-val-2" id="twf8-pos-03"></div>
+                        </div>
+                        <div id="twf8-board">
+                            <div class="twf8-row">
+                                <div class="twf8-cell"></div>
+                                <div class="twf8-cell"></div>
+                                <div class="twf8-cell"></div>
+                                <div class="twf8-cell"></div>
+                            </div>
+                            <div class="twf8-row">
+                                <div class="twf8-cell"></div>
+                                <div class="twf8-cell"></div>
+                                <div class="twf8-cell"></div>
+                                <div class="twf8-cell"></div>
+                            </div>
+                            <div class="twf8-row">
+                                <div class="twf8-cell"></div>
+                                <div class="twf8-cell"></div>
+                                <div class="twf8-cell"></div>
+                                <div class="twf8-cell"></div>
+                            </div>
+                            <div class="twf8-row">
+                                <div class="twf8-cell"></div>
+                                <div class="twf8-cell"></div>
+                                <div class="twf8-cell"></div>
+                                <div class="twf8-cell"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <h2 class="item">Quadrominoes</h2>
+            <h3 class="version">0</h3>
+            <div class="item-main">
+                <p>
+                    Because why not.
+                </p>
+                <p>BUGS/ISSUES:</p>
+                <ul class="main">
+                    <li><b>[B]: </b>When around 60 or so blocks have been placed, some future blocks will place solid "towers" 
+                    of blocks that reach to the top of the board, blocking columns or ending the game immediately. No cause has 
+                    been found.</li>
+                </ul>
+                <div class="game" id="qdr-game">
+                    <div id="qdr-gui">
+                        <div id="qdr-title">
+                            <button id="qdr-start">Start</button>
+                        </div>
+                        <div id="qdr-side">
+                            <div id="qdr-controls">
+                                <div>W</div>
+                                <br />
+                                <div>A</div>
+                                <div>S</div>
+                                <div>D</div>
+                            </div>
+                        </div>
+                        <div id="qdr-pause">
+                            <h2>Game paused.</h2>
+                            <p>To resume the game, move the<br />
+                            cursor inside the game space.</p>
+                        </div>
+                        <div id="qdr-overlay">
+                            <h2>Game Over!</h2>
+                            <div class="span">Congratulations! Your score was:</div>
+                            <div id="qdr-score"></div>
+                            <button id="qdr-retry">Try Again</button>
+                        </div>
+                    </div>
+                    <canvas id="qdr-canvas" height="600" width="400">
+                        Your browser is not capable of recognising the HTML5 &lt;canvas&gt; graphics framework.
+                        Supported browsers include Google Chrome and Mozilla Firefox.
+                    </canvas>
+                </div>
+            </div>
+            <h2 class="item">Treehouse</h2>
+            <h3 class="version">0</h3>
+            <div class="item-main">
+                <p>
+                    This is an basic simulation game in which you are a kid with a big imagination 
+                    and builds a treehouse near his house. Raising money through a lemonade stand, you 
+                    have to upgrade your treehouse and make it into a world-famous attraction!
+                    At the moment, I have no art assets, or much experience to make good ones. Help would 
+                    be appreciated.
+                </p>
+            </div>
+        </div>
+        <div id="sidebar"></div>
+    </div>
+</body>
+</html>

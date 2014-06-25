@@ -10,10 +10,91 @@
     <script src="./test.js"></script>
 </head>
 <body>
-    <div id="navigation"></div>
+    <header></header>
     <div id="content">
         <div id="maincontent">
-            <canvas id="scale" width="600" height="150"></canvas>
+            <h2 class="item">Scale</h2>
+            <h3 class="version"></h3>
+            <div class="item-main">
+                <canvas id="scale" width="600" height="150" class="item"></canvas>
+            </div>
+            <h2 class="item">Cartesian Plane</h2>
+            <h3 class="version"></h3>
+            <div class="item-main">
+                <canvas id="cart-plane" width="600" height="600" class="item"></canvas>
+            </div>
+            <h2 class="item">Table</h2>
+            <div class="item-main">
+                <table class="main item sortable">
+                    <thead>
+                        <tr>
+                            <th>Part</th>
+                            <th>Cost</th>
+                            <th>Stats</th>
+                            <th>Manufacturer</th>
+                            <th>Name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr id="part-cpu">
+                            <td>CPU</td>
+                            <td class="data-money">136</td>
+                            <td>3.50GHz</td>
+                            <td>Intel</td>
+                            <td>Core i3-4150</td>
+                        </tr>
+                        <tr id="part-mbd">
+                            <td>Motherboard</td>
+                            <td class="data-money">95</td>
+                            <td></td>
+                            <td>Asus</td>
+                            <td>B85M-G LGA1150</td>
+                        </tr>
+                        <tr id="part-ram">
+                            <td>Memory (RAM)</td>
+                            <td class="data-money">55</td>
+                            <td>4GB</td>
+                            <td>Kingston</td>
+                            <td>DDR3 1600MHz</td>
+                        </tr>
+                        <tr id="part-hdd">
+                            <td>Hard Disk Drive</td>
+                            <td class="data-money">69</td>
+                            <td>1TB</td>
+                            <td>Western Digital</td>
+                            <td>WD10EXEX 3.5"</td>
+                        </tr>
+                        <tr id="part-gpu">
+                            <td>Graphics Card</td>
+                            <td class="data-money">135</td>
+                            <td>2GB</td>
+                            <td>Asus/NVidia</td>
+                            <td>GeForce GTX 650</td>
+                        </tr>
+                        <tr id="part-cse">
+                            <td>Case</td>
+                            <td class="data-money">79</td>
+                            <td>with PSU (420 watts)</td>
+                            <td>COOLER MASTER</td>
+                            <td>Elite 371</td>
+                        </tr>
+                        <tr id="part-os">
+                            <td>Operating System</td>
+                            <td class="data-money">119</td>
+                            <td>x86-64 (64-bit)</td>
+                            <td>Microsoft</td>
+                            <td>Windows 7 Home Premium SP1</td>
+                        </tr>
+                        <tr id="part-wna">
+                            <td>Wireless Network Adapter</td>
+                            <td class="data-money">14</td>
+                            <td>150 Mbps</td>
+                            <td>TP-Link</td>
+                            <td>TL-WN781ND</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
         <div id="sidebar"></div>
     </div>

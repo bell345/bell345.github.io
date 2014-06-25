@@ -1,21 +1,15 @@
-﻿// TBI.JS - V6.2
+﻿// TBI.JS - V6.3
 // Base functions, variables and helpers that are included and required in
 // all of my website pages.
 // START INCOMPATIBILITY CODE //
 document.onreadystatechange = function () {
+    if (document.getElementsByTagName("html")[0].className.search("no-js") != -1) document.getElementsByTagName("html")[0].className = document.getElementsByTagName("html")[0].className.replace("no-js","");
     if (!window.jQuery) {
-        var incompat = "";
-        incompat += "<DIV style='width:100%;height:100%;background-color:#fff;color:#000;font-size:24px;padding:16px;'>";
-        incompat += "<H1 style='font-size:64px;font-family:monospace;color:#000;margin-bottom:48px;'>Your browser is unsupported.</H1>";
-        incompat += "<P style='text-align:center;margin:0 200px 0 200px;'>Your browser is too out of date to view the website content properly. ";
-        incompat += "Please upgrade your browser, preferably to either <A href='http://google.com/chrome'>Google Chrome</A> ";
-        incompat += "or <A href='http://firefox.com'>Mozilla Firefox</A>.</P>";
-        incompat += "</DIV>";
-        document.body.innerHTML = incompat;
+        document.body.innerHTML = "<P style='text-align:center;color:#333333;background:#EEEEEE;font-size:32px;padding:24px 48px;margin-top:300px;'>Your browser is too outdated to display this website properly. Please consider updating your browser to either <A href='http://google.com/chrome'>Google Chrome</A> or <A href='http://firefox.com'>Mozilla Firefox</A>.</P>";
     }
 }
 // END INCOMPATIBILITY CODE //
-var TBI = {};
+var TBI = { loaded: false };
 var now = new Date(),
     unqid = now.getTime(),
     query = {},
@@ -126,13 +120,12 @@ TBI.navMoveTo = function (el) {
     var loc = $(el).offset().left;
     var off = $("#top-ind").offset().left;
     var alg = loc-off;
-    if(alg<0)alg=0;
-    else if(alg+parseInt($("#top-ind div").css("width"))>window.innerWidth)
-        alg=parseInt(window.innerWidth-$("#top-ind div").css("width"));
+    if (alg<0) alg=0;
+    else if (alg+parseInt($("#top-ind div").css("width"))>window.innerWidth)
+        alg = parseInt(window.innerWidth-$("#top-ind div").css("width"));
+    var cn = $("#top-ind div")[0].className;
+    $("#top-ind div")[0].className = cn.replace(" focus", "");
     $("#top-ind div").css("left", alg + "px");
-    $("#top-ind div").css("backgroundColor", "#2bf");
-    $("#top-ind div").css("boxShadow", "0px 4px 0px 0px #09d");
-    $("#top-ind div").css("transition", "0.4s all");
 }
 // A blanket function that handles the navbar indicator behaviour and when and where to place the sub-menus.
 TBI.checkNav = function () {
@@ -146,10 +139,9 @@ TBI.checkNav = function () {
         var page = parseInt($("body").css("width"));
         if(alg<0)alg=0;
         else if(alg+off+width>page) alg=page-width-off;
+        var cn = $("#top-ind div")[0].className;
+        $("#top-ind div")[0].className = cn.search(" focus") != -1 ? cn : cn + " focus";
         $("#top-ind div").css("left", alg+"px");
-        $("#top-ind div").css("backgroundColor", "#5dd");
-        $("#top-ind div").css("boxShadow", "0px 4px 0px 0px #3bb");
-        $("#top-ind div").css("transition","0s all");
     });
     /** When leaving or creating the navbar, move the indicator to the current menu item after 500ms. */
     $("#top>div:not(.nav-ind)").off("mouseleave");
@@ -166,16 +158,27 @@ TBI.checkNav = function () {
         TBI.timerClear("curr");
         TBI.timerSet("curr", 500, function () { TBI.navMoveTo("#curr"); TBI.timerClear("curr") });
     }
-    
-    /** Fill the prototypes menu. */
-    $(".nav-proto .inner-nav").empty();
-    for (var i=0;i<Prototypes.length;i++)
-        $(".nav-proto .inner-nav").append("<li><a href='/proto/#"+Prototypes[i].id+"'>"+Prototypes[i].name+"</a></li>");
-    
-    /** Fill the work menu. */
-    $(".nav-work .inner-nav").empty();
-    for (var i=0;i<Work.length;i++) 
-        $(".nav-work .inner-nav").append("<li><a href='/work/#"+Work[i].id+"'>"+Work[i].name+"</a></li>");
+    /** Handles the dynamic content and section navigation. */
+    if (!isNull(TBI.content)) for (var i=0;i<TBI.content.length;i++) {
+        var item = TBI.content[i];
+        if ($(".nav-"+item.item+" .inner-nav").length == 0) $(".nav-"+item.item).append("<ul class='inner-nav'></ul>");
+        else $(".nav-"+item.item+" .inner-nav").empty();
+        if (path.isEqual(item.path) && TBI.loaded) {
+            if ($("#sidebar .sections").length == 0)
+                $("#sidebar").html(
+                    "<h3 class='span'>\
+                    <a href='javascript:void(0)' class='up-down' for='.sections'>Sections</a></h3>\
+                    <ul class='side para sections'></ul>"
+                    + $("#sidebar").html());
+            else $("#sidebar .sections").empty();
+        }
+        for (var j=0;j<TBI[item.name].length;j++) {
+            var sect = TBI[item.name][j];
+            $(".nav-"+item.item+" .inner-nav").append("<li><a href='/"+item.path+"/#"+sect.id+"'>"+sect.name+"</a></li>");
+            if (path.isEqual(item.path) && TBI.loaded) $("#sidebar .sections").append("<li><a href='/"+item.path+"/#"+sect.id+"'>"+sect.name+"</a></li>");
+        }
+    }
+    TBI.updateUI();
     
     /** A complicated for loop that handles the indicator behaviour relating to submenus. */
     var nv = "#top>div:not(.nav-ind)";
@@ -210,6 +213,24 @@ TBI.checkNav = function () {
     /** Whether or not to show the "to top" menu item. */
     if (window.scrollY > 0) $(".nav-top").slideDown();
     else $(".nav-top").slideUp();
+}
+TBI.updateUI = function () {
+    $("button.toggle").off("mouseup");
+    $("button.toggle").mouseup(function (event) {
+        if (event.button != 0) return true;
+        var a = " on",
+            c = this.className;
+        this.className=c.search(a)!=-1?c.replace(a,""):c+a;
+    });
+    $(".up-down").off("mouseup");
+    $(".up-down").mouseup(function () {
+        if (event.button != 0) return true;
+        var toSwitch = $($(this).attr("for"));
+        if (toSwitch.length > 0) toSwitch.slideToggle();
+        var a = " on";
+            c = this.className;
+        this.className=c.search(a)!=-1?c.replace(a,""):c+a;
+    });
 }
 // Returns first-level elements in an XML index.
 TBI.findIndex = function (file, name) {
@@ -267,15 +288,15 @@ function isNull(thing) {
 function isNegative(num) { return (Math.abs(num) != num); }
 // Determines whether a one level array is equal to another.
 function isEqual(arr1, arr2) {
-    if (arr1.length != arr2.length || !(arr1 instanceof Array) || !(arr2 instanceof Array)) return arr1 == arr2;
-    for (var i=0;i<arr1.length;i++) {
-        if (!(arr1[i] instanceof Array) && !(arr2[i] instanceof Array) && arr1[i] != arr2[i]) return false;
-        else if (arr1[i] instanceof Array && arr2[i] instanceof Array && !isEqual(arr1[i], arr2[i])) return false;
-    }
+    if (!(arr1 instanceof Array) || !(arr2 instanceof Array)) return arr1 == arr2;
+    else if (arr1.length != arr2.length) return false;
+    for (var i=0;i<arr1.length;i++) if (!isEqual(arr1[i], arr2[i])) return false;
     return true;
 }
-function isPresent(arr, item) {
-    for (var i=0;i<arr.length;i++) if (isEqual(arr[i], item)) return true; return false;
+Array.prototype.isEqual = function (arr) { return isEqual(this, arr); }
+// Determines whether or not an array contains a particular item.
+Array.prototype.contains = function (item) {
+    for (var i=0;i<this.length;i++) if (isEqual(this[i], item)) return true; return false;
 }
 // Returns the numbers that go into the specified number.
 function divisors(num) {
@@ -286,49 +307,75 @@ function divisors(num) {
     divisors.push(num);
     return divisors;
 }
-// Translate a constant string of ASCII encoded octet-sized characters.
-function translateBinary(bin) { 
-    var barr = [], 
-        bstr = ""; 
-    while (bin.search(/[01]{8}/) != -1) { 
-        barr.push(bin.match(/[01]{8}/)[0]); 
-        bin = bin.replace(/[01]{8}/, "");
+// Translate an octet stream into the string of ASCII characters it represents.
+function translateOctetStream(str, radix, len, delimit) {
+    var nw = "",
+        nwArr = [];
+    delimit = isNull(delimit) ? nw.search(" ") != -1 : delimit;
+    len = isNull(len) ? 0 : len;
+    if (Math.pow(radix, len) < ASCII.length) do { len++; } while (Math.pow(radix, len) < ASCII.length)
+    var octetRegExp = new RegExp("[0-9A-Z]{"+len+"}"+(delimit?" ?":""));
+    while (str.search(octetRegExp) != -1) {
+        nwArr.push(str.match(octetRegExp)[0]);
+        str = str.replace(octetRegExp, "");
     }
-    for (var i=0;i<barr.length;i++) bstr += ASCII[parseInt(barr[i],2)];
-    return bstr;
+    for (var i=0;i<nwArr.length;i++) nw += ASCII[parseInt(nwArr[i], radix)];
+    return nw;
 }
-// Changes a decimal number to a binary octet.
-function decimalToBinary(dec) {
-    dec++;
-    var maxPower = 0;
-    var binArr = [];
-    while (Math.pow(2,maxPower) < dec) { maxPower++ }
-    for (var i=maxPower-1;i>=0;i--) {
-        if (dec-Math.pow(2,i) > 0) {
-            dec -= Math.pow(2,i);
-            binArr.push(1);
-        } else binArr.push(0);
+// Changes a decimal number into a number of the specified base.
+function transformDecimal(dec, radix, len) {
+    var max = 0,
+        nwArr = [],
+        nw = "",
+        neg = false,
+        chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    if (radix > 10+chars.length || radix < 2) return null;
+    if (Math.abs(dec) != dec) { neg = true; dec = Math.abs(dec) }
+    else if (dec == 0) return 0;
+    do { max++; } while (Math.pow(radix, max) <= dec)
+    for (var i=max-1;i>=0;i--) {
+        if (Math.pow(radix, i) <= dec) {
+            var pw = Math.floor(dec / Math.pow(radix, i));
+            nwArr.push(pw);
+            dec -= Math.pow(radix, i) * pw;
+        } else nwArr.push(0);
     }
-    var binStr = binArr.join("");
-    while (binStr.length < 8) { binStr = "0" + binStr; }
-    return binStr;
+    for (var i=0;i<nwArr.length;i++) 
+        if (nwArr[i] > 9) nw += chars[nwArr[i] - 10];
+        else nw += nwArr[i];
+    if (!isNull(len)) while (nw.length < len) nw = "0" + nw;
+    return neg ? "-" + nw : nw;
 }
-// Translates a string of characters to an ASCII encoded octet stream.
-function stringToBinary(str) {
-    var binstr = "";
-    for (var i=0;i<str.length;i++) { 
-        if (str[i] == " ") binstr += decimalToBinary(32);
-        else binstr += decimalToBinary(ASCII.indexOf(str[i]));
+// Takes a string and transforms it into an octet-stream with the specified radix.
+function octetStream(str, radix, len, delimit) {
+    len = isNull(len) ? 0 : len;
+    delimit = isNull(delimit) ? true : delimit;
+    var dlim = delimit ? " " : "";
+    var stream = "";
+    if (Math.pow(radix, len) < ASCII.length) do len++; while (Math.pow(radix, len) < ASCII.length)
+    for (var i=0;i<str.length;i++) {
+        if (str[i] != " ") stream += transformDecimal(ASCII.indexOf(str[i]), radix, len) + dlim;
+        else stream += transformDecimal(32, radix, len) + dlim;
     }
-    return binstr;
+    return stream.substring(0, stream.length-(delimit?1:0));
 }
 // Aliases for the above functions.
-var binToStr = translateBinary,
-    decToBin = decimalToBinary,
-    strToBin = stringToBinary,
-    strToDec = function(b){return parseInt(b,2)},
-    binToDec = function(b){return strToDec(b.toString())},
-    decToStr = function(d){return ASCII[d]};
+var binToNum = function(b){return parseInt(b,2)},
+    binToDec = function(b){return octetStream(binToStr(b),10)},
+    binToStr = function(b){return translateOctetStream(b,2,8,false)},
+    binToChar = function(b){return ASCII[parseInt(b,2)]},
+    binToHex = function(b){return numToHex(binToNum(b))},
+    numToBin = function(n){return transformDecimal(n,2,8)},
+    numToDec = function(n){return n.toString()},
+    numToChar = function(n){return ASCII[n]},
+    numToHex = function(n){return transformDecimal(n,16)},
+    strToBin = function(s){return octetStream(s,2,8,false)},
+    charToNum = function(s){return ASCII.indexOf(s)},
+    strToDec = function(s){return octetStream(s,10)},
+    strToHex = function(s){return octetStream(s,16)};
+    hexToBin = function(h){return numToBin(hexToNum(h))},
+    hexToNum = function(h){return parseInt(h,16)},
+    hexToStr = function(h){return translateOctetStream(h,16)};
 var Timers = {};
 // An externally edited replacement for setInterval.
 TBI.timerSet = function (timer, seconds, func) {
@@ -352,6 +399,60 @@ TBI.timerClear = function (timer) {
         Timers[timer] = undefined;
         $(document).off(timer + "_timertrig")
     }
+}
+function Coords(x,y) {
+    this.x = x;
+    this.y = y;
+}
+Coords.prototype.midpoint = function (c2) {
+    if (!(c2 instanceof Coords) && !isNull(c2[1])) c2 = new Coords(c2[0],c2[1]);  
+    return new Coords(Math.mean([this.x,c2.x]), Math.mean([this.y,c2.y]));
+}
+Coords.prototype.toArray = function () { return [this.x,this.y] }
+Coords.prototype.toString = function () { return "("+this.x+", "+this.y+")" }
+function Line(start, end) {
+    if (!(start instanceof Coords) && !isNull(start[1])) start = new Coords(start[0], start[1]);
+    if (!(end instanceof Coords) && !isNull(end[1])) end = new Coords(end[0], end[1]);
+    this.start = start;
+    this.end = end;
+}
+Line.midpoint = function () {
+    return new Coords(Math.mean([start.x, end.x]), Math.mean([start.y, end.y]));
+}
+function LinearFunc(gradient, yIntercept) {
+    this.gradient = gradient;
+    this.yIntercept = yIntercept;
+}
+LinearFunc.prototype.eval = function (x) {
+    return this.gradient*x+this.yIntercept;
+}
+LinearFunc.prototype.toString = function (spacing) {
+    var s = isNull(spacing) ? "" : spacing ? " " : "";
+    var gradient = this.gradient == 1?"":this.gradient.toString();
+    var sign = this.yIntercept==0?"":isNegative(this.yIntercept)?"-":"+";
+    var yIntercept = this.yIntercept == 0?"":Math.abs(this.yIntercept).toString();
+    return gradient+"x"+sign+yIntercept;
+}
+LinearFunc.prototype.intersection = function (f2) {
+    var x = ((f2.yIntercept-this.yIntercept) / (this.gradient-f2.gradient)).fix()
+    return new Coords(x, this.eval(x));
+}
+function RelationFunc(a, b, c) {
+    this.a = a;
+    this.b = b;
+    this.c = c;
+    this.gradient = -(a/b);
+    this.yIntercept = c/b;
+}
+RelationFunc.prototype.toLinear = function () {
+    return new LinearFunc(this.gradient, this.yIntercept);
+}
+// Turns a relation into a string representation.
+RelationFunc.prototype.toString = function () {
+    var a = this.a==1?this.a==-1?"-":"":this.a.toString();
+    var sign = isNegative(this.b) ? "-" : "+";
+    var b = this.b == 1?"":Math.abs(this.b).toString();
+    return a+"x"+sign+b+"y="+this.c;
 }
 // Returns a preformatted array of the date object specified.
 function unixToString(date) {
@@ -381,7 +482,7 @@ function rtd(rad) { return (180/Math.PI)*rad }
 function circlePoint(a, r, x, y) {
     x=isNull(x)?0:x;
     y=isNull(y)?0:y;
-    return [x+r*Math.cos(dtr(a)),y+r*Math.sin(dtr(a))];
+    return new Coords(x+r*Math.cos(dtr(a)),y+r*Math.sin(dtr(a)));
 }
 // Formula for the circumference of a circle with the specified radius r.
 function circum(r) { return 2*Math.PI*r }
@@ -400,14 +501,21 @@ function splice(list, index, howMany) {
         if (!(i >= index && i < index+howMany)) newlist.push(list[i]);
     return newlist;
 }
+Number.prototype.equal = function (num) { return Math.abs(num - this) < Number.EPSILON }
+Number.prototype.fix = function () { return parseFloat(this.toPrecision(16)) }
+// indexOf polyfill.
+if (!Array.prototype.indexOf) {
+    Array.prototype.indexOf = function (obj, start) {
+        for (var i = (start || 0), j = this.length; i < j; i++) {
+            if (this[i] === obj) { return i; }
+        }
+        return -1;
+    }
+}
 // Sorts a number list in ascending order.
 function sort(list) {
-    var min = Infinity,
-        max = -Infinity;
-    for (var i=0;i<list.length;i++) {
-        if (list[i] < min) min = list[i];
-        if (list[i] > max) max = list[i];
-    }
+    var min = Math.min.apply(null, list),
+        max = Math.max.apply(null, list);
     list = splice(list, list.indexOf(min), 1);
     list = splice(list, list.indexOf(max), 1);
     if (list.length == 0) return [min,max];
@@ -580,7 +688,6 @@ TBI.Popup.registry.remove = function (element) {
 TBI.Notification = function (head, text, type, timeout) {
     this.type = isNull(type) ? 0 : type;
     timeout = isNull(timeout) ? 10000 : timeout;
-    var states = ["ui-state-highlight", "ui-state-error"];
     this.head = head;
     this.text = text;
     this.noteNum = $(".notification").length;
@@ -596,7 +703,7 @@ TBI.Notification = function (head, text, type, timeout) {
         $(".notification").remove();
         var body = $('body');
         var pup = "";
-        pup += "<div class='notification "+states[this.type]+" ui-corner-all'>";
+        pup += "<div class='notification'>";
         pup += "<h3>"+this.head+"</h3>";
         pup += "<ul><li>"+this.text+"</li></ul>";
         pup += "</div>";
@@ -655,12 +762,40 @@ TBI.dialog = function (head, body, func, nfunc) {
     nfunc = typeof(nfunc) == "undefined" ? function () {} : nfunc;
     $("#dialog-no").click(function () { nfunc(); $("#dialog-yes").off("click"); $("#dialog-no").off("click"); $(".dialog").remove(); });
 }
-TBI.buttonToggle = function (element, bool) {
-    if ((!isNull(bool) && !bool) || TBI.isButtonToggled(element)) element.className = element.className.replace(" toggle-on","");
-    else element.className += " toggle-on";
-    return TBI.isButtonToggled(element);
+TBI.toggleButton = function (element, bool) {
+    if (!isNull(element[0]) && element[0] instanceof HTMLElement) element = element[0];
+    if (!element instanceof HTMLElement) return null;
+    var isToggled = TBI.isToggled(element);
+    if (!isToggled && bool !== false) { element.className += " on"; }
+    else if (isToggled && bool !== true) { element.className = element.className.replace(" on",""); }
+    if (!isNull(bool) && bool !== isToggled) $(element).click();
+    return TBI.isToggled(element);
 }
-TBI.isButtonToggled = function (element) { return element.className.search(" toggle-on") != -1; }
+TBI.isToggled = function (element) { return element.className.search(" on") != -1; }
+TBI.sortTable = function (table, colIndex, direction) {
+    if (!(table instanceof HTMLTableElement)) return null;
+    var records = table.querySelectorAll("tbody tr"),
+        refs = {},
+        fields = [],
+        numbers = true;
+    for (var i=0;i<records.length;i++) {
+        var list = records[i].querySelectorAll("td");
+        var item = list[colIndex].innerText;
+        if (numbers && isNaN(parseFloat(item))) numbers = false;
+    }
+    for (var i=0;i<records.length;i++) {
+        var list = records[i].querySelectorAll("td");
+        var item = list[colIndex].innerText.toLowerCase();
+        if (numbers) item = parseFloat(item);
+        fields.push(item);
+        refs[item] = i;
+    }
+    if (numbers) fields = sort(fields);
+    else fields.sort();
+    if (direction) fields.reverse();
+    $(table.getElementsByTagName("tbody")[0]).empty();
+    for (var i=0;i<fields.length;i++) table.getElementsByTagName("tbody")[0].appendChild(records[refs[fields[i]]]);
+}
 // Generates a desktop notification outside of the regular environment.
 function Note(img, title, desc, link) {
     if (isNull(window.Notification)) return null;
@@ -760,7 +895,7 @@ TBI.updateLinks = function () {
                 $("a[href]:nth("+i+")")[0].className += " external";
         }
     }
-    $("#navigation a").click(function () {
+    $("#top a").click(function () {
         if (!isNull(location.hash) && !isNull($(location.hash))) {
             TBI.timerSet("scroll",10,function () {
                 if (!isNull($(location.hash).offset())) {
@@ -794,67 +929,46 @@ HTMLIncludes.get = function () {
                 $(HTMLIncludes.info[curr].insert).html(HTMLIncludes.includes[curr]);
                 if (curr == HTMLIncludes.getDone.length - 1) {
                     TBI.timerClear("includes");
-                    $(document).trigger("pageload");
+                    TBI.fetchIndex();
                 } else curr++;
             });
         }
     });
 }
 // END INCLUDE CODE //
-// indexOf polyfill.
-if (!Array.prototype.indexOf) {
-    Array.prototype.indexOf = function (obj, start) {
-        for (var i = (start || 0), j = this.length; i < j; i++) {
-            if (this[i] === obj) { return i; }
-        }
-        return -1;
-    }
-}
-var Prototypes = [];
-var Work = [];
-TBI.fetchProtoIndex = function () {
+TBI.fetchIndex = function () {
     var xhr = new TBI.AJAX("/assets/data/work.json", function () {
-        Prototypes = $.parseJSON(xhr.response).prototypes;
-        Work = $.parseJSON(xhr.response).work;
-        if (path[0] == "proto") TBI.setupPrototypes();
-        if (path[0] == "work") TBI.setupWork();
-        TBI.checkNav();
-        TBI.updateLinks();
+        TBI.content = $.parseJSON(xhr.response).content;
+        for (var i=0;i<TBI.content.length;i++) {
+            TBI[TBI.content[i].name] = $.parseJSON(xhr.response)[TBI.content[i].id];
+            if (path.isEqual(TBI.content[i].path.split("/"))) TBI.setupContent(TBI.content[i]);
+        }
+        $(document).trigger("pageload");
     });
 }
-TBI.setupPrototypes = function () {
-    for (var i=0;i<Prototypes.length;i++) {
+TBI.setupContent = function (type) {
+    for (var i=0;i<TBI[type.name].length;i++) {
+        var items = TBI[type.name];
         var titleText = "";
-        if (!isNull(Prototypes[i].link))
-            titleText += "<a href='"+Prototypes[i].link+"'>";
-        titleText += Prototypes[i].name;
-        if (!isNull(Prototypes[i].link))
-            titleText += "</a>";
-        $($("h2.proto, h3.proto")[i]).html(titleText);
-        $($("h2.proto, h3.proto")[i]).attr("id",Prototypes[i].id);
+        if (!isNull(items[i].link)) titleText += "<a href='"+items[i].link+"'>";
+        titleText += items[i].name;
+        if (!isNull(items[i].link)) titleText += "</a>";
+        $($("h2.item, h3.item")[i]).html(titleText);
+        $($("h2.item, h3.item")[i]).attr("id",items[i].id);
         var toggleHTML = "";
         toggleHTML += "<span class='right'><a href='javascript:void(0)' ";
-        toggleHTML += "onclick='$($(\".proto-main\")["+i+"]).slideToggle()'>";
-        toggleHTML += "Toggle Prototype</a></span>"
-        $($(".version")[i]).html(Prototypes[i].version + toggleHTML);
-    }
-}
-TBI.setupWork = function () {
-    for (var i=0;i<Work.length;i++) {
-        var titleText = "";
-        if (!isNull(Work[i].link)) titleText += "<a href='"+Work[i].link+"'>";
-        titleText += Work[i].name;
-        if (!isNull(Work[i].link)) titleText += "</a>";
-        $($("h2.work, h3.work")[i]).html(titleText);
-        $($("h2.work, h3.work")[i]).attr("id", Prototypes[i].id);
+        toggleHTML += "class='up-down on' for='.item-info:nth("+i+")'>";
+        toggleHTML += "Toggle</a></span>";
+        $($(".version")[i]).html(items[i].version + toggleHTML);
     }
 }
 $(document).on("pageload", function () {
-    TBI.fetchProtoIndex();
+    TBI.loaded = true;
     TBI.findPage();
     TBI.checkNav();
     TBI.navMoveTo($("#curr"));
     TBI.updateLinks();
+    TBI.updateUI();
     if (!isNull(location.hash) && !isNull($(location.hash.toString()))) {
         TBI.timerSet("scroll",10,function () {
             if (!isNull($(location.hash).offset())) {
@@ -863,22 +977,22 @@ $(document).on("pageload", function () {
             }
         });
     }
+    var konami = ["up","up","down","down","left","right","left","right","b","a"],
+        kCode = 0;
+    $(document).keydown(function (event) {
+        if (convertKeyDown(event) == konami[kCode]) kCode++; 
+        else kCode = 0;
+        if (kCode >= konami.length) 
+            if (!path.isEqual(["test"])) location.href = location.origin + "/test/";
+            else if (!isNull(history)) history.back();
+    });
 });
+window.onerror = function (message, url, line, column, e) { TBI.error(e); return true; }
 $(function () {
     TBI.requestManager();
     TBI.checkNav();
     $(document).scroll(function () { TBI.checkNav() });
     HTMLIncludes.getIndex();
-    $("button.toggle").click(function () {
-        var a = " toggle-on";
-        var c = this.className;
-        this.className=c.search(a)!=-1?c.replace(a,""):c+a;
-    });
-    $(".switch").click(function () {
-        var toSwitch = $("#"+$(this).attr("for"));
-        if (toSwitch.length > 0)
-            toSwitch.fadeToggle();
-    });
 });
 // START OF COOKIE CODES //
 function createCookie(name, value, days) {
@@ -904,39 +1018,3 @@ function eraseCookie(name) {
     createCookie(name, "", -1);
 }
 // END OF COOKIE CODES //
-// json2.js -- Credit to Douglas Crockford -- //
-// START JSON2.JS //
-if(typeof JSON!=='object'){JSON={};}
-(function(){'use strict';function f(n){return n<10?'0'+n:n;}
-if(typeof Date.prototype.toJSON!=='function'){Date.prototype.toJSON=function(){return isFinite(this.valueOf())?this.getUTCFullYear()+'-'+
-f(this.getUTCMonth()+1)+'-'+
-f(this.getUTCDate())+'T'+
-f(this.getUTCHours())+':'+
-f(this.getUTCMinutes())+':'+
-f(this.getUTCSeconds())+'Z':null;};String.prototype.toJSON=Number.prototype.toJSON=Boolean.prototype.toJSON=function(){return this.valueOf();};}
-var cx,escapable,gap,indent,meta,rep;function quote(string){escapable.lastIndex=0;return escapable.test(string)?'"'+string.replace(escapable,function(a){
-var c=meta[a];return typeof c==='string'?c:'\\u'+('0000'+a.charCodeAt(0).toString(16)).slice(-4);})+'"':'"'+string+'"';}
-function str(key,holder){var i,k,v,length,mind=gap,partial,value=holder[key];if(value&&typeof value==='object'&&typeof value.toJSON==='function'){value=value.toJSON(key);}
-if(typeof rep==='function'){value=rep.call(holder,key,value);}
-switch(typeof value){case'string':return quote(value);case'number':return isFinite(value)?String(value):'null';case'boolean':case'null':return String(value);case'object':if(!value)
-{return'null';}
-gap+=indent;partial=[];if(Object.prototype.toString.apply(value)==='[object Array]'){length=value.length;for(var i=0;i<length;i+=1){partial[i]=str(i,value)||'null';}
-v=partial.length===0?'[]':gap?'[\n'+gap+partial.join(',\n'+gap)+'\n'+mind+']':'['+partial.join(',')+']';gap=mind;return v;}
-if(rep&&typeof rep==='object'){length=rep.length;for(var i=0;i<length;i+=1){if(typeof rep[i]==='string'){k=rep[i];v=str(k,value);if(v){partial.push(quote(k)+(gap?': ':':')+v);}}}}
-else{for(k in value){if(Object.prototype.hasOwnProperty.call(value,k)){v=str(k,value);if(v){partial.push(quote(k)+(gap?': ':':')+v);}}}}
-v=partial.length===0?'{}':gap?'{\n'+gap+partial.join(',\n'+gap)+'\n'+mind+'}':'{'+partial.join(',')+'}';gap=mind;return v;}}
-if(typeof JSON.stringify!=='function'){escapable=/[\\\"\x00-\x1f\x7f-\x9f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g;meta={
-'\b':'\\b','\t':'\\t','\n':'\\n','\f':'\\f','\r':'\\r','"':'\\"','\\':'\\\\'};JSON.stringify=function(value,replacer,space){var i;gap='';indent='';if(typeof space==='number'){
-for(var i=0;i<space;i+=1){indent+=' ';}}else if(typeof space==='string'){indent=space;}
-rep=replacer;if(replacer&&typeof replacer!=='function'&&(typeof replacer!=='object'||typeof replacer.length!=='number')){throw new Error('JSON.stringify');}
-return str('',{'':value});};}
-if(typeof JSON.parse!=='function'){cx=/[\u0000\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g;
-JSON.parse=function(text,reviver){var j;function walk(holder,key){var k,v,value=holder[key];if(value&&typeof value==='object'){for(k in value){
-if(Object.prototype.hasOwnProperty.call(value,k)){v=walk(value,k);if(v!==undefined){value[k]=v;}else{delete value[k];}}}}
-return reviver.call(holder,key,value);}
-text=String(text);cx.lastIndex=0;if(cx.test(text)){text=text.replace(cx,function(a){return'\\u'+
-('0000'+a.charCodeAt(0).toString(16)).slice(-4);});}
-if(/^[\],:{}\s]*$/.test(text.replace(/\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g,'@').replace(
-/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g,']').replace(/(?:^|:|,)(?:\s*\[)+/g,''))){j=eval('('+text+')');return typeof reviver==='function'?walk({'':j},''):j;}
-throw new SyntaxError('JSON.parse');};}}());
-// END JSON2.JS //

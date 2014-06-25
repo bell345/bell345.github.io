@@ -819,7 +819,7 @@ body .ui-tooltip {
 .ui-state-default,
 .ui-widget-content .ui-state-default,
 .ui-widget-header .ui-state-default {
-	border: 2px solid #d3d3d3;
+    border-left: 2px solid #eee;
 	background: #eeeeee url(/assets/res/jquery-ui/ui-bg_flat_75_eeeeee_40x100.png) 50% 50% repeat-x;
 	font-weight: normal;
 	color: #555;
@@ -850,8 +850,8 @@ body .ui-tooltip {
 .ui-state-focus,
 .ui-widget-content .ui-state-focus,
 .ui-widget-header .ui-state-focus {
-	border: 2px solid #0094ff;
-	background: #fdfdfd url(/assets/res/jquery-ui/ui-bg_flat_75_fdfdfd_40x100.png) 50% 50% repeat-x;
+	border: 2px solid #f2f2f2;
+	background: #f2f2f2;
 	font-weight: normal;
 	color: #212121;
 }
