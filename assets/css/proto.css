@@ -290,7 +290,7 @@
     font-size:18px;
     line-height:24px;
 }
-#calc-status span:before { content:"."; font-size:0; }
+#calc-status span::before { content:"."; font-size:0; }
 #calc-status button {
     position:relative;
     bottom:2px;
@@ -566,5 +566,24 @@ button.calcbh {
 }
 #cmp-mouse {
     position:absolute;
-    left:24px;
+    left:0;
+    top:0;
+}
+/* =============== */
+/* CARTESIAN PLANE */
+/* =============== */
+#cart-buttons {
+    position:absolute;
+    top:0;
+    right:0;
+    height:600px;
+    width:48px;
+}
+#cart-buttons button {
+    height:50%;
+    width:100%;
+    font-size:24px;
+}
+#cart-container {
+    position:relative;
 }

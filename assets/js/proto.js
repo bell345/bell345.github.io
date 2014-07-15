@@ -2617,7 +2617,6 @@ CmpCvs.validate = function () {
         case 6: TBI.error(prefix+"The maximum iteration has to be a positive integer."); break;
         default: TBI.error(prefix+"Unhandled exception."); break;
     }
-    CmpCvs.reset();
     return false;
 }
 CmpCvs.setSpinners = function () {
@@ -2730,3 +2729,211 @@ $(document).on("pageload",function () {
     }
 });
 // END FRACTAL CODE //
+// START CARTESIAN CODE //
+
+CrtPlane = {
+    bounds: {x:7,y:7},
+    polBounds: {start:0,end:6*Math.PI},
+    pan: {x:0,y:0},
+    mouse: new Coords(0,0),
+    axes: true,
+    scale: true,
+    grid: true,
+    log: false,
+    rwInterval: 1,
+    fnDefinition: 80,
+    fnDefMode: true,
+    zFactor: 10,
+    funcs: [
+        new LinearFunc(2,-2), 
+        new RelationFunc(2,3,10).toLinear(),
+        {eval:function(x){return Math.sin(x)*3}},
+        {eval:function(x){return Math.pow(2,x)}}
+    ],
+    colours: [
+        "#a00","#0a0","#00a","#aa0","#a0a","#0aa","#aaa",
+        "#500","#050","#005","#550","#505","#055","#777",
+        "#f00","#0f0","#00f","#ff0","#f0f","#0ff","#fff"
+    ],
+    currColour: 0,
+    CARTESIAN: 1,
+    POLAR: 2
+};
+CrtPlane.setup = function (id) {
+    CrtPlane.id = id;
+    CrtPlane.$ = new Canvas2D(id);
+    CrtPlane.width = gebi(id).width;
+    CrtPlane.height = gebi(id).height;
+    CrtPlane.$.clearRect(0,0,CrtPlane.width,CrtPlane.height);
+    CrtPlane.$.translate(CrtPlane.width/2, CrtPlane.height/2);
+}
+CrtPlane.set = function (key, value) {
+    if (isNull(CrtPlane[key])) return false;
+    CrtPlane[key] = value;
+    CrtPlane.init();
+}
+CrtPlane.reset = function () {
+    CrtPlane.$.clearRect(-CrtPlane.width/2, -CrtPlane.height/2,CrtPlane.width,CrtPlane.height);
+    CrtPlane.currColour = 0;
+}
+CrtPlane.init = function () {
+    CrtPlane.reset();
+    if (CrtPlane.log) TBI.log("Initializing");
+    if (CrtPlane.scale) { CrtPlane.drawScale(); if (CrtPlane.log) TBI.log("Finished scale"); }
+    if (CrtPlane.axes) { CrtPlane.drawAxes(); if (CrtPlane.log) TBI.log("Finished axes"); }
+    for (var i=0;i<CrtPlane.funcs.length;i++)
+        CrtPlane.func(CrtPlane.funcs[i], CrtPlane.CARTESIAN);
+    //CrtPlane.randomWalk(10000, "#a00");
+    //CrtPlane.randomWalk(10000, "#0a0");
+    //CrtPlane.randomWalk(10000, "#00a");
+}
+CrtPlane.randomWalk = function (num, style) {
+    var plot = [],
+        loc = new Coords(0,0),
+        it = CrtPlane.rwInterval;
+    for (var i=0;i<num;i++) {
+        if (randomInt(2) == 0) loc.x += randomInt(2) == 0 ? -it : it;
+        else loc.y += randomInt(2) == 0 ? -it : it;
+        plot.push([loc.x,loc.y]);
+    }
+    CrtPlane.plot(plot, style);
+}
+CrtPlane.proportion = function (f,g,lower,upper) {
+    while (f*g<lower) { // for larger numbers
+        if (!(f*(g*10)>upper)) g*=10;
+        else if (!(f*(g*5)>upper)) g*=5;
+        else g*=2;
+    }
+    while (f*g>upper) { // for decimal numbers
+        if (f*(g/10)<lower) g/=2; // either divide by two (0.5, 0.005, etc...)
+        else if (!(f*(g/5)>upper)) g/=5; // divide by five (0.2, 0.002, etc...)
+        else g/=10; // or divide by ten (0.1, 0.2, 0.3, 0.005, 0.006, etc...)
+    }
+    return g;
+}
+CrtPlane.fixDecimal = function (num) {
+    return parseFloat(num.toPrecision(16));
+}
+CrtPlane.drawScale = function () {
+    var b = CrtPlane.bounds,
+        w = CrtPlane.width,
+        h = CrtPlane.height,
+        p = CrtPlane.pan,
+        f = CrtPlane.fixDecimal,
+        g = CrtPlane.grid,
+        fx = CrtPlane.fixDecimal(w/(2*b.x)), // factor of x on the canvas
+        fy = CrtPlane.fixDecimal(h/(2*b.y)), // factor of y on the canvas
+        gx = CrtPlane.proportion(fx, 1, 30, 50), // proportion of the scale of x
+        gy = CrtPlane.proportion(fy, 1, 30, 50), // proportion of the scale of y
+        mx = 0,
+        my = 0;
+    if (CrtPlane.log) TBI.log("drawScale: set variables");
+    while (!((b.x+mx).fix() % gx).fix().equal(0)) mx += (gx-(b.x%gx)).fix();
+    while (!((b.y+my).fix() % gy).fix().equal(0)) my += (gy-(b.y%gy)).fix();
+    if (CrtPlane.log) {
+        TBI.log("drawScale: terminated while loops");
+        TBI.log("Manifest:\nBounds: ("+b.x+", "+b.y+")\nfx: "+fx+", gx: "+gx+", modulo: "+(b.x%gx)+", mx: "+mx);
+    }
+    CrtPlane.$.textAlign = "center";
+    CrtPlane.$.font = "8px Righteous";/*
+    for (var x=xs;x<=xe;x+=xi) { // x axis
+        Canvas2D.path(CrtPlane.$, {type:"stroke",style:"#aaa",path:[[x+p.x,5+p.y],[x+p.x,-5+p.y]]}); // line
+        if (x!=0) CrtPlane.$.fillText(CrtPlane.fixDecimal(x/fx),x+p.x,15+p.y); // label
+    }
+    CrtPlane.$.textAlign = "left";
+    for (var y=ys;y<=ye;y+=yi) { // y axis
+        Canvas2D.path(CrtPlane.$, {type:"stroke",style:"#aaa",path:[[5+p.x,y+p.y],[-5+p.x,y+p.y]]}); // line
+        if (y!=0) CrtPlane.$.fillText(y/-fy,10+p.x,y+2+p.y); // label
+    }*/
+    for (var x=-b.x-mx;x<=b.x+mx;x+=gx) {
+        Canvas2D.path(CrtPlane.$, {type:"stroke",style:"#aaa",path:[[x*fx+p.x,(g?h/2:5)+p.y],[x*fx+p.x,-(g?h/2:5)+p.y]]});
+        if (x!=0) CrtPlane.$.fillText(x=(parseFloat(x.toPrecision(14))), x*fx+p.x,15+p.y);
+    }
+    if (CrtPlane.log) TBI.log("drawScale: completed x axis");
+    CrtPlane.$.textAlign = "left";
+    for (var y=-b.y-my;y<=b.y+my;y+=gy) {
+        Canvas2D.path(CrtPlane.$, {type:"stroke",style:"#aaa",path:[[(g?w/2:5)+p.x,y*fy+p.y],[-(g?w/2:5)+p.x,y*fy+p.y]]});
+        if (y!=0) CrtPlane.$.fillText(-(y=parseFloat((y).toPrecision(14))),10+p.x,y*fy+2+p.y);
+    }
+    if (CrtPlane.log) TBI.log("drawScale: completed y axis");
+}
+CrtPlane.drawAxes = function () {
+    var w = CrtPlane.width,
+        h = CrtPlane.height,
+        p = CrtPlane.pan;
+    CrtPlane.$.lineWidth = 2;
+    Canvas2D.path(CrtPlane.$, {type:"stroke",style:"#000",path:[[p.x,-h/2],[p.x,h/2]]}); // x axis
+    Canvas2D.path(CrtPlane.$, {type:"stroke",style:"#000",path:[[-w/2,p.y],[w/2,p.y]]}); // y axis
+    CrtPlane.$.lineWidth = 1;
+}
+CrtPlane.plot = function (path, style) {
+    var fx = CrtPlane.width/(CrtPlane.bounds.x*2),
+        fy = -(CrtPlane.height/(CrtPlane.bounds.y*2)),
+        p = CrtPlane.pan;
+    CrtPlane.$.save();
+    CrtPlane.$.strokeStyle = (style?style:CrtPlane.colours[CrtPlane.currColour++ % CrtPlane.colours.length]);
+    CrtPlane.$.beginPath();
+    CrtPlane.$.moveTo((isNull(path[0].x)?path[0][0]:path[0].x)*fx+p.x,(isNull(path[0].y)?path[0][1]:path[0].y)*fy+p.y);
+    for (var i=1;i<path.length;i++) {
+        var x = (isNull(path[i].x)?path[i][0]:path[i].x)*fx+p.x,
+            y = (isNull(path[i].y)?path[i][1]:path[i].y)*fy+p.y;
+        x=x>800?800:x<-800?-800:x;
+        y=y>800?800:y<-800?-800:y;
+        CrtPlane.$.lineTo(x,y);
+    }
+    CrtPlane.$.stroke();
+    CrtPlane.$.restore();
+    if (CrtPlane.log) TBI.log("plot: completed");
+}
+CrtPlane.func = function (func, type, style) {
+    if (isNull(func.eval)) return null;
+    if (CrtPlane.log) {
+        TBI.log("func: now plotting: ");
+        TBI.log(func.eval);
+    }
+    var b = CrtPlane.bounds,
+        w = CrtPlane.width,
+        h = CrtPlane.height,
+        cinc = CrtPlane.fnDefMode?(b.x*2)/CrtPlane.fnDefinition:1/CrtPlane.fnDefinition,
+        pol = CrtPlane.polBounds,
+        pinc = CrtPlane.fnDefMode?(pol.end-pol.start)/CrtPlane.fnDefinition:1/CrtPlane.fnDefinition,
+        plot = [],
+        fx = w/(2*b.x),
+        fy = h/(2*b.y);
+    if (type == CrtPlane.CARTESIAN || isNull(type)) {
+        for (var x=-b.x;x<=b.x;x+=cinc) {
+            if (!isNull(func.eval(x)) && Math.abs(func.eval(x)) != Infinity) // if valid
+                plot.push(new Coords(x, func.eval(x)));
+        }
+        if (CrtPlane.log) TBI.log("func: plotted cartesian function");
+    } else if (type == CrtPlane.POLAR) {
+        for (var az=pol.start;az<=pol.end;az+=pinc) {
+            if (!isNull(func.eval(az)) && Math.abs(func.eval(az)) != Infinity)
+                plot.push(new PolarCoords(func.eval(az), az).toCartesian());
+        }
+        if (CrtPlane.log) TBI.log("func: plotted polar function");
+    } else return null;
+    CrtPlane.plot(plot);
+}
+$(document).on("pageload", function () {
+    CrtPlane.setup("cart-plane");
+    CrtPlane.init();
+    $("#cart-plus").click(function () {
+        var b = CrtPlane.bounds,
+            z = CrtPlane.zFactor;
+        if (b.x-(b.x/z) <= 1 || b.y-(b.y/z) <= 1) z = Infinity;
+        CrtPlane.set("bounds", {x:b.x-(b.x/z),y:b.y-(b.y/z)});
+    });
+    $("#cart-minus").click(function () {
+        var b = CrtPlane.bounds,
+            z = CrtPlane.zFactor;
+        CrtPlane.set("bounds", {x:b.x+(b.x/z),y:b.y+(b.y/z)});
+    });
+    $("#cart-funcrender").click(function () {
+        CrtPlane.set("fnDefMode", this.checked);
+    });
+    $("#cart-grid").click(function () {
+        CrtPlane.set("grid", this.checked);
+    });
+});
+// END CARTESIAN CODE //

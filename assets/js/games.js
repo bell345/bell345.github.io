@@ -173,11 +173,11 @@ QDR.init = function () {
     QDR.active = false;
     QDR.over = false; // Game Over or not?
     QDR.limits = [QDR.height/QDR.size, 12]; // limits = [height, width]
-    QDR.board = []; // The blocks that have already been placed.
+    QDR.board = {}; // The blocks that have already been placed.
     for (var i=0;i<QDR.limits[0];i++) {                       //
-        var tempArr = [];                                     // Filling board[] with empty
-        for (var j=0;j<QDR.limits[1];j++) tempArr.push(null); // values, representing clear space.
-        QDR.board.push(tempArr);                              //
+        var tempArr = {};                                     // Filling board[] with empty
+        for (var j=0;j<QDR.limits[1];j++) tempArr[j] = -1;    // values, representing clear space.
+        QDR.board[i] = tempArr;                               //
     }
     QDR.blockground = new Image(); // The block textures.
     QDR.blockground.src = "data:image/png;base64,\
@@ -209,17 +209,17 @@ QDR.title = function () {
     QDR.$.closePath();
 }
 QDR.checkRows = function () {
-    var checked = new Array(QDR.board.length);
+    var checked = new Array(QDR.limits[0]);
     var total = 0;
-    for (var i=0;i<QDR.board.length;i++) {
+    for (var i=0;i<QDR.limits[0];i++) {
         checked[i] = true;
-        for (var j=0;j<QDR.board[i].length;j++) if (isNull(QDR.board[i][j])) checked[i] = false
+        for (var j=0;j<QDR.limits[1];j++) if (QDR.board[i][j] == -1) checked[i] = false
         if (checked[i]) { QDR.removeRow(i); QDR.score += 1 }
     }
     return true;
 }
 QDR.removeRow = function (row) {
-    QDR.board[row] = [QDR.limits[1]];
+    QDR.board[row] = new Array(QDR.limits[1]);
     for (var i=row;i>0;i--) QDR.board[i] = QDR.board[i-1];
     return true;
 }
@@ -309,6 +309,7 @@ QDR.drawPiece = function (piece, index, x, y) {
     return true;
 }
 QDR.boardAdd = function (piece, index, x, y) {
+    debugger;
 	var prevBoard = QDR.board;
     for (var i=0;i<4;i++)
         for (var j=0;j<4;j++)
@@ -348,7 +349,7 @@ QDR.play = function () {
     }
     for (var i=0;i<QDR.limits[0];i++) 
         for (var j=0;j<QDR.limits[1];j++)
-            if (!isNull(QDR.board[i][j])) QDR.drawBlock(QDR.board[i][j], j, i);
+            if (QDR.board[i][j] != -1) QDR.drawBlock(QDR.board[i][j], j, i);
     if (QDR.over) {
         $("#qdr-overlay").show();
         $("#qdr-score").html(QDR.score);
@@ -369,7 +370,7 @@ QDR.end = function () {
 }
 QDR.checkBlock = function (x, y) { 
     if (x >= QDR.limits[1] || y >= QDR.limits[0] || x < 0 || y < 0) return true
-    else return !isNull(QDR.board[y][x])
+    else return QDR.board[y][x] != -1;
 }
 QDR.checkPiece = function (piece, x, y) {
     for (var i=0;i<4;i++)

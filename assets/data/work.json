@@ -1,11 +1,11 @@
 {
     "content": [
-        { "id": "prototypes", "name": "Prototypes", "item": "proto", "path": "proto" },
+        { "id": "proto", "name": "Prototypes", "item": "proto", "path": "proto" },
         { "id": "games", "name": "Games", "item": "game", "path": "games" },
-        { "id": "work", "name": "Work", "item": "work", "path": "work" },
+        { "id": "apps", "name": "Applications", "item": "app", "path": "apps" },
         { "id": "test", "name": "Testing", "item": "test", "path": "test" }
     ],
-    "prototypes": [
+    "proto": [
         {
             "id": "grid",
             "name": "Grid JavaScript Test",
@@ -24,13 +24,13 @@
         {
             "id": "cdown",
             "name": "CountDown",
-            "version": "3.0.1",
+            "version": "3.1.1",
             "link": "/proto/cdown3/"
         }, 
         {
             "id": "calc",
             "name": "Calculator",
-            "version": "2.1",
+            "version": "2.2",
             "link": "/proto/calc/"
         },
         {
@@ -52,6 +52,11 @@
             "id": "cvscom",
             "name": "Fractal Generator",
             "version": "1.4.1"
+        },
+        {
+            "id": "crtplane",
+            "name": "Cartesian Plane",
+            "version": "0.5"
         }
 
     ],
@@ -80,12 +85,18 @@
             "link": "/games/treehouse/"
         }
     ],
-    "work": [
+    "apps": [
         {
             "id": "cdown",
             "name": "CountDown",
-            "version": "2.6",
-            "link": "/proto/cdown"
+            "version": "3.2",
+            "link": "/apps/cdown"
+        },
+        {
+            "id": "calc",
+            "name": "Calculator",
+            "version": "2.2.1",
+            "link": "/apps/calc"
         }
     ],
     "test": [
@@ -93,11 +104,6 @@
             "id": "scle",
             "name": "Scale",
             "version": "0.9"
-        },
-        {
-            "id": "crtplane",
-            "name": "Cartesian Plane",
-            "version": "0.3"
         }
     ]
 }

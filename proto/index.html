@@ -324,7 +324,7 @@
                             <span class="main">Mode: </span><span id="cvs-mode">None</span>
                         </div>
                     </div>
-                    <canvas id="cvs" width="750" height="750" style="border:2px solid #000">
+                    <canvas id="cvs" width="600" height="600" style="border:2px solid #000">
                         Your browser is not capable of recognising the HTML5 &lt;canvas&gt; graphics framework.
                         Supported browsers include Google Chrome and Mozilla Firefox.
                     </canvas>
@@ -489,6 +489,32 @@
                         <button id="cmp-mode">Switch Mode</button>
                         <button class="major" id="cmp-generate">Generate Mandelbrot Set</button>
                     </div>
+                </div>
+            </div>
+            <h2 class="item">Cartesian Plane</h2>
+            <h3 class="version"></h3>
+            <div class="item-info">
+                <p>
+                    In my maths class, I wanted to visualise the linear functions that we were studying without using 
+                    a tedious pen and paper, so I created a &lt;canvas&gt; program to plot them for me! This started 
+                    off as a small test app, but it's recently become my most worked-on project.
+                    <br>
+                    You can use your own functions using the console through the CrtPlane.func() method. It takes 
+                    a LinearFunc, RelationFunc or regular object with an eval(x) property that spits out a y value as 
+                    the parameter.
+                </p>
+                <div id="cart-container">
+                    <canvas id="cart-plane" width="600" height="600" class="item"></canvas>
+                    <div id="cart-buttons">
+                        <button id="cart-plus">+</button>
+                        <button id="cart-minus">-</button>
+                    </div>
+                </div>
+                <div>
+                    <input type="checkbox" id="cart-funcrender" checked /><label for="cart-funcrender">Enable fast rendering</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="cart-grid" checked /><label for="cart-grid">Show grid</label>
                 </div>
             </div>
         </div>

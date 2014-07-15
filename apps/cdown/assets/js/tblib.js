@@ -1,51 +1,24 @@
-// TBI.JS - V6.4
-// Base functions, variables and helpers that are included and required in
-// all of my website pages.
+// TBLib.js v1.0
+// A JavaScript library containing a useful array of functions for independent use or for integration into other programs.
+// Requires jQuery, preferrably v2.x.
 // START INCOMPATIBILITY CODE //
 document.onreadystatechange = function () {
-    if (document.getElementsByTagName("html")[0].className.search("no-js") != -1) document.getElementsByTagName("html")[0].className = document.getElementsByTagName("html")[0].className.replace("no-js","js init");
+    if (document.getElementsByTagName("html")[0].className.search("no-js") != -1) document.getElementsByTagName("html")[0].className = document.getElementsByTagName("html")[0].className.replace("no-js","");
     if (!window.jQuery) {
         document.body.innerHTML = "<P style='text-align:center;color:#333333;background:#EEEEEE;font-size:32px;padding:24px 48px;margin-top:300px;'>Your browser is too outdated to display this website properly. Please consider updating your browser to either <A href='http://google.com/chrome'>Google Chrome</A> or <A href='http://firefox.com'>Mozilla Firefox</A>.</P>";
     }
 }
 // END INCOMPATIBILITY CODE //
-var TBI = { loaded: false };
-var now = new Date(),
+var TBI = {},
+    notePrevInfo = {
+        head: [],
+        text: []
+    },
+    now = new Date(),
     unqid = now.getTime(),
     query = {},
     path = [],
-    notePrevInfo = {
-        "head" : [], 
-        "text" : [],
-        "type" : []
-    },
-    navbase = [],
-    ASCII = "\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
-// START CONSOLE NOTIFICATIONS //
-TBI.log = function (message, timeout) {
-    console.log(message);
-    timeout = isNull(timeout) ? 30000 : timeout;
-    new TBI.Notification("Log", message, 0, timeout);
-}
-TBI.warn = function (message, timeout) {
-    console.warn(message);
-    timeout = isNull(timeout) ? 40000 : timeout;
-    new TBI.Notification("Warning", message, 0, timeout);
-}
-TBI.error = function (message, timeout) {
-    console.error(message);
-    var orig = message;
-    if (typeof(message) == "object") message = message.message;
-    timeout = isNull(timeout) ? 50000 : timeout;
-    var onclick = "$($(this).parent()[0].getElementsByTagName(\"div\")[0]).slideToggle()";
-    if (typeof(orig) == "object")
-        new TBI.Notification("Error", 
-            orig.message+"<button onclick='"+onclick+"'>Show/Hide Stack</button><div style='display:none'>"+orig.stack+"</div>", 
-            1, 
-            timeout);
-    else new TBI.Notification("Error", message, 1, timeout);
-}
-// END CONSOLE NOTIFICATIONS //
+    ASCII = "         \t\n\f\r                    !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
 $(function () {
     if (navigator.userAgent.search(/[Ff]irefox/)!=-1)
         document.body.className = "gecko";
@@ -56,6 +29,7 @@ $(function () {
     else if (navigator.userAgent.search(/MSIE/)!=-1)
         document.body.className = "ie";
 });
+// START DOM/XHR FUNCTIONS //
 // Shorthand for document.getElementById.
 function gebi(id) { return document.getElementById(id); }
 // Shorthand for document.getElementsByClassName.
@@ -81,7 +55,7 @@ TBI.AJAX = function (url, func) {
     return xhr;
 }
 // Sets up the query variable with the search criteria.
-TBI.requestManager = function () {
+requestManager = function () {
     var search = location.search;
     if (!isNull(location.search)) {
         search = search.replace("?","").split("&");
@@ -107,178 +81,6 @@ TBI.requestManager = function () {
         path = pathname.split("/");
     }
 }
-// Searches the navbar menu item database.
-TBI.searchNavbase = function (s) {
-    for (var i=0;i<navbase.length;i++) 
-        if (!isNull(navbase[i]) && navbase[i][0] == s) 
-            return navbase[i][1];
-    return null;
-}
-// Moves the navbar indicator to the specified element.
-TBI.navMoveTo = function (el) {
-    if ($(el).length < 1) return false;
-    var loc = $(el).offset().left;
-    var off = $("#top-ind").offset().left;
-    var alg = loc-off;
-    if (alg<0) alg=0;
-    else if (alg+parseInt($("#top-ind div").css("width"))>window.innerWidth)
-        alg = parseInt(window.innerWidth-$("#top-ind div").css("width"));
-    var cn = $("#top-ind div")[0].className;
-    $("#top-ind div")[0].className = cn.replace(" focus", "");
-    $("#top-ind div").css("left", alg + "px");
-}
-// A blanket function that handles the navbar indicator behaviour and when and where to place the sub-menus.
-TBI.checkNav = function () {
-    $("#top>div:not(.nav-ind)").off("mousemove");
-    /** When mouse is moving on the navbar, move to its position. */
-    $("#top>div:not(.nav-ind)").mousemove(function (event) {
-        var width = parseInt($("#top-ind div").css("width"));
-        var half = width/2;
-        var off = $("#top-ind").offset().left;
-        var alg = event.clientX-half-off;
-        var page = parseInt($("body").css("width"));
-        if(alg<0)alg=0;
-        else if(alg+off+width>page) alg=page-width-off;
-        var cn = $("#top-ind div")[0].className;
-        $("#top-ind div")[0].className = cn.search(" focus") != -1 ? cn : cn + " focus";
-        $("#top-ind div").css("left", alg+"px");
-    });
-    /** When leaving or creating the navbar, move the indicator to the current menu item after 500ms. */
-    $("#top>div:not(.nav-ind)").off("mouseleave");
-    $("#top>div:not(.nav-ind)").mouseleave(function () { 
-        TBI.timerClear("curr");
-        TBI.timerSet("curr", 500, function () { TBI.navMoveTo("#curr"); TBI.timerClear("curr") });
-    });
-    $("#top").off("mouseleave");
-    $("#top").mouseleave(function () { 
-        TBI.timerClear("curr");
-        TBI.timerSet("curr", 500, function () { TBI.navMoveTo("#curr"); TBI.timerClear("curr") }); 
-    });
-    if ($("#top").length > 0) { 
-        TBI.timerClear("curr");
-        TBI.timerSet("curr", 500, function () { TBI.navMoveTo("#curr"); TBI.timerClear("curr") });
-    }
-    /** Handles the dynamic content and section navigation. */
-    if (!isNull(TBI.content)) for (var i=0;i<TBI.content.length;i++) {
-        var item = TBI.content[i];
-        if ($(".nav-"+item.id+" .inner-nav").length == 0) $(".nav-"+item.id).append("<ul class='inner-nav'></ul>");
-        else $(".nav-"+item.id+" .inner-nav").empty();
-        if (path.isEqual(item.path) && TBI.loaded) {
-            if ($("#sidebar .sections").length == 0)
-                $("#sidebar").html(
-                    "<h3 class='span'>\
-                    <a href='javascript:void(0)' class='up-down' for='.sections'>Sections</a></h3>\
-                    <ul class='side para sections'></ul>"
-                    + $("#sidebar").html());
-            else $("#sidebar .sections").empty();
-        }
-        for (var j=0;j<TBI[item.name].length;j++) {
-            var sect = TBI[item.name][j];
-            $(".nav-"+item.id+" .inner-nav").append("<li><a href='/"+item.path+"/#"+sect.id+"'>"+sect.name+"</a></li>");
-            if (path.isEqual(item.path) && TBI.loaded) $("#sidebar .sections").append("<li><a href='/"+item.path+"/#"+sect.id+"'>"+sect.name+"</a></li>");
-        }
-    }
-    TBI.updateUI();
-    
-    /** A complicated for loop that handles the indicator behaviour relating to submenus. */
-    var nv = "#top>div:not(.nav-ind)";
-    navbase = new Array($(nv).length);
-    for (var i=0;i<$(nv).length;i++) {
-        var parent = nv+":nth("+i+")";
-        var child = parent+" .inner-nav";
-        if ($(child).length > 0) {
-            navbase[i] = [$(parent)[0], $(child)[0]];
-            $(parent).off("mouseover");
-            $(parent).mouseover(function () {
-                var child = TBI.searchNavbase(this);
-                if (isNull(child)) return false;
-                $(child).show();
-                $(child).mouseenter(function () {
-                    $($(child).parent()).off("mousemove");
-                    TBI.timerClear("curr");
-                    TBI.navMoveTo($($(child).parent()));
-                    $(child).mouseenter(function () { TBI.navMoveTo($($(child).parent())) });
-                    TBI.updateLinks();
-                });
-                $(child).mouseleave(function () { TBI.checkNav(); TBI.timerClear("curr"); });
-            });
-            $(parent).off("mouseleave");
-            $(parent).mouseleave(function () {
-                var child = TBI.searchNavbase(this);
-                if (isNull(child)) return false;
-                $(child).hide();
-            });
-        }
-    }
-    /** Whether or not to show the "to top" menu item. */
-    if (window.scrollY > 0) $(".nav-top").slideDown();
-    else $(".nav-top").slideUp();
-}
-// Updates toggleable elements.
-TBI.updateUI = function () {
-    for (var i=0;i<$(".img-mid:not(.done)").length;i++) {
-        var currimg = $(".img-mid:not(.done)")[i];
-        var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
-        if (isNull(currimg.id)) { 
-            do {
-                var rand = "";
-                for (var i=0;i<4;i++) rand += chars[randomInt(chars.length)];
-            } while ($("#unq-"+rand).length > 0)
-            currimg.id = "unq-"+rand;
-        }
-        $(currimg.getElementsByClassName("img-toggle")[0]).attr("for", "#" + currimg.id + " img");
-        currimg.className += " done";
-    }
-    $("button.toggle").off("mouseup");
-    $("button.toggle").mouseup(function (event) {
-        if (event.button != 0) return true;
-        var a = " on",
-            c = this.className;
-        this.className=c.search(a)!=-1?c.replace(a,""):c+a;
-    });
-    $(".up-down").off("mouseup");
-    $(".up-down").mouseup(function () {
-        if (event.button != 0) return true;
-        var toSwitch = $($(this).attr("for"));
-        if (toSwitch.length > 0) toSwitch.slideToggle();
-        var a = " on";
-            c = this.className;
-        this.className=c.search(a)!=-1?c.replace(a,""):c+a;
-    });
-    for (var i=0;i<$("table.sortable").length;i++) {
-        var currtble = $("table.sortable")[i];
-        var rows = currtble.querySelectorAll("tbody tr");
-        for (var j=0;j<rows.length;j++) if (rows[j].className.search(" torder") == -1) rows[j].className += " torder-"+j;
-        $(currtble.querySelectorAll("th.sort")).attr("class", "sort none");
-        $(currtble.querySelectorAll("th.sort")).off("click");
-        $(currtble.querySelectorAll("th.sort")).click(function () {
-            if ($(this).parent()[0].getElementsByTagName("th").length > 0) {
-                var updownList = $(this).parent()[0].getElementsByTagName("th");
-                for (var j=0;j<updownList.length;j++) 
-                    if (updownList[j] != this) 
-                        updownList[j].className = updownList[j].className.replace(/( up| down)/, " none");
-                    else var tIndex = j;
-            }
-            var currclass = this.className;
-            if (currclass.search(" none") != -1) this.className = currclass.replace(" none", " up");
-            else if (currclass.search(" up") != -1) this.className = currclass.replace(" up", " down");
-            else if (currclass.search(" down") != -1) this.className = currclass.replace(" down", " none");
-            if (this.className.search(" down") != -1) TBI.sortTable($(this).parent().parent().parent()[0], tIndex, true);
-            else if (this.className.search(" up") != -1) TBI.sortTable($(this).parent().parent().parent()[0], tIndex, false);
-            else if (this.className.search(" none") != -1) TBI.sortTable($(this).parent().parent().parent()[0], -1, false);
-        });
-    }
-}
-// Returns first-level elements in an XML index.
-TBI.findIndex = function (file, name) {
-    if (navigator.userAgent.search(/MSIE [0-9]/) != -1)
-        var xml = $.parseXML(file.responseText);
-    if (navigator.userAgent.indexOf("Trident") != -1)
-        var xml = file.responseXML;
-    else 
-        var xml = $.parseXML(file.response);
-    return xml.getElementsByTagName(name);
-}
 // Appends HTML to an element.
 function modifyHtml(id, mod) { gebi(id).innerHTML += mod }
 // Returns a string from the start of str that is num characters long.
@@ -291,28 +93,8 @@ function shorten(str, num) {
         }
     }
 }
-// Pads a number to the specified length. Default is two (e.g. "2" to "02")
-function zeroPrefix(num, len) {
-    num = num.toString();
-    while (num.length < (len?len:2)) num = "0" + num;
-    return num;
-}
-// Highlights the current navbar menu item.
-TBI.findPage = function () {
-    var curr = path[0];
-    if (isNull(curr)) curr = "";
-    var nav = "#top>div:not(.nav-ind)";
-    var navbar = $(nav);
-    var links = $("#top>div:not(.nav-ind)>a");
-    for (var i = 0; i < links.length; i++) {
-        if ($(links[i]).attr("href").split("/")[1] == curr) {
-            $(navbar[i]).attr("id","curr");
-            return true;
-        }
-    }
-    $(".nav-home").attr("id","curr");
-    return true;
-}
+// END DOM/XHR FUNCTIONS //
+// START MATH/LOGIC FUNCTIONS //
 // Determines whether or not a number is even.
 function isEven(n) { return n%2==0 }
 // Determines whether or not a variable is nothing at all.
@@ -372,22 +154,22 @@ function transformDecimal(dec, radix, len) {
         nw = "",
         neg = false,
         chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    if (radix > 10+chars.length || radix < 2) return null; // if the radix cannot be represented fully 
-    if (Math.abs(dec) != dec) { neg = true; dec = Math.abs(dec) } // if this number is negative
-    else if (dec == 0) return 0; // else if number is plain zero, return zero (that's what it always is)
-    do { max++; } while (Math.pow(radix, max) <= dec) // finding the maximum power to raise radix to (the length of the string)
-    for (var i=max-1;i>=0;i--) { // main loop
-        if (Math.pow(radix, i) <= dec) { // if the raised radix is lower or equal to the number (say 16^2 = 256 <= this number)
-            var pw = Math.floor(dec / Math.pow(radix, i)); // the floor of the current number over the raised radix (how many 256s go in)
-            nwArr.push(pw); // push the pw value which is the current place value (if this number > 512, pw > 2)
-            dec -= Math.pow(radix, i) * pw; // take away the pw value from the number
-        } else nwArr.push(0); // else push zero
+    if (radix > 10+chars.length || radix < 1) return null;
+    if (Math.abs(dec) != dec) { neg = true; dec = Math.abs(dec) }
+    else if (dec == 0) return 0;
+    do { max++; } while (Math.pow(radix, max) <= dec)
+    for (var i=max-1;i>=0;i--) {
+        if (Math.pow(radix, i) <= dec) {
+            var pw = Math.floor(dec / Math.pow(radix, i));
+            nwArr.push(pw);
+            dec -= Math.pow(radix, i) * pw;
+        } else nwArr.push(0);
     }
-    for (var i=0;i<nwArr.length;i++) // converting the numbers into characters (16 to F)
+    for (var i=0;i<nwArr.length;i++) 
         if (nwArr[i] > 9) nw += chars[nwArr[i] - 10];
         else nw += nwArr[i];
-    if (!isNull(len)) while (nw.length < len) nw = "0" + nw; // prepending zeroes to fit the len value
-    return neg ? "-" + nw : nw; // negative or not
+    if (!isNull(len)) while (nw.length < len) nw = "0" + nw;
+    return neg ? "-" + nw : nw;
 }
 // Takes a string and transforms it into an octet-stream with the specified radix.
 function octetStream(str, radix, len, delimit) {
@@ -397,7 +179,8 @@ function octetStream(str, radix, len, delimit) {
     var stream = "";
     if (Math.pow(radix, len) < ASCII.length) do len++; while (Math.pow(radix, len) < ASCII.length)
     for (var i=0;i<str.length;i++) {
-        stream += transformDecimal(ASCII.indexOf(str[i])!=-1?ASCII.indexOf(str[i]):0, radix, len) + dlim;
+        if (str[i] != " ") stream += transformDecimal(ASCII.indexOf(str[i])!=-1?ASCII.indexOf(str[i]):0, radix, len) + dlim;
+        else stream += transformDecimal(32, radix, len) + dlim;
     }
     return stream.substring(0, stream.length-(delimit?1:0));
 }
@@ -451,17 +234,6 @@ function Coords(x, y) {
 Coords.prototype.toArray = function () { return [this.x,this.y] }
 // Transforms coordinates into a string representation of "(x, y)".
 Coords.prototype.toString = function () { return "("+this.x+", "+this.y+")" }
-Coords.prototype.toPolar = function () {
-    return new PolarCoords(Math.pythagoras(this.x, this.y), Math.atan2(this.y, this.x));
-}
-function PolarCoords(radius, azimuth) {
-    this.radius = radius;
-    this.azimuth = azimuth;
-}
-PolarCoords.prototype.toCartesian = function () { 
-    return new Coords(this.radius*Math.sin(this.azimuth), this.radius*Math.cos(this.azimuth));
-}
-PolarCoords.prototype.toString = function () { return "("+this.radius+", "+this.azimuth+")" }
 // Declares a line segment with the endpoints start and end.
 function LineSegment(start, end) {
     if (!(start instanceof Coords) && !isNull(start[1])) start = new Coords(start[0], start[1]);
@@ -564,20 +336,6 @@ RelationFunc.prototype.toString = function () {
 }
 RelationFunc.prototype.eval = function (x) {
     return this.gradient*x+this.yIntercept;
-}
-// Returns a preformatted array of the date object specified.
-function unixToString(date) {
-    var month = date.getMonth()+1;
-    var day = date.getDate();
-    var hour = date.getHours();
-    var minute = date.getMinutes();
-    var second = date.getSeconds();
-    month = zeroPrefix(month);
-    day = zeroPrefix(day);
-    hour = zeroPrefix(hour);
-    minute = zeroPrefix(minute);
-    second = zeroPrefix(second);
-    return [date.getTime(), date.getFullYear(), month, day, hour, minute, second];
 }
 // Returns a random positive integer below the specified number.
 function randomInt(num) { return parseInt(Math.random()*num) }
@@ -703,6 +461,14 @@ Math.eratosthenes = function (num) {
 Math.newValueForMean = function (list, num) {
     return num * (list.length + 1) - Math.total(list);
 }
+// END MATH AND LOGIC FUNCTIONS //
+// START FORMAT/TRANSLATION FUNCTIONS //
+// Pads a number to the specified length. Default is two (e.g. "2" to "02")
+function zeroPrefix(num, len) {
+    num = num.toString();
+    while (num.length < (len?len:2)) num = "0" + num;
+    return num;
+}
 // Converts a keypress event keycode into the character typed.
 function convertKeyDown(event) {
     var chars = {
@@ -747,6 +513,120 @@ function shiftDown(key) {
     else if (isNull(chars[key])) return key.toString();
     else return chars[key.toString()];
 }
+// END FORMAT/TRANSLATION FUNCTIONS //
+// START CANVAS FRAMEWORKS //
+// A 2D canvas context constructor.
+function Canvas2D(id) {
+    var curr = gebi(id);
+    if (curr.getContext && !isNull(curr))
+        var ctx = curr.getContext("2d");
+    else return null;
+    return ctx;
+}
+// Adds a coordinate popup to a specified canvas.
+Canvas2D.inspector = function (context) {
+    var cvs = context.canvas;
+    $(cvs).off("mousemove");
+    if (context.inspector) {
+        $(cvs).mousemove(function (event) {
+            new TBI.Popup(
+                event.clientX + 20,
+                event.clientY + 20,
+                "Canvas Inspector",
+                event.offsetX + "X, " + event.offsetY + "Y"
+            );
+        });
+        $(cvs).mouseleave(function () { $('.popup').remove() });
+    } else return null;
+}
+Canvas2D.set = function (context, type, style, width) {
+    isNull(width)?1:width;
+    switch (type) {
+        case "stroke": context.strokeStyle = style; context.lineWidth = width; break;
+        case "fill": context.fillStyle = style; break;
+        case "font": context.font = style; break;
+    }
+}
+// Processes a string of canvas commands.
+Canvas2D.path = function (context, obj) {
+    var path = obj.path;
+    var type = obj.type;
+    var style = obj.style;
+    context.save();
+    switch (type) { 
+        case "stroke": context.strokeStyle = style; break; 
+        case "fill": context.fillStyle = style; break; 
+        default: return false;
+    }
+    context.beginPath();
+    context.moveTo(path[0][0], path[0][1]);
+    for (var i = 1; i < path.length; i++) 
+        context.lineTo(path[i][0], path[i][1]);
+    context.closePath();
+    switch (type) {
+        case "stroke": context.stroke(); break;
+        case "fill": context.fill(); break;
+        default: return false;
+    }
+    context.restore();
+}
+Canvas2D.reset = function (context) {
+    context.closePath();
+    context.beginPath();
+    context.firstPos = [];
+    context.secondPos = [];
+    return 0;
+}
+// A WebGL canvas constructor.
+function Canvas3D(cvs) {
+    var gl = null;
+    try { gl = cvs.getContext("webgl") || cvs.getContext("experimental-webgl"); }
+    catch (e) {} 
+    if (isNull(gl)) { 
+        error("WebGL failed to initialize.");
+        gl = null;
+    }
+    return gl;
+}
+// END CANVAS FRAMEWORKS //
+// START MISC FRAMEWORKS //
+// Generates a desktop notification outside of the regular environment.
+function Note(img, title, desc, link) {
+    if (isNull(window.Notification)) return null;
+    var note = {title:title,body:desc,icon:img,lang:"en"};
+    if (!isNull(link))
+        note.onclick = function () {
+            window.open(link);
+            note.close();
+        }
+    new Notification(title, note);
+}
+// START CONSOLE NOTIFICATIONS //
+TBI.log = function (message, timeout) {
+    console.log(message);
+    timeout = isNull(timeout) ? 30000 : timeout;
+    new TBI.Notification("Log", message, 0, timeout);
+}
+TBI.warn = function (message, timeout) {
+    console.warn(message);
+    timeout = isNull(timeout) ? 40000 : timeout;
+    new TBI.Notification("Warning", message, 0, timeout);
+}
+TBI.error = function (message, timeout) {
+    console.error(message);
+    var orig = message;
+    if (typeof(message) == "object") message = message.message;
+    timeout = isNull(timeout) ? 50000 : timeout;
+    var onclick = "$($(this).parent()[0].getElementsByTagName(\"div\")[0]).slideToggle()";
+    if (typeof(orig) == "object")
+        new TBI.Notification("Error", 
+            orig.message+"<button onclick='"+onclick+"'>Show/Hide Stack</button><div style='display:none'>"+orig.stack+"</div>", 
+            1, 
+            timeout);
+    else new TBI.Notification("Error", message, 1, timeout);
+}
+// END CONSOLE NOTIFICATIONS //
+
 // Creates a customizable, absolutely positioned popup element.
 // There can only be one at a time.
 TBI.Popup = function (x, y, head, text) {
@@ -826,8 +706,7 @@ TBI.Notification = function (head, text, type, timeout) {
     } else if (notePrevInfo["head"].indexOf(this.head)!=-1 && notePrevInfo["text"].indexOf(this.text)!=-1) {
         for (var i=0;i<this.noteNum;i++) {
             if ($($(".notification h3")[i]).text() == this.head) {
-                var lines = $(".notification ul").children(),
-                    found = false;
+                var lines = $(".notification ul").children();
                 for (var j=0;j<lines.length;j++) {
                     if ($(lines[j]).text() == this.text) {
                         var prevNum = 0;
@@ -836,10 +715,8 @@ TBI.Notification = function (head, text, type, timeout) {
                         });
                         if (prevNum >= 9) $(lines[j]).attr("class", "list-plus")
                         else $(lines[j]).attr("class", "list-"+(++prevNum));
-                        found = true;
                     }
                 }
-                if (!found) notePrevInfo = {head:[],text:[]};
             }
         }
     }
@@ -885,361 +762,64 @@ TBI.toggleButton = function (element, bool) {
     var isToggled = TBI.isToggled(element);
     if (!isToggled && bool !== false) { element.className += " on"; }
     else if (isToggled && bool !== true) { element.className = element.className.replace(" on",""); }
-    if (!isNull(bool) && bool !== isToggled || isNull(bool)) $(element).click();
+    if (!isNull(bool) && bool !== isToggled) $(element).click();
     return TBI.isToggled(element);
 }
 // Returns whether or not a specified toggleable element is toggled or not.
 TBI.isToggled = function (element) { return element.className.search(" on") != -1; }
-// Sorts a specific table element according to the column and direction specified.
-TBI.sortTable = function (table, colIndex, direction) {
-    if (!(table instanceof HTMLTableElement)) return null; // checks if the table is an element
-    var records = table.querySelectorAll("tbody tr"), // all the rows in the table body
-        refs = {}, // references to the rows using the text content as the key and the row number as the value
-        fields = [], // an array of the text content inside of the specified column of the table (that can be sorted)
-        numbers = true; // whether or not to use the custom number-focused sort() algorithm or use the inbuilt .sort() for text values
-    if (colIndex != -1) for (var i=0;i<records.length;i++) { // this loop checks whether or not the table uses all numerical values
-        var list = records[i].querySelectorAll("td");
-        var item = list[colIndex].innerText;
-        if (numbers && isNaN(parseFloat(item))) numbers = false;
-    }
-    for (var i=0;i<records.length;i++) { // this loop places the items into the fields array and adds the row reference to refs
-        var list = records[i].querySelectorAll("td");
-        if (colIndex != -1) {
-            var item = list[colIndex].innerText.toLowerCase();
-            if (numbers) item = parseFloat(item);
-        } else var item = parseFloat(records[i].className.match(/ torder-[0-9]{1,}/)[0].match(/[0-9]{1,}/)[0]);
-        fields.push(item);
-        refs[item] = i;
-    }
-    if (numbers) fields = sort(fields); // sorting algorithms
-    else fields.sort();
-    if (direction) fields.reverse(); // whether or not to reverse the order
-    $(table.getElementsByTagName("tbody")[0]).empty(); // empty the table body (too bad if anything other than <tr>s are inside of it)
-    for (var i=0;i<fields.length;i++) table.getElementsByTagName("tbody")[0].appendChild(records[refs[fields[i]]]); 
-    // and add in the rows in the right order
-}
-// Generates a desktop notification outside of the regular environment.
-function Note(img, title, desc, link) {
-    if (isNull(window.Notification)) return null;
-    var note = {title:title,body:desc,icon:img,lang:"en"};
-    if (!isNull(link))
-        note.onclick = function () {
-            window.open(link);
-            note.close();
-        }
-    new Notification(title, note);
-}
-// A 2D canvas context constructor.
-function Canvas2D(id) {
-    var curr = gebi(id);
-    if (curr.getContext && !isNull(curr))
-        var ctx = curr.getContext("2d");
-    else return null;
-    return ctx;
-}
-Canvas2D.dotEnabled = true;
-// Adds a coordinate popup to a specified canvas.
-Canvas2D.inspector = function (context) {
-    var cvs = context.canvas;
-    $(cvs).off("mousemove");
-    if (context.inspector) {
-        $(cvs).mousemove(function (event) {
-            new TBI.Popup(
-                event.clientX + 20,
-                event.clientY + 20,
-                "Canvas Inspector",
-                event.offsetX + "X, " + event.offsetY + "Y"
-            );
-        });
-        $(cvs).mouseleave(function () { $('.popup').remove() });
-    } else return null;
-}
-Canvas2D.set = function (context, type, style, width) {
-    isNull(width)?1:width;
-    switch (type) {
-        case "stroke": context.strokeStyle = style; context.lineWidth = width; break;
-        case "fill": context.fillStyle = style; break;
-        case "font": context.font = style; break;
-    }
-}
-// Processes a string of canvas commands.
-Canvas2D.path = function (context, obj) {
-    var path = obj.path;
-    var type = obj.type;
-    var style = obj.style;
-    context.save();
-    switch (type) { 
-        case "stroke": context.strokeStyle = style; break; 
-        case "fill": context.fillStyle = style; break; 
-        default: return false;
-    }
-    context.beginPath();
-    context.moveTo(path[0][0], path[0][1]);
-    for (var i = 1; i < path.length; i++) 
-        context.lineTo(path[i][0], path[i][1]);
-    context.closePath();
-    switch (type) {
-        case "stroke": context.stroke(); break;
-        case "fill": context.fill(); break;
-        default: return false;
-    }
-    context.restore();
-}
-Canvas2D.reset = function (context) {
-    context.closePath();
-    context.beginPath();
-    context.firstPos = [];
-    context.secondPos = [];
-    return 0;
-}
-Canvas2D.dot = function (x, y, colour) {
-    var v = Canvas2D.dotEnabled ? "visible" : "hidden";
-    $("body").append("<div class='cvs-dot' style='background:"+colour+";left:"+
-        x+"px;top:"+y+"px;visibility:"+v+";'></div>");
-}
-// A WebGL canvas constructor.
-function Canvas3D(cvs) {
-    var gl = null;
-    try { gl = cvs.getContext("webgl") || cvs.getContext("experimental-webgl"); }
-    catch (e) {} 
-    if (isNull(gl)) { 
-        error("WebGL failed to initialize.");
-        gl = null;
-    }
-    return gl;
-}
-// Designates outgoing links.
-TBI.updateLinks = function () {
-    for (var i = 0; i < $("a[href]").length; i++) {
-        if ($("a[href]:nth("+i+")").attr("href").search(/((http|https|mailto|news):|\/\/)/) == 0) {
-            $("a[href]:nth("+i+")").attr("target", "_blank");
-            if ($("a[href]:nth("+i+")")[0].className.search(" external") == -1)
-                $("a[href]:nth("+i+")")[0].className += " external";
-        }
-    }
-    $("#top a").click(function () {
-        if (!isNull(location.hash) && !isNull($(location.hash))) {
-            TBI.timerSet("scroll",10,function () {
-                if (!isNull($(location.hash).offset())) {
-                    $(document).scrollTop(parseInt($(location.hash).offset().top - 57));
-                    TBI.timerClear("scroll");
-                }
-            });
-        }
-    });
-}
+// END MISC FRAMEWORKS //
 // START INCLUDE CODE //
 // Code for implementing a client-side HTML includes system.
 var HTMLIncludes = {
     info: [],
     getDone: [],
     includes: [],
-    getIndex: function () {
-        var xhr = new TBI.AJAX("/assets/data/includes.json", function () {
+    getIndex: function (index, whenDone) {
+        var xhr = new AJAX(index, function () {
             HTMLIncludes.info = $.parseJSON(xhr.response).includes;
-            TBI.Loader.complete("HTMLIncIndex", TBI.Loader.DONE);
+            HTMLIncludes.get(whenDone);
         });
     },
-    get: function () {
+    get: function (whenDone) {
         var curr = 0;
         HTMLIncludes.getDone = new Array(HTMLIncludes.info.length);
-        TBI.timerSet("includes", 0, function () {
+        timerSet("includes", 0, function () {
             if (!HTMLIncludes.getDone[curr]) {
                 HTMLIncludes.getDone[curr] = true;
                 var xhr = new TBI.AJAX(HTMLIncludes.info[curr].source, function () {
                     HTMLIncludes.includes[curr] = xhr.response;
-                    var oldHTML = HTMLIncludes.info[curr].replace?"":$(HTMLIncludes.info[curr].insert).html();
-                    $(HTMLIncludes.info[curr].insert).html(oldHTML + xhr.response);
+                    $(HTMLIncludes.info[curr].insert).html(xhr.response);
                     if (curr == HTMLIncludes.getDone.length - 1) {
-                        TBI.timerClear("includes");
-                        TBI.Loader.event("HTMLIncludes #"+curr+": "+HTMLIncludes.info[curr].source);
-                        TBI.Loader.complete("HTMLIncludes", TBI.Loader.DONE);
-                    } else { 
-                        TBI.Loader.event("HTMLIncludes #"+curr+": "+HTMLIncludes.info[curr].source); 
-                        curr++; 
-                    }
+                        timerClear("includes");
+                        whenDone();
+                    } else curr++;
                 });
             }
         });
     }
 };
 // END INCLUDE CODE //
-// Fetches a dynamic content manifest.
-TBI.fetchIndex = function () {
-    var xhr = new TBI.AJAX("/assets/data/work.json", function () {
-        TBI.content = $.parseJSON(xhr.response).content;
-        for (var i=0;i<TBI.content.length;i++) {
-            TBI[TBI.content[i].name] = $.parseJSON(xhr.response)[TBI.content[i].id];
-            if (path.isEqual(TBI.content[i].path.split("/"))) TBI.setupContent(TBI.content[i]);
-        }
-        TBI.Loader.complete("protoIndex", TBI.Loader.DONE);
-    });
-}
-// Sets up a type of dynamic content.
-TBI.setupContent = function (type) {
-    for (var i=0;i<TBI[type.name].length;i++) {
-        var items = TBI[type.name];
-        var titleText = "";
-        if (!isNull(items[i].link)) titleText += "<a href='"+items[i].link+"'>";
-        titleText += items[i].name;
-        if (!isNull(items[i].link)) titleText += "</a>";
-        $($("h2.item, h3.item")[i]).html(titleText);
-        $($("h2.item, h3.item")[i]).attr("id",items[i].id);
-        var toggleHTML = "";
-        toggleHTML += "<span class='right'><a href='javascript:void(0)' ";
-        toggleHTML += "class='up-down on' for='.item-info:nth("+i+")'>";
-        toggleHTML += "Toggle</a></span>";
-        $($(".version")[i]).html(items[i].version + toggleHTML);
-    }
-}
-TBI.checkFonts = function () {
-    if ($("#fontload-rw").length == 0) { 
-        TBI.Loader.complete("Fonts", TBI.Loader.ERR);
-        return false; 
-    }
-    var fonts = ["os", "rw", "rwb", "ri"],
-        ftimer = 0;
-    TBI.timerSet("fontload", 10, function () {
-        var fontsLoaded = 0;
-        for (var i=0;i<fonts.length;i++) if (parseInt($("#fontload-"+fonts[i]).css("width")) > 8) fontsLoaded++;
-        if (fontsLoaded >= fonts.length || ftimer > 2000) {
-            TBI.timerClear("fontload");
-            $("#fontload").remove();
-            TBI.Loader.complete("Fonts", TBI.Loader.DONE);
-        }
-        ftimer+=10;
-    });
-}
-var testtime = new Date().getTime();
-// Called when the HTML includes of the page have all loaded.
-$(document).on("pageload", function () {
-    TBI.loaded = true;
-    TBI.Loader.event("Page loaded", true);
-    $("html")[0].className = $("html")[0].className.replace(/(init|loading)/, "");
-    TBI.findPage();
-    TBI.checkNav();
-    TBI.navMoveTo($("#curr"));
-    TBI.updateLinks();
-    TBI.updateUI();
-    if (!isNull(location.hash) && !isNull($(location.hash.toString()))) {
-        TBI.timerSet("scroll",10,function () {
-            if (!isNull($(location.hash).offset())) {
-                $(document).scrollTop(parseInt($(location.hash).offset().top - 57));
-                TBI.timerClear("scroll");
-            }
-        });
-    }
-    var konami = ["up","up","down","down","left","right","left","right","b","a"],
-        kCode = 0;
-    $(document).keydown(function (event) {
-        if (convertKeyDown(event) == konami[kCode]) kCode++; 
-        else kCode = 0;
-        if (kCode >= konami.length) 
-            if (!path.isEqual(["test"])) location.href = location.origin + "/test/";
-            else if (!isNull(history)) history.back();
-    });
-});
-window.onerror = function (message, url, line, column, e) { 
-    if (TBI.error == undefined) document.body.innerHTML = "Error encountered in "+url+":"+line+":"+column+"\n"+message;
-    else TBI.error(e); 
-    TBI.log("Error encountered in "+url+":"+line+":"+column+"\n"+message); 
-    return true; 
-}
 $(function () {
-    TBI.Loader.event("Ready", true);
-    TBI.requestManager();
-    TBI.checkNav();
-    $(document).scroll(TBI.checkNav);
-    TBI.Loader.init();
+    requestManager();
+    $("button.toggle").off("mouseup");
+    $("button.toggle").mouseup(function (event) {
+        if (event.button != 0) return true;
+        var a = " on",
+            c = this.className;
+        this.className=c.search(a)!=-1?c.replace(a,""):c+a;
+    });
+    $(".up-down").off("mouseup");
+    $(".up-down").mouseup(function () {
+        if (event.button != 0) return true;
+        var toSwitch = $($(this).attr("for"));
+        if (toSwitch.length > 0) toSwitch.slideToggle();
+        var a = " on";
+            c = this.className;
+        this.className=c.search(a)!=-1?c.replace(a,""):c+a;
+    });
+    $(document).trigger("pageload");
 });
-TBI.Loader = {
-    ERR: -2,
-    TIMEOUT: -3,
-    DONE: -1,
-    progress: [],
-    completed: [],
-    timer: 0,
-    settings: {
-        timeout: 10000,
-        time_until_load_screen: 2000,
-        interval: 10
-    },
-    jobs: [
-        {
-            func: HTMLIncludes.getIndex,
-            id: "HTMLIncIndex",
-            dependencies: [],
-            conditions: [],
-            done: "HTMLIncludes manifest loaded"
-        },
-        {
-            func: HTMLIncludes.get,
-            id: "HTMLIncludes",
-            dependencies: ["HTMLIncIndex"],
-            conditions: []
-        },
-        {
-            func: TBI.fetchIndex,
-            id: "protoIndex",
-            dependencies: [],
-            conditions: [],
-            done: "Content manifest loaded"
-        },
-        {
-            func: TBI.checkFonts,
-            id: "Fonts",
-            dependencies: [],
-            conditions: [function(){return $("#fontload-rw").length>0}]
-        }
-    ],
-    searchJobs: function (id) {
-        for (var i=0;i<TBI.Loader.jobs.length;i++) if (TBI.Loader.jobs[i].id == id) return i;
-        return null;
-    },
-    init: function () {
-        TBI.Loader.event("Loader initializing");
-        TBI.timerSet("loader", TBI.Loader.settings.interval, function () {
-            for (var i=0;i<TBI.Loader.jobs.length;i++) {
-                var job = TBI.Loader.jobs[i], 
-                    depSatisfied = true,
-                    condSatisfied = true;
-                if (TBI.Loader.progress.indexOf(job.id) == -1 && TBI.Loader.completed.indexOf(job.id) == -1) {
-                    job.dependencies.forEach(function (dep) { if (TBI.Loader.completed.indexOf(dep) == -1) depSatisfied = false });
-                    job.conditions.forEach(function (cond) { if (!cond()) condSatisfied = false });
-                    if (depSatisfied && condSatisfied) {
-                        job.func();
-                        TBI.Loader.event("Executed "+job.id);
-                        TBI.Loader.progress.push(job.id);
-                    }
-                }
-            }
-            if (TBI.Loader.completed.length >= TBI.Loader.jobs.length || TBI.Loader.timer > TBI.Loader.settings.timeout) {
-                TBI.timerClear("loader");
-                $(document).trigger("pageload");
-            } else if (TBI.Loader.timer > TBI.Loader.settings.time_until_load_screen)
-                $("html")[0].className = $("html")[0].className.replace("init", "loading");
-            TBI.Loader.timer+=TBI.Loader.settings.interval;
-        });
-    },
-    complete: function (id, status) {
-        var loc = TBI.Loader.searchJobs(id);
-        if (!isNull(loc) && TBI.Loader.completed.indexOf(id) == -1) TBI.Loader.completed.push(id);
-        if (isNull(loc)) var message = id;
-        else switch (status) {
-            case TBI.Loader.ERR: var message = isNull(TBI.Loader.jobs[loc].error)?id+" failed":TBI.Loader.jobs[loc].error; break;
-            case TBI.Loader.TIMEOUT: var message = isNull(TBI.Loader.jobs[loc].timeout)?id+" timed out":TBI.Loader.jobs[loc].timeout; break;
-            case TBI.Loader.DONE: var message = isNull(TBI.Loader.jobs[loc].done)?id+" loaded":TBI.Loader.jobs[loc].done; break;
-            default: var message = id;
-        }
-        TBI.Loader.event(message);
-    },
-    event: function (message, important) {
-        TBI.Loader.log.push({time:new Date().getTime() - testtime,message:message});
-        if (important) console.log("["+(new Date().getTime() - testtime)+"ms] "+message);
-    },
-    log: []
-}
-// START OF COOKIE CODES //
+// START OF COOKIE CODE //
 function createCookie(name, value, days) {
     if (days) {
         var date = new Date();
@@ -1259,4 +839,4 @@ function readCookie(name) {
     return null;
 }
 function eraseCookie(name) { createCookie(name, "", -1) }
-// END OF COOKIE CODES //
+// END OF COOKIE CODE //

@@ -3,25 +3,25 @@
 <head>
     <title>CountDown</title>
     <meta charset="utf-8" />
-    <link rel="shortcut icon" href="/assets/res/icons/time48.png" />
-    <link rel="stylesheet" href="/assets/css/picker.css" />
-    <link rel="stylesheet" href="/assets/css/jquery-ui.css" />
-    <link rel="stylesheet" href="/assets/css/sheet.css" />
-    <link rel="stylesheet" href="/assets/css/cd3.css" />
-    <script src="/assets/js/jquery2.min.js"></script>
-    <script src="/assets/js/jquery-ui.min.js"></script>
-    <script src="/assets/js/picker.js"></script>
-    <script src="/assets/js/tbi.js"></script>
-    <script src="/assets/js/cd3.js"></script>
+    <link rel="shortcut icon" href="assets/res/icons/time48.png" />
+    <link rel="stylesheet" href="assets/css/picker.css" />
+    <link rel="stylesheet" href="assets/css/jquery-ui.css" />
+    <link rel="stylesheet" href="assets/css/base.css" />
+    <link rel="stylesheet" href="assets/css/cd3.css" />
+    <script src="assets/js/jquery2.min.js"></script>
+    <script src="assets/js/jquery-ui.min.js"></script>
+    <script src="assets/js/picker.js"></script>
+    <script src="assets/js/tblib.js"></script>
+    <script src="assets/js/cd3.js"></script>
 </head>
 <body>
-    <header></header>
     <div class="cdown set" id="cdown3">
         <div class="cdown-head">
             <h1 class="cdh-title">Set CountDown</h1>
-            <h2 class="cdh-dest cdo"><time datetime="2000-01-01T00:00:00"></time></h2>
+            <h2 class="cdh-dest cdo"><time datetime="1970-01-01T00:00:00"></time></h2>
             <button class="cdh-format toggle cdo">Shorten</button>
             <button class="cdh-mode toggle cds">Offset Mode</button>
+            <button class="cdh-timer toggle cds">Timer Mode</button>
             <button class="cdh-geturl up-down cdo" for=".cdh-url">URL</button>
             <button class="cdh-getdest up-down on cdo" for=".cdh-dest">Finish Time</button>
             <button class="cdh-reset cdo">Reset</button>
@@ -101,8 +101,8 @@
             <h2 class="cdo-active"></h2>
         </div>
         <audio class="cdown-notify">
-            <source src="/assets/res/sounds/notify.ogg" type="audio/ogg" />
-            <source src="/assets/res/sounds/notify.mp3" type="audio/mpeg" />
+            <source src="assets/res/sounds/notify.ogg" type="audio/ogg" />
+            <source src="assets/res/sounds/notify.mp3" type="audio/mpeg" />
         </audio>
     </div>
 </body>

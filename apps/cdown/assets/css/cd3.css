@@ -1,0 +1,50 @@
+.cdown {
+    margin:72px auto;
+    margin-bottom:0;
+    text-align:center;
+}
+.cdown.set .cdo, .cdown.out .cds {
+    display:none;
+}
+.cdown-head, .cdown-set, .cdown-out {
+    background:#eee;
+    padding:12px 18px;
+    margin:24px 48px;
+    box-shadow:4px 4px 0px 0px rgba(0,0,0,0.1);
+}
+.cds-time {
+    font-size:22px;
+}
+.cds-defined {
+    margin-bottom:14px;
+}
+.cds-fromnow {
+    display:none;
+}
+.cds-time input {
+    width:40px;
+}
+.cdown-set input {
+    padding:8px 16px;
+    font-size:22px;
+}
+.cdo-active {
+    padding:18px 36px;
+    font-size:64px;
+    font-family:"Raleway", "Open Sans", sans-serif;
+    font-weight:bold;
+    text-shadow:4px 4px 0px rgba(0,0,0,0.1);
+    color:#222;
+    margin-bottom:0;
+    text-align:center;
+}
+.cdown-out h3, .cdown-set h2, .cds-date, .cdh-dest { text-align:center; }
+.cdh-url {
+    font-size:24px;
+    margin-top:10px;
+    display:none;
+}
+.cdh-dest {
+    font-size:32px;
+    margin-bottom:20px;
+}

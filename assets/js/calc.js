@@ -14,12 +14,12 @@ Calc.init = function () {
 }
 Calc.shorten = function (num) {
     num = num.toString();
-    if (num.length > 15) do {
+    while (num.length > 14) {
         if (num.search("e") != -1) {
             var nums = num.split("e");
             num = nums[0].substring(0, nums[0].length-1) + "e" + nums[1];
         } else num = num.substring(0, num.length-1);
-    } while (num.length > 15)
+    }
     return num;
 }
 Calc.update = function (string, fsh) {
@@ -88,7 +88,7 @@ Calc.compute = function (f) {
         case "^": result = pow(parseFloat(Calc.numbers[0]), parseFloat(Calc.numbers[1])); break;
         default: result = 0; break;
     } else result = 0;
-    result = Calc.shorten(result);
+    result = Calc.shorten(parseFloat(result.fix()));
     if (Calc.args(f) == 1) Calc.status(f+"("+Calc.numbers[0]+") = "+result, true);
     else if (Calc.args(f) == 2) Calc.status(Calc.numbers[0]+" "+f+" "+Calc.numbers[1]+" = "+result, true);
     return result;

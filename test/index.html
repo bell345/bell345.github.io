@@ -1,13 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="no-js">
 <head>
     <title>Thomas Bell - Testing</title>
     <meta charset="utf-8" />
     <link rel="shortcut icon" href="/favicon.png" />
     <link rel="stylesheet" href="/assets/css/sheet.css" />
+    <link rel="stylesheet" href="/assets/css/test.css" />
     <script src="/assets/js/jquery2.min.js"></script>
     <script src="/assets/js/tbi.js"></script>
-    <script src="./test.js"></script>
+    <script src="/assets/js/test.js"></script>
 </head>
 <body>
     <header></header>
@@ -15,24 +16,19 @@
         <div id="maincontent">
             <h2 class="item">Scale</h2>
             <h3 class="version"></h3>
-            <div class="item-main">
+            <div class="item-info">
                 <canvas id="scale" width="600" height="150" class="item"></canvas>
             </div>
-            <h2 class="item">Cartesian Plane</h2>
-            <h3 class="version"></h3>
-            <div class="item-main">
-                <canvas id="cart-plane" width="600" height="600" class="item"></canvas>
-            </div>
             <h2 class="item">Table</h2>
-            <div class="item-main">
+            <div class="item-info">
                 <table class="main item sortable">
                     <thead>
                         <tr>
-                            <th>Part</th>
-                            <th>Cost</th>
+                            <th class="sort">Part</th>
+                            <th class="sort">Cost</th>
                             <th>Stats</th>
-                            <th>Manufacturer</th>
-                            <th>Name</th>
+                            <th class="sort">Manufacturer</th>
+                            <th class="sort">Name</th>
                         </tr>
                     </thead>
                     <tbody>
