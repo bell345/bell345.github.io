@@ -6,6 +6,7 @@
     <link rel="shortcut icon" href="/favicon.png" />
     <link rel="stylesheet" href="/assets/css/sheet.css" />
     <link rel="stylesheet" href="/assets/css/test.css" />
+    <script src="/assets/js/gl-matrix.min.js"></script>
     <script src="/assets/js/jquery2.min.js"></script>
     <script src="/assets/js/tbi.js"></script>
     <script src="/assets/js/test.js"></script>
@@ -19,7 +20,12 @@
             <div class="item-info">
                 <canvas id="scale" width="600" height="150" class="item"></canvas>
             </div>
-            <h2 class="item">Table</h2>
+            <h2 class="item">Timeline</h2>
+            <h3 class="version"></h3>
+            <div class="item-info">
+                <canvas id="tline-canvas" width="600" height="350" class="item"></canvas>
+            </div>
+            <h2>Table</h2>
             <div class="item-info">
                 <table class="main item sortable">
                     <thead>
@@ -90,6 +96,66 @@
                         </tr>
                     </tbody>
                 </table>
+            </div>
+            <h2>Trigonometry Calculator</h2>
+            <div class="item-info">
+                <fieldset>
+                    <select id="trig-choice1">
+                        <option value="hyp" selected>Hypotenuse</option>
+                        <option value="adj">Adjacent side</option>
+                        <option value="opp">Opposite side</option>
+                        <option value="a">Angle (degrees)</option>
+                    </select>
+                    <input type="text" id="trig-input1" />
+                </fieldset>
+                <fieldset>
+                    <select id="trig-choice2">
+                        <option value="hyp">Hypotenuse</option>
+                        <option value="adj" selected>Adjacent side</option>
+                        <option value="opp">Opposite side</option>
+                        <option value="a">Angle (degrees)</option>
+                    </select>
+                    <input type="text" id="trig-input2" />
+                </fieldset>
+                <fieldset>
+                    <br />
+                    <select id="trig-choice3">
+                        <option value="hyp">Hypotenuse</option>
+                        <option value="adj">Adjacent side</option>
+                        <option value="opp" selected>Opposite side</option>
+                        <option value="a">Angle (degrees)</option>
+                    </select>
+                    <input type="text" id="trig-out" disabled />
+                    <button id="trig-submit">Calculate</button>
+                </fieldset>
+                <canvas id="trig-canvas" width="120" height="120"></canvas>
+            </div>
+            <h2>WebGL Testing</h2>
+            <div class="item-info">
+                <script id="shader-fs" type="x-shader/x-fragment">
+                    precision mediump float;
+                    
+                    varying vec4 vColor;
+                    
+                    void main(void) {
+                        gl_FragColor = vColor;
+                    }
+                </script>
+                <script id="shader-vs" type="x-shader/x-vertex">
+                    attribute vec3 aVertexPosition;
+                    attribute vec4 aVertexColor;
+                    
+                    uniform mat4 uMVMatrix;
+                    uniform mat4 uPMatrix;
+                    
+                    varying vec4 vColor;
+                    
+                    void main(void) {
+                        gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+                        vColor = aVertexColor;
+                    }
+                </script>
+                <canvas id="gl-canvas" width="600" height="600"></canvas>
             </div>
         </div>
         <div id="sidebar"></div>

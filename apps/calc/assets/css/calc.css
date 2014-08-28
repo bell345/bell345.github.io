@@ -51,6 +51,7 @@
     font-family:"Audimat Mono", "Consolas", monospace;
     font-size:18px;
     line-height:24px;
+    white-space:nowrap;
 }
 #calc-status span:before { content:"."; font-size:0; }
 #calc-status button {
@@ -145,4 +146,12 @@ button.calcbh {
 }
 #calc-ac .calc-scut {
     color:#555;
+}
+#calc-sqrt .calc-sh {
+    position:relative;
+}
+#calc-sqrt .calc-sh sup {
+    position:absolute;
+    top:4px;
+    left:4px;
 }

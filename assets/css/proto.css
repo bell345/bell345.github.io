@@ -568,6 +568,7 @@ button.calcbh {
     position:absolute;
     left:0;
     top:0;
+    cursor:crosshair;
 }
 /* =============== */
 /* CARTESIAN PLANE */
@@ -580,10 +581,56 @@ button.calcbh {
     width:48px;
 }
 #cart-buttons button {
-    height:50%;
+    height:33%;
     width:100%;
     font-size:24px;
 }
 #cart-container {
     position:relative;
+}
+#cart-plane {
+    cursor:move;
+    cursor:-webkit-grab;
+    cursor:-moz-grab;
+    cursor:grab;
+}
+#cart-plane.mdown {
+    cursor:-webkit-grabbing;
+    cursor:-moz-grabbing;
+    cursor:grabbing;
+}
+#cart-legend {
+    position:absolute;
+    top:0;
+    left:0;
+    padding:4px 6px;
+    background:rgba(220,220,220,0.6);
+    max-width:210px;
+    max-height:200px;
+    overflow-x:hidden;
+    overflow-y:auto;
+    -webkit-user-select:none;
+    -moz-user-select:none;
+    user-select:none;
+    text-align:center;
+}
+#cart-legend ul {
+    text-align:left;
+    white-space:nowrap;
+}
+#cart-legend li {
+    list-style:none;
+    font-size:14px;
+    border-left:20px solid;
+    padding-left:10px;
+    overflow:auto;
+    cursor:pointer;
+}
+#cart-legend.rm-mode li {
+    color:#f33 !important;
+}
+#cart-newfunc {
+    width:80%;
+    display:block;
+    margin:4px auto;
 }

@@ -87,7 +87,7 @@ CD3.format = function (time, formatstr) {
         "MM": zeroPrefix(time.getMonth()+1), // prefixed month (03)
         "M": time.getMonth()+1, // month (3)
         "YYYY": time.getFullYear(), // long year (2004)
-        "YY": time.getYear(), // short year (04)
+        "YY": time.getFullYear().toString().substring(2,4), // short year (04)
         "HH": zeroPrefix(time.getHours()), // prefixed hours (04)
         "H": time.getHours(), // hours (4)
         "hh": (time.getHours()==0||time.getHours()==12?"12":zeroPrefix(time.getHours()%12)), // prefixed 12-hour (05) from (17)

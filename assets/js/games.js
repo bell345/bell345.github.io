@@ -395,3 +395,88 @@ $(document).on("pageload", function () {
     $("#qdr-retry").click(function () { QDR.screen = 2 });
 });
 // END QDR CODE // 2892-3141 = 249 lines
+var PipeG = {
+    pipeDefs: {
+        PLUS_JUNCTION: 0,
+        T_JUNCTION: 1,
+        STRAIGHT: 2,
+        BUTT: 3,
+        CORNER: 4
+    },
+    tileWidth: 64,
+    levels: [
+        {
+            grid:
+                [[[4,2],[2,0],[2,0],[2,0],[2,0],[2,0],[2,0],[2,0],[4,1]]
+                ,[[2,1],[ , ],[ , ],[ , ],[ , ],[ , ],[ , ],[ , ],[2,1]]
+                ,[[2,1],[ , ],[ , ],[ , ],[ , ],[ , ],[ , ],[ , ],[2,1]]
+                ,[[2,1],[ , ],[ , ],[ , ],[ , ],[ , ],[ , ],[ , ],[2,1]]
+                ,[[2,1],[ , ],[ , ],[ , ],[ , ],[ , ],[ , ],[ , ],[2,1]]
+                ,[[2,1],[ , ],[ , ],[ , ],[ , ],[ , ],[ , ],[ , ],[2,1]]
+                ,[[2,1],[ , ],[ , ],[ , ],[ , ],[ , ],[ , ],[ , ],[2,1]]
+                ,[[2,1],[ , ],[ , ],[ , ],[ , ],[ , ],[ , ],[ , ],[2,1]]
+                ,[[4,3],[2,0],[2,0],[2,0],[2,0],[2,0],[2,0],[2,0],[4,0]]],
+            start: new Coords(0,0),
+            end: new Coords(8,8)
+        }
+    ]
+};
+PipeG.setup = function (id) {
+    PipeG.id = id;
+    PipeG.canvas = gebi(id);
+    PipeG.$ = new Canvas2D(id);
+    PipeG.width = PipeG.canvas.width;
+    PipeG.height = PipeG.canvas.height;
+    PipeG.tiles = Array.dimensional(
+        2, 
+        [PipeG.width/PipeG.tileWidth, PipeG.height/PipeG.tileWidth].reverse(), 
+        [null,null,false]);
+    PipeG.pipeImage = new Image();
+    PipeG.pipeImage.src = "/assets/res/sheet/pipes.png";
+    PipeG.pipeOffImage = new Image();
+    PipeG.pipeOffImage.src = "/assets/res/sheet/pipesoff.png";
+}
+PipeG.init = function () {
+    PipeG.readLevel(PipeG.levels[0]);
+    TBI.timerSet("pipeg", 50, function () {
+        PipeG.loop();
+    });
+}
+PipeG.readLevel = function (level) {
+    for (var i=0;i<level.grid.length;i++) {
+        for (var j=0;j<level.grid[i].length;j++) {
+            var item = level.grid[i][j];
+            PipeG.addPipe(item[0], item[1], i, j, false);
+        }
+    }
+    if (PipeG.checkPipe(level.start.x, level.start.y)) {
+        var item = PipeG.tiles[level.start.x][level.start.y];
+        PipeG.addPipe(item[0], item[1], level.start.x, level.start.y, true);
+    }
+}
+PipeG.drawPipe = function (pipe, rotation, x, y, on) {
+    var tw = PipeG.tileWidth;
+    PipeG.$.save();
+    PipeG.$.drawImage(on?PipeG.pipeImage:PipeG.pipeOffImage, 64*pipe, 64*rotation, 64, 64, x, y, tw, tw);
+    PipeG.$.restore();
+}
+PipeG.checkPipe = function (x, y) {
+    return !isNull(PipeG.tiles[x][y][0]);
+}
+PipeG.addPipe = function (pipe, rotation, x, y, on) {
+    PipeG.tiles[x][y] = [pipe,rotation,on];
+}
+PipeG.loop = function () {
+    PipeG.$.clearRect(0,0,PipeG.width,PipeG.height);
+    var tw = PipeG.tileWidth;
+    for (var i=0;i<PipeG.tiles.length;i++) {
+        for (var j=0;j<PipeG.tiles[i].length;j++) {
+            var curr = PipeG.tiles[i][j];
+            if (!isNull(curr[0])) PipeG.drawPipe(curr[0], curr[1], i*tw, j*tw, curr[2]);
+        }
+    }
+}
+$(document).on("pageload", function () {
+    PipeG.setup("pipeg-canvas");
+    PipeG.init();
+});

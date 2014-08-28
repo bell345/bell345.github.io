@@ -51,9 +51,9 @@ Calc.func = function (f) {
         Calc.numbers = [];
         Calc.cfunc = "";
     } else if (!isNull(Calc.working)) {
-        if (Calc.args(f) > Calc.numbers.length) Calc.numbers.push(Calc.working);
+        if (Calc.args(f) > Calc.numbers.length && !Calc.fshown) Calc.numbers.push(Calc.working);
         else Calc.numbers[0] = Calc.working;
-        if (Calc.args(f) <= Calc.numbers.length) Calc.numbers = [Calc.compute(f)];
+        if (Calc.args(f) <= Calc.numbers.length) Calc.numbers = [Calc.compute(Calc.cfunc)];
         if (Calc.args(f) > Calc.numbers.length) {
             Calc.update(f, true);
             Calc.status(Calc.numbers[0].toString()+" "+f, false);
@@ -69,12 +69,12 @@ Calc.compute = function (f) {
         case "squared": result = pow(Calc.numbers[0], 2); break;
         case "cubed": result = pow(Calc.numbers[0], 3); break;
         case "factorial": result = factorial(Calc.numbers[0]); break;
-        case "sin": result = Calc.degrees ? rtd(sin(Calc.numbers[0])) : sin(Calc.numbers[0]); break;
-        case "cos": result = Calc.degrees ? rtd(cos(Calc.numbers[0])) : cos(Calc.numbers[0]); break;
-        case "tan": result = Calc.degrees ? rtd(tan(Calc.numbers[0])) : tan(Calc.numbers[0]); break;
-        case "asin": result = Calc.degrees ? rtd(asin(Calc.numbers[0])) : asin(Calc.numbers[0]); break;
-        case "acos": result = Calc.degrees ? rtd(acos(Calc.numbers[0])) : acos(Calc.numbers[0]); break;
-        case "atan": result = Calc.degrees ? rtd(atan(Calc.numbers[0])) : atan(Calc.numbers[0]); break;
+        case "sin": result = Calc.degrees ? dtr(sin(Calc.numbers[0])) : sin(Calc.numbers[0]); break;
+        case "cos": result = Calc.degrees ? dtr(cos(Calc.numbers[0])) : cos(Calc.numbers[0]); break;
+        case "tan": result = Calc.degrees ? dtr(tan(Calc.numbers[0])) : tan(Calc.numbers[0]); break;
+        case "asin": result = Calc.degrees ? dtr(asin(Calc.numbers[0])) : asin(Calc.numbers[0]); break;
+        case "acos": result = Calc.degrees ? dtr(acos(Calc.numbers[0])) : acos(Calc.numbers[0]); break;
+        case "atan": result = Calc.degrees ? dtr(atan(Calc.numbers[0])) : atan(Calc.numbers[0]); break;
         case "tento": result = pow(10, Calc.numbers[0]); break;
         case "rint": result = randomInt(Calc.numbers[0]); break;
         case "ln": result = log(Calc.numbers[0]); break;
@@ -88,7 +88,7 @@ Calc.compute = function (f) {
         case "^": result = pow(parseFloat(Calc.numbers[0]), parseFloat(Calc.numbers[1])); break;
         default: result = 0; break;
     } else result = 0;
-    result = Calc.shorten(parseFloat(result.fix()));
+    result = Calc.shorten(parseFloat(result.fixFloat()));
     if (Calc.args(f) == 1) Calc.status(f+"("+Calc.numbers[0]+") = "+result, true);
     else if (Calc.args(f) == 2) Calc.status(Calc.numbers[0]+" "+f+" "+Calc.numbers[1]+" = "+result, true);
     return result;
@@ -118,7 +118,7 @@ Calc.scutChange = function (scut) {
     if (scut) $(".calc-scut").show();
     else $(".calc-scut").hide();
 }
-$(function () {
+$(document).on("pageload", function () {
     Calc.setup();
     Calc.init();
     $(".calcn").click(function () { Calc.digit(parseInt($(this).html())); });

@@ -38,7 +38,8 @@ Calc.digit = function (digit) {
 }
 Calc.args = function (f) {
     if (f.search(/[\+\-\*\/\^]/) != -1) return 2;
-    else if (f.search(/(sqrt|squared|cubed|tento|sin|cos|tan|ln|rint|exp|factorial)/) != -1) return 1;
+    else if (f.search(/(sqrt|cbrt|squared|cubed|tento|sin|cos|tan|ln|rint|exp|factorial)/) != -1) return 1;
+    return 0;
 }
 Calc.sign = function () {
     if (!isNull(Calc.working)) Calc.update(-parseFloat(Calc.working));
@@ -51,10 +52,11 @@ Calc.func = function (f) {
         Calc.numbers = [];
         Calc.cfunc = "";
     } else if (!isNull(Calc.working)) {
-        if (Calc.args(f) > Calc.numbers.length) Calc.numbers.push(Calc.working);
+        var args = Calc.args(f);
+        if (args > Calc.numbers.length && !Calc.fshown) Calc.numbers.push(Calc.working);
         else Calc.numbers[0] = Calc.working;
-        if (Calc.args(f) <= Calc.numbers.length) Calc.numbers = [Calc.compute(f)];
-        if (Calc.args(f) > Calc.numbers.length) {
+        if (args <= Calc.numbers.length) Calc.numbers = [Calc.compute(args>1?Calc.cfunc:f)];
+        if (args > Calc.numbers.length) {
             Calc.update(f, true);
             Calc.status(Calc.numbers[0].toString()+" "+f, false);
         } else Calc.update(Calc.numbers[0].toString(), true);
@@ -66,12 +68,13 @@ Calc.compute = function (f) {
     if (Calc.numbers.length == 0) return false;
     else if (Calc.args(f) == 1 && Calc.numbers.length > 0) with (Math) switch (f) {
         case "sqrt": result = sqrt(Calc.numbers[0]); break;
+        case "cbrt": result = pow(Calc.numbers[0], 1/3); break;
         case "squared": result = pow(Calc.numbers[0], 2); break;
         case "cubed": result = pow(Calc.numbers[0], 3); break;
         case "factorial": result = factorial(Calc.numbers[0]); break;
-        case "sin": result = Calc.degrees ? rtd(sin(Calc.numbers[0])) : sin(Calc.numbers[0]); break;
-        case "cos": result = Calc.degrees ? rtd(cos(Calc.numbers[0])) : cos(Calc.numbers[0]); break;
-        case "tan": result = Calc.degrees ? rtd(tan(Calc.numbers[0])) : tan(Calc.numbers[0]); break;
+        case "sin": result = Calc.degrees ? sin(dtr(Calc.numbers[0])) : sin(Calc.numbers[0]); break;
+        case "cos": result = Calc.degrees ? cos(dtr(Calc.numbers[0])) : cos(Calc.numbers[0]); break;
+        case "tan": result = Calc.degrees ? tan(dtr(Calc.numbers[0])) : tan(Calc.numbers[0]); break;
         case "asin": result = Calc.degrees ? rtd(asin(Calc.numbers[0])) : asin(Calc.numbers[0]); break;
         case "acos": result = Calc.degrees ? rtd(acos(Calc.numbers[0])) : acos(Calc.numbers[0]); break;
         case "atan": result = Calc.degrees ? rtd(atan(Calc.numbers[0])) : atan(Calc.numbers[0]); break;
@@ -140,8 +143,6 @@ $(function () {
     $("#calc-pi").click(function () { Calc.shift ? Calc.update(Math.E) : Calc.update(Math.PI); });
     $("#calc-rnd").click(function () { Calc.shift ? Calc.func("rint") : Calc.update(Math.random()); });
     $("#calc-sign").click(function () { Calc.sign(); });
-    $("#calc-back").click(function () { Calc.update(Calc.working.substring(0, Calc.working.length-1)); });
-    $("#calc-del").click(function () { Calc.update(Calc.working.substring(1)); });
     $("#calc-mode").click(function () { TBI.isToggled(this) ? $(".calc-adv").show() : $(".calc-adv").hide(); });
     $("#calc-deg").click(function () { Calc.degrees = TBI.isToggled(this); });
     $("#calc-shift").click(function () { Calc.shChange(TBI.isToggled(this)); });
@@ -164,20 +165,22 @@ $(function () {
             case "4":Calc.digit(4);break;case "5":Calc.digit(5);break;case "6":Calc.digit(6);break;case "7":Calc.digit(7);break;
             case "8":Calc.digit(8);break;case "9":Calc.digit(9);break;case ".":Calc.digit(".");break;
             case "enter":if (!Calc.enterPressed) { Calc.func("="); Calc.enterPressed = true; }break;
-            case "+":Calc.func("+");break;case "-":Calc.func("-");break;case "*":Calc.func("*");break;case "/":Calc.func("/");break;
+            case "+":Calc.func("+");break;case "-":Calc.func("-");break;case "*":Calc.func("*");break;
+            case "/":Calc.func("/");break;
             case "delete":Calc.update(Calc.working.substring(1));break;case "_":Calc.sign();break;case "c":Calc.init();break;
             case "shift":if(!Calc.shift){TBI.toggleButton($("#calc-shift")[0],true);Calc.shChange(true);}break;
             case "a":TBI.toggleButton(gebi("calc-mode"));break;case "A":TBI.toggleButton(gebi("calc-mode"));break;
             case "d":TBI.toggleButton(gebi("calc-deg"));break;case "D":TBI.toggleButton(gebi("calc-deg"));break;
-            case "u":Calc.func("^");break;case "U":Calc.func("factorial");break;case ":":Calc.func("ln");break;
-            case "i":Calc.func("squared");break;case "I":Calc.func("cubed");break;case "o":Calc.update(Math.PI);break;
-            case "O":Calc.update(Math.E);break;case "p":Calc.func("tento");break;case "P":Calc.func("exp");break;
-            case "h":Calc.func("sin");break;case "H":Calc.func("asin");break;case "j":Calc.func("cos");break;
-            case "J":Calc.func("acos");break;case "k":Calc.func("tan");break;case "K":Calc.func("atan");break;
-            case "l":Calc.update(Math.random());break;case "L":Calc.func("rint");break;case ";":Calc.func("ln");break;
+            case "!":Calc.func("factorial");break;case "l":Calc.func("ln");break;
+            case "i":Calc.func("squared");break;case "I":Calc.func("cubed");break;case "P":Calc.update(Math.PI);break;
+            case "P":Calc.update(Math.E);break;case "x":Calc.func("tento");break;case "X":Calc.func("exp");break;
+            case "s":Calc.func("sin");break;case "S":Calc.func("asin");break;case "o":Calc.func("cos");break;
+            case "O":Calc.func("acos");break;case "t":Calc.func("tan");break;case "T":Calc.func("atan");break;
+            case "n":Calc.update(Math.random());break;case "N":Calc.func("rint");break;case "L":Calc.func("ln");break;
             case "<":TBI.toggleButton(gebi("calc-statusp"));break;case ">":TBI.toggleButton(gebi("calc-statusn"));break;
             case "left":Calc.update(Calc.working.substring(0, Calc.working.length-1));break;case "^":Calc.func("^");break;
-            case "right":Calc.update(Calc.working.substring(1));break;case "r":Calc.func("sqrt");break;case "R":Calc.func("sqrt");break;
+            case "right":Calc.update(Calc.working.substring(1));break;case "r":Calc.func("sqrt");break;
+            case "R":Calc.func("cbrt");break;case "C":$("#calc-status span").html("");Calc.statusLog=[];Calc.init();break;
             case "backspace":Calc.update(Calc.working.substring(0, Calc.working.length-1));return false;break;
             default:return true;
         }

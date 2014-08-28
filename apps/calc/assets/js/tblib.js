@@ -481,7 +481,8 @@ function convertKeyDown(event) {
         91:"super",38:"up",40:"down",37:"left",39:"right",13:"enter",8:"backspace",103:"7",104:"8",105:"9",
         100:"4",101:"5",102:"6",97:"1",98:"2",99:"3",96:"0",110:".",111:"/",106:"*",109:"-",107:"+"
     };
-    if (event.shiftKey && event.which != 16) return shiftUp(event.which, true);
+    if (event.shiftKey && chars[event.which].toUpperCase() != chars[event.which] && chars[event.which].length < 2) return chars[event.which].toUpperCase();
+    else if (event.shiftKey && !isNull(shiftUp(event.which, true))) return shiftUp(event.which, true);
     else return chars[event.which];
 }
 // Converts a normal key press into a shifted one. 
@@ -490,10 +491,12 @@ function shiftUp(key, isKeyDown) {
     if (isKeyDown) {
         var chars = {
             49:'!',50:'@',51:'#',52:'$',53:'%',54:'^',55:'&',56:'*',57:'(',48:')',189:'_',187:'+',192:'~',219:'{',
-            221:'}',220:'|',186:':',222:'"',188:'<',190:'>',111:'?'
+            221:'}',220:'|',186:':',222:'"',188:'<',190:'>',111:'?',65:"A",66:"B",67:"C",68:"D",69:"E",70:"F",
+            71:"G",72:"H",73:"I",74:"J",75:"K",76:"L",77:"M",78:"N",79:"O",80:"P",81:"Q",82:"R",83:"S",84:"T",
+            85:"U",86:"V",87:"W",88:"X",89:"Y",90:"Z"
         };
-        if (isNull(chars[key])) return key.toString();
-        else return chars[key.toString()];
+        if (isNull(chars[key])) return null;
+        else return chars[key];
     } else {
         var chars = {
             '1':'!','2':'@','3':'#','4':'$','5':'%','6':'^','7':'&','8':'*','9':'(','0':')','-':'_','=':'+','`':'~','[':'{',
@@ -501,7 +504,7 @@ function shiftUp(key, isKeyDown) {
         };
         if (key.search(/[a-z]/) != -1 && key.length == 1) return key.toUpperCase(); 
         else if (isNull(chars[key])) return key.toString();
-        else return chars[key.toString()];s
+        else return chars[key.toString()];
     }
 }
 function shiftDown(key) {

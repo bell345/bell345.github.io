@@ -16,11 +16,11 @@ var CD3 = {
     offset: [9001,12,0,24,60,60], // it's over NINE-THOUSAND!!!! - also by 9001AD me and this program would be long dead
     // human-readable terms for the six values to be appended accordingly
     terms: ["year","month","day","hour","minute","second"],
-    LONG_CDOWN: "[0]({y} {yyy})[1]({m} {mmm})[2]({d} {ddd})[3]({H} {HHH})[4]({M} {MMM})[5]({S} {SSS})",
-    SHORT_CDOWN: "[2]({D} {ddd})[3]({HH}:)[4]({MM}:)[5]({SS})"
+    LONG_CDOWN: "[0]({y} {yyy})[1]({M} {MMM})[2]({d} {ddd})[3]({h} {hhh})[4]({m} {mmm})[5]({s} {sss})",
+    SHORT_CDOWN: "[2]({D} {ddd})[3]({hh}:)[4]({mm}:)[5]({ss})"
 };
 // Calculates the difference between two dates (given as UNIX timestamps).
-CD3.difference = function (before, after, isShort) {
+CD3.difference = function (before, after, format) {
     if (before > after || isNull(before) || isNull(after)) return null; // my work here is done
     var bTime = CD3.dateToArray(new Date(before)),
         aTime = CD3.dateToArray(new Date(after)),
@@ -35,9 +35,7 @@ CD3.difference = function (before, after, isShort) {
             diff[i] = CD3.offset[i] - Math.abs(aTime[i] - bTime[i]); // and the diff uses the offset to calculate the value
         } else diff[i] = aTime[i] - bTime[i]; // otherwise it's as simple as pie (not pi, although it's not complex) {MATH JOKE}
     }
-    return isShort ? 
-        CD3.formatDiff(diff, CD3.SHORT_CDOWN) : 
-        CD3.formatDiff(diff, CD3.LONG_CDOWN);
+    return CD3.formatDiff(diff, format);
 }
 // Takes a difference array (6 length) and formats the string as specified by formatstr.
 CD3.formatDiff = function (diff, formatstr) {
@@ -47,23 +45,23 @@ CD3.formatDiff = function (diff, formatstr) {
         "y": diff[0],
         "yy": zeroPrefix(diff[0]),
         "yyy": CD3.terms[0] + (diff[0] == 1 ? " " : "s "),
-        "m": diff[1],
-        "mm": zeroPrefix(diff[1]),
-        "mmm": CD3.terms[1] + (diff[1] == 1 ? " " : "s "),
+        "M": diff[1],
+        "MM": zeroPrefix(diff[1]),
+        "MMM": CD3.terms[1] + (diff[1] == 1 ? " " : "s "),
         "d": diff[2],
         "dd": zeroPrefix(diff[2]),
         "ddd": CD3.terms[2] + (diff[2] == 1 ? " " : "s "),
         "D": parseInt(diff[2]) + (diff[1]*CD3.offset[2]) + (diff[0]*(365+(CD3.months[1]==29?1:0))),
         "DD": zeroPrefix(parseInt(diff[2]) + (diff[1]*CD3.offset[2]) + (diff[0]*(365+(CD3.months[1]==29?1:0)))),
-        "H": diff[3],
-        "HH": zeroPrefix(diff[3]),
-        "HHH": CD3.terms[3] + (diff[3] == 1 ? " " : "s "),
-        "M": diff[4],
-        "MM": zeroPrefix(diff[4]),
-        "MMM": CD3.terms[4] + (diff[4] == 1 ? " " : "s "),
-        "S": diff[5],
-        "SS": zeroPrefix(diff[5]),
-        "SSS": CD3.terms[5] + (diff[5] == 1 ? " " : "s "),
+        "h": diff[3],
+        "hh": zeroPrefix(diff[3]),
+        "hhh": CD3.terms[3] + (diff[3] == 1 ? " " : "s "),
+        "m": diff[4],
+        "mm": zeroPrefix(diff[4]),
+        "mmm": CD3.terms[4] + (diff[4] == 1 ? " " : "s "),
+        "s": diff[5],
+        "ss": zeroPrefix(diff[5]),
+        "sss": CD3.terms[5] + (diff[5] == 1 ? " " : "s "),
         "{": "{",
         "}": "}"
     }, active = null;
@@ -90,12 +88,12 @@ CD3.dateToArray = function (time) {
 // Also does what it advertises.
 CD3.arrayToDate = function (year, month, date, hour, minute, second) {
     var time = new Date();
-    time.setSeconds(second);
-    time.setMinutes(minute);
-    time.setHours(hour);
-    time.setDate(date);
-    time.setMonth(month);
     time.setFullYear(year);
+    time.setMonth(month);
+    time.setDate(date);
+    time.setHours(hour);
+    time.setMinutes(minute);
+    time.setSeconds(second);
     return time;
 }
 // Takes a date object and returns a formatted string referring to that object as specified in formatstr.
@@ -103,7 +101,7 @@ CD3.format = function (time, formatstr) {
     // formatstr has zero or more of the following letter sequences 
     // surrounded by block (curly) brackets in addition to other
     // characters to specify the format of the moment in question.
-    // e.g. "{YYYY}-{MM}-{DD} {HH}:{mm}:{ss}" would deliver an ISO
+    // e.g. "{yyyy}-{MM}-{DD} {HH}:{mm}:{ss}" would deliver an ISO
     // formatted date and time.
     var formats = {
         "dddd": CD3.dayNames[time.getDay()], // long day (Sunday)
@@ -112,12 +110,12 @@ CD3.format = function (time, formatstr) {
         "d": time.getDate() + (time.getDate()%10==1?"st":time.getDate()%10==2?"nd":time.getDate()%10==3?"rd":"th"), // dateth (1st)
         "DD": zeroPrefix(time.getDate()), // prefixed date (02)
         "D": time.getDate(), // date (2)
-        "mmmm": CD3.monthNames[time.getMonth()], // long month (March)
-        "mmm": CD3.monthShort[time.getMonth()], // short month (Mar)
+        "MMMM": CD3.monthNames[time.getMonth()], // long month (March)
+        "MMM": CD3.monthShort[time.getMonth()], // short month (Mar)
         "MM": zeroPrefix(time.getMonth()+1), // prefixed month (03)
         "M": time.getMonth()+1, // month (3)
-        "YYYY": time.getFullYear(), // long year (2004)
-        "YY": time.getYear(), // short year (04)
+        "yyyy": time.getFullYear(), // long year (2004)
+        "yy": time.getFullYear().toString().substring(2,4), // short year (04)
         "HH": zeroPrefix(time.getHours()), // prefixed hours (04)
         "H": time.getHours(), // hours (4)
         "hh": (time.getHours()==0||time.getHours()==12?"12":zeroPrefix(time.getHours()%12)), // prefixed 12-hour (05) from (17)
@@ -126,7 +124,7 @@ CD3.format = function (time, formatstr) {
         "m": time.getMinutes(), // minutes (6)
         "ss": zeroPrefix(time.getSeconds()), // prefixed seconds (07)
         "s": time.getSeconds(), // seconds (7)
-        "P": (time.getHours()<12?"AM":"PM"), // AM/PM (PM)
+        "tt": (time.getHours()<12?"AM":"PM"), // AM/PM (PM)
         "{": "{",
         "}": "}"
         // 2004-03-02 04:06:07 given as 24-hour example
@@ -221,8 +219,8 @@ CDown.toggle = function (bool) {
     }
 }
 CDown.update = function () {
-    var diff = CDown.mode?CD3.difference(CDown.active, new Date().getTime(), CDown.shorten):
-        CD3.difference(new Date().getTime(), CDown.active, CDown.shorten);
+    var diff = CDown.mode?CD3.difference(CDown.active, new Date().getTime(), CDown.shorten?CD3.SHORT_CDOWN:CD3.LONG_CDOWN):
+        CD3.difference(new Date().getTime(), CDown.active, CDown.shorten?CD3.SHORT_CDOWN:CD3.LONG_CDOWN);
     if (isNull(diff)) { 
         if (!isNull(CDown.active)) {
             new Note("/assets/res/icons/time48.png", isNull(CDown.title)?"CountDown":CDown.title, "CountDown completed.");
@@ -242,10 +240,11 @@ CDown.update = function () {
         $(".cdh-url").html(location.origin + location.pathname + "?t=" + CDown.active + (isNull(CDown.title) ? "" : "&n=" + CDown.title) + (CDown.mode?"&m=" + CDown.mode.toString():""));
         $(".cdh-dest time").attr("datetime", new Date(CDown.active).toISOString());
         $(".cdh-dest time").attr("title", $(".cdh-dest time").attr("datetime"));
-        $(".cdh-dest time").html(CD3.format(new Date(CDown.active), "{dddd} the {d} of {mmmm}, {YYYY} at {HH}:{mm}:{ss}"));
-        document.title = (isNull(CDown.title)?"CDown":CDown.title)+" - "+
-            (CDown.mode?CD3.difference(CDown.active, new Date().getTime(), true):
-            CD3.difference(new Date().getTime(), CDown.active, true));
+        $(".cdh-dest time").html(CD3.format(new Date(CDown.active), "{dddd} the {d} of {MMMM}, {yyyy} at {HH}:{mm}:{ss}"));
+        document.title = 
+            (CDown.mode?CD3.difference(CDown.active, new Date().getTime(), CD3.SHORT_CDOWN):
+            CD3.difference(new Date().getTime(), CDown.active, CD3.SHORT_CDOWN))+" - "+
+            (isNull(CDown.title)?"CDown":CDown.title)
         return true; 
     }
 }
@@ -276,6 +275,9 @@ CDown.setup = function () {
     $(".cds-zone").val(-CD3.now.getTimezoneOffset()/60);
     $(".cds-date").attr("data-value",CD3.now.getFullYear()+"-"+zeroPrefix(CD3.now.getMonth()+1)+"-"+zeroPrefix(CD3.now.getDate()));
     $(".cds-date").pickadate({format:'yyyy-mm-dd',clear:false});
+    $(".cds-date").pickadate().pickadate("picker").set("select", CD3.now);
+    $(".cds-date").pickadate().pickadate("picker").set("min",!CDown.mode);
+    $(".cds-date").pickadate().pickadate("picker").set("max",CDown.mode);
     $(".cds-hour").spinner({min:-1,max:24,spin:spinfunc});
     $(".cds-hour").val(zeroPrefix(CD3.now.getHours()));
     $(".cds-minute").spinner({min:-1,max:60,spin:spinfunc});

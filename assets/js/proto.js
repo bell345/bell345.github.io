@@ -1,4 +1,4 @@
-﻿// START GRID CODE // 1-673 = 673 lines // LAST UPDATED: 2014-05-25 22:07 +08:00
+// START GRID CODE // 1-673 = 673 lines // LAST UPDATED: 2014-05-25 22:07 +08:00
 /**
 *   GRID JAVASCRIPT PROTOTYPE
 */
@@ -46,7 +46,7 @@ Grid.set = function (height) {
         this.heightQuant = Math.floor(parseInt(grid.css("width")) / height);
         var heightFinal = Math.floor(this.heightQuant + (padding * this.heightQuant - 1));
         var k = -1;
-        for (i = 0; i <= heightFinal; i++) {
+        for (var i = 0; i <= heightFinal; i++) {
             var newText = "";
             for (j = 0; j <= heightFinal; j++) {
                 newText += "<div id='gridcell"+this.count+"' class='gridcell' style='width:" + height + "px;height:" + height + "px;'></div>";
@@ -64,7 +64,7 @@ Grid.set = function (height) {
 // Colours cells alternately through cell indexes.
 Grid.altColours = function (colour1, colour2) {
     if (this.hasSet) {
-        for (i = 0; i < this.count; i++) {
+        for (var i = 0; i < this.count; i++) {
             if (isEven(i)) {
                 $("#gridcell" + i).css("backgroundColor", colour1);
             }
@@ -80,7 +80,7 @@ Grid.setProperties = function () {
     if (!isEven(Grid.heightQuant)) {
         Grid.center = Math.floor(Grid.count / 2);
     }
-    for (i = 0; i < Grid.colcount; i++) {
+    for (var i = 0; i < Grid.colcount; i++) {
         if (Grid.colcount / 2 % 1 != 0) {
             Grid.middleRow.push(Grid.rows[Grid.colcount/2]);
         }
@@ -123,7 +123,7 @@ Grid.coords = function (column, row) {
 }   
 // Modifies entire middle row(s).
 Grid.Modify.middleRow = function (colour1) {
-    for (i = 0; i < Grid.middleRow.length; i++) {
+    for (var i = 0; i < Grid.middleRow.length; i++) {
         $("#gridcell" + Grid.middleRow[i]).css("backgroundColor", colour1);
     }
     Grid.Status.print("> Coloured the middle row the colour " + colour1);
@@ -135,25 +135,25 @@ Grid.Modify.single = function (cell, colour1) {
 }
 // Changes the colour of a column.
 Grid.Modify.column = function (column, colour1) {
-    for (i = 0; i < Grid.columns[column].length; i++) {
+    for (var i = 0; i < Grid.columns[column].length; i++) {
         Grid.Modify.single(Grid.columns[column][i],colour1);
     }
 }
 // Changes the colour of a row.
 Grid.Modify.row = function (row, colour1) {
-    for (i = 0; i < Grid.rows[row].length; i++) {
+    for (var i = 0; i < Grid.rows[row].length; i++) {
         Grid.Modify.single(Grid.rows[row][i],colour1);
     }
 }
 // Changes a part of a column.
 Grid.Modify.colseg = function (column, start, end, colour1) {
-    for (i = Grid.columns[column][start]; i <= Grid.columns[column][end]; i++) {
+    for (var i = Grid.columns[column][start]; i <= Grid.columns[column][end]; i++) {
         Grid.Modify.single(i, colour1);
     }
 }
 // Changes a part of a row.
 Grid.Modify.rowseg = function (row, start, end, colour1) {
-    for (i = Grid.rows[row][start]; i <= Grid.rows[row][end]; i += Grid.colcount) {
+    for (var i = Grid.rows[row][start]; i <= Grid.rows[row][end]; i += Grid.colcount) {
         Grid.Modify.single(i, colour1);
     }
 }
@@ -163,7 +163,7 @@ Grid.Modify.rect = function (startX, startY, endX, endY, colour1) {
     var height = endY - startY;
     var start = Grid.coords(startX, startY);
     var end = Grid.coords(endX, endY);
-    for (i = 0; i <= width; i++) {
+    for (var i = 0; i <= width; i++) {
         for (j = 0; j <= height; j++) {
             Grid.Modify.single(Grid.coords(startX + i, startY + j),colour1);
         }
@@ -171,13 +171,13 @@ Grid.Modify.rect = function (startX, startY, endX, endY, colour1) {
 }
 // Changes the colour of all cells.
 Grid.Modify.all = function (colour1) {
-    for (i = 0; i < Grid.count; i++) {
+    for (var i = 0; i < Grid.count; i++) {
         Grid.Modify.single(i, colour1);
     }
 }
 // Creates an alternating colour scale around the top and left sides.
 Grid.Modify.scale = function (colour1, colour2) {
-    for (i = 0; i < Grid.colcount; i++) {
+    for (var i = 0; i < Grid.colcount; i++) {
         if (isEven(i)) {
             Grid.Modify.single(Grid.rows[0][i], colour1);
         }
@@ -185,7 +185,7 @@ Grid.Modify.scale = function (colour1, colour2) {
             Grid.Modify.single(Grid.rows[0][i], colour2);
         }
     }
-    for (i = 0; i < Grid.colcount; i++) {
+    for (var i = 0; i < Grid.colcount; i++) {
         if (isEven(i)) {
             Grid.Modify.single(Grid.columns[0][i], colour1);
         }
@@ -204,7 +204,7 @@ Grid.Border.single = function (cell, border, colour) {
 }
 // Changes all border values
 Grid.Border.all = function (border, colour) {
-    for (i = 0; i < Grid.count; i++) {
+    for (var i = 0; i < Grid.count; i++) {
         Grid.Border.single(i, border, colour);
     }
 }
@@ -359,7 +359,7 @@ Grid.Animation.colSegReverse = function (column, start, end, timeOut, colour) {
 // Creates a new layer at the index.
 Grid.Layer.new = function (num) {
     var tempLayer = [];
-    for (i = 0; i < Grid.count; i++) {
+    for (var i = 0; i < Grid.count; i++) {
         var tempCell = [];
         if ($("#gridcell" + i).css("backgroundColor") != "rgba(0, 0, 0, 0)")
             tempCell.push($("#gridcell" + i).css("backgroundColor"));
@@ -377,7 +377,7 @@ Grid.Layer.new = function (num) {
 }
 // Displays the specified layer over current layer
 Grid.Layer.read = function (num) {
-    for (i = 0; i < Grid.count; i++) {
+    for (var i = 0; i < Grid.count; i++) {
         if (Grid.layers[num][i][0] != null) {
             $("#gridcell" + i).css("backgroundColor", Grid.layers[num][i][0]);
         }
@@ -393,7 +393,7 @@ Grid.Layer.export = function (num) {
 // Creates a new layer at a specified index based on a string value.
 Grid.Layer.import = function (num, array) {
     var tempLayer = [];
-    for (i = 0; i < array.length; i++) {
+    for (var i = 0; i < array.length; i++) {
         var tempCell = [];
         if (array[i][0] != null)
             tempCell.push(array[i][0]);
@@ -513,7 +513,7 @@ Grid.Clear.stage = function () {
 }
 // Clears all cell colours.
 Grid.Clear.cells = function () {
-    for (i = 0; i < Grid.count; i++) {
+    for (var i = 0; i < Grid.count; i++) {
         Grid.Modify.single(i, "");
     }
 }
@@ -528,13 +528,13 @@ Grid.Clear.single = function (cell) {
 }
 // Clears an entire column.
 Grid.Clear.column = function (column) {
-    for (i = 0; i < Grid.columns[column].length; i++) {
+    for (var i = 0; i < Grid.columns[column].length; i++) {
         Grid.Clear.single(Grid.columns[column][i]);
     }
 }
 // Clears an entire row.
 Grid.Clear.row = function (row) {
-    for (i = 0; i < Grid.rows[row].length; i++) {
+    for (var i = 0; i < Grid.rows[row].length; i++) {
         Grid.Clear.single(Grid.rows[row][i]);
     }
 }
@@ -546,7 +546,7 @@ Grid.Clear.rect = function (startX, startY, endX, endY) {
     var height = endY - startY;
     var start = Grid.coords(startX, startY);
     var end = Grid.coords(endX, endY);
-    for (i = 0; i <= width; i++) {
+    for (var i = 0; i <= width; i++) {
         for (j = 0; j <= height; j++) {
             Grid.Clear.single(Grid.coords(startX + i, startY + j));
         }
@@ -554,7 +554,7 @@ Grid.Clear.rect = function (startX, startY, endX, endY) {
 }
 // Clears a stored grid layer.
 Grid.Clear.layer = function (num) {
-    for (i = 0; i < Grid.layers[num].length; i++) {
+    for (var i = 0; i < Grid.layers[num].length; i++) {
         for (j = 0; j < Grid.layers[num][i].length; j++) {
             Grid.layers[num][i][j] = null;
         }
@@ -562,7 +562,7 @@ Grid.Clear.layer = function (num) {
 }
 // Clears all stored layers.
 Grid.Clear.layers = function () {
-    for (i = 0; i < Grid.layers.length; i++) {
+    for (var i = 0; i < Grid.layers.length; i++) {
         Grid.Clear.layer(i);
     }
 }
@@ -583,7 +583,7 @@ Grid.Status.print = function (message) {
     var box = $("#dbuggrid");
     box.val(box.val() + message + "\n");
 }
-$(function () {
+$(document).on("pageload", function () {
     $("#gridset").click(function () {
         var num = Grid.width/$("#gridsetnum").val();
         if (num == undefined || num.toString() == "") {
@@ -740,7 +740,7 @@ Calendar.generate = function (year, month) {
     Calendar.weeks = Math.ceil((Calendar.firstDay+Calendar.monthLength)/7);
     Calendar.cellHeight = parseInt(Calendar.height/Calendar.weeks);
     var count = 0;
-    for (i = 0; i < 7; i++) {
+    for (var i = 0; i < 7; i++) {
         modifyHtml("calinner", "<div id='calcol" + i + "' class='calcol'>");
         var tempCol = [];
         for (j=0;j<Calendar.weeks;j++) {
@@ -895,7 +895,7 @@ Calendar.clearSelected = function () {
     for (ix=0;ix<selected.length;ix++)
         selected[ix].className = selected[ix].className.replace(" calselect", "");
 }
-$(function () {
+$(document).on("pageload", function () {
     $("#calcontmonth").click(function () {
         Calendar.generate();
     });
@@ -964,7 +964,7 @@ txteng.echo = function (message) {
     }
 }
 txteng.motdEcho = function () {
-    for (i = 0; i < this.motd.length; i++) {
+    for (var i = 0; i < this.motd.length; i++) {
         txteng.echo(this.motd[i]);
     }
 }
@@ -1005,7 +1005,7 @@ txteng.command = function () {
     var tempcmd = "";
     this.cmd = [];
     var str = false;
-    for (i = 0; i <= txteng.input(false).length; i++) {
+    for (var i = 0; i <= txteng.input(false).length; i++) {
         var input = txteng.input(false);
         if (i != txteng.input(false).length) {
             if (input[i] == " " && !str) {
@@ -1030,7 +1030,7 @@ txteng.command = function () {
     }
     if (!txteng.inProgram) {
         var match = false;
-        for (i = 0; i < txteng.cmdlist.length;i++) {
+        for (var i = 0; i < txteng.cmdlist.length;i++) {
             if (this.cmd[0].toLowerCase() == txteng.cmdlist[i]) {
                 txteng.execute(i, this.cmd[1], this.cmd[2], this.cmd[3], this.cmd[4], this.cmd[5]);
                 txteng.input(true);
@@ -1065,7 +1065,7 @@ txteng.clear = function () {
 txteng.help = function (command) {
     if (command == undefined || command == "" || command == " ") {
         txteng.echo("COMMANDS: ");
-        for (i = 0; i < txteng.cmdlist.length; i++) {
+        for (var i = 0; i < txteng.cmdlist.length; i++) {
             txteng.echo(txteng.cmdlist[i]);
         }
     }
@@ -1141,7 +1141,7 @@ txteng.Program.battleship = function () {
         ["0", "0", "0", "0", "0"]
     ]
     var boardEcho = function () {
-        for (i = 0; i < board.length; i++) {
+        for (var i = 0; i < board.length; i++) {
             var temprow = "";
             for (j = 0; j < board[i].length; j++) {
                 temprow += board[i][j];
@@ -1175,7 +1175,7 @@ txteng.Program.battleship = function () {
     })
 }
 TBI.timerSet("motd", 1000, function () { $("#txtengarea").val(""); txteng.motdEcho(); TBI.timerClear("motd"); });
-$(function () {
+$(document).on("pageload", function () {
     $("#txtengin").keydown(function (event) {
         if (event.which == 13) {
             txteng.command();
@@ -1380,7 +1380,7 @@ Cdown.checkfn = function () {
         createCookie("cDown", out+","+Cdown.name, 365);
     }
 }
-$(function () {
+$(document).on("pageload", function () {
     var cdInputs = $("#cdown-full input");
     TBI.timerSet("cdInputs",100,function () {
         for (i=1;i<cdInputs.length;i++) {
@@ -1519,7 +1519,7 @@ Calc.status = function (message, store) {
         Calc.statusCurr = Calc.statusLog.length-1;
     }
 }
-$(function () {
+$(document).on("pageload", function () {
     Calc.setup();
     Calc.init();
     $(".calcn").click(function () { Calc.digit(parseInt($(this).html())); });
@@ -1800,12 +1800,12 @@ TTBL.highlight = function (col, row) {
     }
     return false;
 }
-$(function () { 
+$(document).on("pageload", function () { 
     TTBL.setup(); 
     $("#ttb-test").click(function () {
         if ((isNull(TTBL.data) && isNull(localStorage.TTBL2)) || 
         (!isNull(localStorage.TTBL2) && confirm("Do you want to overwrite your current timetable?"))) {
-            var xhr = new TBI.AJAX("/assets/data/ttb1.json", function () {
+            var xhr = new TBI.AJAX("/assets/data/ttb1.json", function (xhr) {
                 localStorage.TTBL2 = xhr.response;
                 TTBL.data = localStorage.TTBL2;
                 TTBL.setup();
@@ -1865,7 +1865,7 @@ $(function () {
 /**
 *   CANVAS PAINT PROGRAM TEST
 */
-$(function () {
+$(document).on("pageload", function () {
     var ctx = new Canvas2D("cvs");
     ctx.fillRect(25,25,100,100);
     ctx.clearRect(45,45,60,60);
@@ -2061,7 +2061,7 @@ PSim.init = function () {
     PSim.objectvars = {};
     PSim.objects = [];
     TBI.timerClear("PSim");
-    var xhr = new TBI.AJAX("/assets/data/psim.json", function () {
+    var xhr = new TBI.AJAX("/assets/data/psim.json", function (xhr) {
         try { PSim.objectvars = $.parseJSON(xhr.response).objects; PSim.objects = $.parseJSON(xhr.response).list } 
         catch (e) { e.message = "Planetarium load error: "+ e.message; TBI.error(e) }
         TBI.timerSet("PSim", PSim.ms, function () {
@@ -2438,12 +2438,10 @@ CmpCvs.setup = function () {
     $(".cmp-jonly").hide();
 }
 CmpCvs.reset = function () {
-    CmpCvs.asisIncrement = 1;
+    CmpCvs.asisIncrement = 0.5;
     CmpCvs.maxIter = 30;
     CmpCvs.factor = 110;
     CmpCvs.pan = [-0.75, 0];
-    CmpCvs.spinners = true;
-    TBI.toggleButton($("#cmp-spinners")[0], CmpCvs.spinners);
     CmpCvs.tracking = true;
     TBI.toggleButton($("#cmp-tracking")[0], CmpCvs.tracking);
     CmpCvs.jfunc = new Complex(0.3, 0.25);
@@ -2454,8 +2452,6 @@ CmpCvs.reset = function () {
     $("#cmp-pany").val(CmpCvs.pan[1]);
     $("#cmp-jreal").val(CmpCvs.jfunc.real);
     $("#cmp-jimaginary").val(CmpCvs.jfunc.imaginary);
-    $("#cmp-panx").spinner({step:Math.pow(10,-(parseInt($("#cmp-factor").val())-1)),min:-2,max:2});
-    $("#cmp-pany").spinner({step:Math.pow(10,-(parseInt($("#cmp-factor").val())-1)),min:-2,max:2});
 }
 CmpCvs.init = function () {
     CmpCvs.location = [0,0];
@@ -2501,33 +2497,33 @@ CmpCvs.loop = function () {
 }
 CmpCvs.drawAxis = function () {
     CmpCvs.$_.save();
-    CmpCvs.$_.lineWidth = 2;
-    var p = CmpCvs.pan, u = CmpCvs.UPSCALE;
-    Canvas2D.path(CmpCvs.$_, {type:"stroke",style:"#333",path:[[-300,-p[1]*u],[300,-p[1]*u]]});
-    Canvas2D.path(CmpCvs.$_, {type:"stroke",style:"#333",path:[[-p[0]*u,-300],[-p[0]*u,300]]});
-    Canvas2D.path(CmpCvs.$_, {type:"stroke",style:"#77a",path:[[-300,0],[300,0]]});
-    Canvas2D.path(CmpCvs.$_, {type:"stroke",style:"#77a",path:[[0,-300],[0,300]]});
+    CmpCvs.$_.lineWidth = 1;
+    var p = CmpCvs.pan, u = CmpCvs.UPSCALE, h = 0.5;
+    Canvas2D.path(CmpCvs.$_, {type:"stroke",style:"#333",path:[[-300+h,-p[1]*u+h],[300+h,-p[1]*u+h]]});
+    Canvas2D.path(CmpCvs.$_, {type:"stroke",style:"#333",path:[[-p[0]*u+h,-300+h],[-p[0]*u+h,300+h]]});
+    Canvas2D.path(CmpCvs.$_, {type:"stroke",style:"#77a",path:[[-300+h,h],[300+h,h]]});
+    Canvas2D.path(CmpCvs.$_, {type:"stroke",style:"#77a",path:[[h,-300+h],[h,300+h]]});
     CmpCvs.$_.restore();
 }
 CmpCvs.drawCentre = function () {
     CmpCvs.$_.beginPath();
     CmpCvs.$_.fillStyle = "#333";
-    CmpCvs.$_.arc(0,0,3,0,dtr(360),false);
+    CmpCvs.$_.arc(.5,.5,3,0,dtr(360),false);
     CmpCvs.$_.fill();
     CmpCvs.$_.closePath();
     CmpCvs.$_.beginPath();
     CmpCvs.$_.fillStyle = "#eee";
-    CmpCvs.$_.arc(0,0,1,0,dtr(360),false);
+    CmpCvs.$_.arc(.5,.5,1,0,dtr(360),false);
     CmpCvs.$_.fill();
     CmpCvs.$_.closePath();
     CmpCvs.$.beginPath();
     CmpCvs.$.fillStyle = "#333";
-    CmpCvs.$.arc(0,0,3,0,dtr(360), false);
+    CmpCvs.$.arc(.5,.5,3,0,dtr(360), false);
     CmpCvs.$.fill();
     CmpCvs.$.closePath();
     CmpCvs.$.beginPath();
     CmpCvs.$.fillStyle = "#eee";
-    CmpCvs.$.arc(0,0,1,0,dtr(360), false);
+    CmpCvs.$.arc(.5,.5,1,0,dtr(360), false);
     CmpCvs.$.fill();
     CmpCvs.$.closePath();
 }
@@ -2575,6 +2571,7 @@ CmpCvs.analyse = function () {
         r = CmpCvs.hue,
         y = CmpCvs.hueFreq,
         a = CmpCvs.asisIncrement,
+        b = a*2,
         u = CmpCvs.UPSCALE;
     p[0]*=f;
     p[1]*=f;
@@ -2584,7 +2581,8 @@ CmpCvs.analyse = function () {
             if (!isNull(result)) CmpCvs.$.fillStyle = "hsl("+-parseInt(((result+r/y)%360)*y)+",100%,50%)";
             else CmpCvs.$.fillStyle = "#000";
             CmpCvs.$.beginPath();
-            CmpCvs.$.arc(i*u-p[0]*u,j*u-p[1]*u,a<1?1:a,0,dtr(360),false);
+            CmpCvs.$.fillRect(i*u-p[0]*u-(a<1?1:a),j*u-p[1]*u-(a<1?1:a),b<2?2:b,b<2?2:b);
+            // CmpCvs.$.arc(i*u-p[0]*u,j*u-p[1]*u,a<1?1:a,0,dtr(360),false); // wtf was i thinking
             CmpCvs.$.fill();
             CmpCvs.$.closePath();
         }
@@ -2604,7 +2602,7 @@ CmpCvs.validate = function () {
     if (isNull(asisinc) || isNull(maxiter) || isNull(factor) || isNull(panx) || isNull(pany) || (CmpCvs.mode == 0 && isNull(real) || isNull(imaginary))) code = 1;
     else if (isNaN(asisinc) || isNaN(maxiter) || isNaN(factor) || isNaN(panx) || isNaN(pany) || (CmpCvs.mode == 0 && isNaN(real) || isNaN(imaginary))) code = 2;
     else if (asisinc <= 0 || maxiter <= 0 || factor <= 0) code = 3;
-    else if (asisinc < 0.3 || maxiter > 400 || factor > 15) code = 4;
+    else if (asisinc < 0.3 || maxiter > 600 || factor > 15) code = 4;
     else if (asisinc > 10) code = 5;
     else if (parseInt(maxiter) != maxiter) code = 6;
     switch (code) {
@@ -2618,18 +2616,6 @@ CmpCvs.validate = function () {
         default: TBI.error(prefix+"Unhandled exception."); break;
     }
     return false;
-}
-CmpCvs.setSpinners = function () {
-    if (!isNull($("#cmp-maxiter").data("ui-spinner")) && !CmpCvs.spinners) $("#cmp-maxiter").spinner("destroy");
-    else if (CmpCvs.spinners) $("#cmp-maxiter").spinner({step:10,min:30,page:20});
-    if (!isNull($("#cmp-factor").data("ui-spinner")) && !CmpCvs.spinners) $("#cmp-factor").spinner("destroy");
-    else if (CmpCvs.spinners) $("#cmp-factor").spinner({step:0.5,min:1,page:2});
-    if (!isNull($("#cmp-panx").data("ui-spinner")) && !CmpCvs.spinners) $("#cmp-panx").spinner("destroy");
-    else if (CmpCvs.spinners && Math.pow(10,-parseInt($("#cmp-factor").val())) > 1e-6) 
-        $("#cmp-panx").spinner({step:Math.pow(10,-parseInt($("#cmp-factor").val())),min:-2,max:2});
-    if (!isNull($("#cmp-pany").data("ui-spinner")) && !CmpCvs.spinners) $("#cmp-pany").spinner("destroy");
-    else if (CmpCvs.spinners && Math.pow(10, -parseInt($("#cmp-factor").val())) > 1e-6)
-        $("#cmp-pany").spinner({step:Math.pow(10,-parseInt($("#cmp-factor").val())),min:-2,max:2});
 }
 CmpCvs.generate = function (asis, maxiter, factor, panx, pany, real, imaginary) {
     CmpCvs.asisIncrement = asis;
@@ -2661,9 +2647,6 @@ $(document).on("pageload",function () {
     });
     $("#cmp-mouse").click(function () {
         var f = CmpCvs.factor;
-        TBI.toggleButton($("#cmp-spinners")[0],false);
-        CmpCvs.spinners = false;
-        CmpCvs.setSpinners();
         $("#cmp-panx").val(CmpCvs.location[0]/f);
         $("#cmp-pany").val(-(CmpCvs.location[1]/f));
         if (!CmpCvs.validate()) return false;
@@ -2675,17 +2658,10 @@ $(document).on("pageload",function () {
                 parseFloat($("#cmp-jreal").val()),
                 parseFloat($("#cmp-jimaginary").val()));
     });
-    $("#cmp-lquality").click(function () { $("#cmp-asisinc").val("1"); });
-    $("#cmp-mquality").click(function () { $("#cmp-asisinc").val("0.6"); });
-    $("#cmp-hquality").click(function () { $("#cmp-asisinc").val("0.3"); });
-    $("#cmp-ldetail").click(function () { $("#cmp-maxiter").val("20"); });
-    $("#cmp-mdetail").click(function () { $("#cmp-maxiter").val("50"); });
-    $("#cmp-hdetail").click(function () { $("#cmp-maxiter").val("80"); });
+    $("#cmp-lquality").click(function () { $("#cmp-asisinc").val("2"); });
+    $("#cmp-mquality").click(function () { $("#cmp-asisinc").val("1"); });
+    $("#cmp-hquality").click(function () { $("#cmp-asisinc").val("0.5"); });
     $("#cmp-tracking").click(function () { CmpCvs.tracking = TBI.isToggled(this); });
-    $("#cmp-spinners").click(function () {
-        CmpCvs.spinners = TBI.isToggled(this);
-        CmpCvs.setSpinners();
-    });
     $("#cmp-mode").click(function () {
         CmpCvs.mode = CmpCvs.mode==0?1:0; 
         if (CmpCvs.mode == 0) {
@@ -2730,37 +2706,53 @@ $(document).on("pageload",function () {
 });
 // END FRACTAL CODE //
 // START CARTESIAN CODE //
-
-CrtPlane = {
+var FuncTypes = {CARTESIAN:-1,POLAR:-2,PARAMETRIC:-3};
+var ModeTypes = {HIDE:-1,HIGHLIGHT:-2,REMOVE:-3,EDIT:-4};
+var CrtPlane = {
     bounds: {x:7,y:7},
     polBounds: {start:0,end:6*Math.PI},
+    parBounds: {start:-6*Math.PI,end:6*Math.PI},
     pan: {x:0,y:0},
-    mouse: new Coords(0,0),
+    panTemp: {x:0,y:0},
+    propLim: {lower:18,upper:75},
+    boundLim: {min:2e-5,max:2e+5},
+    rwInterval: 1,
+    fnDefinition: 250,
+    zFactor: 5,
+    maxTries: 500,
+    currColour: 0,
+    currLegend: null,
+    mouse: null,
     axes: true,
     scale: true,
     grid: true,
     log: false,
-    rwInterval: 1,
-    fnDefinition: 80,
+    debug: false,
+    suppress: false,
     fnDefMode: true,
-    zFactor: 10,
+    legendMode: ModeTypes.HIDE,
     funcs: [
-        new LinearFunc(2,-2), 
-        new RelationFunc(2,3,10).toLinear(),
-        {eval:function(x){return Math.sin(x)*3}},
-        {eval:function(x){return Math.pow(2,x)}}
+        {func:new LinearFunc(2,-2)}, 
+        {func:new RelationFunc(2,3,10)},
+        {func:{eval:function(x){return Math.sin(x)}}},
+        {func:{eval:function(x){return Math.pow(2,x)}}},
+        {func:{eval:function(a){return a/(2*Math.PI)}},type:FuncTypes.POLAR},
+        {func:{eval:function(a){return 2*Math.sin(4*a)}},type:FuncTypes.POLAR},
+        {func:Parametric.lissajous(0.4,1),type:FuncTypes.PARAMETRIC},
+        {func:new QuadraticFunc(2,1,2)}
+    ],
+    plots: [
+        {plot:[[0,2],[2,0],[0,-2],[-2,0]],style:"#000"}
     ],
     colours: [
         "#a00","#0a0","#00a","#aa0","#a0a","#0aa","#aaa",
-        "#500","#050","#005","#550","#505","#055","#777",
-        "#f00","#0f0","#00f","#ff0","#f0f","#0ff","#fff"
-    ],
-    currColour: 0,
-    CARTESIAN: 1,
-    POLAR: 2
+        "#f00","#0f0","#00f","#ff0","#f0f","#0ff","#fff",
+        "#500","#050","#005","#550","#505","#055","#777"
+    ]
 };
 CrtPlane.setup = function (id) {
     CrtPlane.id = id;
+    CrtPlane.canvas = gebi(id);
     CrtPlane.$ = new Canvas2D(id);
     CrtPlane.width = gebi(id).width;
     CrtPlane.height = gebi(id).height;
@@ -2768,24 +2760,68 @@ CrtPlane.setup = function (id) {
     CrtPlane.$.translate(CrtPlane.width/2, CrtPlane.height/2);
 }
 CrtPlane.set = function (key, value) {
-    if (isNull(CrtPlane[key])) return false;
+    if (!CrtPlane.hasOwnProperty(key)) return false;
     CrtPlane[key] = value;
     CrtPlane.init();
 }
 CrtPlane.reset = function () {
     CrtPlane.$.clearRect(-CrtPlane.width/2, -CrtPlane.height/2,CrtPlane.width,CrtPlane.height);
     CrtPlane.currColour = 0;
+    $("#cart-legend ul").empty();
 }
 CrtPlane.init = function () {
     CrtPlane.reset();
     if (CrtPlane.log) TBI.log("Initializing");
-    if (CrtPlane.scale) { CrtPlane.drawScale(); if (CrtPlane.log) TBI.log("Finished scale"); }
+    if (CrtPlane.scale) 
+        try { CrtPlane.drawScale(); if (CrtPlane.log) TBI.log("Finished scale"); } 
+        catch (e) { if (!CrtPlane.suppress) TBI.error(e); else TBI.warn("Scale failed to generate") }
     if (CrtPlane.axes) { CrtPlane.drawAxes(); if (CrtPlane.log) TBI.log("Finished axes"); }
     for (var i=0;i<CrtPlane.funcs.length;i++)
-        CrtPlane.func(CrtPlane.funcs[i], CrtPlane.CARTESIAN);
-    //CrtPlane.randomWalk(10000, "#a00");
-    //CrtPlane.randomWalk(10000, "#0a0");
-    //CrtPlane.randomWalk(10000, "#00a");
+        CrtPlane.func(CrtPlane.funcs[i]);
+    $("#cart-legend li").off("click");
+    $("#cart-legend li").click(function () {
+        var t = this.innerHTML, a = false;
+        $("#cart-legend li").toArray().forEach(function (el, i) { 
+            if (!a && el.innerHTML == t) {
+                switch (CrtPlane.legendMode) {
+                    case ModeTypes.HIDE:
+                        CrtPlane.funcs[i].active = !(isNull(CrtPlane.funcs[i].active) || CrtPlane.funcs[i].active);
+                        CrtPlane.init();
+                        break;
+                    case ModeTypes.REMOVE:
+                        CrtPlane.funcs = splice(CrtPlane.funcs, i, 1);
+                        CrtPlane.init();
+                        break;
+                    case ModeTypes.EDIT:
+                        var ce = "contenteditable", over = true;
+                        $(el).attr(ce, $(el).attr(ce) == ce ? over ? ce : null : ce);
+                        el.focus();
+                        $(el).mouseenter(function () { over = true; });
+                        $(el).mouseleave(function () { over = false; });
+                        $(document).keydown(function (event) {
+                            var tt = this.innerHTML;
+                            if (over && convertKeyDown(event) == "enter") {
+                                $("#cart-legend li").toArray().forEach(function (elm, j) {
+                                    if (elm.innerHTML == tt) {
+                                        if (!isNull(String.parseFunction(tt))) {
+                                            if (tt.search("f(a)") != -1) var type = ModeTypes.POLAR;
+                                            else if (tt.search("f(t)") != -1) var type = ModeTypes.PARAMETRIC;
+                                            else var type = ModeTypes.CARTESIAN;
+                                            CrtPlane.funcs[j].func = {eval:String.parseFunction(tt),type:type};
+                                            CrtPlane.init();
+                                        }
+                                    }
+                                });
+                                over = false;
+                                $(el).attr(ce, null);
+                            }
+                        });
+                        break;
+                }
+                a = true;
+            }
+        });
+    });
 }
 CrtPlane.randomWalk = function (num, style) {
     var plot = [],
@@ -2798,7 +2834,8 @@ CrtPlane.randomWalk = function (num, style) {
     }
     CrtPlane.plot(plot, style);
 }
-CrtPlane.proportion = function (f,g,lower,upper) {
+CrtPlane.proportion = function (f, lower, upper) {
+    var g = 1;
     while (f*g<lower) { // for larger numbers
         if (!(f*(g*10)>upper)) g*=10;
         else if (!(f*(g*5)>upper)) g*=5;
@@ -2811,129 +2848,283 @@ CrtPlane.proportion = function (f,g,lower,upper) {
     }
     return g;
 }
-CrtPlane.fixDecimal = function (num) {
-    return parseFloat(num.toPrecision(16));
+function EndlessLoopException(message) {
+    this.name = "EndlessLoopException";
+    this.message = (message || "");
 }
+EndlessLoopException.prototype = Error.prototype;
 CrtPlane.drawScale = function () {
     var b = CrtPlane.bounds,
         w = CrtPlane.width,
         h = CrtPlane.height,
         p = CrtPlane.pan,
-        f = CrtPlane.fixDecimal,
         g = CrtPlane.grid,
-        fx = CrtPlane.fixDecimal(w/(2*b.x)), // factor of x on the canvas
-        fy = CrtPlane.fixDecimal(h/(2*b.y)), // factor of y on the canvas
-        gx = CrtPlane.proportion(fx, 1, 30, 50), // proportion of the scale of x
-        gy = CrtPlane.proportion(fy, 1, 30, 50), // proportion of the scale of y
-        mx = 0,
-        my = 0;
+        plim = CrtPlane.propLim,
+        tries = CrtPlane.maxTries,
+        fx = (w/(2*b.x)).fixFloat(), // factor of x on the canvas
+        fy = (h/(2*b.y)).fixFloat(), // factor of y on the canvas
+        gx = CrtPlane.proportion(fx, plim.lower, plim.upper), // increment of the scale of x
+        gy = CrtPlane.proportion(fy, plim.lower, plim.upper), // increment of the scale of y
+        mx = 0, // adjustment to the scale of x
+        my = 0, // adjustment to the scale of y
+        tryCounter = 1;
     if (CrtPlane.log) TBI.log("drawScale: set variables");
-    while (!((b.x+mx).fix() % gx).fix().equal(0)) mx += (gx-(b.x%gx)).fix();
-    while (!((b.y+my).fix() % gy).fix().equal(0)) my += (gy-(b.y%gy)).fix();
-    if (CrtPlane.log) {
-        TBI.log("drawScale: terminated while loops");
-        TBI.log("Manifest:\nBounds: ("+b.x+", "+b.y+")\nfx: "+fx+", gx: "+gx+", modulo: "+(b.x%gx)+", mx: "+mx);
-    }
+    
+    while (!(b.x-p.x+mx).fixFloat(10).fixMod(gx).isFloatEqual(0) && tryCounter++ < tries)
+        mx = (mx + (gx-((b.x-p.x+mx).fixMod(gy)))).fixFloat(10);
+    if (tryCounter >= tries)
+        throw new EndlessLoopException("x axis failed to generate: bound: "+b.x+", pan: "+p.x+", gx: "+gx+", bpg: "+((b.x-p.x+mx).fixFloat(10))+", mx: "+mx);
+    else tryCounter = 0;
+    while (!(b.y+p.y+my).fixFloat(10).fixMod(gy).isFloatEqual(0) && tryCounter++ < tries)
+        my = (my + (gy-((b.y+p.y+my).fixMod(gy)))).fixFloat(10);
+    if (tryCounter > tries)
+        throw new EndlessLoopException("y axis failed to generate: bound: "+b.y+", pan: "+p.y+", gy: "+gy+", bpg: "+((b.y+p.y+my).fixFloat(10))+", my: "+my);
+    else tryCounter = 0;
+    if (CrtPlane.log) TBI.log("drawScale: terminated while loops");
+    if (CrtPlane.debug) TBI.log("Manifest:\nBounds: ("+b.x+", "+b.y+")\nfx: "+fx+", gx: "+gx+", modulo: "+(b.x%gx)+", mx: "+mx);
+    
     CrtPlane.$.textAlign = "center";
-    CrtPlane.$.font = "8px Righteous";/*
-    for (var x=xs;x<=xe;x+=xi) { // x axis
-        Canvas2D.path(CrtPlane.$, {type:"stroke",style:"#aaa",path:[[x+p.x,5+p.y],[x+p.x,-5+p.y]]}); // line
-        if (x!=0) CrtPlane.$.fillText(CrtPlane.fixDecimal(x/fx),x+p.x,15+p.y); // label
-    }
-    CrtPlane.$.textAlign = "left";
-    for (var y=ys;y<=ye;y+=yi) { // y axis
-        Canvas2D.path(CrtPlane.$, {type:"stroke",style:"#aaa",path:[[5+p.x,y+p.y],[-5+p.x,y+p.y]]}); // line
-        if (y!=0) CrtPlane.$.fillText(y/-fy,10+p.x,y+2+p.y); // label
-    }*/
-    for (var x=-b.x-mx;x<=b.x+mx;x+=gx) {
-        Canvas2D.path(CrtPlane.$, {type:"stroke",style:"#aaa",path:[[x*fx+p.x,(g?h/2:5)+p.y],[x*fx+p.x,-(g?h/2:5)+p.y]]});
-        if (x!=0) CrtPlane.$.fillText(x=(parseFloat(x.toPrecision(14))), x*fx+p.x,15+p.y);
+    CrtPlane.$.font = "8px Righteous";
+    for (var ex=b.x+p.x+mx,x=-(b.x-p.x+mx);x<=ex;x+=gx) {
+        var px = x-p.x;
+        Canvas2D.path(CrtPlane.$, {type:"stroke",style:"#aaa",path:[[px*fx,(g?h/2:5+p.y*fy)],[px*fx,-(g?h/2:5)+(g?0:p.y*fy)]]});
+        if (x!=0) CrtPlane.$.fillText(x=x.fixFloat(10), px*fx,15+p.y*fy);
     }
     if (CrtPlane.log) TBI.log("drawScale: completed x axis");
+    
     CrtPlane.$.textAlign = "left";
-    for (var y=-b.y-my;y<=b.y+my;y+=gy) {
-        Canvas2D.path(CrtPlane.$, {type:"stroke",style:"#aaa",path:[[(g?w/2:5)+p.x,y*fy+p.y],[-(g?w/2:5)+p.x,y*fy+p.y]]});
-        if (y!=0) CrtPlane.$.fillText(-(y=parseFloat((y).toPrecision(14))),10+p.x,y*fy+2+p.y);
+    for (var ey=b.y-p.y+my,y=-(b.y+p.y+my);y<=ey;y+=gy) {
+        var py = y+p.y;
+        Canvas2D.path(CrtPlane.$, {type:"stroke",style:"#aaa",path:[[(g?w/2:5-p.x*fx),py*fy],[-(g?w/2:5)-(g?0:p.x*fx),py*fy]]});
+        if (y!=0) CrtPlane.$.fillText(-(y=y.fixFloat(10)),10-p.x*fx,py*fy+2);
     }
     if (CrtPlane.log) TBI.log("drawScale: completed y axis");
 }
 CrtPlane.drawAxes = function () {
     var w = CrtPlane.width,
         h = CrtPlane.height,
-        p = CrtPlane.pan;
+        p = CrtPlane.pan,
+        b = CrtPlane.bounds,
+        fx = (w/(2*b.x)).fixFloat(),
+        fy = (h/(2*b.y)).fixFloat();
     CrtPlane.$.lineWidth = 2;
-    Canvas2D.path(CrtPlane.$, {type:"stroke",style:"#000",path:[[p.x,-h/2],[p.x,h/2]]}); // x axis
-    Canvas2D.path(CrtPlane.$, {type:"stroke",style:"#000",path:[[-w/2,p.y],[w/2,p.y]]}); // y axis
+    Canvas2D.path(CrtPlane.$, {type:"stroke",style:"#000",path:[[-p.x*fx,-h/2],[-p.x*fx,h/2]]}); // x axis
+    Canvas2D.path(CrtPlane.$, {type:"stroke",style:"#000",path:[[-w/2,p.y*fy],[w/2,p.y*fy]]}); // y axis
     CrtPlane.$.lineWidth = 1;
 }
-CrtPlane.plot = function (path, style) {
+CrtPlane.plot = function (path, style, highlight) {
     var fx = CrtPlane.width/(CrtPlane.bounds.x*2),
         fy = -(CrtPlane.height/(CrtPlane.bounds.y*2)),
-        p = CrtPlane.pan;
+        p = CrtPlane.pan,
+        hl = !isNull(highlight) && highlight;
     CrtPlane.$.save();
-    CrtPlane.$.strokeStyle = (style?style:CrtPlane.colours[CrtPlane.currColour++ % CrtPlane.colours.length]);
+    CrtPlane.$.strokeStyle = (style||hl?style:CrtPlane.colours[CrtPlane.currColour++ % CrtPlane.colours.length]);
+    CrtPlane.$.shadowBlur = !hl ? 0 : 5;
+    CrtPlane.$.shadowColor = isNull(style) ? "#09f" : style;
     CrtPlane.$.beginPath();
-    CrtPlane.$.moveTo((isNull(path[0].x)?path[0][0]:path[0].x)*fx+p.x,(isNull(path[0].y)?path[0][1]:path[0].y)*fy+p.y);
+    CrtPlane.$.moveTo((isNull(path[0].x)?path[0][0]:path[0].x)*fx-p.x*fx,(isNull(path[0].y)?path[0][1]:path[0].y)*fy-p.y*fy);
     for (var i=1;i<path.length;i++) {
-        var x = (isNull(path[i].x)?path[i][0]:path[i].x)*fx+p.x,
-            y = (isNull(path[i].y)?path[i][1]:path[i].y)*fy+p.y;
+        var x = (isNull(path[i].x)?path[i][0]:path[i].x)*fx-p.x*fx,
+            y = (isNull(path[i].y)?path[i][1]:path[i].y)*fy-p.y*fy;
         x=x>800?800:x<-800?-800:x;
         y=y>800?800:y<-800?-800:y;
         CrtPlane.$.lineTo(x,y);
     }
     CrtPlane.$.stroke();
     CrtPlane.$.restore();
-    if (CrtPlane.log) TBI.log("plot: completed");
+    if (hl) CrtPlane.currColour++;
 }
-CrtPlane.func = function (func, type, style) {
-    if (isNull(func.eval)) return null;
-    if (CrtPlane.log) {
-        TBI.log("func: now plotting: ");
-        TBI.log(func.eval);
-    }
+CrtPlane.func = function (funcobj, style) {
+    if (isNull(funcobj) || isNull(funcobj.func) || isNull(funcobj.func.eval)) return null;
     var b = CrtPlane.bounds,
         w = CrtPlane.width,
         h = CrtPlane.height,
+        p = CrtPlane.pan,
         cinc = CrtPlane.fnDefMode?(b.x*2)/CrtPlane.fnDefinition:1/CrtPlane.fnDefinition,
         pol = CrtPlane.polBounds,
         pinc = CrtPlane.fnDefMode?(pol.end-pol.start)/CrtPlane.fnDefinition:1/CrtPlane.fnDefinition,
+        par = CrtPlane.parBounds,
+        rinc = CrtPlane.fnDefMode?(par.end-par.start)/CrtPlane.fnDefinition:1/CrtPlane.fnDefinition,
         plot = [],
         fx = w/(2*b.x),
-        fy = h/(2*b.y);
-    if (type == CrtPlane.CARTESIAN || isNull(type)) {
-        for (var x=-b.x;x<=b.x;x+=cinc) {
-            if (!isNull(func.eval(x)) && Math.abs(func.eval(x)) != Infinity) // if valid
-                plot.push(new Coords(x, func.eval(x)));
-        }
-        if (CrtPlane.log) TBI.log("func: plotted cartesian function");
-    } else if (type == CrtPlane.POLAR) {
-        for (var az=pol.start;az<=pol.end;az+=pinc) {
-            if (!isNull(func.eval(az)) && Math.abs(func.eval(az)) != Infinity)
-                plot.push(new PolarCoords(func.eval(az), az).toCartesian());
-        }
-        if (CrtPlane.log) TBI.log("func: plotted polar function");
-    } else return null;
-    CrtPlane.plot(plot);
+        fy = h/(2*b.y),
+        type = isNull(funcobj.type) ? FuncTypes.CARTESIAN : funcobj.type,
+        func = funcobj.func,
+        active = !(!isNull(funcobj.active) && !funcobj.active),
+        hlighted = !isNull(funcobj.highlighted) && funcobj.highlighted,
+        colour = active?hlighted?"#09f":CrtPlane.colours[CrtPlane.currColour % CrtPlane.colours.length]:"transparent".
+        typestr = "",
+        varstr = ""
+        formstr = function (str) {
+            var temp = str
+                .replaceAll("Math.E", "e")
+                .replaceAll(/(function ?\([A-Za-z_]([A-Za-z0-9_]{1,})?\) ?\{ ?return ?|\}$|Math\.|\*)/, "")
+                .replaceAll(/pow\(([^,]{1,}), ?((\([^\)]{1,}\)|[^\)]{1,}))\)/, "$1^$2")
+                .replaceAll("PI", "π");
+            return type != FuncTypes.POLAR ? temp : temp
+                .replaceAll(/([^A-Za-z_])a([^A-Za-z_])/, "$1θ$2")
+                .replace(/^a([^A-Za-z_])/, "θ$1")
+                .replace(/([^A-Za-z_])a$/, "$1θ");
+        }; // definitions
+    switch (type) { // various strings
+        case FuncTypes.POLAR: typestr="polar "; varstr="θ"; break;
+        case FuncTypes.PARAMETRIC: typestr="parametric "; varstr="t"; break;
+        default: typestr="cartesian "; varstr="x"; break;
+    }
+    if (active) switch (type) { // calculation
+        case FuncTypes.POLAR:
+            for (var a=pol.start;a<=pol.end;a+=pinc)
+                if (!isNull(func.eval(a)) && isFinite(func.eval(a)))
+                    plot.push(new PolarCoords(func.eval(a), a).toCartesian());
+            break;
+        case FuncTypes.PARAMETRIC:
+            for (var t=par.start;t<=par.end;t+=rinc)
+                if (!isNull(func.eval(t).x) && !isNull(func.eval(t).y) && isFinite(func.eval(t).x) && isFinite(func.eval(t).y))
+                    plot.push(func.eval(t));
+            break;
+        default:
+            for (var x=-(b.x-p.x);x<=b.x+p.x;x+=cinc)
+                if (!isNull(func.eval(x)) && isFinite(func.eval(x))) // if valid
+                    plot.push(new Coords(x, func.eval(x)));
+    }
+    // draw legend
+    if (func.toString(true) != "[object Object]") CrtPlane.drawLegend(func.toString(true), colour);
+    else CrtPlane.drawLegend("f("+varstr+") = "+formstr(func.eval.toString(true)), colour);
+    // plot
+    if (!isNull(plot)) CrtPlane.plot(plot, (active&&hlighted?"#09f":null), hlighted);
+    else CrtPlane.currColour++;
+}
+CrtPlane.drawLegend = function (text, style) {
+    var elm = document.createElement("li");
+    elm.style.borderColor = (style?style:"transparent");
+    elm.style.color = (isNull(style)?"#aaa":"#333");
+    elm.innerHTML = text;
+    $("#cart-legend ul").append(elm);
+}
+CrtPlane.parseFunc = function (text) {
+    var val = (text
+        .replaceAll("pi", "π")
+        .replaceAll(/([0-9π\)]{1,})([\(a-zA-Z]{1,})/, "$1*$2")
+        .replaceAll(/([a-zA-Z\)]{1,})([0-9π]{1,})/, "$1*$2")
+        .replaceAll("π", "Math.PI")
+        .replaceAll(/(([^a-zA-Z\.]|^))e/, "$1Math.E")
+        .replaceAll(/([0-9a-zA-Z\.]{1,})\^(([0-9a-zA-Z\.]{1,}|\([^\)]{1,}?\)))/, "Math.pow($1,$2)")
+        .replaceAll(/([^\.a])((a?(sin|cos|tan)|abs))/, "$1Math.$2")),
+        type = "",
+        varstr = "";
+    if (val.search(/f\(a\) ?= ?/) != -1) var type = FuncTypes.POLAR;
+    else if (val.search(/f\(t\) ?= ?/) != -1) var type = FuncTypes.PARAMETRIC;
+    else var type = FuncTypes.CARTESIAN;
+    val = val.replaceAll(/f\([a-zA-Z]{1,}\) ?= ?/, "");
+    switch (type) {
+        case FuncTypes.POLAR: varstr = "a"; break;
+        case FuncTypes.PARAMETRIC: varstr = "t"; break;
+        default: varstr = "x"; break;
+    }
+    try { 
+        eval("var func = {eval:function ("+varstr+") { return "+val+" }}");
+        func.eval(1);
+    } catch (e) { TBI.error(e); return null; }
+    return {func:func,type:type};
+}
+CrtPlane.bind = function (elName, option, click) {
+    $(elName).click(function (event) {
+        CrtPlane.set(option, TBI.isToggled(this));
+        if (typeof(click) == "function") try { click() } catch (e) {}
+    });
+    TBI.toggleButton($(elName)[0], CrtPlane[option]);
+}
+CrtPlane.rightAngledTriangle = function (a, b, angleA) {
+    if (!(a instanceof Coords) && !isNaN(a[1])) a = new Coords(a[0],a[1]);
+    if (!(b instanceof Coords) && !isNaN(b[1])) b = new Coords(b[0],b[1]);
+    var ab = new LineSegment(a,b);
+    var c = new Coords(b.x, b.y+Math.tan(angleA)*ab.length);
+    CrtPlane.plot([a,b], "#000");
+    CrtPlane.plot([b,c], "#000");
+    CrtPlane.plot([a,c], "#000");
 }
 $(document).on("pageload", function () {
     CrtPlane.setup("cart-plane");
     CrtPlane.init();
     $("#cart-plus").click(function () {
         var b = CrtPlane.bounds,
-            z = CrtPlane.zFactor;
-        if (b.x-(b.x/z) <= 1 || b.y-(b.y/z) <= 1) z = Infinity;
+            z = CrtPlane.zFactor,
+            l = CrtPlane.boundLim;
+        if (b.x-(b.x/z) <= l.min || b.y-(b.y/z) <= l.min) z = Infinity;
         CrtPlane.set("bounds", {x:b.x-(b.x/z),y:b.y-(b.y/z)});
     });
     $("#cart-minus").click(function () {
         var b = CrtPlane.bounds,
-            z = CrtPlane.zFactor;
+            z = CrtPlane.zFactor,
+            l = CrtPlane.boundLim;
+        if (b.x+(b.x/z) >= l.max || b.y+(b.y/z) >= l.max) z = Infinity;
         CrtPlane.set("bounds", {x:b.x+(b.x/z),y:b.y+(b.y/z)});
     });
-    $("#cart-funcrender").click(function () {
-        CrtPlane.set("fnDefMode", this.checked);
+    CrtPlane.bind("#cart-funcrender", "fnDefMode");
+    /*$("#cart-mode-rm").click(function () {
+        CrtPlane.set("legendMode", TBI.isToggled(this) ? ModeTypes.REMOVE : ModeTypes.HIDE);
+        $("#cart-legend").toggleClass("rm-mode", TBI.isToggled(this));
+    });*/
+    CrtPlane.bind("#cart-grid", "grid");
+    CrtPlane.bind("#cart-scale", "scale");
+    CrtPlane.bind("#cart-axes", "axes");
+    $("#cart-legend-tog").click(function () {
+        TBI.isToggled(this) ? $("#cart-legend").show() : $("#cart-legend").hide();
     });
-    $("#cart-grid").click(function () {
-        CrtPlane.set("grid", this.checked);
+    TBI.toggleButton($("#cart-legend-tog")[0], $("#cart-legend")[0].display != "none");
+    $("#cart-plane").mousedown(function (event) {
+        CrtPlane.set("mouse", new Coords(event.offsetX, event.offsetY));
+        CrtPlane.set("panTemp", CrtPlane.pan);
+        $(CrtPlane.canvas).toggleClass("mdown", true);
+    });
+    $("#cart-plane").mouseup(function () {
+        CrtPlane.set("mouse", null);
+        $(CrtPlane.canvas).toggleClass("mdown", false);
+    });
+    $("#cart-plane").mousemove(function (event) {
+        if (isNull(CrtPlane.mouse)) return null;
+        else {
+            var w = CrtPlane.width,
+                h = CrtPlane.height,
+                b = CrtPlane.bounds,
+                p = CrtPlane.panTemp,
+                m = CrtPlane.mouse,
+                fx = w/(2*b.x),
+                fy = h/(2*b.y);
+            CrtPlane.set("pan", {x:(p.x-(event.offsetX-m.x)/fx).fixFloat(4),y:(p.y+(event.offsetY-m.y)/fy).fixFloat(4)});
+        }
+    });
+    $("#cart-reset").click(function () {
+        CrtPlane.set("pan", {x:0,y:0});
+    });
+    $("#cart-newfunc").keydown(function (event) {
+        if (convertKeyDown(event) == "enter") {
+            var input = CrtPlane.parseFunc(this.value);
+            if (!isNull(input)) CrtPlane.funcs.push(input);
+            $("#cart-newfunc").val("");
+            CrtPlane.init();
+        }
+    });
+    gebi("cart-plane").onmousewheel = function (event) { 
+        if (event.wheelDelta > 0) $("#cart-plus").click();
+        else $("#cart-minus").click();
+        event.preventDefault(); 
+    }
+    TBI.Popup.registry.add(gebi("cart-reset"), "Centre view", "Resets the pan on the origin point (0,0).\
+    The pan can be modified by dragging on the plane area.");
+    TBI.Popup.registry.add([gebi("cart-plus"), gebi("cart-minus")], "Zoom in/out", "You can also scroll \
+    on the plane area to achieve the same result.");
+    TBI.Popup.registry.add(gebi("cart-funcrender"), "Fast rendering", "This rendering is less accurate, \
+    but also drastically reduces lag, especially when zoomed out.");
+    $("#cart-mode").click(function () {
+        var list = document.getElementsByName("cart-mode"), selection = ModeTypes.HIDE;
+        for (var i=0;i<list.length;i++) if (list[i].checked) switch (list[i].value) {
+            case "HLight": selection = ModeTypes.HIGHLIGHT; break;
+            case "Remove": selection = ModeTypes.REMOVE; break;
+            case "Edit": selection = ModeTypes.EDIT; break;
+            default: selection = ModeTypes.HIDE;
+        }
+        CrtPlane.set("legendMode", selection);
     });
 });
 // END CARTESIAN CODE //

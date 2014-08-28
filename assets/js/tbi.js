@@ -1,4 +1,4 @@
-// TBI.JS - V6.4
+﻿// TBI.JS - V6.6
 // Base functions, variables and helpers that are included and required in
 // all of my website pages.
 // START INCOMPATIBILITY CODE //
@@ -20,17 +20,17 @@ var now = new Date(),
         "type" : []
     },
     navbase = [],
-    ASCII = "\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
+    ASCII = "\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~\x80\x81\x82\x83\x84\x85\x86\x87\x88\x89\x8A\x8B\x8C\x8D\x8E\x8F\x90\x91\x92\x93\x94\x95\x96\x97\x98\x99\x9A\x9B\x9C\x9D\x9E\x9F\xA0\xA1\xA2\xA3\xA4\xA5\xA6\xA7\xA8\xA9\xAA\xAB\xAC\xAD\xAE\xAF\xB0\xB1\xB2\xB3\xB4\xB5\xB6\xB7\xB8\xB9\xBA\xBB\xBC\xBD\xBE\xBF\xC0\xC1\xC2\xC3\xC4\xC5\xC6\xC7\xC8\xC9\xCA\xCB\xCC\xCD\xCE\xCF\xD0\xD1\xD2\xD3\xD4\xD5\xD6\xD7\xD8\xD9\xDA\xDB\xDC\xDD\xDE\xDF\xE0\xE1\xE2\xE3\xE4\xE5\xE6\xE7\xE8\xE9\xEA\xEB\xEC\xED\xEE\xEF\xF0\xF1\xF2\xF3\xF4\xF5\xF6\xF7\xF8\xF9\xFA\xFB\xFC\xFD\xFE\xFF";
 // START CONSOLE NOTIFICATIONS //
 TBI.log = function (message, timeout) {
     console.log(message);
     timeout = isNull(timeout) ? 30000 : timeout;
-    new TBI.Notification("Log", message, 0, timeout);
+    TBI.notification("Log", message, timeout);
 }
 TBI.warn = function (message, timeout) {
     console.warn(message);
     timeout = isNull(timeout) ? 40000 : timeout;
-    new TBI.Notification("Warning", message, 0, timeout);
+    TBI.notification("Warning", message, timeout);
 }
 TBI.error = function (message, timeout) {
     console.error(message);
@@ -39,11 +39,10 @@ TBI.error = function (message, timeout) {
     timeout = isNull(timeout) ? 50000 : timeout;
     var onclick = "$($(this).parent()[0].getElementsByTagName(\"div\")[0]).slideToggle()";
     if (typeof(orig) == "object")
-        new TBI.Notification("Error", 
+        TBI.notification("Error", 
             orig.message+"<button onclick='"+onclick+"'>Show/Hide Stack</button><div style='display:none'>"+orig.stack+"</div>", 
-            1, 
             timeout);
-    else new TBI.Notification("Error", message, 1, timeout);
+    else TBI.notification("Error", message, timeout);
 }
 // END CONSOLE NOTIFICATIONS //
 $(function () {
@@ -58,10 +57,13 @@ $(function () {
 });
 // Shorthand for document.getElementById.
 function gebi(id) { return document.getElementById(id); }
+HTMLElement.prototype.gebi = function (id) { return this.getElementById(id) }
 // Shorthand for document.getElementsByClassName.
 function gecn(className) { return document.getElementsByClassName(className); }
+HTMLElement.prototype.gecn = function (className) { return this.getElementsByClassName(className) }
 // Shorthand for document.getElementsByTagName.
 function getn(tagName) { return document.getElementsByTagName(tagName); }
+HTMLElement.prototype.getn = function (tagName) { return this.getElementsByTagName(tagName) }
 // Checks the state of an XHR.
 function checkState(request) { return (request.readyState == 4); }
 // A XMLHttpRequest object constructor.
@@ -75,7 +77,7 @@ TBI.AJAX = function (url, func) {
     xhr.onreadystatechange = function () {
         if (checkState(xhr)) {
             if (isNull(xhr.response)) xhr.response = xhr.responseText;
-            if (func instanceof Function) func();
+            if (func instanceof Function) func(xhr);
         }
     }
     return xhr;
@@ -182,37 +184,54 @@ TBI.checkNav = function () {
     
     /** A complicated for loop that handles the indicator behaviour relating to submenus. */
     var nv = "#top>div:not(.nav-ind)";
-    navbase = new Array($(nv).length);
+    navbase = [];
     for (var i=0;i<$(nv).length;i++) {
         var parent = nv+":nth("+i+")";
-        var child = parent+" .inner-nav";
+        var child = parent+">.inner-nav";
         if ($(child).length > 0) {
-            navbase[i] = [$(parent)[0], $(child)[0]];
+            navbase.push([$(parent)[0], $(child)[0]]);
             $(parent).off("mouseover");
             $(parent).mouseover(function () {
                 var child = TBI.searchNavbase(this);
                 if (isNull(child)) return false;
                 $(child).show();
                 $(child).mouseenter(function () {
-                    $($(child).parent()).off("mousemove");
+                    $($(this).parent()).off("mousemove");
                     TBI.timerClear("curr");
-                    TBI.navMoveTo($($(child).parent()));
-                    $(child).mouseenter(function () { TBI.navMoveTo($($(child).parent())) });
+                    TBI.navMoveTo($($(this).parent()));
+                    $(this).mouseenter(function () { TBI.navMoveTo($($(this).parent())) });
                     TBI.updateLinks();
                 });
                 $(child).mouseleave(function () { TBI.checkNav(); TBI.timerClear("curr"); });
             });
             $(parent).off("mouseleave");
-            $(parent).mouseleave(function () {
-                var child = TBI.searchNavbase(this);
-                if (isNull(child)) return false;
-                $(child).hide();
-            });
+            $(parent).mouseleave(function () { $(TBI.searchNavbase(this)).hide(); });
+            var nv2 = child+">li";
+            for (var j=0;j<$(nv2).length;j++) {
+                var parent = nv2+":nth("+j+")";
+                var child = parent+">.inner-nav";
+                TBI.bindNav(parent, child);
+            }
         }
     }
     /** Whether or not to show the "to top" menu item. */
     if (window.scrollY > 0) $(".nav-top").slideDown();
     else $(".nav-top").slideUp();
+}
+TBI.bindNav = function (parent, child) {
+    if ($(child).length > 0) {
+        navbase.push([$(parent)[0], $(child)[0]]);
+        $(parent).off("mouseover");
+        $(parent).mouseover(function () { $(TBI.searchNavbase(this)).show(); });
+        $(parent).off("mouseleave");
+        $(parent).mouseleave(function () { $(TBI.searchNavbase(this)).hide(); });
+        var nv = child+">li";
+        for (var i=0;i<$(nv).length;i++) {
+            var parent = nv+":nth("+i+")";
+            var child = parent+">.inner-nav";
+            if ($(child).length > 0) TBI.bindNav(parent, child);
+        }
+    }
 }
 // Updates toggleable elements.
 TBI.updateUI = function () {
@@ -319,11 +338,9 @@ function isEven(n) { return n%2==0 }
 function isNull(thing) {
     if (thing instanceof Array) {
         for (var i=0;i<thing.length;i++)
-            if (thing[i] == undefined || thing[i] === "" || thing[i] == null || thing.toString() == "NaN")
-                return true;
+            if (isNull(thing[i])) return true;
         return (thing.length == 0)
-    }
-    return (thing == undefined || thing === "" || thing == null || thing.toString() == "NaN")
+    } else return (thing == undefined || thing === "" || thing == null || thing.toString() == "NaN")
 }
 // Determines whether a number is negative.
 function isNegative(num) { return (Math.abs(num) != num); }
@@ -340,6 +357,15 @@ Array.prototype.isEqual = function (arr) { return isEqual(this, arr); }
 // Determines whether or not an array contains a particular item.
 Array.prototype.contains = function (item) {
     for (var i=0;i<this.length;i++) if (isEqual(this[i], item)) return true; return false;
+}
+Array.dimensional = function (n, lengths, initial) {
+    for (var i=0,a=[];i<lengths[n-1];i++) a.push(n==1?initial:Array.dimensional(n-1, lengths, initial));
+    return a;
+}
+String.prototype.replaceAll = String.prototype.replaceAll || function (toReplace, replacement) {
+    var str = this;
+    while (str.search(toReplace) != -1) str = str.replace(toReplace, replacement);
+    return str;
 }
 // Returns the numbers that go into the specified number.
 function divisors(num) {
@@ -444,13 +470,18 @@ TBI.timerClear = function (timer) {
 }
 // Declares an object of {x,y} to represent a coordinate value.
 function Coords(x, y) {
+    if (x instanceof Array) return new Coords(x[0], x[1]);
     this.x = x;
     this.y = y;
+}
+Coords.parse = function (str) {
+    var params = str.replaceAll(/[\(\)]/, "").split(/\, ?/);
+    return new Coords(parseFloat(params[0]).fixFloat(), parseFloat(params[1]).fixFloat());
 }
 // Transforms coordinates into an array of [x,y].
 Coords.prototype.toArray = function () { return [this.x,this.y] }
 // Transforms coordinates into a string representation of "(x, y)".
-Coords.prototype.toString = function () { return "("+this.x+", "+this.y+")" }
+Coords.prototype.toString = function (spacing) { return "("+this.x+","+(isNull(spacing)?" ":spacing?" ":"")+this.y+")" }
 Coords.prototype.toPolar = function () {
     return new PolarCoords(Math.pythagoras(this.x, this.y), Math.atan2(this.y, this.x));
 }
@@ -458,8 +489,12 @@ function PolarCoords(radius, azimuth) {
     this.radius = radius;
     this.azimuth = azimuth;
 }
+PolarCoords.parse = function (str) {
+    var params = str.replaceAll(/[\(\)]/, "").split(/\, ?/);
+    return new PolarCoords(params[0], params[1]);
+}
 PolarCoords.prototype.toCartesian = function () { 
-    return new Coords(this.radius*Math.sin(this.azimuth), this.radius*Math.cos(this.azimuth));
+    return new Coords(this.radius*Math.cos(this.azimuth), this.radius*Math.sin(this.azimuth));
 }
 PolarCoords.prototype.toString = function () { return "("+this.radius+", "+this.azimuth+")" }
 // Declares a line segment with the endpoints start and end.
@@ -470,11 +505,11 @@ function LineSegment(start, end) {
     this.end = end;
     this.length = Math.pythagoras(this.end.x-this.start.x, this.end.y-this.start.y);
     this.midpoint = new Coords(Math.mean([this.start.x, this.end.x]), Math.mean([this.start.y, this.end.y]));
-    this.gradient = ((this.end.y-this.start.y) / (this.end.x-this.start.x)).fix(); 
+    this.gradient = ((this.end.y-this.start.y) / (this.end.x-this.start.x)).fixFloat(); 
     // simple: m = rise/run
     // the trick is to use two points
-    // take away the first point's y values from the second y value
-    // and then divide that by the second x from the first x, same as the last step
+    // take away the first point's y values from the second y value (rise)
+    // and then divide that by the second x from the first x, same as the last step (run)
     // the .fix() is simply to reduce the chances of floating point errors
     // the formula is (y2-y1)/(x2-x1)
     this.yIntercept = this.start.y-(this.gradient*this.start.x);
@@ -486,12 +521,19 @@ function LineSegment(start, end) {
     // where m is the gradient and x is the x value of the point
     // the formula is y-mx
 }
+LineSegment.parse = function (str) {
+    var params = str.replace("((", "(").replace("))", ")").split(/\), ?\(/);
+    return new LineSegment(Coords.parse(params[0]), Coords.parse(params[1]));
+}
 // Finds the midpoint of a line segment.
 LineSegment.prototype.midpoint = function () {
     return new Coords(Math.mean([this.start.x, this.end.x]), Math.mean([this.start.y, this.end.y]));
 }
-LineSegment.prototype.toLinear = function () {
-    return new LinearFunc(this.gradient, this.yIntercept);
+LineSegment.prototype.toLinear = function () { return new LinearFunc(this.gradient, this.yIntercept); }
+LineSegment.prototype.toArray = function () { return [[this.start.x, this.start.y], [this.end.x, this.end.y]]; }
+LineSegment.prototype.toString = function (spacing) {
+    var s = spacing ? " " : "";
+    return "(" + this.start.toString(s==" ") + "," + s + this.end.toString(s==" ") + ")";
 }
 // Declares a linear function f(x) = gradient*x+yIntercept.
 function LinearFunc(gradient, yIntercept) {
@@ -504,22 +546,23 @@ LinearFunc.prototype.eval = function (x) {
 }
 // Transforms a linear function rule into a string representation.
 LinearFunc.prototype.toString = function (spacing) {
-    var s = isNull(spacing) ? "" : spacing ? " " : "";
+    var s = spacing == true ? " " : "";
     var gradient = this.gradient == 1?"":this.gradient.toString();
     var sign = this.yIntercept==0?"":isNegative(this.yIntercept)?"-":"+";
     var yIntercept = this.yIntercept == 0?"":Math.abs(this.yIntercept).toString();
-    return "f(x)="+gradient+"x"+sign+yIntercept;
+    return "f(x)"+s+"="+s+gradient+"x"+s+sign+s+yIntercept;
 }
 // Finds the intersection of two linear functions.
 LinearFunc.prototype.intersection = function (f2) {
-    var x = ((f2.yIntercept-this.yIntercept) / (this.gradient-f2.gradient)).fix()
+    var x = ((f2.yIntercept-this.yIntercept) / (this.gradient-f2.gradient)).fixFloat()
     return new Coords(x, this.eval(x));
 }
 LinearFunc.prototype.multiply = function (f2) {
-    return new QuadraticFunc(
+    if (f2 instanceof LinearFunc) return new QuadraticFunc(
             this.gradient*f2.gradient, 
-            this.yIntercept+f2.yIntercept, 
+            this.yIntercept*f2.gradient+this.gradient*f2.yIntercept, 
             this.yIntercept*f2.yIntercept);
+    else return new LinearFunc(this.gradient*f2, this.yIntercept*f2);
 }
 function QuadraticFunc(a, b, c) {
     if (a == 0) return new LinearFunc(b, c);
@@ -528,7 +571,7 @@ function QuadraticFunc(a, b, c) {
     this.c = c;
 }
 QuadraticFunc.prototype.eval = function (x) {
-    return this.a*x*x + this.b*x + this.c;
+    return this.a*Math.pow(x,2) + this.b*x + this.c;
 }
 QuadraticFunc.prototype.toString = function (spacing) {
     var s = isNull(spacing) ? "" : (spacing) ? " " : "";
@@ -540,8 +583,8 @@ QuadraticFunc.prototype.toString = function (spacing) {
     return "f(x)"+s+"="+a+"x^2"+b+"x"+c;
 }
 QuadraticFunc.prototype.formula = function (sign) {
-    var rt = Math.sqrt(this.b*this.b - 4*this.a*this.c);
-    return (-this.b+(sign?rt:-rt)) / 2*this.a;
+    var rt = Math.sqrt(Math.pow(this.b,2) - 4*this.a*this.c);
+    return (-this.b+(sign?rt:-rt)) / (2*this.a);
 }
 // Declares a relation ax+by=c as a function of x.
 function RelationFunc(a, b, c) {
@@ -556,14 +599,83 @@ RelationFunc.prototype.toLinear = function () {
     return new LinearFunc(this.gradient, this.yIntercept);
 }
 // Turns a relation into a string representation.
-RelationFunc.prototype.toString = function () {
-    var a = this.a==1?this.a==-1?"-":"":this.a.toString();
-    var sign = isNegative(this.b) ? "-" : "+";
-    var b = this.b == 1?"":Math.abs(this.b).toString();
-    return a+"x"+sign+b+"y="+this.c;
+RelationFunc.prototype.toString = function (spacing) {
+    var s = isNull(spacing) ? "" : spacing ? " " : "",
+        a = this.a==1?this.a==-1?"-":"":this.a.toString(),
+        sign = isNegative(this.b) ? "-" : "+",
+        b = this.b == 1?"":Math.abs(this.b).toString();
+    return a+"x"+s+sign+s+b+"y"+s+"="+s+this.c;
 }
 RelationFunc.prototype.eval = function (x) {
     return this.gradient*x+this.yIntercept;
+}
+function Parametric(xfunc, yfunc) {
+    this.xfunc = xfunc;
+    this.yfunc = yfunc;
+}
+Parametric.prototype.eval = function (t) {
+    return new Coords(this.xfunc(t), this.yfunc(t));
+}
+Parametric.prototype.toString = function (spacing) {
+    var s = spacing ? " " : "",
+        formstr = function (str) {
+            return str
+            .replaceAll("Math.E", "e")
+            .replaceAll(/(function ?\([A-Za-z_]([A-Za-z0-9_]{1,})?\) ?\{ ?return ?|\}$|Math\.|\*)/, "")
+            .replaceAll(/pow\(([^,]{1,}), ?((\([^\)]{1,}\)|[^\)]{1,}))\)/, "$1^$2")
+            .replaceAll("PI", "π");
+        },
+        xstr = formstr(this.xfunc.toString());
+        ystr = formstr(this.yfunc.toString());
+    return "f(t) = ("+xstr+","+s+ystr+")";
+}
+Parametric.ellipse = function (a, b) {
+    return eval("new Parametric(\
+        function(t){return "+a+"*Math.cos(t)},\
+        function(t){return "+b+"*Math.sin(t)})");
+}
+Parametric.lissajous = function (a, b, sigma) {
+    return eval("new Parametric(\
+        function(t){return Math.sin("+a+"*t+"+(isNull(sigma)?"0":sigma)+")},\
+        function(t){return Math.sin("+b+"*t)})");
+}
+Function.equationToString = function (func, toReplace, replacement) {
+    var str = func.toString(),
+        regex = /function ?\(([a-zA-Z_]([a-zA-Z0-9_]{1,})?)\) ?= ?/,
+        typestr = "";
+    if (str.search("native code") != -1) return null;
+    else if (str.search(regex) != -1) typestr = str.match(regex)[1];
+    else typestr = "x";
+    str = str
+        .replaceAll("Math.E", "e")
+        .replaceAll(/(function ?\([A-Za-z_]([A-Za-z0-9_]{1,})?\) ?\{ ?return ?|;? ?\}$|Math\.|\*)/, "")
+        .replaceAll(/pow\(([^,]{1,}), ?((\([^\)]{1,}\)|[^\)]{1,}))\)/, "$1^$2")
+        .replaceAll("PI", "π");
+    str = "f("+typestr+") = "+str;
+    return isNull(toReplace) || isNull(replacement) ? str : str
+        .replaceAll(new RegExp("([^A-Za-z_])"+toReplace+"([^A-Za-z_])"), "$1"+replacement+"$2")
+        .replace(new RegExp("^"+toReplace+"([^A-Za-z_])"), replacement+"$1")
+        .replace(new RegExp("([^A-Za-z_])"+toReplace+"$"), "$1"+replacement);
+}
+String.parseFunction = function (text) {
+    var val = (text
+        .replaceAll("pi", "π")
+        .replaceAll(/([0-9π\)]{1,})([\(a-zA-Z]{1,})/, "$1*$2")
+        .replaceAll(/([a-zA-Z\)]{1,})([0-9π]{1,})/, "$1*$2")
+        .replaceAll("π", "Math.PI")
+        .replaceAll(/(([^a-zA-Z\.]|^))e/, "$1Math.E")
+        .replaceAll(/([0-9a-zA-Z\.]{1,})\^(([0-9a-zA-Z\.]{1,}|\([^\)]{1,}?\)))/, "Math.pow($1,$2)")
+        .replaceAll(/([^\.a])(a?(sin|cos|tan))/, "$1Math.$2"));
+    var regex = /f\(([a-zA-Z_]([a-zA-Z0-9_]{1,})?)\) ?= ?/,
+        typestr = "";
+    if (val.search(regex) != -1) typestr = val.match(regex)[1];
+    else typestr = "x";
+    val = val.replaceAll(regex, "");
+    try { 
+        eval("var func = function ("+typestr+") { return "+val+" }");
+        func(1);
+    } catch (e) { TBI.error(e); return null; }
+    return func;
 }
 // Returns a preformatted array of the date object specified.
 function unixToString(date) {
@@ -590,18 +702,32 @@ function dtr(deg) { return (Math.PI/180)*deg }
 // Radians to degrees.
 function rtd(rad) { return (180/Math.PI)*rad }
 // Location of a point on a circle's circumference.
-function circlePoint(a, r, x, y) {
-    x=isNull(x)?0:x;
-    y=isNull(y)?0:y;
-    return new Coords(x+r*Math.cos(dtr(a)),y+r*Math.sin(dtr(a)));
-}
+function circlePoint(a, r, x, y) { return new Coords((x?0:x)+r*Math.cos(dtr(a)),(y?0:y)+r*Math.sin(dtr(a))) }
 // Formula for the circumference of a circle with the specified radius r.
 function circum(r) { return 2*Math.PI*r }
+function formulaToCalc(formula, vars) {
+    var rxv = "";
+    for (var prop in vars) if (vars.hasOwnProperty(prop) && prop.length == 1) rxv += prop;
+    var val = (formula
+        .replaceAll("pi", "π")
+        .replaceAll(new RegExp("([0-9π\\)]{1,})([\\("+rxv+"]{1,})"), "$1*$2")
+        .replaceAll(new RegExp("(["+rxv+"\\)]{1,})([0-9π\\(]{1,})"), "$1*$2")
+        .replaceAll(new RegExp("(["+rxv+"])(["+rxv+"])"), "$1*$2")
+        .replaceAll("π", "Math.PI")
+        .replaceAll(/(([^a-zA-Z\.]|^))e/, "$1Math.E")
+        .replaceAll(/([0-9a-zA-Z\.]{1,}) ?\^ ?(([0-9a-zA-Z\.]{1,}|\([^\)]{1,}?\)))/, "Math.pow($1,$2)")
+        .replaceAll(/(([0-9a-zA-Z\.]{1,}|\([^\)]{1,}?\))) ?\^ ?([0-9a-zA-Z\.]{1,})/, "Math.pow($1,$3)")
+        .replaceAll(/([^\.a])(a?\*?(s\*?i\*?n|c\*?o\*?s|t\*?a\*?n))/, "$1Math.$2")
+        .replaceAll(/(([^\.]|^))s\*?q\*?r\*?t/, "$1Math.sqrt"));
+    try { eval("var result = function () { with (vars) { return "+val+" } }()") }
+    catch (e) { return false; }
+    return result;
+}
 // Formula for calculating the hypotenuse of a right angled triangle, given sides a and b.
 Math.pythagoras = function (arg0, arg1, mode) { 
     if (mode && arg0 > arg1) return Math.sqrt((arg0*arg0)-(arg1*arg1));
     else if (mode && arg0 < arg1) return Math.sqrt((arg1*arg1)-(arg0*arg0));
-    else return Math.sqrt((arg0*arg0)+(arg1*arg1)).fix();
+    else return Math.sqrt((arg0*arg0)+(arg1*arg1)).fixFloat();
 }
 // Splices an element and returns the array while preserving the original.
 function splice(list, index, howMany) {
@@ -611,28 +737,28 @@ function splice(list, index, howMany) {
     return newlist;
 }
 // A function to compare often inaccurate floating-point values by measuring their difference against an immesurably small value.
-Number.prototype.equal = function (num) { return Math.abs(num - this) < Number.EPSILON }
+Number.prototype.isFloatEqual = function (num) { return Math.abs(num - this) < Number.EPSILON }
 // Fixes a malfunctioning floating-point value (e.g. 2.999999999995) by slightly reducing its precision.
-Number.prototype.fix = function () { return parseFloat(this.toPrecision(15)) }
+Number.prototype.fixFloat = function (num) { return parseFloat(this.toPrecision(num?(num<16?num:15):15)) }
+Number.prototype.fixMod = function (mod) { 
+    var temp = (this.fixFloat() % mod.fixFloat()).fixFloat(); 
+    if (temp.isFloatEqual(mod)) return 0; else return temp;
+}
 // arr.indexOf polyfill.
-if (!Array.prototype.indexOf) {
-    Array.prototype.indexOf = function (obj, start) {
-        for (var i = (start || 0), j = this.length; i < j; i++) {
-            if (this[i] === obj) { return i; }
-        }
-        return -1;
-    }
+Array.prototype.indexOf = Array.prototype.indexOf || function (obj, start) {
+    for (var i = (start || 0), j = this.length; i < j; i++) if (this[i] === obj) return i;
+    return -1;
 }
 // Sorts a number list in ascending order.
-function sort(list) {
-    var min = Math.min.apply(null, list),
-        max = Math.max.apply(null, list);
-    list = splice(list, list.indexOf(min), 1);
-    list = splice(list, list.indexOf(max), 1);
-    if (list.length == 0) return [min,max];
-    else if (list.length == 1) return [min,list[0],max];
+function sort(templst) {
+    var min = Math.min.apply(null, templst),
+        max = Math.max.apply(null, templst);
+    templst = splice(templst, templst.indexOf(min), 1);
+    templst = splice(templst, templst.indexOf(max), 1);
+    if (templst.length == 0) return [min,max];
+    else if (templst.length == 1) return [min,templst[0],max];
     else {
-        var newarr = sort(list);
+        var newarr = sort(templst);
         newarr.push(max);
         newarr.unshift(min);
         return newarr;
@@ -665,7 +791,7 @@ Math.mode = function (list) {
     }
     for (var i=0;i<Object.keys(freq).length;i++) if (freq[Object.keys(freq)[i]] > max) max = freq[Object.keys(freq)[i]];
     for (var i=0;i<Object.keys(freq).length;i++) if (freq[Object.keys(freq)[i]] == max) modes.push(parseInt(Object.keys(freq)[i]));
-    if (max < 2) return "none";
+    if (max < 2) return null;
     return modes.length == 1?modes[0]:modes;
 }
 // Finds the range of a list.
@@ -703,6 +829,28 @@ Math.eratosthenes = function (num) {
 Math.newValueForMean = function (list, num) {
     return num * (list.length + 1) - Math.total(list);
 }
+//         /|
+//        / |
+//       /  |
+//      /   |
+//  hyp/    |opp
+//    /     |
+//   /a     |
+//  /_______|
+//     adj
+//
+// sin = opp/hyp
+// when given hyp and a, hyp*sin(a) gives opp
+// when given opp and a, opp/sin(a) gives hyp
+// when given opp and hyp, arcsin(opp/hyp) gives a
+// cos = adj/hyp
+// when given hyp and a, hyp*cos(a) gives adj
+// when given adj and a, adj/cos(a) gives hyp
+// when given adj and hyp, arccos(adj/hyp) gives a
+// tan = opp/adj
+// when given adj and a, adj*tan(a) gives opp
+// when given opp and a, opp/tan(a) gives adj
+// when given opp and adj, arctan(opp/adj) gives a
 // Converts a keypress event keycode into the character typed.
 function convertKeyDown(event) {
     var chars = {
@@ -774,7 +922,7 @@ TBI.Popup = function (x, y, head, text) {
 TBI.Popup.registry = [];
 // Adds a popup when hovering over a specified element.
 TBI.Popup.registry.add = function (element, head, text) {
-    if (true) {
+    if (element instanceof HTMLElement) {
         TBI.Popup.registry.push([element, head, text]);
         $(element).off("mousemove");
         $(element).mousemove(function (event) {
@@ -787,6 +935,8 @@ TBI.Popup.registry.add = function (element, head, text) {
         $(element).mouseleave(function () {
             $('.popup').remove();
         });
+    } else if (element instanceof Array) {
+        element.forEach(function (el) { TBI.Popup.registry.add(el, head, text) });
     } else {
         throw new Error("Supplied element is invalid.");
     }
@@ -799,68 +949,30 @@ TBI.Popup.registry.remove = function (element) {
     $(element).off("mousemove");
 }
 // A predefined popup element that can be added to by using the same header.
-// There can only be one notification type, but multiple messages and instances of messages.
-TBI.Notification = function (head, text, type, timeout) {
-    this.type = isNull(type) ? 0 : type;
-    timeout = isNull(timeout) ? 10000 : timeout;
-    this.head = head;
-    this.text = text;
-    this.noteNum = $(".notification").length;
-    if (notePrevInfo["head"].indexOf(this.head)!=-1
-    && !isNull(Timers.noteRemove) 
-    && notePrevInfo["text"].indexOf(this.text)==-1) {
-        for (var i=0;i<this.noteNum;i++) {
-            if ($($(".notification h3")[i]).text() == this.head) {
-                $($(".notification ul")[i]).append("<li>"+this.text+"</li>");
-            }
-        }
-    } else if (notePrevInfo["text"].indexOf(this.text)==-1 && notePrevInfo["head"].indexOf(this.head)==-1) {
-        $(".notification").remove();
-        var body = $('body');
-        var pup = "";
-        pup += "<div class='notification'>";
-        pup += "<h3>"+this.head+"</h3>";
-        pup += "<ul><li>"+this.text+"</li></ul>";
-        pup += "</div>";
-        body.append(pup);
-    } else if (notePrevInfo["head"].indexOf(this.head)!=-1 && notePrevInfo["text"].indexOf(this.text)!=-1) {
-        for (var i=0;i<this.noteNum;i++) {
-            if ($($(".notification h3")[i]).text() == this.head) {
-                var lines = $(".notification ul").children(),
-                    found = false;
-                for (var j=0;j<lines.length;j++) {
-                    if ($(lines[j]).text() == this.text) {
-                        var prevNum = 0;
-                        notePrevInfo["text"].forEach(function (el) {
-                            if (el == text) prevNum++;
-                        });
-                        if (prevNum >= 9) $(lines[j]).attr("class", "list-plus")
-                        else $(lines[j]).attr("class", "list-"+(++prevNum));
-                        found = true;
-                    }
-                }
-                if (!found) notePrevInfo = {head:[],text:[]};
-            }
-        }
+TBI.notification = function (group, text, timeout) {
+    var groupId = "note-group-"+group.toLowerCase(),
+        noteGroup = $("#"+groupId),
+        noteGroupList = $("#"+groupId+" li");
+    if ($("#note-holder").length == 0) $("body").append("<div id='note-holder'><div id='note-holder-inner'></div></div>");
+    if (noteGroup.length == 0) {
+        var buttonText = "<button onclick='$(this).parent().remove()'>Dismiss</button>";
+        $("#note-holder-inner").append("<div class='note' id='"+groupId+"'><h3>"+group+"</h3><ul></ul>"+buttonText+"</div>");
     }
-    TBI.timerClear("noteRemove");
-    var timerCount = 0;
-    TBI.timerSet("noteRemove",500,function () {
-        if (timerCount >= timeout)
-            $(".notification").hide();
-        if ($($(".notification")[0]).css("display")=="none") {
-            $(".notification").remove();
-            notePrevInfo = {
-                "head": [], 
-                "text": []
-            };
-            TBI.timerClear("noteRemove");
-            timerCount = 0;
-        }
-        timerCount+=500;
+    if (noteGroupList.length > 0) {
+        var el = noteGroupList[noteGroupList.length-1];
+        if (el.innerHTML == text) {
+            if (isNull(el.dataset.instances)) el.dataset.instances = 1;
+            el.dataset.instances++;
+        } else $("#"+groupId+" ul").append("<li>"+text+"</li>");
+    } else $("#"+groupId+" ul").append("<li>"+text+"</li>");
+    TBI.timerClear("noteRemove-"+group.toLowerCase());
+    var nRemoveTotal = 0;
+    TBI.timerSet("noteRemove-"+group.toLowerCase(), 10, function () {
+        if (nRemoveTotal > timeout) {
+            $("#"+groupId).remove();
+            TBI.timerClear("noteRemove-"+group.toLowerCase());
+        } else nRemoveTotal += 10;
     });
-    notePrevInfo["head"].push(this.head);
-    notePrevInfo["text"].push(this.text);
 }
 // A dialog which displays a yes/no prompt and can provide functions when an option is chosen.
 TBI.dialog = function (head, body, func, nfunc) {
@@ -882,6 +994,7 @@ TBI.dialog = function (head, body, func, nfunc) {
 TBI.toggleButton = function (element, bool) {
     if (!isNull(element[0]) && element[0] instanceof HTMLElement) element = element[0];
     if (!element instanceof HTMLElement) return null;
+    else if (!isNull(element.checked)) return element.checked = isNull(bool)?!element.checked:bool;
     var isToggled = TBI.isToggled(element);
     if (!isToggled && bool !== false) { element.className += " on"; }
     else if (isToggled && bool !== true) { element.className = element.className.replace(" on",""); }
@@ -889,7 +1002,7 @@ TBI.toggleButton = function (element, bool) {
     return TBI.isToggled(element);
 }
 // Returns whether or not a specified toggleable element is toggled or not.
-TBI.isToggled = function (element) { return element.className.search(" on") != -1; }
+TBI.isToggled = function (element) { return isNull(element.checked)?element.className.search(" on") != -1:element.checked; }
 // Sorts a specific table element according to the column and direction specified.
 TBI.sortTable = function (table, colIndex, direction) {
     if (!(table instanceof HTMLTableElement)) return null; // checks if the table is an element
@@ -974,9 +1087,11 @@ Canvas2D.path = function (context, obj) {
         default: return false;
     }
     context.beginPath();
-    context.moveTo(path[0][0], path[0][1]);
+    if (path[0] instanceof Coords) context.moveTo(path[0].x, path[0].y);
+    else context.moveTo(path[0][0], path[0][1]);
     for (var i = 1; i < path.length; i++) 
-        context.lineTo(path[i][0], path[i][1]);
+        if (path[i] instanceof Coords) context.lineTo(path[i].x, path[i].y)
+        else context.lineTo(path[i][0], path[i][1]);
     context.closePath();
     switch (type) {
         case "stroke": context.stroke(); break;
@@ -1018,13 +1133,11 @@ TBI.updateLinks = function () {
         }
     }
     $("#top a").click(function () {
-        if (!isNull(location.hash) && !isNull($(location.hash))) {
-            TBI.timerSet("scroll",10,function () {
-                if (!isNull($(location.hash).offset())) {
-                    $(document).scrollTop(parseInt($(location.hash).offset().top - 57));
-                    TBI.timerClear("scroll");
-                }
-            });
+        var url = new URL(this.href),
+            hash = url.hash;
+        if (path.isEqual(url.pathname.split('/')) && !isNull(hash) && !isNull($(hash))) {
+            $(document).scrollTop(parseInt($(hash).offset().top - 64));
+            return false;
         }
     });
 }
@@ -1035,7 +1148,7 @@ var HTMLIncludes = {
     getDone: [],
     includes: [],
     getIndex: function () {
-        var xhr = new TBI.AJAX("/assets/data/includes.json", function () {
+        TBI.AJAX("/assets/data/includes.json", function (xhr) {
             HTMLIncludes.info = $.parseJSON(xhr.response).includes;
             TBI.Loader.complete("HTMLIncIndex", TBI.Loader.DONE);
         });
@@ -1046,7 +1159,7 @@ var HTMLIncludes = {
         TBI.timerSet("includes", 0, function () {
             if (!HTMLIncludes.getDone[curr]) {
                 HTMLIncludes.getDone[curr] = true;
-                var xhr = new TBI.AJAX(HTMLIncludes.info[curr].source, function () {
+                TBI.AJAX(HTMLIncludes.info[curr].source, function (xhr) {
                     HTMLIncludes.includes[curr] = xhr.response;
                     var oldHTML = HTMLIncludes.info[curr].replace?"":$(HTMLIncludes.info[curr].insert).html();
                     $(HTMLIncludes.info[curr].insert).html(oldHTML + xhr.response);
@@ -1066,10 +1179,10 @@ var HTMLIncludes = {
 // END INCLUDE CODE //
 // Fetches a dynamic content manifest.
 TBI.fetchIndex = function () {
-    var xhr = new TBI.AJAX("/assets/data/work.json", function () {
+    TBI.AJAX("/assets/data/work.json", function (xhr) {
         TBI.content = $.parseJSON(xhr.response).content;
         for (var i=0;i<TBI.content.length;i++) {
-            TBI[TBI.content[i].name] = $.parseJSON(xhr.response)[TBI.content[i].id];
+            TBI[TBI.content[i].name] = $.parseJSON(xhr.response).content[i].projects;
             if (path.isEqual(TBI.content[i].path.split("/"))) TBI.setupContent(TBI.content[i]);
         }
         TBI.Loader.complete("protoIndex", TBI.Loader.DONE);
@@ -1115,20 +1228,43 @@ var testtime = new Date().getTime();
 $(document).on("pageload", function () {
     TBI.loaded = true;
     TBI.Loader.event("Page loaded", true);
-    $("html")[0].className = $("html")[0].className.replace(/(init|loading)/, "");
+    $("html")[0].className = $("html")[0].className.replace(/ (init|loading)/, "");
     TBI.findPage();
     TBI.checkNav();
     TBI.navMoveTo($("#curr"));
     TBI.updateLinks();
     TBI.updateUI();
+    // interactive scrolling - marks the closest item to the scroll position
+    var tempscroll = false;
+    $(document).scroll(function () {
+        var hash = "",
+            currScroll = new Coords(window.scrollX, window.scrollY);
+        if (currScroll.y > 0) $(".nav-top").slideDown();
+        else $(".nav-top").slideUp();
+        if (tempscroll) return tempscroll = false;
+        if (!isNull(TBI.content)) for (var i=0;i<TBI.content.length;i++) {
+            var item = TBI.content[i];
+            if (path.isEqual(item.path.split("/"))) {
+                for (var j=0;j<TBI[item.name].length;j++) {
+                    var sect = TBI[item.name][j];
+                    if ($("#"+sect.id).length > 0 && $("#"+sect.id).offset().top < currScroll.y + 58) hash = "#" + sect.id;
+                }
+            }
+        }
+        location.hash = hash;
+        tempscroll = true;
+        scrollTo(currScroll.x, currScroll.y);
+    });
+    // scroll to current hash
     if (!isNull(location.hash) && !isNull($(location.hash.toString()))) {
         TBI.timerSet("scroll",10,function () {
             if (!isNull($(location.hash).offset())) {
-                $(document).scrollTop(parseInt($(location.hash).offset().top - 57));
+                $(document).scrollTop(parseInt($(location.hash).offset().top + 58));
                 TBI.timerClear("scroll");
-            }
+            } else if (location.hash.length < 2) TBI.timerClear("scroll");
         });
     }
+    // test page konami code (w/o enter)
     var konami = ["up","up","down","down","left","right","left","right","b","a"],
         kCode = 0;
     $(document).keydown(function (event) {
@@ -1142,14 +1278,11 @@ $(document).on("pageload", function () {
 window.onerror = function (message, url, line, column, e) { 
     if (TBI.error == undefined) document.body.innerHTML = "Error encountered in "+url+":"+line+":"+column+"\n"+message;
     else TBI.error(e); 
-    TBI.log("Error encountered in "+url+":"+line+":"+column+"\n"+message); 
-    return true; 
 }
 $(function () {
     TBI.Loader.event("Ready", true);
     TBI.requestManager();
     TBI.checkNav();
-    $(document).scroll(TBI.checkNav);
     TBI.Loader.init();
 });
 TBI.Loader = {
@@ -1160,8 +1293,8 @@ TBI.Loader = {
     completed: [],
     timer: 0,
     settings: {
-        timeout: 10000,
-        time_until_load_screen: 2000,
+        timeout: 20000,
+        time_until_load_screen: 6000,
         interval: 10
     },
     jobs: [
@@ -1217,7 +1350,7 @@ TBI.Loader = {
                 TBI.timerClear("loader");
                 $(document).trigger("pageload");
             } else if (TBI.Loader.timer > TBI.Loader.settings.time_until_load_screen)
-                $("html")[0].className = $("html")[0].className.replace("init", "loading");
+                $("html")[0].className = $("html")[0].className.replace(" init", " loading");
             TBI.Loader.timer+=TBI.Loader.settings.interval;
         });
     },

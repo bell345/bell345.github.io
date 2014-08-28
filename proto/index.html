@@ -9,7 +9,6 @@
     <link rel="stylesheet" href="/assets/css/proto.css" />
     <script src="/assets/js/jquery2.min.js"></script>
     <script src="/assets/js/jquery-ui.min.js"></script>
-    <script src="/assets/js/gldepend.js"></script>
     <script src="/assets/js/tbi.js"></script>
     <script src="/assets/js/proto.js"></script>
 </head>
@@ -22,7 +21,7 @@
                 These are programs and code snippets that I have on display
                 for infinite free use and reuse by anybody for any purpose 
                 under the 
-                <a href="//creativecommons.org/licenses/by-sa/4.0" class="license">(CC) BY-SA</a>
+                <a href="//creativecommons.org/licenses/by-sa/4.0" class="license"></a>
                 license.
             </p>
             <h2 id="anchor2" class="item">Grid JavaScript Test</h2>
@@ -436,9 +435,14 @@
                     </canvas>
                     <canvas id="cmp-mouse" height="600" width="600"></canvas>
                     <div class="cmp-control">
-                        <input type="text" id="cmp-asisinc" />
+                        <input type="text" id="cmp-asisinc" disabled />
                         <span class="help" id="cmp-asisinch"></span>
-                        <span class="main">Analysis Increment (resolution, &lt; is better)</span>
+                        <span class="main">Analysis Increment</span>
+                    </div>
+                    <div class="cmp-control cmp-buttonr">
+                        <button id="cmp-lquality">Low Quality</button>
+                        <button id="cmp-mquality">Medium Quality</button>
+                        <button id="cmp-hquality">High Quality</button>
                     </div>
                     <div class="cmp-control">
                         <input type="text" id="cmp-maxiter" />
@@ -472,17 +476,6 @@
                     </div>
                     <div class="cmp-control cmp-buttonr">
                         <button id="cmp-tracking" class="toggle">Line tracking</button>
-                        <button id="cmp-spinners" class="toggle">Spinners</button>
-                    </div>
-                    <div class="cmp-control cmp-buttonr">
-                        <button id="cmp-lquality">Low Quality</button>
-                        <button id="cmp-mquality">Medium Quality</button>
-                        <button id="cmp-hquality">High Quality</button>
-                    </div>
-                    <div class="cmp-control cmp-buttonr">
-                        <button id="cmp-ldetail">Low Detail</button>
-                        <button id="cmp-mdetail">Medium Detail</button>
-                        <button id="cmp-hdetail">High Detail</button>
                     </div>
                     <div class="cmp-control cmp-buttonr">
                         <button id="cmp-reset">Reset Settings</button>
@@ -496,25 +489,60 @@
             <div class="item-info">
                 <p>
                     In my maths class, I wanted to visualise the linear functions that we were studying without using 
-                    a tedious pen and paper, so I created a &lt;canvas&gt; program to plot them for me! This started 
-                    off as a small test app, but it's recently become my most worked-on project.
-                    <br>
-                    You can use your own functions using the console through the CrtPlane.func() method. It takes 
-                    a LinearFunc, RelationFunc or regular object with an eval(x) property that spits out a y value as 
-                    the parameter.
+                    a tedious pen and paper, so I created a <code>&lt;canvas&gt;</code> program to plot them for me! 
+                    This started off as a small test app, but it's recently become my most worked-on project.
                 </p>
+                <p>
+                    Using the mouse, you can scroll in, out and around the plane to explore the functions. The plus 
+                    and minus buttons on the side scroll without a mouse wheel, while the button in the middle centres
+                    the pan. To view more detailed functions, turn off the "Fast Rendering" option at the bottom of 
+                    the plane area.
+                </p>
+                <p>
+                    Click on the functions and they hide themselves - click again and they re-appear. Scroll down to 
+                    the bottom and you will find a text box and some options. The text box can be used to input new 
+                    equations and the options can be used to change the behaviour when you click on the functions.
+                    Enter <code>pi</code> for the ratio between circumference and diameter, <code>x^y</code> for
+                    exponents and <code>sin</code>, <code>cos</code> and <code>tan</code> are available as 
+                    trigonometric functions. For polar equations, enter <code>a</code> in place of <code>x</code>. 
+                    For regular equations, the <code>f(x) = </code> is not required, but polar equations require 
+                    <code>f(a) = </code> to be recognised properly.
+                </p>
+                <p>BUGS/ISSUES: </p>
+                <ul class="main">
+                    <li>Some particular zoom and pan configurations cause the scale algorithm to fail and 
+                    loop forever. This has been caught with an error handler, but will need a better solution
+                    in production.</li>
+                </ul>
                 <div id="cart-container">
                     <canvas id="cart-plane" width="600" height="600" class="item"></canvas>
+                    <div id="cart-legend">
+                        <ul></ul>
+                        <input type="text" id="cart-newfunc" placeholder="New function" />
+                        <div class="radio-input" id="cart-mode">
+                            <input type="radio" name="cart-mode" value="Hide" id="cart-mode-hide" checked />
+                            <label for="cart-mode-hide">Hide</label>
+                            <input type="radio" name="cart-mode" value="HLight" id="cart-mode-hli" />
+                            <label for="cart-mode-hli">Highlight</label>
+                            <input type="radio" name="cart-mode" value="Remove" id="cart-mode-rem" />
+                            <label for="cart-mode-rem">Remove</label>
+                            <input type="radio" name="cart-mode" value="Edit" id="cart-mode-edit" />
+                            <label for="cart-mode-edit">Edit</label>
+                        </div>
+                    </div>
                     <div id="cart-buttons">
-                        <button id="cart-plus">+</button>
-                        <button id="cart-minus">-</button>
+                        <button id="cart-plus">&plus;</button>
+                        <button id="cart-reset">&curren;</button>
+                        <button id="cart-minus">&minus;</button>
                     </div>
                 </div>
                 <div>
-                    <input type="checkbox" id="cart-funcrender" checked /><label for="cart-funcrender">Enable fast rendering</label>
-                </div>
-                <div>
-                    <input type="checkbox" id="cart-grid" checked /><label for="cart-grid">Show grid</label>
+                    <h3>Options</h3>
+                    <button class="toggle" id="cart-funcrender">Fast rendering</button>
+                    <button class="toggle" id="cart-axes">Axes</button>
+                    <button class="toggle" id="cart-grid">Grid</button>
+                    <button class="toggle" id="cart-scale">Scale</button>
+                    <button class="toggle" id="cart-legend-tog">Legend</button>
                 </div>
             </div>
         </div>
