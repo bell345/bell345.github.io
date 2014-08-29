@@ -294,6 +294,7 @@ nav>div.nav-top {
     display:inline-block;
     background:#f2f2f2;
     box-shadow:4px 4px 0px rgba(0,0,0,0.1);
+    z-index:1;
 }
 @media (max-width:1000px) {
     #sidebar { right:5%; }
