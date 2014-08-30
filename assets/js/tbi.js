@@ -160,24 +160,14 @@ TBI.checkNav = function () {
         TBI.timerClear("curr");
         TBI.timerSet("curr", 500, function () { TBI.navMoveTo("#curr"); TBI.timerClear("curr") });
     }
-    /** Handles the dynamic content and section navigation. */
+    /** Handles the dynamic content. */
     if (!isNull(TBI.content)) for (var i=0;i<TBI.content.length;i++) {
         var item = TBI.content[i];
         if ($(".nav-"+item.id+" .inner-nav").length == 0) $(".nav-"+item.id).append("<ul class='inner-nav'></ul>");
         else $(".nav-"+item.id+" .inner-nav").empty();
-        if (path.isEqual(item.path) && TBI.loaded) {
-            if ($("#sidebar .sections").length == 0)
-                $("#sidebar").html(
-                    "<h3 class='span'>\
-                    <a href='javascript:void(0)' class='up-down' for='.sections'>Sections</a></h3>\
-                    <ul class='side para sections'></ul>"
-                    + $("#sidebar").html());
-            else $("#sidebar .sections").empty();
-        }
         for (var j=0;j<TBI[item.name].length;j++) {
             var sect = TBI[item.name][j];
             $(".nav-"+item.id+" .inner-nav").append("<li><a href='/"+item.path+"/#"+sect.id+"'>"+sect.name+"</a></li>");
-            if (path.isEqual(item.path) && TBI.loaded) $("#sidebar .sections").append("<li><a href='/"+item.path+"/#"+sect.id+"'>"+sect.name+"</a></li>");
         }
     }
     TBI.updateUI();
@@ -248,11 +238,18 @@ TBI.updateUI = function () {
         $(currimg.getElementsByClassName("img-toggle")[0]).attr("for", "#" + currimg.id + " img");
         currimg.className += " done";
     }
+    $("button.toggle").off("mousedown");
+    $("button.toggle").mousedown(function (event) {
+        if (event.button != 0) return true;
+        var a = " dwn";
+            c = this.className;
+        this.className=c.search(a)!=-1?c:c+a;
+    });
     $("button.toggle").off("mouseup");
     $("button.toggle").mouseup(function (event) {
-        if (event.button != 0) return true;
+        if (event.button != 0 || this.className.search("dwn") == -1) return true;
         var a = " on",
-            c = this.className;
+            c = this.className.replace(" dwn","");
         this.className=c.search(a)!=-1?c.replace(a,""):c+a;
     });
     $(".up-down").off("mouseup");
@@ -286,6 +283,18 @@ TBI.updateUI = function () {
             else if (this.className.search(" up") != -1) TBI.sortTable($(this).parent().parent().parent()[0], tIndex, false);
             else if (this.className.search(" none") != -1) TBI.sortTable($(this).parent().parent().parent()[0], -1, false);
         });
+    }
+    var headers = $("h2.item[id], h2.section[id]");
+    if (headers.length > 0 && TBI.loaded) {
+        if ($("#sidebar .sections").length == 0)
+            $("#sidebar").html(
+                "<h3 class='span'>\
+                <a href='javascript:void(0)' class='up-down' for='.sections'>Sections</a></h3>\
+                <ul class='side para sections'></ul>"
+                + $("#sidebar").html());
+        else $("#sidebar .sections").empty();
+        for (var i=0;i<headers.length;i++)
+            $("#sidebar .sections").append("<li><a href='/"+path+"/#"+headers[i].id+"'>"+headers[i].innerHTML+"</a></li>");
     }
 }
 // Returns first-level elements in an XML index.
@@ -852,7 +861,17 @@ Math.newValueForMean = function (list, num) {
 // when given opp and a, opp/tan(a) gives adj
 // when given opp and adj, arctan(opp/adj) gives a
 // Converts a keypress event keycode into the character typed.
-function convertKeyDown(event) {
+var Keys = {
+    SPACE:32,ESC:27,F1:112,F2:113,F3:114,F4:115,F5:116,F6:117,F7:118,F8:119,F9:120,F10:121,F11:122,F12:123,
+    HOME:36,END:35,INSERT:45,DELETE:46,GRAVE:192,ZERO:48,ONE:49,TWO:50,THREE:51,FOUR:52,FIVE:53,SIX:54,
+    SEVEN:55,EIGHT:56,NINE:57,A:65,B:66,C:67,D:68,E:69,F:70,G:71,H:72,I:73,J:74,L:75,M:76,N:77,O:78,P:79,
+    Q:80,R:81,S:82,T:83,U:84,V:85,W:86,X:87,Y:88,Z:89,HYPHEN:189,EQUALS:187,LBRAC:219,BACKSLASH:220,
+    RBRAC:221,QUOTE:222,SEMICOLON:186,COMMA:188,PERIOD:190,SLASH:191,CTRL:17,ALT:18,SHIFT:16,TAB:9,
+    CAPS_LOCK:20,PAGE_UP:33,PAGE_DOWN:34,SUPER:91,UP:38,DOWN:40,LEFT:37,RIGHT:39,RETURN:13,BACKSPACE:8,
+    NUM_7:103,NUM_8:104,NUM_9:105,NUM_4:100,NUM_5:101,NUM_6:102,NUM_1:97,NUM_2:98,NUM_3:99,NUM_0:96,
+    NUM_PERIOD:110,NUM_DIVIDE:111,NUM_MULTIPLY:106,NUM_SUBTRACT:109,NUM_ADD:107
+};
+function convertKeyDown(event, mode) {
     var chars = {
         32:" ",27:"esc",112:"f1",113:"f2",114:"f3",115:"f4",116:"f5",117:"f6",118:"f7",119:"f8",120:"f9",
         121:"f10",122:"f11",123:"f12",36:"home",35:"end",45:"insert",46:"delete",192:"`",48:"0",49:"1",
@@ -1242,7 +1261,7 @@ $(document).on("pageload", function () {
         if (currScroll.y > 0) $(".nav-top").slideDown();
         else $(".nav-top").slideUp();
         if (tempscroll) return tempscroll = false;
-        if (!isNull(TBI.content)) for (var i=0;i<TBI.content.length;i++) {
+        /*if (!isNull(TBI.content)) for (var i=0;i<TBI.content.length;i++) {
             var item = TBI.content[i];
             if (path.isEqual(item.path.split("/"))) {
                 for (var j=0;j<TBI[item.name].length;j++) {
@@ -1250,7 +1269,9 @@ $(document).on("pageload", function () {
                     if ($("#"+sect.id).length > 0 && $("#"+sect.id).offset().top < currScroll.y + 58) hash = "#" + sect.id;
                 }
             }
-        }
+        }*/
+        var headers = $("h2.item[id], h2.section[id]");
+        for (var i=0;i<headers.length;i++) if ($(headers[i]).offset().top < currScroll.y + 58) hash = headers[i].id;
         location.hash = hash;
         tempscroll = true;
         scrollTo(currScroll.x, currScroll.y);

@@ -1,68 +1,74 @@
-Calc = {};
-Calc.setup = function () {
-    Calc.degrees = false;
-    Calc.statusLog = [];
-    Calc.statusCurr = null;
-    Calc.shift = false;
-    Calc.mouse = false;
-    Calc.enterPressed = false;
+function factorial(n) {
+    return n==1?1:factorial(n-1)*n;
 }
-Calc.init = function () {
-    Calc.numbers = [];
-    Calc.cfunc = "";
-    Calc.update("", true);
-}
-Calc.shorten = function (num) {
-    num = num.toString();
-    while (num.length > 14) {
-        if (num.search("e") != -1) {
-            var nums = num.split("e");
-            num = nums[0].substring(0, nums[0].length-1) + "e" + nums[1];
-        } else num = num.substring(0, num.length-1);
-    }
-    return num;
-}
-Calc.update = function (string, fsh) {
-    fsh == undefined ? false : fsh;
-    string = Calc.shorten(string);
-    Calc.string = string;
-    Calc.working = string;
-    if (string.toString() == "NaN") Calc.update("Math Error", true);
-    else $("#calc-out span").html(string);
-    Calc.fshown = fsh;
-    return string;
-}
-Calc.digit = function (digit) {
-    if (Calc.fshown) Calc.update(digit.toString(), false);
-    else Calc.update(Calc.string.toString() + digit.toString());
-}
-Calc.args = function (f) {
-    if (f.search(/[\+\-\*\/\^]/) != -1) return 2;
-    else if (f.search(/(sqrt|cbrt|squared|cubed|tento|sin|cos|tan|ln|rint|exp|factorial)/) != -1) return 1;
-    return 0;
-}
-Calc.sign = function () {
-    if (!isNull(Calc.working)) Calc.update(-parseFloat(Calc.working));
-    else return null;
-}
-Calc.func = function (f) {
-    if (f == "=") {
-        Calc.numbers.push(Calc.working);
-        Calc.update(Calc.compute(Calc.cfunc).toString(), true);
+Calc = {
+    degrees: false,
+    statusLog: [],
+    statusCurr: null,
+    shift: false,
+    mouse: false,
+    enterPressed: false,
+    numbers: [],
+    cfunc: "",
+    init: function () {
         Calc.numbers = [];
         Calc.cfunc = "";
-    } else if (!isNull(Calc.working)) {
-        var args = Calc.args(f);
-        if (args > Calc.numbers.length && !Calc.fshown) Calc.numbers.push(Calc.working);
-        else Calc.numbers[0] = Calc.working;
-        if (args <= Calc.numbers.length) Calc.numbers = [Calc.compute(args>1?Calc.cfunc:f)];
-        if (args > Calc.numbers.length) {
-            Calc.update(f, true);
-            Calc.status(Calc.numbers[0].toString()+" "+f, false);
-        } else Calc.update(Calc.numbers[0].toString(), true);
-        Calc.cfunc = f;
-    } else return false;
-}
+        Calc.update("", true);
+    },
+    shorten: function (num) {
+        num = num.toString();
+        while (num.length > 14) {
+            if (num.search("e") != -1) {
+                var nums = num.split("e");
+                num = nums[0].substring(0, nums[0].length-1) + "e" + nums[1];
+            } else num = num.substring(0, num.length-1);
+        }
+        return num;
+    },
+    update: function (string, fsh) {
+        fsh == undefined ? false : fsh;
+        string = Calc.shorten(string);
+        Calc.string = string;
+        Calc.working = string;
+        if (string.toString() == "NaN") Calc.update("Math Error", true);
+        else $("#calc-out span").html(string);
+        Calc.fshown = fsh;
+        return string;
+    },
+    digit: function (digit) {
+        if (Calc.fshown) Calc.update(digit.toString(), false);
+        else Calc.update(Calc.string.toString() + digit.toString());
+    },
+    args: function (f) {
+        var binary = ["+","-","*","/","^"],
+            unary = ["sqrt","cbrt","squared","cubed","tento","sin","cos","tan","asin","acos","atan","ln","rint","exp","factorial"];
+        if (binary.indexOf(f) != -1) return 2;
+        else if (unary.indexOf(f) != -1) return 1;
+        else return 0;
+    },
+    sign: function () {
+        if (!isNull(Calc.working)) Calc.update(-parseFloat(Calc.working));
+        else return null;
+    },
+    func: function (f) {
+        if (f == "=") {
+            Calc.numbers.push(Calc.working);
+            Calc.update(Calc.compute(Calc.cfunc).toString(), true);
+            Calc.numbers = [];
+            Calc.cfunc = "";
+        } else if (!isNull(Calc.working)) {
+            var args = Calc.args(f);
+            if (args > Calc.numbers.length && !Calc.fshown) Calc.numbers.push(Calc.working);
+            else Calc.numbers[0] = Calc.working;
+            if (args <= Calc.numbers.length) Calc.numbers = [Calc.compute(args>1?Calc.cfunc:f)];
+            if (args > Calc.numbers.length) {
+                Calc.update(f, true);
+                Calc.status(Calc.numbers[0].toString()+" "+f, false);
+            } else Calc.update(Calc.numbers[0].toString(), true);
+            Calc.cfunc = f;
+        } else return false;
+    }
+};
 Calc.compute = function (f) {
     var result = 0;
     if (Calc.numbers.length == 0) return false;
@@ -122,7 +128,6 @@ Calc.scutChange = function (scut) {
     else $(".calc-scut").hide();
 }
 $(function () {
-    Calc.setup();
     Calc.init();
     $(".calcn").click(function () { Calc.digit(parseInt($(this).html())); });
     $("#calc-dot").click(function () { Calc.digit("."); });

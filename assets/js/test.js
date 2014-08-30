@@ -230,28 +230,111 @@ $(document).on("pageload", function () {
         } else $("#trig-out").val("Invalid");
     });
 });
+var GLObjects = {};
+GLObjects.Star = function (dist, speed) {
+    this.angle = 0;
+    this.dist = dist;
+    this.speed = speed;
+    this.randomiseColours();
+}
+GLObjects.Star.prototype.draw = function (tilt, spin, twinkle) {
+    var gl = GLTest.$;
+    GLTest.save();
+    
+    mat4.rotate(GLTest.mvMatrix, GLTest.mvMatrix, dtr(this.angle), [0.0, 1.0, 0.0]);
+    mat4.translate(GLTest.mvMatrix, GLTest.mvMatrix, [this.dist, 0.0, 0.0]);
+    
+    mat4.rotate(GLTest.mvMatrix, GLTest.mvMatrix, dtr(-this.angle), [0,1,0]);
+    mat4.rotate(GLTest.mvMatrix, GLTest.mvMatrix, dtr(-GLTest.properties.global.tilt), [1,0,0]);
+    
+    if (twinkle) {
+        gl.uniform3f(GLTest.shProg.colorUniform, this.tr, this.tg, this.tb);
+        GLObjects.Star.draw();
+    }
+    mat4.rotate(GLTest.mvMatrix, GLTest.mvMatrix, dtr(GLTest.properties.global.spin), [0,0,1]);
+    gl.uniform3f(GLTest.shProg.colorUniform, this.r, this.g, this.b);
+    GLObjects.Star.draw();
+    
+    GLTest.restore();
+}
+GLObjects.Star.prototype.animate = function (elapsed) {
+    this.angle += this.speed * GLTest.FPMS * elapsed;
+    this.dist -= 0.01 * GLTest.FPMS * elapsed;
+    if (this.dist < 0.0) {
+        this.dist += 5.0;
+        this.randomiseColours();
+    }
+}
+GLObjects.Star.prototype.randomiseColours = function () {
+    this.r = Math.random();
+    this.g = Math.random();
+    this.b = Math.random();
+    this.tr = Math.random();
+    this.tg = Math.random();
+    this.tb = Math.random();
+}
+GLObjects.Star.draw = function () {
+    var gl = GLTest.$;
+    GLTest.drawObject(
+        GLTest.textures.star, gl.TRIANGLE_STRIP,
+        { coords: GLTest.buffers.star.coords, position: GLTest.buffers.star.position },
+        { coords: "textureCoordAttribute", position: "vertexPositionAttribute" }
+    );
+}
 var GLTest = {
+    FPMS: 60 / 1000,
     $: null,
     width: 0,
     height: 0,
     buffers: {
-        pyramid: {
+        star: {
             position: null,
-            color: null,
-        },
-        cube: {
-            position: null,
-            color: null,
-            index: null,
-        },
+            coords: null
+        }
+    },
+    textures: {
+        star: null
     },
     mvMatrix: mat4.create(),
     mvMatrixStack: [],
     pMatrix: mat4.create(),
+    nMatrix: mat3.create(),
     shProg: null,
-    rPyramid: 0,
-    rCube: 0,
+    objects: {
+        stars: new Array(50)
+    },
+    properties: {
+        global: {
+            zoom: -15,
+            tilt: 90,
+            spin: 0
+        },
+    },
     elapsedTime: -1,
+    activeKeys: {},
+    initTasks: {},
+    newInitTask: function (name, func) {
+        GLTest.initTasks[name] = false;
+        func();
+    },
+    completeInitTask: function (name) {
+        GLTest.initTasks[name] = true;
+    },
+    preInit: function (id) {
+        if (GLTest.get(id)) {
+            GLTest.newInitTask("textures", GLTest.initTextures);
+            var timer = 0;
+            TBI.timerSet("gl-init", 10, function () {
+                var complete = true;
+                for (var task in GLTest.initTasks) {
+                    if (GLTest.initTasks.hasOwnProperty(task))
+                        if (GLTest.initTasks[task] == false) complete = false;
+                }
+                if (complete || timer > 10000) { GLTest.init(); TBI.timerClear("gl-init"); }
+                else timer += 10;
+            });
+        }
+    },
     // Gets the WebGL rendering context from an id.
     get: function (id) {
         GLTest.canvas = gebi(id);
@@ -271,16 +354,14 @@ var GLTest = {
     },
     // Initialises the WebGL rendering context then draws the scene.
     init: function (id) {
-        if (GLTest.get(id)) {
-            var gl = GLTest.$;
-            GLTest.initShaders();
-            GLTest.initBuffers();
-            
-            gl.clearColor(0.0, 0.0, 0.0, 1.0);
-            gl.enable(gl.DEPTH_TEST);
-            
-            GLTest.loop();
-        }
+        var gl = GLTest.$;
+        GLTest.initShaders();
+        GLTest.initBuffers();
+        GLTest.initWorld();
+        
+        gl.clearColor(0.0, 0.0, 0.55, 1.0);
+        
+        GLTest.loop();
     },
     // Handles the operations done for every frame of animation.
     loop: function () {
@@ -289,11 +370,11 @@ var GLTest = {
         GLTest.animate();
     },
     // Gets a shader for a specific WebGL rendering context with an id.
-    getShader: function (ctx, id) {
-        var gl = ctx,
+    getShader: function (id) {
+        var gl = GLTest.$,
             shScript = gebi(id),
             shader;
-        if (!shScript) return null;
+        if (isNull(shScript)) return null;
         else if (shScript.type == "x-shader/x-fragment") shader = gl.createShader(gl.FRAGMENT_SHADER);
         else if (shScript.type == "x-shader/x-vertex") shader = gl.createShader(gl.VERTEX_SHADER);
         else return null;
@@ -303,29 +384,32 @@ var GLTest = {
         if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) { TBI.error(gl.getShaderInfoLog(shader)); return null; }
         return shader;
     },
+    getAttribute: function (shprog, name) {
+        var gl = GLTest.$;
+        var attr = gl.getAttribLocation(shprog, name);
+        gl.enableVertexAttribArray(attr);
+        return attr;
+    },
     // Initialises the shader program.
     initShaders: function () {
         var gl = GLTest.$;
-        var frag = GLTest.getShader(GLTest.$, "shader-fs"); // Fragment shader
-        var vert = GLTest.getShader(GLTest.$, "shader-vs"); // Vertex shader
+        var frag = GLTest.getShader("gl-shfrag"); // Fragment shader
+        var vert = GLTest.getShader("gl-shvert"); // Vertex shader
         GLTest.shProg = gl.createProgram(); // Create the program
         gl.attachShader(GLTest.shProg, vert); // Attach the shaders
         gl.attachShader(GLTest.shProg, frag);
         gl.linkProgram(GLTest.shProg); // Then link the program with the rendering context
         
         if (!gl.getProgramParameter(GLTest.shProg, gl.LINK_STATUS)) TBI.error("Could not initialise shaders.");
-        gl.useProgram(GLTest.shProg); // Use the shader program
+        else gl.useProgram(GLTest.shProg); // Use the shader program
         
-        // Get the position attribute and store it
-        GLTest.shProg.vertexPositionAttribute = gl.getAttribLocation(GLTest.shProg, "aVertexPosition");
-        gl.enableVertexAttribArray(GLTest.shProg.vertexPositionAttribute); // and enable the attribute
-        
-        // Get the colour attribute and store it
-        GLTest.shProg.vertexColorAttribute = gl.getAttribLocation(GLTest.shProg, "aVertexColor");
-        gl.enableVertexAttribArray(GLTest.shProg.vertexColorAttribute); // and enable the attribute
+        GLTest.shProg.vertexPositionAttribute = GLTest.getAttribute(GLTest.shProg, "aVertexPosition");
+        GLTest.shProg.textureCoordAttribute = GLTest.getAttribute(GLTest.shProg, "aTextureCoord");
         
         GLTest.shProg.pMatrixUniform = gl.getUniformLocation(GLTest.shProg, "uPMatrix"); // Sets the uniform variables
         GLTest.shProg.mvMatrixUniform = gl.getUniformLocation(GLTest.shProg, "uMVMatrix");
+        GLTest.shProg.samplerUniform = gl.getUniformLocation(GLTest.shProg, "uSampler");
+        GLTest.shProg.colorUniform = gl.getUniformLocation(GLTest.shProg, "uColor");
     },
     // Helper function for defining an array buffer given a set of data.
     newBuffer: function (data) {
@@ -349,104 +433,66 @@ var GLTest = {
         buf.numItems = data.length;
         return buf;
     },
-    // Initialises the vertex buffers.
+    // Initialises the buffers.
     initBuffers: function () {
-        GLTest.buffers.pyramid.position = GLTest.newBuffer( // Pyramid vertices
-            // Front face
-            [[ 0.0, 1.0, 0.0]
-            ,[-1.0,-1.0, 1.0]
-            ,[ 1.0,-1.0, 1.0]
-            // Right face
-            ,[ 0.0, 1.0, 0.0]
-            ,[ 1.0,-1.0, 1.0]
-            ,[ 1.0,-1.0,-1.0]
-            // Back face
-            ,[ 0.0, 1.0, 0.0]
-            ,[ 1.0,-1.0,-1.0]
-            ,[-1.0,-1.0,-1.0]
-            // Left face
-            ,[ 0.0, 1.0, 0.0]
-            ,[-1.0,-1.0,-1.0]
-            ,[-1.0,-1.0, 1.0]]
-        );
-        GLTest.buffers.pyramid.color = GLTest.newBuffer( // Pyramid colours
-            // Front face
-            [[1.0, 0.0, 0.0, 1.0]
-            ,[0.0, 1.0, 0.0, 1.0]
-            ,[0.0, 0.0, 1.0, 1.0]
-            // Right face
-            ,[1.0, 0.0, 0.0, 1.0]
-            ,[0.0, 0.0, 1.0, 1.0]
-            ,[0.0, 1.0, 0.0, 1.0]
-            // Back face
-            ,[1.0, 0.0, 0.0, 1.0]
-            ,[0.0, 1.0, 0.0, 1.0]
-            ,[0.0, 0.0, 1.0, 1.0]
-            // Left face
-            ,[1.0, 0.0, 0.0, 1.0]
-            ,[0.0, 0.0, 1.0, 1.0]
-            ,[0.0, 1.0, 0.0, 1.0]]
-        );
-        GLTest.buffers.cube.position = GLTest.newBuffer( // Cube vertices
-            // Front face
-            [[-1.0,-1.0, 1.0]
-            ,[ 1.0,-1.0, 1.0]
-            ,[ 1.0, 1.0, 1.0]
-            ,[-1.0, 1.0, 1.0]
-            // Back face
-            ,[-1.0,-1.0,-1.0]
-            ,[-1.0, 1.0,-1.0]
-            ,[ 1.0, 1.0,-1.0]
-            ,[ 1.0,-1.0,-1.0]
-            // Top face
-            ,[-1.0, 1.0,-1.0]
-            ,[-1.0, 1.0, 1.0]
-            ,[ 1.0, 1.0, 1.0]
-            ,[ 1.0, 1.0,-1.0]
-            // Bottom face
-            ,[-1.0,-1.0,-1.0]
-            ,[ 1.0,-1.0,-1.0]
-            ,[ 1.0,-1.0, 1.0]
-            ,[-1.0,-1.0, 1.0]
-            // Right face
-            ,[ 1.0,-1.0,-1.0]
-            ,[ 1.0, 1.0,-1.0]
-            ,[ 1.0, 1.0, 1.0]
-            ,[ 1.0,-1.0, 1.0]
-            // Left face
-            ,[-1.0,-1.0,-1.0]
-            ,[-1.0,-1.0, 1.0]
-            ,[-1.0, 1.0, 1.0]
-            ,[-1.0, 1.0,-1.0]]
-        );
-        var colourDefs = [
-            [1.0, 0.0, 0.0, 1.0], // Front face
-            [1.0, 1.0, 0.0, 1.0], // Back face
-            [0.0, 1.0, 0.0, 1.0], // Top face
-            [0.0, 1.0, 1.0, 1.0], // Bottom face
-            [0.0, 0.0, 1.0, 1.0], // Right face
-            [1.0, 0.0, 1.0, 1.0]  // Left face
-        ], unpacked = [];
-        for (var i in colourDefs) for (var j=0;j<4;j++) unpacked.push(colourDefs[i]);
-        GLTest.buffers.cube.color = GLTest.newBuffer(unpacked); // Cube colours
-        GLTest.buffers.cube.index = GLTest.newElementBuffer([ // Cube element buffer (for sharing vertices)
-             0,  1,  2,    0,  2,  3, // Front face
-             4,  5,  6,    4,  6,  7, // Back face
-             8,  9, 10,    8, 10, 11, // Top face
-            12, 13, 14,   12, 14, 15, // Bottom face
-            16, 17, 18,   16, 18, 19, // Right face
-            20, 21, 22,   20, 22, 23  // Left face
+        GLTest.buffers.star.position = GLTest.newBuffer([
+            [-1.0,-1.0, 0.0],
+            [ 1.0,-1.0, 0.0],
+            [-1.0, 1.0, 0.0],
+            [ 1.0, 1.0, 0.0]
+        ]);
+        GLTest.buffers.star.coords = GLTest.newBuffer([
+            [0.0, 0.0],
+            [1.0, 0.0],
+            [0.0, 1.0],
+            [1.0, 1.0]
         ]);
     },
+    initTextures: function (func) {
+        GLTest.textures.star = GLTest.newTexture("/assets/res/star.gif");
+        TBI.timerSet("gl-textures", 10, function () {
+            var complete = true;
+            for (var tex in GLTest.textures)
+                if (GLTest.textures.hasOwnProperty(tex))
+                    if (GLTest.textures(tex) == false) complete = false;
+            if (complete) {
+                GLTest.completeInitTask("textures");
+                TBI.timerClear("gl-textures");
+            }
+        });
+    },
+    newTexture: function (url) {
+        var gl = GLTest.$,
+            tex = gl.createTexture();
+        tex.image = new Image();
+        tex.image.onload = function () { GLTest.loadTexture(tex); }
+        tex.image.src = url;
+        return tex;
+    },
+    loadTexture: function (tex) {
+        var gl = GLTest.$;
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+        
+        gl.bindTexture(gl.TEXTURE_2D, tex);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, tex.image);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        
+        gl.bindTexture(gl.TEXTURE_2D, null);
+    },
+    initWorld: function () {
+        for (var i=0,l=GLTest.objects.stars.length;i<l;i++)
+            GLTest.objects.stars[i] = new GLObjects.Star((i/l) * 5.0, i/l);
+    },
     // Pushes the current model-view matrix to a temporary stack for use later after transform operations.
-    mvPushMatrix: function () {
+    save: function () {
         var copy = mat4.create();
         for (var i=0;i<GLTest.mvMatrix.length;i++)
             copy[i] = GLTest.mvMatrix[i];
         GLTest.mvMatrixStack.push(copy);
     },
     // Pops the latest model-view matrix from the stack into the current matrix to reuse initial matrix transforms.
-    mvPopMatrix: function () {
+    restore: function () {
         if (GLTest.mvMatrixStack.length == 0) throw "The matrix stack does not have any matrices inside of it!";
         GLTest.mvMatrix = GLTest.mvMatrixStack.pop();
     },
@@ -465,55 +511,76 @@ var GLTest = {
     // Draws the scene to the canvas.
     drawScene: function () {
         // SCENE SETUP //
-        var gl = GLTest.$;
+        var gl = GLTest.$, obj;
         gl.viewport(0, 0, GLTest.width, GLTest.height); // Set the viewport
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT); // Clear the buffers
         
         mat4.perspective(GLTest.pMatrix, dtr(45), GLTest.width / GLTest.height, 0.1, 100.0); // Set the perspective
+        
+        gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
+        gl.enable(gl.BLEND);
+        
+        var glob = GLTest.properties.global;
+        
         mat4.identity(GLTest.mvMatrix); // Set the identity matrix
+        mat4.translate(GLTest.mvMatrix, GLTest.mvMatrix, [0.0, 0.0, glob.zoom]);
+        mat4.rotate(GLTest.mvMatrix, GLTest.mvMatrix, dtr(glob.tilt), [1.0, 0.0, 0.0]);
         
-        // DRAW PYRAMID //
+        GLTest.objects.stars.forEach(function (star) {
+            star.draw(glob.tilt, glob.spin, TBI.isToggled(gebi("gl-twinkle")));
+            GLTest.properties.global.spin
+        });
+        for (var i=0;i<GLTest.objects.stars.length;i++)  {
+            GLTest.objects.stars[i].draw(glob.tilt, glob.spin, TBI.isToggled(gebi("gl-twinkle")));
+            GLTest.properties.global.spin += 0.1;
+        }
+    },
+    drawObject: function (texture, type, buffers, attributes) {
+        var gl = GLTest.$;
+        if (!isNull(texture) && GLTest.shProg.hasOwnProperty("samplerUniform")) { 
+            gl.activeTexture(gl.TEXTURE0);
+            gl.bindTexture(gl.TEXTURE_2D, texture);
+            gl.uniform1i(GLTest.shProg.samplerUniform, 0);
+        }
         
-        GLTest.mvPushMatrix(); // Save the current state for later
-        
-        mat4.translate(GLTest.mvMatrix, GLTest.mvMatrix, [-1.5, 0.0, -9.0]); // Go to triangle position
-        mat4.rotate(GLTest.mvMatrix, GLTest.mvMatrix, dtr(GLTest.rPyramid%360), [0,1,0]); // Rotate the triangle accordingly
-        
-        GLTest.bindBuffer(GLTest.buffers.pyramid.position, GLTest.shProg.vertexPositionAttribute); // Bind the buffers
-        GLTest.bindBuffer(GLTest.buffers.pyramid.color, GLTest.shProg.vertexColorAttribute);
-        
-        GLTest.setMatrixUniforms();
-        gl.drawArrays(gl.TRIANGLES, 0, GLTest.buffers.pyramid.position.numItems); // Draw the triangle to the scene
-        
-        GLTest.mvPopMatrix(); // Get that state back
-        
-        // DRAW CUBE // 
-        
-        GLTest.mvPushMatrix(); // Save the current state for later
-        
-        mat4.translate(GLTest.mvMatrix, GLTest.mvMatrix, [1.5, 0.0, -9.0]); // Go to square position
-        mat4.rotate(GLTest.mvMatrix, GLTest.mvMatrix, dtr(GLTest.rCube%360), [1,1,1]); // Rotate the square accordingly
-        
-        GLTest.bindBuffer(GLTest.buffers.cube.position, GLTest.shProg.vertexPositionAttribute); // Bind the buffers
-        GLTest.bindBuffer(GLTest.buffers.cube.color, GLTest.shProg.vertexColorAttribute);
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, GLTest.buffers.cube.index);
+        for (var buf in buffers)
+            if (buffers.hasOwnProperty(buf))
+                if (buf.search("_el") != -1) gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffers[buf]);
+                else if (attributes.hasOwnProperty(buf)) GLTest.bindBuffer(buffers[buf], GLTest.shProg[attributes[buf]]);
         
         GLTest.setMatrixUniforms();
-        // Draw the square to the scene, according to the index buffer
-        gl.drawElements(gl.TRIANGLES, GLTest.buffers.cube.index.numItems, gl.UNSIGNED_SHORT, 0); 
-        
-        GLTest.mvPopMatrix(); // Get that state back
+        if (type == gl.TRIANGLE_STRIP && buffers.hasOwnProperty("position"))
+            gl.drawArrays(type, 0, buffers.position.numItems);
+        else if (type == gl.TRIANGLES && buffers.hasOwnProperty("index_el")) 
+            gl.drawElements(type, buffers.index_el.numItems, gl.UNSIGNED_SHORT, 0);
+        else throw("Object failed to draw!");
     },
     // Called every frame, this function changes values used in drawing the frame to create animation.
     animate: function () {
         if (GLTest.elapsedTime != -1) {
             var elapsed = new Date().getTime() - GLTest.elapsedTime;
-            GLTest.rPyramid += (90 * elapsed) / 1000.0;
-            GLTest.rCube -= (75 * elapsed) / 1000.0;
+            for (var i=0;i<GLTest.objects.stars.length;i++)
+                GLTest.objects.stars[i].animate(elapsed);
+            
+            if (GLTest.activeKeys[Keys.PAGE_UP]) GLTest.properties.global.zoom -= 0.1;
+            else if (GLTest.activeKeys[Keys.PAGE_DOWN]) GLTest.properties.global.zoom += 0.1;
+            
+            if (GLTest.activeKeys[Keys.UP]) GLTest.properties.global.tilt += 2;
+            else if (GLTest.activeKeys[Keys.DOWN]) GLTest.properties.global.tilt -= 2;
         }
         GLTest.elapsedTime = new Date().getTime();
     }
 };
 $(document).on("pageload", function () {
-    GLTest.init("gl-canvas");
+    GLTest.preInit("gl-canvas");
+    var canvasActive = false;
+    $("#gl-canvas").mouseenter(function () { canvasActive = true; });
+    $("#gl-canvas").mouseleave(function () { canvasActive = false; GLTest.activeKeys = {} });
+    $(document).keydown(function (event) { 
+        if (canvasActive) { 
+            GLTest.activeKeys[event.which] = true; 
+            event.preventDefault();
+        } 
+    });
+    $(document).keyup(function (event) { if (canvasActive) GLTest.activeKeys[event.which] = false });
 });
