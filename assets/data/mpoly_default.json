@@ -1,0 +1,540 @@
+{
+    "rules": {
+        "direction": false,
+        "max_houses": 4,
+        "go_amount": 200,
+        "start_amount": 2000,
+        "railroads": {
+            "price": 200,
+            "rents": {
+                "1": 20,
+                "2": 50,
+                "3": 100,
+                "4": 200
+            }
+        },
+        "utilities": {
+            "price": 150,
+            "modifiers": {
+                "1": 4,
+                "2": 10
+            }
+        }
+    },
+    "resources": {
+        "cards": {
+            "Chance": [
+                {
+                    "text": "You win second prize in a beauty contest!",
+                    "desc": "Collect 50 dollars.",
+                    "type": "transaction",
+                    "amount": 50
+                },
+                {
+                    "text": "Housing tax!",
+                    "desc": "Spend $50 per house and $100 per hotel you own.",
+                    "type": "housing",
+                    "amount_house": 50,
+                    "amount_hotel": 100
+                },
+                {
+                    "text": "It's your birthday!",
+                    "desc": "Collect $50 from all other players as a birthday gift.",
+                    "type": "gift",
+                    "amount": 50
+                },
+                {
+                    "text": "Go to MAYFAIR.",
+                    "desc": "If you pass GO, collect ${rules.go_amount}.",
+                    "type": "space",
+                    "name": "Mayfair",
+                    "pass_go": true
+                },
+                {
+                    "text": "Go to JAIL.",
+                    "desc": "Do not pass GO. Do not collect ${rules.go_amount}.",
+                    "type": "jail",
+                    "pass_go": false
+                },
+                {
+                    "text": "Get out of JAIL free card!",
+                    "desc": "Keep this card and redeem it when you are imprisoned to forgo bail.",
+                    "type": "jailfree"
+                }
+            ]
+        },
+        "currency": "£",
+        "corners": [
+            "/assets/res/mpoly/parking.png",
+            "/assets/res/mpoly/gotojail.png",
+            "/assets/res/mpoly/jail.png",
+            "/assets/res/mpoly/go.png"
+        ]
+    },
+    "board": {
+        "width": 9,
+        "height": 9,
+        "top": [
+            {
+                "type": "property",
+                "colour": "red",
+                "name": "Strand",
+                "rents": {
+                    "0": 20,
+                    "1": 60,
+                    "2": 100,
+                    "3": 500,
+                    "4": 900,
+                    "hotel": 1200
+                },
+                "price": 220,
+                "prices": {
+                    "house": 200,
+                    "hotel": 200
+                }
+            },
+            {
+                "type": "property",
+                "colour": "red",
+                "name": "Fleet Street",
+                "rents": {
+                    "0": 20,
+                    "1": 60,
+                    "2": 100,
+                    "3": 500,
+                    "4": 900,
+                    "hotel": 1200
+                },
+                "price": 220,
+                "prices": {
+                    "house": 200,
+                    "hotel": 200
+                }
+            },
+            {
+                "type": "card",
+                "name": "Chance"
+            },
+            {
+                "type": "property",
+                "colour": "red",
+                "name": "Trafalgar Square",
+                "rents": {
+                    "0": 20,
+                    "1": 60,
+                    "2": 100,
+                    "3": 500,
+                    "4": 900,
+                    "hotel": 1200
+                },
+                "price": 240,
+                "prices": {
+                    "house": 200,
+                    "hotel": 200
+                }
+            },
+            {
+                "type": "railroad",
+                "name": "St. Mary's Station"
+            },
+            {
+                "type": "property",
+                "colour": "yellow",
+                "name": "Leicster Square",
+                "rents": {
+                    "0": 20,
+                    "1": 60,
+                    "2": 100,
+                    "3": 500,
+                    "4": 900,
+                    "hotel": 1200
+                },
+                "price": 260,
+                "prices": {
+                    "house": 200,
+                    "hotel": 200
+                }
+            },
+            {
+                "type": "property",
+                "colour": "yellow",
+                "name": "Manchester Lane",
+                "rents": {
+                    "0": 20,
+                    "1": 60,
+                    "2": 100,
+                    "3": 500,
+                    "4": 900,
+                    "hotel": 1200
+                },
+                "price": 260,
+                "prices": {
+                    "house": 200,
+                    "hotel": 200
+                }
+            },
+            {
+                "type": "utility",
+                "name": "Water Works"
+            },
+            {
+                "type": "property",
+                "colour": "yellow",
+                "name": "Worcester Street",
+                "rents": {
+                    "0": 20,
+                    "1": 60,
+                    "2": 100,
+                    "3": 500,
+                    "4": 900,
+                    "hotel": 1200
+                },
+                "price": 280,
+                "prices": {
+                    "house": 200,
+                    "hotel": 200
+                }
+            }
+        ],
+        "left": [
+            {
+                "type": "property",
+                "colour": "hotpink",
+                "name": "Pall Mall",
+                "rents": {
+                    "0": 20,
+                    "1": 60,
+                    "2": 100,
+                    "3": 500,
+                    "4": 900,
+                    "hotel": 1200
+                },
+                "price": 140,
+                "prices": {
+                    "house": 200,
+                    "hotel": 200
+                }
+            },
+            {
+                "type": "utility",
+                "name": "Electric Company"
+            },
+            {
+                "type": "property",
+                "colour": "hotpink",
+                "name": "Whitehall",
+                "rents": {
+                    "0": 20,
+                    "1": 60,
+                    "2": 100,
+                    "3": 500,
+                    "4": 900,
+                    "hotel": 1200
+                },
+                "price": 140,
+                "prices": {
+                    "house": 200,
+                    "hotel": 200
+                }
+            },
+            {
+                "type": "property",
+                "colour": "hotpink",
+                "name": "Northumberland Avenue",
+                "rents": {
+                    "0": 20,
+                    "1": 60,
+                    "2": 100,
+                    "3": 500,
+                    "4": 900,
+                    "hotel": 1200
+                },
+                "price": 160,
+                "prices": {
+                    "house": 200,
+                    "hotel": 200
+                }
+            },
+            {
+                "type": "railroad",
+                "name": "Marylebone Station"
+            },
+            {
+                "type": "property",
+                "colour": "orange",
+                "name": "Bow Street",
+                "rents": {
+                    "0": 20,
+                    "1": 60,
+                    "2": 100,
+                    "3": 500,
+                    "4": 900,
+                    "hotel": 1200
+                },
+                "price": 180,
+                "prices": {
+                    "house": 200,
+                    "hotel": 200
+                }
+            },
+            {
+                "type": "card",
+                "name": "Community Chest"
+            },
+            {
+                "type": "property",
+                "colour": "orange",
+                "name": "Marlborough Street",
+                "rents": {
+                    "0": 20,
+                    "1": 60,
+                    "2": 100,
+                    "3": 500,
+                    "4": 900,
+                    "hotel": 1200
+                },
+                "price": 180,
+                "prices": {
+                    "house": 200,
+                    "hotel": 200
+                }
+            },
+            {
+                "type": "property",
+                "colour": "orange",
+                "name": "Vine Street",
+                "rents": {
+                    "0": 20,
+                    "1": 60,
+                    "2": 100,
+                    "3": 500,
+                    "4": 900,
+                    "hotel": 1200
+                },
+                "price": 200,
+                "prices": {
+                    "house": 200,
+                    "hotel": 200
+                }
+            }
+        ],
+        "right": [
+            {
+                "type": "property",
+                "colour": "green",
+                "name": "Regent Street",
+                "rents": {
+                    "0": 20,
+                    "1": 60,
+                    "2": 100,
+                    "3": 500,
+                    "4": 900,
+                    "hotel": 1200
+                },
+                "price": 300,
+                "prices": {
+                    "house": 200,
+                    "hotel": 200
+                }
+            },
+            {
+                "type": "property",
+                "colour": "green",
+                "name": "Oxford Street",
+                "rents": {
+                    "0": 20,
+                    "1": 60,
+                    "2": 100,
+                    "3": 500,
+                    "4": 900,
+                    "hotel": 1200
+                },
+                "price": 300,
+                "prices": {
+                    "house": 200,
+                    "hotel": 200
+                }
+            },
+            {
+                "type": "card",
+                "name": "Community Chest"
+            },
+            {
+                "type": "property",
+                "colour": "green",
+                "name": "Bond Street",
+                "rents": {
+                    "0": 20,
+                    "1": 60,
+                    "2": 100,
+                    "3": 500,
+                    "4": 900,
+                    "hotel": 1200
+                },
+                "price": 320,
+                "prices": {
+                    "house": 200,
+                    "hotel": 200
+                }
+            },
+            {
+                "type": "railroad",
+                "name": "Liverpool Street Station"
+            },
+            {
+                "type": "card",
+                "name": "Chance"
+            },
+            {
+                "type": "property",
+                "colour": "blue",
+                "name": "Park Lane",
+                "rents": {
+                    "0": 20,
+                    "1": 60,
+                    "2": 100,
+                    "3": 500,
+                    "4": 900,
+                    "hotel": 1200
+                },
+                "price": 350,
+                "prices": {
+                    "house": 200,
+                    "hotel": 200
+                }
+            },
+            {
+                "type": "tax",
+                "name": "Super Tax",
+                "price": 100
+            },
+            {
+                "type": "property",
+                "colour": "blue",
+                "name": "Mayfair",
+                "rents": {
+                    "0": 20,
+                    "1": 60,
+                    "2": 100,
+                    "3": 500,
+                    "4": 900,
+                    "hotel": 1200
+                },
+                "price": 400,
+                "prices": {
+                    "house": 200,
+                    "hotel": 200
+                }
+            }
+        ],
+        "bottom": [
+            {
+                "type": "property",
+                "colour": "brown",
+                "name": "Old Kent Road",
+                "rents": {
+                    "0": 20,
+                    "1": 60,
+                    "2": 100,
+                    "3": 500,
+                    "4": 900,
+                    "hotel": 1200
+                },
+                "price": 60,
+                "prices": {
+                    "house": 200,
+                    "hotel": 200
+                }
+            },
+            {
+                "type": "card",
+                "name": "Community Chest"
+            },
+            {
+                "type": "property",
+                "colour": "brown",
+                "name": "Whitechapel Road",
+                "rents": {
+                    "0": 20,
+                    "1": 60,
+                    "2": 100,
+                    "3": 500,
+                    "4": 900,
+                    "hotel": 1200
+                },
+                "price": 60,
+                "prices": {
+                    "house": 200,
+                    "hotel": 200
+                }
+            },
+            {
+                "type": "tax",
+                "name": "Income Tax",
+                "price": 200
+            },
+            {
+                "type": "railroad",
+                "name": "Kings Cross Station"
+            },
+            {
+                "type": "property",
+                "colour": "lightblue",
+                "name": "The Angel Islington",
+                "rents": {
+                    "0": 20,
+                    "1": 60,
+                    "2": 100,
+                    "3": 500,
+                    "4": 900,
+                    "hotel": 1200
+                },
+                "price": 100,
+                "prices": {
+                    "house": 200,
+                    "hotel": 200
+                }
+            },
+            {
+                "type": "card",
+                "name": "Chance"
+            },
+            {
+                "type": "property",
+                "colour": "lightblue",
+                "name": "Euston Road",
+                "rents": {
+                    "0": 20,
+                    "1": 60,
+                    "2": 100,
+                    "3": 500,
+                    "4": 900,
+                    "hotel": 1200
+                },
+                "price": 100,
+                "prices": {
+                    "house": 200,
+                    "hotel": 200
+                }
+            },
+            {
+                "type": "property",
+                "colour": "lightblue",
+                "name": "Pentonville Road",
+                "rents": {
+                    "0": 20,
+                    "1": 60,
+                    "2": 100,
+                    "3": 500,
+                    "4": 900,
+                    "hotel": 1200
+                },
+                "price": 120,
+                "prices": {
+                    "house": 200,
+                    "hotel": 200
+                }
+            }
+        ]
+    }
+}

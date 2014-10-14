@@ -245,6 +245,7 @@ CDown.reset = function () {
     }
 }
 $(document).on("pageload", function () {
+    TBI.log("This version of CDown3 is deprecated! Please use <a href='/apps/cdown'>the most recent version</a> as this will not be updated.");
     CDown.setup();
     CDown.check();
     $(".cdh-mode").click(function () {

@@ -809,7 +809,7 @@ $(function () {
         this.className=c.search(a)!=-1?c.replace(a,""):c+a;
     });
     $(".up-down").off("mouseup");
-    $(".up-down").mouseup(function () {
+    $(".up-down").mouseup(function (event) {
         if (event.button != 0) return true;
         var toSwitch = $($(this).attr("for"));
         if (toSwitch.length > 0) toSwitch.slideToggle();

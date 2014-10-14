@@ -120,7 +120,7 @@ Grid.coords = function (column, row) {
         return null;
     }
     return Grid.columns[column][row];
-}   
+}
 // Modifies entire middle row(s).
 Grid.Modify.middleRow = function (colour1) {
     for (var i = 0; i < Grid.middleRow.length; i++) {
@@ -418,7 +418,7 @@ Grid.Layer.keepAlive = function (timeOut) {
     else {
         Grid.keepAlive = false;
     }
-    if (Grid.keepAlive) {    
+    if (Grid.keepAlive) {
         var interval = setInterval(function () {
         while (Grid.layers[i] == undefined && i < Grid.layers.length) {
             i++;
@@ -642,15 +642,15 @@ $(document).on("pageload", function () {
     });
     $("#gclearcells").click(function () { Grid.Clear.cells() });
     $("#gcleargrid").click(function () { Grid.Clear.stage() });
-    $("#gdrawpencil").click(function () { 
-        Grid.Draw.prevDiam = Grid.Draw.diameter; 
-        Grid.Draw.diameter = 1; 
+    $("#gdrawpencil").click(function () {
+        Grid.Draw.prevDiam = Grid.Draw.diameter;
+        Grid.Draw.diameter = 1;
         $("#gdrawdiam").val("1");
         Grid.Draw.tool = "";
     });
-    $("#gdrawbrush").click(function () { 
-        Grid.Draw.diameter = Grid.Draw.prevDiam; 
-        $("#gdrawdiam").val(Grid.Draw.prevDiam); 
+    $("#gdrawbrush").click(function () {
+        Grid.Draw.diameter = Grid.Draw.prevDiam;
+        $("#gdrawdiam").val(Grid.Draw.prevDiam);
         Grid.Draw.tool = "";
     });
     $("#gdrawerase").click(function () { Grid.Draw.colour = "transparent"; Grid.Draw.tool = ""; });
@@ -663,7 +663,7 @@ $(document).on("pageload", function () {
     $("#gcurrcolour").keydown(function (event) {
         if (event.which == 13) {
             var pColours = Grid.Draw.prevColours;
-            if (pColours.indexOf(Grid.Draw.colour)==-1) 
+            if (pColours.indexOf(Grid.Draw.colour)==-1)
                 Grid.Draw.prevColours.push(Grid.Draw.colour);
             Grid.Draw.updatePrevColours();
             Grid.Draw.colour = $("#gdrawcolour").val();
@@ -688,9 +688,9 @@ Calendar.reset = function () {
     Calendar.items = [];
     Calendar.weeks = 0;
     Calendar.year = 0;
-    Calendar.month = 0; 
-    Calendar.day = 0; 
-    Calendar.date = 0; 
+    Calendar.month = 0;
+    Calendar.day = 0;
+    Calendar.date = 0;
     Calendar.monthLength = 0;
     Calendar.firstDay = 0;
     Calendar.lastDay = 0;
@@ -994,7 +994,7 @@ txteng.execute = function (command, arg1, arg2, arg3, arg4, arg5) {
             txteng.input(true);
             break;
         case 4:
-            txteng.echo("This command causes an unknown browser hang.");
+            txteng.motdEcho();
             break;
         default:
             txteng.input(true);
@@ -1545,8 +1545,8 @@ $(document).on("pageload", function () {
     $("#calc-del").click(function () { Calc.update(Calc.working.substring(1)); });
     $("#calc-mode").click(function () { TBI.isToggled(this) ? $(".calc-adv").show() : $(".calc-adv").hide(); });
     $("#calc-deg").click(function () { Calc.degrees = TBI.isToggled(this); });
-    $("#calc-shift").click(function () { 
-        Calc.shift = TBI.isToggled(this); 
+    $("#calc-shift").click(function () {
+        Calc.shift = TBI.isToggled(this);
         if (Calc.shift) {
             $(".calc-sh").show();
             $(".calc-nsh").hide();
@@ -1555,7 +1555,7 @@ $(document).on("pageload", function () {
             $(".calc-nsh").show();
         }
     });
-    $("#calc-statusp").click(function () { 
+    $("#calc-statusp").click(function () {
         if (Calc.statusCurr-1 < 0) return false;
         else Calc.status(Calc.statusLog[--Calc.statusCurr]);
     });
@@ -1663,7 +1663,7 @@ TTBL.generate = function () {
         }
         var it = 0;
         var jt = 0;
-        while (it < TTBL.vr.length[0]) { 
+        while (it < TTBL.vr.length[0]) {
             if (TTBL.blocks[0][it].type != "break") {
                 $(".ttable-row:nth("+jt+") > div:first-child").text(jt+1);
                 jt++;
@@ -1715,7 +1715,7 @@ TTBL.fillIn = function () {
                             thisDay[jt].text = ref.text;
                         else
                             thisDay[jt].text = "#000";
-                    } else if (TTBL.vr.display.gpshort.indexOf(info[kt]) != -1 
+                    } else if (TTBL.vr.display.gpshort.indexOf(info[kt]) != -1
                         && isNull(thisDay[jt][info[kt]]))
                         thisDay[jt][info[kt]] = TTBL.df[info[kt]][TTBL.df.group[group][kt]];
                     else if (isNull(thisDay[jt][info[kt]]))
@@ -1751,7 +1751,7 @@ TTBL.set = function () {
                     info[kt].innerHTML = time;
                 } else if (!isNull(currPeriod[TTBL.vr.display.period[kt+1]]))
                     info[kt].innerHTML = currPeriod[TTBL.vr.display.period[kt+1]];
-                else 
+                else
                     info[kt].innerHTML = "&nbsp;";
             }
             cells[jt].style.visibility = currPeriod.type == "blank" ? "hidden" : "visible";
@@ -1800,10 +1800,10 @@ TTBL.highlight = function (col, row) {
     }
     return false;
 }
-$(document).on("pageload", function () { 
-    TTBL.setup(); 
+$(document).on("pageload", function () {
+    TTBL.setup();
     $("#ttb-test").click(function () {
-        if ((isNull(TTBL.data) && isNull(localStorage.TTBL2)) || 
+        if ((isNull(TTBL.data) && isNull(localStorage.TTBL2)) ||
         (!isNull(localStorage.TTBL2) && confirm("Do you want to overwrite your current timetable?"))) {
             var xhr = new TBI.AJAX("/assets/data/ttb1.json", function (xhr) {
                 localStorage.TTBL2 = xhr.response;
@@ -1824,7 +1824,7 @@ $(document).on("pageload", function () {
             $("#ttb-test").css("visibility","visible");
         }, 10000);
     });
-    TBI.Popup.registry.add($("#ttb-clear")[0], "Clear timetable", 
+    TBI.Popup.registry.add($("#ttb-clear")[0], "Clear timetable",
     "The 'Test timetable' button will be unavailable for a few seconds");
     $(".ttbs-mode").buttonset();
     if (!isNull(localStorage.TTBL2)) {
@@ -1978,11 +1978,11 @@ $(document).on("pageload", function () {
                 Canvas2D.dot(event.pageX, event.pageY, "lime");
             } else if (click > 2) {
                 ctx.bezierCurveTo(
-                    event.offsetX, 
-                    event.offsetY, 
-                    ctx.secondPos[0], 
-                    ctx.secondPos[1], 
-                    ctx.firstPos[0], 
+                    event.offsetX,
+                    event.offsetY,
+                    ctx.secondPos[0],
+                    ctx.secondPos[1],
+                    ctx.firstPos[0],
                     ctx.firstPos[1]
                 );
                 if (stroke) ctx.stroke();
@@ -2062,7 +2062,7 @@ PSim.init = function () {
     PSim.objects = [];
     TBI.timerClear("PSim");
     var xhr = new TBI.AJAX("/assets/data/psim.json", function (xhr) {
-        try { PSim.objectvars = $.parseJSON(xhr.response).objects; PSim.objects = $.parseJSON(xhr.response).list } 
+        try { PSim.objectvars = $.parseJSON(xhr.response).objects; PSim.objects = $.parseJSON(xhr.response).list }
         catch (e) { e.message = "Planetarium load error: "+ e.message; TBI.error(e) }
         TBI.timerSet("PSim", PSim.ms, function () {
             try { PSim.simulate() }
@@ -2197,8 +2197,8 @@ PSim.planet = function (name) {
     }
     PSim.ctx.restore();
     PSim.objectbank[name] = [
-        rotation, 
-        distance, 
+        rotation,
+        distance,
         size
     ];
     return true;
@@ -2385,7 +2385,7 @@ $(document).on("pageload", function () {
     // Speed
     $("#psim-speed").mousedown(function () { speeded = true });
     $("#psim-speed").mouseup(function () { speeded = false });
-    $("#psim-speed").mousemove(function () { 
+    $("#psim-speed").mousemove(function () {
         if (speeded && !isNegative($("#psim-speed").val())) PSim.speed = +Math.pow($("#psim-speed").val(), 6).toFixed(6)
         else if (speeded) PSim.speed = -Math.pow($("#psim-speed").val(), 6).toFixed(6)
     });
@@ -2416,7 +2416,7 @@ $(document).on("pageload", function () {
 var Complex = function (real, imaginary) { this.real = real; this.imaginary = imaginary; }
 Complex.prototype.add = function (cNum) { return new Complex(this.real + cNum.real, this.imaginary + cNum.imaginary); }
 Complex.prototype.multiply = function (c0) {
-    return new Complex(this.real*c0.real - this.imaginary*c0.imaginary, 
+    return new Complex(this.real*c0.real - this.imaginary*c0.imaginary,
             this.real*c0.imaginary + this.imaginary*c0.real);
 }
 var CmpCvs = {};
@@ -2456,16 +2456,6 @@ CmpCvs.reset = function () {
 CmpCvs.init = function () {
     CmpCvs.location = [0,0];
     CmpCvs.$.clearRect(-600, -600, 1200, 1200);
-    if (Math.pow(10,-parseInt($("#cmp-factor").val())) <= 1e-6 && $("#cmp-pany").data("ui-spinner")) {
-        $("#cmp-panx").spinner("destroy");
-        $("#cmp-pany").spinner("destroy");
-    } else if ($("#cmp-pany").data("ui-spinner") && CmpCvs.spinners) {
-        $("#cmp-panx").spinner("option","step",Math.pow(10,-parseInt($("#cmp-factor").val())));
-        $("#cmp-pany").spinner("option","step",Math.pow(10,-parseInt($("#cmp-factor").val())));
-    } else if (CmpCvs.spinners) {
-        $("#cmp-panx").spinner({step:Math.pow(10,-parseInt($("#cmp-factor").val())),min:-2,max:2});
-        $("#cmp-pany").spinner({step:Math.pow(10,-parseInt($("#cmp-factor").val())),min:-2,max:2});
-    }
     CmpCvs.analyse();
     TBI.timerClear("cmpPlane");
     TBI.timerSet("cmpPlane", 50, CmpCvs.loop);
@@ -2533,8 +2523,9 @@ CmpCvs.plot = function (cmp, cmp2) {
     var colour = "hsl("+((new Date().getTime()/8)%360)+",100%,50%)";
     Canvas2D.path(CmpCvs.$_,{type:"stroke",style:"#eee",path:[[(cmp.real*f-p[0])*u,(cmp.imaginary*f-p[1])*u],[(cmp2.real*f-p[0])*u,(cmp2.imaginary*f-p[1])*u]]});
 }
-CmpCvs.func = function (cmp) { 
+CmpCvs.func = function (cmp) {
     return cmp.multiply(cmp).add(CmpCvs.jfunc);
+    // z^2 + j
 }
 CmpCvs.conditions = function (cmp) {
     switch (CmpCvs.mode) {
@@ -2543,15 +2534,15 @@ CmpCvs.conditions = function (cmp) {
     }
 }
 CmpCvs.isBounded = function (cmp) {
-    if (isNaN(cmp.real)||isNaN(cmp.imaginary)) var result = false;
-    else var result = !(Math.abs(cmp.real)>CmpCvs.BOUNDARY||Math.abs(cmp.imaginary)>CmpCvs.BOUNDARY);
+    if (isNaN(cmp.real)||isNaN(cmp.imaginary)) var result = false; // when it craps out
+    else var result = !(Math.abs(cmp.real)>CmpCvs.BOUNDARY||Math.abs(cmp.imaginary)>CmpCvs.BOUNDARY); // beyond boundary
     return result;
 }
 CmpCvs.mandelbrot = function (cmp) {
-    var func = function (cmpvalue, comp) { return cmpvalue.multiply(cmpvalue).add(comp); };
+    var func = function (cmpvalue, comp) { return cmpvalue.multiply(cmpvalue).add(comp); }; // z^2 + comp
     var fate = new Complex(0,0);
     for (var i=0;i<CmpCvs.maxIter;i++) {
-        fate = func(fate, cmp);
+        fate = func(fate, cmp); // test to see if julia plot center is bounded
         if (!CmpCvs.isBounded(fate)) return i;
     }
     return null;
@@ -2575,11 +2566,11 @@ CmpCvs.analyse = function () {
         u = CmpCvs.UPSCALE;
     p[0]*=f;
     p[1]*=f;
-    for (var i=-h/2+p[0];i<h/2+p[0];i+=a) {
-        for (var j=-w/2+p[1];j<w/2+p[1];j+=a) {
+    for (var i=-h/2+p[0];i<h/2+p[0];i+=a) { // i starts as negative half height plus pan, less than half height plus pan
+        for (var j=-w/2+p[1];j<w/2+p[1];j+=a) { // j starts as negative half width plus pan, less than half width plus pan
             var result = CmpCvs.conditions(new Complex(i/f,j/f));
-            if (!isNull(result)) CmpCvs.$.fillStyle = "hsl("+-parseInt(((result+r/y)%360)*y)+",100%,50%)";
-            else CmpCvs.$.fillStyle = "#000";
+            if (!isNull(result)) CmpCvs.$.fillStyle = "hsl("+-parseInt(((result+r/y)%360)*y)+",100%,50%)"; // pwetty colours
+            else CmpCvs.$.fillStyle = "#000"; // boring
             CmpCvs.$.beginPath();
             CmpCvs.$.fillRect(i*u-p[0]*u-(a<1?1:a),j*u-p[1]*u-(a<1?1:a),b<2?2:b,b<2?2:b);
             // CmpCvs.$.arc(i*u-p[0]*u,j*u-p[1]*u,a<1?1:a,0,dtr(360),false); // wtf was i thinking
@@ -2663,7 +2654,7 @@ $(document).on("pageload",function () {
     $("#cmp-hquality").click(function () { $("#cmp-asisinc").val("0.5"); });
     $("#cmp-tracking").click(function () { CmpCvs.tracking = TBI.isToggled(this); });
     $("#cmp-mode").click(function () {
-        CmpCvs.mode = CmpCvs.mode==0?1:0; 
+        CmpCvs.mode = CmpCvs.mode==0?1:0;
         if (CmpCvs.mode == 0) {
             $(".cmp-jonly").show();
             $("#cmp-generate").html("Generate Julia Set");
@@ -2709,13 +2700,13 @@ $(document).on("pageload",function () {
 var FuncTypes = {CARTESIAN:-1,POLAR:-2,PARAMETRIC:-3};
 var ModeTypes = {HIDE:-1,HIGHLIGHT:-2,REMOVE:-3,EDIT:-4};
 var CrtPlane = {
-    bounds: {x:7,y:7},
+    bounds: new Coords(7,7),
     polBounds: {start:0,end:6*Math.PI},
-    parBounds: {start:-6*Math.PI,end:6*Math.PI},
-    pan: {x:0,y:0},
-    panTemp: {x:0,y:0},
+    parBounds: {start:-16*Math.PI,end:16*Math.PI},
+    pan: new Coords(0,0),
+    panTemp: new Coords(0,0),
     propLim: {lower:18,upper:75},
-    boundLim: {min:2e-5,max:2e+5},
+    boundLim: {min:2e-3,max:2e+6},
     rwInterval: 1,
     fnDefinition: 250,
     zFactor: 5,
@@ -2732,13 +2723,14 @@ var CrtPlane = {
     fnDefMode: true,
     legendMode: ModeTypes.HIDE,
     funcs: [
-        {func:new LinearFunc(2,-2)}, 
+        {func:new LinearFunc(2,-2)},
         {func:new RelationFunc(2,3,10)},
         {func:{eval:function(x){return Math.sin(x)}}},
         {func:{eval:function(x){return Math.pow(2,x)}}},
         {func:{eval:function(a){return a/(2*Math.PI)}},type:FuncTypes.POLAR},
         {func:{eval:function(a){return 2*Math.sin(4*a)}},type:FuncTypes.POLAR},
         {func:Parametric.lissajous(0.4,1),type:FuncTypes.PARAMETRIC},
+        {func:new Parametric(function(t){return Math.sin(t)},function(t){return Math.cos(0.9*t)}),type:FuncTypes.PARAMETRIC},
         {func:new QuadraticFunc(2,1,2)}
     ],
     plots: [
@@ -2772,8 +2764,8 @@ CrtPlane.reset = function () {
 CrtPlane.init = function () {
     CrtPlane.reset();
     if (CrtPlane.log) TBI.log("Initializing");
-    if (CrtPlane.scale) 
-        try { CrtPlane.drawScale(); if (CrtPlane.log) TBI.log("Finished scale"); } 
+    if (CrtPlane.scale)
+        try { CrtPlane.drawScale(); if (CrtPlane.log) TBI.log("Finished scale"); }
         catch (e) { if (!CrtPlane.suppress) TBI.error(e); else TBI.warn("Scale failed to generate") }
     if (CrtPlane.axes) { CrtPlane.drawAxes(); if (CrtPlane.log) TBI.log("Finished axes"); }
     for (var i=0;i<CrtPlane.funcs.length;i++)
@@ -2781,7 +2773,7 @@ CrtPlane.init = function () {
     $("#cart-legend li").off("click");
     $("#cart-legend li").click(function () {
         var t = this.innerHTML, a = false;
-        $("#cart-legend li").toArray().forEach(function (el, i) { 
+        $("#cart-legend li").toArray().forEach(function (el, i) {
             if (!a && el.innerHTML == t) {
                 switch (CrtPlane.legendMode) {
                     case ModeTypes.HIDE:
@@ -2867,36 +2859,48 @@ CrtPlane.drawScale = function () {
         gy = CrtPlane.proportion(fy, plim.lower, plim.upper), // increment of the scale of y
         mx = 0, // adjustment to the scale of x
         my = 0, // adjustment to the scale of y
-        tryCounter = 1;
+        tryCounter = 1,
+        fixScale = function (cb, cm, cg, num) {
+            tryCounter = 0;
+            while (!(cb+cm).fixFloat(num).fixMod(cg).isFloatEqual(0) && tryCounter++ < tries)
+                cm = (cm + (cg-((cb+cm).fixMod(cg)))).fixFloat(num);
+            if (tryCounter >= tries)
+                if (num > 5) return fixScale(cb, cm, cg, num-1);
+                else return new EndlessLoopException("Axes failed to generate: "+
+                    "bound - pan: "+cb+
+                    ", g: "+cg+
+                    ", bpg: "+((cb+cm).fixFloat(num))+
+                    ", m: "+cm
+                );
+            else return cm;
+        },
+        nx = Math.bound(14-Math.floor(Math.log10(b.x)), 0, 14),
+        ny = Math.bound(14-Math.floor(Math.log10(b.y)), 0, 14)
     if (CrtPlane.log) TBI.log("drawScale: set variables");
-    
-    while (!(b.x-p.x+mx).fixFloat(10).fixMod(gx).isFloatEqual(0) && tryCounter++ < tries)
-        mx = (mx + (gx-((b.x-p.x+mx).fixMod(gy)))).fixFloat(10);
-    if (tryCounter >= tries)
-        throw new EndlessLoopException("x axis failed to generate: bound: "+b.x+", pan: "+p.x+", gx: "+gx+", bpg: "+((b.x-p.x+mx).fixFloat(10))+", mx: "+mx);
-    else tryCounter = 0;
-    while (!(b.y+p.y+my).fixFloat(10).fixMod(gy).isFloatEqual(0) && tryCounter++ < tries)
-        my = (my + (gy-((b.y+p.y+my).fixMod(gy)))).fixFloat(10);
-    if (tryCounter > tries)
-        throw new EndlessLoopException("y axis failed to generate: bound: "+b.y+", pan: "+p.y+", gy: "+gy+", bpg: "+((b.y+p.y+my).fixFloat(10))+", my: "+my);
-    else tryCounter = 0;
+
+    mx = fixScale(b.x-p.x, mx, gx, nx);
+    my = fixScale(b.y+p.y, my, gy, ny);
+
+    if (mx instanceof Error) { throw mx; return false; }
+    else if (my instanceof Error) { throw my; return false; }
+
     if (CrtPlane.log) TBI.log("drawScale: terminated while loops");
     if (CrtPlane.debug) TBI.log("Manifest:\nBounds: ("+b.x+", "+b.y+")\nfx: "+fx+", gx: "+gx+", modulo: "+(b.x%gx)+", mx: "+mx);
-    
+
     CrtPlane.$.textAlign = "center";
     CrtPlane.$.font = "8px Righteous";
     for (var ex=b.x+p.x+mx,x=-(b.x-p.x+mx);x<=ex;x+=gx) {
         var px = x-p.x;
         Canvas2D.path(CrtPlane.$, {type:"stroke",style:"#aaa",path:[[px*fx,(g?h/2:5+p.y*fy)],[px*fx,-(g?h/2:5)+(g?0:p.y*fy)]]});
-        if (x!=0) CrtPlane.$.fillText(x=x.fixFloat(10), px*fx,15+p.y*fy);
+        if (x!=0) CrtPlane.$.fillText(x=x.fixFloat(nx), px*fx,15+p.y*fy);
     }
     if (CrtPlane.log) TBI.log("drawScale: completed x axis");
-    
+
     CrtPlane.$.textAlign = "left";
     for (var ey=b.y-p.y+my,y=-(b.y+p.y+my);y<=ey;y+=gy) {
         var py = y+p.y;
         Canvas2D.path(CrtPlane.$, {type:"stroke",style:"#aaa",path:[[(g?w/2:5-p.x*fx),py*fy],[-(g?w/2:5)-(g?0:p.x*fx),py*fy]]});
-        if (y!=0) CrtPlane.$.fillText(-(y=y.fixFloat(10)),10-p.x*fx,py*fy+2);
+        if (y!=0) CrtPlane.$.fillText(-(y=y.fixFloat(ny)),10-p.x*fx,py*fy+2);
     }
     if (CrtPlane.log) TBI.log("drawScale: completed y axis");
 }
@@ -3021,7 +3025,7 @@ CrtPlane.parseFunc = function (text) {
         case FuncTypes.PARAMETRIC: varstr = "t"; break;
         default: varstr = "x"; break;
     }
-    try { 
+    try {
         eval("var func = {eval:function ("+varstr+") { return "+val+" }}");
         func.eval(1);
     } catch (e) { TBI.error(e); return null; }
@@ -3051,14 +3055,14 @@ $(document).on("pageload", function () {
             z = CrtPlane.zFactor,
             l = CrtPlane.boundLim;
         if (b.x-(b.x/z) <= l.min || b.y-(b.y/z) <= l.min) z = Infinity;
-        CrtPlane.set("bounds", {x:b.x-(b.x/z),y:b.y-(b.y/z)});
+        CrtPlane.set("bounds", new Coords(b.x-(b.x/z),b.y-(b.y/z)));
     });
     $("#cart-minus").click(function () {
         var b = CrtPlane.bounds,
             z = CrtPlane.zFactor,
             l = CrtPlane.boundLim;
         if (b.x+(b.x/z) >= l.max || b.y+(b.y/z) >= l.max) z = Infinity;
-        CrtPlane.set("bounds", {x:b.x+(b.x/z),y:b.y+(b.y/z)});
+        CrtPlane.set("bounds", new Coords(b.x+(b.x/z),b.y+(b.y/z)));
     });
     CrtPlane.bind("#cart-funcrender", "fnDefMode");
     /*$("#cart-mode-rm").click(function () {
@@ -3073,7 +3077,9 @@ $(document).on("pageload", function () {
     });
     TBI.toggleButton($("#cart-legend-tog")[0], $("#cart-legend")[0].display != "none");
     $("#cart-plane").mousedown(function (event) {
-        CrtPlane.set("mouse", new Coords(event.offsetX, event.offsetY));
+        CrtPlane.set("mouse", new Coords(
+            event.offsetX || event.pageX - $("#cart-plane").offset().left,
+            event.offsetY || event.pageY - $("#cart-plane").offset().top));
         CrtPlane.set("panTemp", CrtPlane.pan);
         $(CrtPlane.canvas).toggleClass("mdown", true);
     });
@@ -3090,12 +3096,14 @@ $(document).on("pageload", function () {
                 p = CrtPlane.panTemp,
                 m = CrtPlane.mouse,
                 fx = w/(2*b.x),
-                fy = h/(2*b.y);
-            CrtPlane.set("pan", {x:(p.x-(event.offsetX-m.x)/fx).fixFloat(4),y:(p.y+(event.offsetY-m.y)/fy).fixFloat(4)});
+                fy = h/(2*b.y),
+                ox = (event.offsetX || event.pageX - $("#cart-plane").offset().left),
+                oy = (event.offsetY || event.pageY - $("#cart-plane").offset().top);
+            CrtPlane.set("pan", new Coords((p.x-(ox-m.x)/fx).fixFloat(4), (p.y+(oy-m.y)/fy).fixFloat(4)));
         }
     });
     $("#cart-reset").click(function () {
-        CrtPlane.set("pan", {x:0,y:0});
+        CrtPlane.set("pan", new Coords(0,0));
     });
     $("#cart-newfunc").keydown(function (event) {
         if (convertKeyDown(event) == "enter") {
@@ -3105,10 +3113,10 @@ $(document).on("pageload", function () {
             CrtPlane.init();
         }
     });
-    gebi("cart-plane").onmousewheel = function (event) { 
+    gebi("cart-plane").onmousewheel = function (event) {
         if (event.wheelDelta > 0) $("#cart-plus").click();
         else $("#cart-minus").click();
-        event.preventDefault(); 
+        event.preventDefault();
     }
     TBI.Popup.registry.add(gebi("cart-reset"), "Centre view", "Resets the pan on the origin point (0,0).\
     The pan can be modified by dragging on the plane area.");

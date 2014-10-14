@@ -19,175 +19,264 @@
             <h1>Prototypes</h1>
             <p>
                 These are programs and code snippets that I have on display
-                for infinite free use and reuse by anybody for any purpose 
-                under the 
+                for infinite free use and reuse by anybody for any purpose
+                under the
                 <a href="//creativecommons.org/licenses/by-sa/4.0" class="license"></a>
                 license.
             </p>
-            <h2 id="anchor2" class="item">Grid JavaScript Test</h2>
-            <h3 class="version">Version 1.5</h3>
+            <h2 class="item">Cartesian Plane</h2>
+            <h3 class="version"></h3>
             <div class="item-info">
                 <p>
-                    This is a test for creating multiple elements in a grid that can be manipulated by CSS,
-                    jQuery and JavaScript. More of a proof-of-concept than an actual working program.
+                    In my maths class, I wanted to visualise the linear functions that we were studying without using
+                    a tedious pen and paper, so I created a <code>&lt;canvas&gt;</code> program to plot them for me!
+                    This started off as a small test app, but it's recently become my most worked-on project.
                 </p>
                 <p>
-                    BUGS/ISSUES:
-                </p><ul class="main">
-                    <li>Not all of the UI is there yet</li>
-                    <li>Isn't very straightforward</li>
-                </ul>
-                <div class="grid item">
-                </div>
-                <div id="gridcontrolscont">
-                    <div id="gridcontrols">
-                        <h3>Grid Statistics</h3>
-                        <p>
-                            <b>Grid dimensions: </b><span id="gridx"></span>px X <span id="gridy"></span>px<br />
-                            <span id="cellstats">
-                                <b>Cell dimensions: </b><span id="cellx"></span>px X <span id="celly"></span>px<br />
-                                <b>Number of cells: </b><span id="clxcount"></span> X <span id="clycount"></span> =
-                                <span id="clcount"></span><br />
-                                <b>Current colour: </b><br /><span id="gcurrcolour"><input type="text" id="gdrawcolour" /></span>
-                            </span>
-                        </p>
-                        <h3>Main</h3>
-                        <p>
-                            <button id="gridset" class="gridcont">Set grid</button>
-                            <input id="gridsetnum" class="gridcont" type="text" /> X <span id="gsnxt"></span><br />
-                        </p>
-                        <h3>Animation</h3>
-                        <p></p>
-                        <h3>Borders</h3>
-                        <p></p>
-                    </div>
-                    <div id="gridcontrols2">
-                        <h3>Clear</h3>
-                        <p>
-                            <button id="gclearcells">Clear cells</button>
-                            <button id="gcleargrid">Clear grid</button>
-                        </p>
-                        <h3>Draw</h3>
-                        <p>
-                            <button id="gdrawpencil">Pencil</button>
-                            <button id="gdrawbrush">Brush</button>
-                            <button id="gdrawerase">Eraser</button>
-                            <button id="gdrawinspc">Inspect</button><br />
-                            Brush diameter: <br /><input type="text" id="gdrawdiam" value="3" />cells <br />
-                            Recent colours: <br />
-                            <div class="gdrawrc" id="gdrc0"></div><div class="gdrawrc" id="gdrc1">
-                            </div><div class="gdrawrc" id="gdrc2"></div><div class="gdrawrc" id="gdrc3">
-                            </div><br />
-                        </p>
-                        <h3>Layer</h3>
-                        <p></p>
-                        <h3>Modify</h3>
-                        <p></p>
-                    </div>
-                </div>
-            </div>
-            <h2 id="anchor3" class="item">JavaScript Calendar</h2>
-            <h3 class="version">Version 0.5</h3>
-            <div class="item-info">
-                <p>
-                    This calendar is going to contain a lot of features, including the ability to set your own events! It's an
-                    ambitious project for sure, but it'll keep me on my toes.
+                    Using the mouse, you can scroll in, out and around the plane to explore the functions. The plus
+                    and minus buttons on the side scroll without a mouse wheel, while the button in the middle centres
+                    the pan. To view more detailed functions, turn off the "Fast Rendering" option at the bottom of
+                    the plane area.
                 </p>
                 <p>
-                    BUGS/ISSUES:
-                </p><ul class="main">
-                    <li>Styling is not quite right when the number of weeks displayed is 6.</li>
-                </ul>
-                <p>
-                    PLANNED:
-                </p><ul class="main">
-                    <li>Events</li>
-                    <li>More buttons!</li>
-                    <li>Cookies</li>
-                    <li>User personalization</li>
-                </ul>
-                <div class="item calendar">
-                    <div id="calhead">
-                        <h3>Calendar</h3>
-                        <button class="gridcont" id="calcontday">Day</button>
-                        <button class="gridcont" id="calcontweek">Week</button>
-                        <button class="gridcont" id="calcontmonth">Month</button>
-                        <button class="gridcont" id="calconttoday">Today</button>
-                        <span id="calchanger">
-                            <button id="calcchangeup">Earlier</button>
-                            <button id="calcchangedown">Later</button>
-                        </span>
-                    </div>
-                    <div id="calstatus"><p></p></div>
-                    <div id="calweekdays">
-                        <div class="calweekday main">Sunday</div><div class="calweekday main">Monday</div>
-                        <div class="calweekday main">Tuesday</div><div class="calweekday main">Wednesday</div>
-                        <div class="calweekday main">Thursday</div><div class="calweekday main">Friday</div>
-                        <div class="calweekday main">Saturday</div>
-                    </div>
-                    <div id="calinner">
-                    </div>
-                </div>
-                <div id="calcontrols">
-                </div>
-            </div>
-            <h2 id="anchor4" class="item">tXtEng</h2>
-            <h3 class="version">Version 0.2.1</h3>
-            <div class="item-info">
-                <p>
-                    After seeing the joy of command line interface games and controls, I decided to create a platform
-                    that would make it easier to develop these kind of programs for the Web. At the moment, it is in
-                    <i>early</i> alpha, so it's featureless. At the moment (v0.2.1), I have implemented:
+                    Click on the functions and they hide themselves - click again and they re-appear. Scroll down to
+                    the bottom and you will find a text box and some options. The text box can be used to input new
+                    equations and the options can be used to change the behaviour when you click on the functions.
+                    Enter <code>pi</code> for the ratio between circumference and diameter, <code>x^y</code> for
+                    exponents and <code>sin</code>, <code>cos</code> and <code>tan</code> are available as
+                    trigonometric functions. For polar equations, enter <code>a</code> in place of <code>x</code>.
+                    For regular equations, the <code>f(x) = </code> is not required, but polar equations require
+                    <code>f(a) = </code> to be recognised properly.
                 </p>
+                <p>BUGS/ISSUES: </p>
                 <ul class="main">
-                    <li>A suitable command line interface</li>
-                    <li>Message Of The Day system</li>
-                    <li>Command based control protocol</li>
-                    <li>The ability to print to the console (print command)</li>
-                    <li>Framework for programs (run command) and a test program (flip)</li>
-                    <li>A few other utility commands (cl, help)</li>
+                    <li>Some particular zoom and pan configurations cause the scale algorithm to fail and
+                    loop forever. This has been caught with an error handler, but will need a better solution
+                    in production.</li>
                 </ul>
-                <p>
-                    NOTES:
-                </p><ul class="main">
-                    <li>Unlikely to ever be worked upon again, because it's kinda hard to make a 
-                    fully functioning terminal emulator in JavaScript.</li>
-                </ul>
-                <textarea id="txtengarea" disabled="disabled" class="item"></textarea><br />
-                <input type="text" id="txtengin" class="item" />
+                <div id="cart-container">
+                    <canvas id="cart-plane" width="600" height="600" class="item"></canvas>
+                    <div id="cart-legend">
+                        <ul></ul>
+                        <input type="text" id="cart-newfunc" placeholder="New function" />
+                        <div class="radio-input" id="cart-mode">
+                            <input type="radio" name="cart-mode" value="Hide" id="cart-mode-hide" checked />
+                            <label for="cart-mode-hide">Hide</label>
+                            <input type="radio" name="cart-mode" value="HLight" id="cart-mode-hli" />
+                            <label for="cart-mode-hli">Highlight</label>
+                            <input type="radio" name="cart-mode" value="Remove" id="cart-mode-rem" />
+                            <label for="cart-mode-rem">Remove</label>
+                            <input type="radio" name="cart-mode" value="Edit" id="cart-mode-edit" />
+                            <label for="cart-mode-edit">Edit</label>
+                        </div>
+                    </div>
+                    <div id="cart-buttons">
+                        <button id="cart-plus">&plus;</button>
+                        <button id="cart-reset">&curren;</button>
+                        <button id="cart-minus">&minus;</button>
+                    </div>
+                </div>
+                <div>
+                    <h3>Options</h3>
+                    <button class="toggle" id="cart-funcrender">Fast rendering</button>
+                    <button class="toggle" id="cart-axes">Axes</button>
+                    <button class="toggle" id="cart-grid">Grid</button>
+                    <button class="toggle" id="cart-scale">Scale</button>
+                    <button class="toggle" id="cart-legend-tog">Legend</button>
+                </div>
             </div>
-            <h2 id="anchor5" class="item">Countdown</h2>
-            <h3 class="version">Version 2.2</h3>
+            <h2 class="main item">Complex Plane</h2>
+            <h3 class="version"></h3>
             <div class="item-info">
                 <p>
-                    This is a widget based off of my countdown blog posts. You can set it to
-                    count down towards a specific date in the future, or to a duration from now
-                    onwards. <br />
-                    <strong>This is not the full application. Click on the title to go there.</strong>
-                </p><p>
+                    After watching a few introductory videos on complex numbers and how they could generate
+                    fractals, I decided to implement a few complex number functions in JavaScript. This is
+                    the result.
+                </p>
+                <div class="item">
+                    <canvas id="cmp-canvas" height="600" width="600">
+                        Your browser is not capable of recognising the HTML5 &lt;canvas&gt; graphics framework.
+                        Supported browsers include Google Chrome and Mozilla Firefox.
+                    </canvas>
+                    <canvas id="cmp-mouse" height="600" width="600"></canvas>
+                    <div class="cmp-control">
+                        <input type="text" id="cmp-asisinc" disabled />
+                        <span class="help" id="cmp-asisinch"></span>
+                        <span class="main">Analysis Increment</span>
+                    </div>
+                    <div class="cmp-control cmp-buttonr">
+                        <button id="cmp-lquality">Low Quality</button>
+                        <button id="cmp-mquality">Medium Quality</button>
+                        <button id="cmp-hquality">High Quality</button>
+                    </div>
+                    <div class="cmp-control">
+                        <input type="text" id="cmp-maxiter" />
+                        <span class="help" id="cmp-maxiterh"></span>
+                        <span class="main">Maximum Iterations (detail, &gt; is better)</span>
+                    </div>
+                    <div class="cmp-control">
+                        <input type="text" id="cmp-factor" />
+                        <span class="help" id="cmp-factorh"></span>
+                        <span class="main">Zoom Factor (zoom, &gt; is better)</span>
+                    </div>
+                    <div class="cmp-control">
+                        <input type="text" id="cmp-panx" />
+                        <span class="help cmp-panh"></span>
+                        <span class="main">X Pan</span>
+                    </div>
+                    <div class="cmp-control">
+                        <input type="text" id="cmp-pany" />
+                        <span class="help cmp-panh"></span>
+                        <span class="main">Y Pan</span>
+                    </div>
+                    <div class="cmp-control cmp-jonly">
+                        <input type="text" id="cmp-jreal" />
+                        <span class="help" id="cmp-jrealh"></span>
+                        <span class="main">Real component</span>
+                    </div>
+                    <div class="cmp-control cmp-jonly">
+                        <input type="text" id="cmp-jimaginary" />
+                        <span class="help" id="cmp-jimaginaryh"></span>
+                        <span class="main">Imaginary component</span>
+                    </div>
+                    <div class="cmp-control cmp-buttonr">
+                        <button id="cmp-tracking" class="toggle">Line tracking</button>
+                    </div>
+                    <div class="cmp-control cmp-buttonr">
+                        <button id="cmp-reset">Reset Settings</button>
+                        <button id="cmp-mode">Switch Mode</button>
+                        <button class="major" id="cmp-generate">Generate Mandelbrot Set</button>
+                    </div>
+                </div>
+            </div>
+            <h2 class="item">Planetarium</h2>
+            <h3 class="version"></h3>
+            <div class="item-info">
+                <p>
+                    An accurate 2D rendering of the Solar System with adjustable controls for time,
+                    size and scale. Fully customisable and currently supports:
+                </p><ul class="main">
+                    <li>Realistic, proportionate planet sizes</li>
+                    <li>Satellites can orbit planets</li>
+                    <li>Options for orbit, location and label visibility</li>
+                    <li>Debug mode</li>
+                    <li>Rings around planets</li>
+                    <li>Planet focusing to view satellites</li>
+                    <li>Controls for zoom, scale and speed</li>
+                    <li>Stars with a parallax effect</li>
+                </ul>
+                <div class="proto">
+                    <div class="psim-control"><button id="psim-power" class="toggle">Simulation state</button></div>
+                    <canvas id="psim-canvas" height="600" width="600">
+                        Your browser is not capable of recognising the HTML5 &lt;canvas&gt; graphics framework.
+                        Supported browsers include Google Chrome and Mozilla Firefox.
+                    </canvas>
+                    <div class="psim-control">
+                        <span class="main">Zoom</span>
+                        <span class="help" id="psim-zoom-help"></span><br />
+                        <input type="range" min="0.2" max="2" step="0.005" id="psim-zoom" />
+                    </div>
+                    <div class="psim-control">
+                        <span class="main">Scale</span>
+                        <span class="help" id="psim-scale-help"></span>
+                        <button id="psim-scale-reset">Reset</button><br />
+                        <input type="range" min="1" max="8" step="0.05" id="psim-scale" />
+                    </div>
+                    <div class="psim-control">
+                        <span class="main">Speed</span>
+                        <span class="help" id="psim-speed-help"></span>
+                        <button id="psim-speed-reset">Reset</button>
+                        <button id="psim-speed-pause">Pause</button><br />
+                        <input type="range" min="-30" max="30" step="0.2" id="psim-speed" />
+                    </div>
+                    <div class="psim-control">
+                        <button id="psim-plines" class="toggle">Location lines</button>
+                        <button id="psim-porbits" class="toggle on">Orbits</button>
+                        <button id="psim-plabels" class="toggle on">Labels</button>
+                        <button id="psim-debug" class="toggle">Debug mode</button>
+                    </div>
+                    <div class="psim-control">
+                        <button id="psim-reset">Reset simulation</button>
+                    </div>
+                </div>
+            </div>
+            <h2 id="anchor9" class="item">TimeTable</h2>
+            <h3 class="version"></h3>
+            <div class="item-info">
+                <p>
+                    This may look like nothing, but it is not! Instead, it is a timetable, which loads
+                    the information to fill the table from a JSON file in the local storage of
+                    the browser! All of the variables (days, number of periods, info, colours)
+                    are defined in the data to be as extensible as possible. Press the buttons below for a preview:
+                </p>
+                <p>
+                    <button id="ttb-test">Test timetable</button>
+                    <button id="ttb-clear">Clear timetable</button>
+                </p>
+                <p>
+                    Okay, so I've given up on creating a UI for this, as its extensibility leads to lots of
+                    problems and useless classes and IDs that I'm beginning to hate. Now it's simply a JSON
+                    editor.
+                </p>
+                <p>
                     PLANNED:
                 </p><ul class="main">
                     <li>Theming</li>
                 </ul>
-                <div id="cdown-full" class="cdown cdset item">
-                    <h3>Countdown</h3><button class="gridcont" onclick="
-                    if (Cdown.expand) Cdown.expand = false; else Cdown.expand = true;">
-                        Expand/Contract
-                    </button><button class="gridcont" onclick="eraseCookie('cDown'); Cdown.check(false)">Reset</button>
-                    <div id="cdset">
-                        <button class="gridcont" onclick="Cdown.check(true)">Submit</button><br />
-                        <input type="text" id="cdsetname" value="Name" class="inactive" /><br />
-                        <input type="text" id="cdsetyear" value="YYYY" />/<input type="text" id="cdsetmonth" value="MM" />/
-                        <input type="text" id="cdsetday" value="DD" /><input type="text" id="cdsethour" value="HH" />:
-                        <input type="text" id="cdsetminute" value="M" />.<input type="text" id="cdsetsecond" value="S" /><br />
+                <div id="ttable-proto" class="ttable item">
+                    <div class="ttb-set">
+                        <textarea class="main" disabled style='width:80%; height:220px;'></textarea>
+                        <div class="ttbs-mode">
+                            <input type="radio" id="ttbs-modev" checked name="ttbs-mode" />
+                            <label for="ttbs-modev">View</label>
+                            <input type="radio" id="ttbs-modee" name="ttbs-mode" />
+                            <label for="ttbs-modee">Edit</label>
+                        </div>
                     </div>
-                    <div id="cd-fn-set">
-                        <h3>From Now</h3><button class="gridcont" onclick="Cdown.checkfn();Cdown.check(false);">Submit</button><br />
-                        <input type="text" id="cdfn-year" value="Years" /><input type="text" id="cdfn-month" value="Months" />
-                        <input type="text" id="cdfn-day" value="Days" /><input type="text" id="cdfn-hour" value="Hours" />
-                        <input type="text" id="cdfn-minute" value="Minutes" /><input type="text" id="cdfn-second" value="Seconds" />
+                    <button id="ttbs-hlnow">Highlight Now</button>
+                    <div class="ttb-body">
                     </div>
-                    <h2 id="cdown-count" class="span">Countdown over!!!</h2>
+                    <div class="ttb-info">
+                    </div>
+                </div>
+            </div>
+            <h2 id="anchor8" class="item">Canvas</h2>
+            <h3 class="version"></h3>
+            <div class="item-info">
+                <p>
+                    Hooray! Canvas things! Not really a thing yet, just messing around.
+                </p>
+                <div class="item">
+                    <div id="cvs-cont">
+                        <div class="button-row">
+                            <button id="cvs-line">Line</button>
+                            <button id="cvs-brush">Brush</button>
+                            <button id="cvs-quad">Basic curve</button>
+                            <button id="cvs-bezier">Advanced curve</button>
+                            <button id="cvs-poly">Polygon</button>
+                            <button id="cvs-end">End path</button>
+                        </div><div class="button-row">
+                            <label for="cvs-style-0">Stroke Style</label>
+                            <input type="text" id="cvs-style-0" value="black" />
+                            <label for="cvs-style-1">Fill Style</label>
+                            <input type="text" id="cvs-style-1" value="white" />
+                            <br />
+                            <label for="cvs-width">Line Width</label>
+                            <input type="text" id="cvs-width" value="5" />
+                            <label for="cvs-bwid">Brush Width</label>
+                            <input type="text" id="cvs-bwid" value="10" />
+                        </div><div class="button-row">
+                            <button id="cvs-stroke" class="toggle on">Toggle Stroke</button>
+                            <button id="cvs-fill" class="toggle on">Toggle Fill</button>
+                            <button id="cvs-guide" class="toggle on">Toggle Guides</button>
+                        </div><div class="button-row">
+                            <span class="main">Mode: </span><span id="cvs-mode">None</span>
+                        </div>
+                    </div>
+                    <canvas id="cvs" width="600" height="600" style="border:2px solid #000">
+                        Your browser is not capable of recognising the HTML5 &lt;canvas&gt; graphics framework.
+                        Supported browsers include Google Chrome and Mozilla Firefox.
+                    </canvas>
                 </div>
             </div>
             <h2 id="anchor6" class="item">Calculator</h2>
@@ -196,10 +285,10 @@
                 <p>
                     Originally one of my first JavaScript projects, this calculator supports
                     chained equations and different modes. The greatest difference is that it
-                    looks like an actual calculator! UPDATE: I've managed to remake the calculator 
-                    and it's code, even though it looks roughly the same. It now feels better to use, 
+                    looks like an actual calculator! UPDATE: I've managed to remake the calculator
+                    and it's code, even though it looks roughly the same. It now feels better to use,
                     has a navigable calculation log and handles a lot more functions with the shift
-                    key. In addition, the code doesn't look like a pile of spaghetti (369 lines 
+                    key. In addition, the code doesn't look like a pile of spaghetti (369 lines
                     before to 147 lines now)!
                 </p><p>
                     PLANNED:
@@ -290,259 +379,170 @@
                     </div>
                 </div>
             </div>
-            <h2 id="anchor8" class="item">Canvas</h2>
-            <h3 class="version"></h3>
+            <h2 id="anchor5" class="item">Countdown</h2>
+            <h3 class="version">Version 2.2</h3>
             <div class="item-info">
                 <p>
-                    Hooray! Canvas things! Not really a thing yet, just messing around.
-                </p>
-                <div class="item">
-                    <div id="cvs-cont">
-                        <div class="button-row">
-                            <button id="cvs-line">Line</button>
-                            <button id="cvs-brush">Brush</button>
-                            <button id="cvs-quad">Basic curve</button>
-                            <button id="cvs-bezier">Advanced curve</button>
-                            <button id="cvs-poly">Polygon</button>
-                            <button id="cvs-end">End path</button>
-                        </div><div class="button-row">
-                            <label for="cvs-style-0">Stroke Style</label>
-                            <input type="text" id="cvs-style-0" value="black" />
-                            <label for="cvs-style-1">Fill Style</label>
-                            <input type="text" id="cvs-style-1" value="white" />
-                            <br />
-                            <label for="cvs-width">Line Width</label>
-                            <input type="text" id="cvs-width" value="5" />
-                            <label for="cvs-bwid">Brush Width</label>
-                            <input type="text" id="cvs-bwid" value="10" />
-                        </div><div class="button-row">
-                            <button id="cvs-stroke" class="toggle on">Toggle Stroke</button>
-                            <button id="cvs-fill" class="toggle on">Toggle Fill</button>
-                            <button id="cvs-guide" class="toggle on">Toggle Guides</button>
-                        </div><div class="button-row">
-                            <span class="main">Mode: </span><span id="cvs-mode">None</span>
-                        </div>
-                    </div>
-                    <canvas id="cvs" width="600" height="600" style="border:2px solid #000">
-                        Your browser is not capable of recognising the HTML5 &lt;canvas&gt; graphics framework.
-                        Supported browsers include Google Chrome and Mozilla Firefox.
-                    </canvas>
-                </div>
-            </div>
-            <h2 id="anchor9" class="item">TimeTable</h2>
-            <h3 class="version"></h3>
-            <div class="item-info">
-                <p>
-                    This may look like nothing, but it is not! Instead, it is a timetable, which loads
-                    the information to fill the table from a JSON file in the local storage of
-                    the browser! All of the variables (days, number of periods, info, colours)
-                    are defined in the data to be as extensible as possible. Press the buttons below for a preview:
-                </p>
-                <p>
-                    <button id="ttb-test">Test timetable</button>
-                    <button id="ttb-clear">Clear timetable</button>
-                </p>
-                <p>
-                    Okay, so I've given up on creating a UI for this, as its extensibility leads to lots of
-                    problems and useless classes and IDs that I'm beginning to hate. Now it's simply a JSON
-                    editor.
-                </p>
-                <p>
+                    This is a widget based off of my countdown blog posts. You can set it to
+                    count down towards a specific date in the future, or to a duration from now
+                    onwards. <br />
+                    <strong>This is not the full application. Click on the title to go there.</strong>
+                </p><p>
                     PLANNED:
                 </p><ul class="main">
                     <li>Theming</li>
                 </ul>
-                <div id="ttable-proto" class="ttable item">
-                    <div class="ttb-set">
-                        <textarea class="main" disabled style='width:80%; height:220px;'></textarea>
-                        <div class="ttbs-mode">
-                            <input type="radio" id="ttbs-modev" checked name="ttbs-mode" />
-                            <label for="ttbs-modev">View</label>
-                            <input type="radio" id="ttbs-modee" name="ttbs-mode" />
-                            <label for="ttbs-modee">Edit</label>
-                        </div>
+                <div id="cdown-full" class="cdown cdset item">
+                    <h3>Countdown</h3><button class="gridcont" onclick="
+                    if (Cdown.expand) Cdown.expand = false; else Cdown.expand = true;">
+                        Expand/Contract
+                    </button><button class="gridcont" onclick="eraseCookie('cDown'); Cdown.check(false)">Reset</button>
+                    <div id="cdset">
+                        <button class="gridcont" onclick="Cdown.check(true)">Submit</button><br />
+                        <input type="text" id="cdsetname" value="Name" class="inactive" /><br />
+                        <input type="text" id="cdsetyear" value="YYYY" />/<input type="text" id="cdsetmonth" value="MM" />/
+                        <input type="text" id="cdsetday" value="DD" /><input type="text" id="cdsethour" value="HH" />:
+                        <input type="text" id="cdsetminute" value="M" />.<input type="text" id="cdsetsecond" value="S" /><br />
                     </div>
-                    <button id="ttbs-hlnow">Highlight Now</button>
-                    <div class="ttb-body">
+                    <div id="cd-fn-set">
+                        <h3>From Now</h3><button class="gridcont" onclick="Cdown.checkfn();Cdown.check(false);">Submit</button><br />
+                        <input type="text" id="cdfn-year" value="Years" /><input type="text" id="cdfn-month" value="Months" />
+                        <input type="text" id="cdfn-day" value="Days" /><input type="text" id="cdfn-hour" value="Hours" />
+                        <input type="text" id="cdfn-minute" value="Minutes" /><input type="text" id="cdfn-second" value="Seconds" />
                     </div>
-                    <div class="ttb-info">
-                    </div>
+                    <h2 id="cdown-count" class="span">Countdown over!!!</h2>
                 </div>
             </div>
-            <h2 class="item">Planetarium</h2>
-            <h3 class="version"></h3>
+            <h2 id="anchor4" class="item">tXtEng</h2>
+            <h3 class="version">Version 0.2.1</h3>
             <div class="item-info">
                 <p>
-                    An accurate 2D rendering of the Solar System with adjustable controls for time,
-                    size and scale. Fully customisable and currently supports:
-                </p><ul class="main">
-                    <li>Realistic, proportionate planet sizes</li>
-                    <li>Satellites can orbit planets</li>
-                    <li>Options for orbit, location and label visibility</li>
-                    <li>Debug mode</li>
-                    <li>Rings around planets</li>
-                    <li>Planet focusing to view satellites</li>
-                    <li>Controls for zoom, scale and speed</li>
-                    <li>Stars with a parallax effect</li>
-                </ul>
-                <div class="proto">
-                    <div class="psim-control"><button id="psim-power" class="toggle">Simulation state</button></div>
-                    <canvas id="psim-canvas" height="600" width="600">
-                        Your browser is not capable of recognising the HTML5 &lt;canvas&gt; graphics framework.
-                        Supported browsers include Google Chrome and Mozilla Firefox.
-                    </canvas>
-                    <div class="psim-control">
-                        <span class="main">Zoom</span>
-                        <span class="help" id="psim-zoom-help"></span><br />
-                        <input type="range" min="0.2" max="2" step="0.005" id="psim-zoom" />
-                    </div>
-                    <div class="psim-control">
-                        <span class="main">Scale</span>
-                        <span class="help" id="psim-scale-help"></span>
-                        <button id="psim-scale-reset">Reset</button><br />
-                        <input type="range" min="1" max="8" step="0.05" id="psim-scale" />
-                    </div>
-                    <div class="psim-control">
-                        <span class="main">Speed</span>
-                        <span class="help" id="psim-speed-help"></span>
-                        <button id="psim-speed-reset">Reset</button>
-                        <button id="psim-speed-pause">Pause</button><br />
-                        <input type="range" min="-30" max="30" step="0.2" id="psim-speed" />
-                    </div>
-                    <div class="psim-control">
-                        <button id="psim-plines" class="toggle">Location lines</button>
-                        <button id="psim-porbits" class="toggle on">Orbits</button>
-                        <button id="psim-plabels" class="toggle on">Labels</button>
-                        <button id="psim-debug" class="toggle">Debug mode</button>
-                    </div>
-                    <div class="psim-control">
-                        <button id="psim-reset">Reset simulation</button>
-                    </div>
-                </div>
-            </div>
-            <h2 class="main item">Complex Plane</h2>
-            <h3 class="version"></h3>
-            <div class="item-info">
-                <p>
-                    After watching a few introductory videos on complex numbers and how they could generate
-                    fractals, I decided to implement a few complex number functions in JavaScript. This is
-                    the result.
+                    After seeing the joy of command line interface games and controls, I decided to create a platform
+                    that would make it easier to develop these kind of programs for the Web. At the moment, it is in
+                    <i>early</i> alpha, so it's featureless. At the moment (v0.2.1), I have implemented:
                 </p>
-                <div class="item">
-                    <canvas id="cmp-canvas" height="600" width="600">
-                        Your browser is not capable of recognising the HTML5 &lt;canvas&gt; graphics framework.
-                        Supported browsers include Google Chrome and Mozilla Firefox.
-                    </canvas>
-                    <canvas id="cmp-mouse" height="600" width="600"></canvas>
-                    <div class="cmp-control">
-                        <input type="text" id="cmp-asisinc" disabled />
-                        <span class="help" id="cmp-asisinch"></span>
-                        <span class="main">Analysis Increment</span>
-                    </div>
-                    <div class="cmp-control cmp-buttonr">
-                        <button id="cmp-lquality">Low Quality</button>
-                        <button id="cmp-mquality">Medium Quality</button>
-                        <button id="cmp-hquality">High Quality</button>
-                    </div>
-                    <div class="cmp-control">
-                        <input type="text" id="cmp-maxiter" />
-                        <span class="help" id="cmp-maxiterh"></span>
-                        <span class="main">Maximum Iterations (detail, &gt; is better)</span>
-                    </div>
-                    <div class="cmp-control">
-                        <input type="text" id="cmp-factor" />
-                        <span class="help" id="cmp-factorh"></span>
-                        <span class="main">Zoom Factor (zoom, &gt; is better)</span>
-                    </div>
-                    <div class="cmp-control">
-                        <input type="text" id="cmp-panx" />
-                        <span class="help cmp-panh"></span>
-                        <span class="main">X Pan</span>
-                    </div>
-                    <div class="cmp-control">
-                        <input type="text" id="cmp-pany" />
-                        <span class="help cmp-panh"></span>
-                        <span class="main">Y Pan</span>
-                    </div>
-                    <div class="cmp-control cmp-jonly">
-                        <input type="text" id="cmp-jreal" />
-                        <span class="help" id="cmp-jrealh"></span>
-                        <span class="main">Real component</span>
-                    </div>
-                    <div class="cmp-control cmp-jonly">
-                        <input type="text" id="cmp-jimaginary" />
-                        <span class="help" id="cmp-jimaginaryh"></span>
-                        <span class="main">Imaginary component</span>
-                    </div>
-                    <div class="cmp-control cmp-buttonr">
-                        <button id="cmp-tracking" class="toggle">Line tracking</button>
-                    </div>
-                    <div class="cmp-control cmp-buttonr">
-                        <button id="cmp-reset">Reset Settings</button>
-                        <button id="cmp-mode">Switch Mode</button>
-                        <button class="major" id="cmp-generate">Generate Mandelbrot Set</button>
-                    </div>
-                </div>
-            </div>
-            <h2 class="item">Cartesian Plane</h2>
-            <h3 class="version"></h3>
-            <div class="item-info">
-                <p>
-                    In my maths class, I wanted to visualise the linear functions that we were studying without using 
-                    a tedious pen and paper, so I created a <code>&lt;canvas&gt;</code> program to plot them for me! 
-                    This started off as a small test app, but it's recently become my most worked-on project.
-                </p>
-                <p>
-                    Using the mouse, you can scroll in, out and around the plane to explore the functions. The plus 
-                    and minus buttons on the side scroll without a mouse wheel, while the button in the middle centres
-                    the pan. To view more detailed functions, turn off the "Fast Rendering" option at the bottom of 
-                    the plane area.
-                </p>
-                <p>
-                    Click on the functions and they hide themselves - click again and they re-appear. Scroll down to 
-                    the bottom and you will find a text box and some options. The text box can be used to input new 
-                    equations and the options can be used to change the behaviour when you click on the functions.
-                    Enter <code>pi</code> for the ratio between circumference and diameter, <code>x^y</code> for
-                    exponents and <code>sin</code>, <code>cos</code> and <code>tan</code> are available as 
-                    trigonometric functions. For polar equations, enter <code>a</code> in place of <code>x</code>. 
-                    For regular equations, the <code>f(x) = </code> is not required, but polar equations require 
-                    <code>f(a) = </code> to be recognised properly.
-                </p>
-                <p>BUGS/ISSUES: </p>
                 <ul class="main">
-                    <li>Some particular zoom and pan configurations cause the scale algorithm to fail and 
-                    loop forever. This has been caught with an error handler, but will need a better solution
-                    in production.</li>
+                    <li>A suitable command line interface</li>
+                    <li>Message Of The Day system</li>
+                    <li>Command based control protocol</li>
+                    <li>The ability to print to the console (print command)</li>
+                    <li>Framework for programs (run command) and a test program (flip)</li>
+                    <li>A few other utility commands (cl, help)</li>
                 </ul>
-                <div id="cart-container">
-                    <canvas id="cart-plane" width="600" height="600" class="item"></canvas>
-                    <div id="cart-legend">
-                        <ul></ul>
-                        <input type="text" id="cart-newfunc" placeholder="New function" />
-                        <div class="radio-input" id="cart-mode">
-                            <input type="radio" name="cart-mode" value="Hide" id="cart-mode-hide" checked />
-                            <label for="cart-mode-hide">Hide</label>
-                            <input type="radio" name="cart-mode" value="HLight" id="cart-mode-hli" />
-                            <label for="cart-mode-hli">Highlight</label>
-                            <input type="radio" name="cart-mode" value="Remove" id="cart-mode-rem" />
-                            <label for="cart-mode-rem">Remove</label>
-                            <input type="radio" name="cart-mode" value="Edit" id="cart-mode-edit" />
-                            <label for="cart-mode-edit">Edit</label>
-                        </div>
+                <p>
+                    NOTES:
+                </p><ul class="main">
+                    <li>Unlikely to ever be worked upon again, because it's kinda hard to make a
+                    fully functioning terminal emulator in JavaScript.</li>
+                </ul>
+                <textarea id="txtengarea" disabled="disabled" class="item"></textarea><br />
+                <input type="text" id="txtengin" class="item" />
+            </div>
+            <h2 id="anchor3" class="item">JavaScript Calendar</h2>
+            <h3 class="version">Version 0.5</h3>
+            <div class="item-info">
+                <p>
+                    This calendar is going to contain a lot of features, including the ability to set your own events! It's an
+                    ambitious project for sure, but it'll keep me on my toes.
+                </p>
+                <p>
+                    BUGS/ISSUES:
+                </p><ul class="main">
+                    <li>Styling is not quite right when the number of weeks displayed is 6.</li>
+                </ul>
+                <p>
+                    PLANNED:
+                </p><ul class="main">
+                    <li>Events</li>
+                    <li>More buttons!</li>
+                    <li>Cookies</li>
+                    <li>User personalization</li>
+                </ul>
+                <div class="item calendar">
+                    <div id="calhead">
+                        <h3>Calendar</h3>
+                        <button class="gridcont" id="calcontday">Day</button>
+                        <button class="gridcont" id="calcontweek">Week</button>
+                        <button class="gridcont" id="calcontmonth">Month</button>
+                        <button class="gridcont" id="calconttoday">Today</button>
+                        <span id="calchanger">
+                            <button id="calcchangeup">Earlier</button>
+                            <button id="calcchangedown">Later</button>
+                        </span>
                     </div>
-                    <div id="cart-buttons">
-                        <button id="cart-plus">&plus;</button>
-                        <button id="cart-reset">&curren;</button>
-                        <button id="cart-minus">&minus;</button>
+                    <div id="calstatus"><p></p></div>
+                    <div id="calweekdays">
+                        <div class="calweekday main">Sunday</div><div class="calweekday main">Monday</div>
+                        <div class="calweekday main">Tuesday</div><div class="calweekday main">Wednesday</div>
+                        <div class="calweekday main">Thursday</div><div class="calweekday main">Friday</div>
+                        <div class="calweekday main">Saturday</div>
+                    </div>
+                    <div id="calinner">
                     </div>
                 </div>
-                <div>
-                    <h3>Options</h3>
-                    <button class="toggle" id="cart-funcrender">Fast rendering</button>
-                    <button class="toggle" id="cart-axes">Axes</button>
-                    <button class="toggle" id="cart-grid">Grid</button>
-                    <button class="toggle" id="cart-scale">Scale</button>
-                    <button class="toggle" id="cart-legend-tog">Legend</button>
+                <div id="calcontrols">
+                </div>
+            </div>
+            <h2 id="anchor2" class="item">Grid JavaScript Test</h2>
+            <h3 class="version">Version 1.5</h3>
+            <div class="item-info">
+                <p>
+                    This is a test for creating multiple elements in a grid that can be manipulated by CSS,
+                    jQuery and JavaScript. More of a proof-of-concept than an actual working program.
+                </p>
+                <p>
+                    BUGS/ISSUES:
+                </p><ul class="main">
+                    <li>Not all of the UI is there yet</li>
+                    <li>Isn't very straightforward</li>
+                </ul>
+                <div class="grid item">
+                </div>
+                <div id="gridcontrolscont">
+                    <div id="gridcontrols">
+                        <h3>Grid Statistics</h3>
+                        <p>
+                            <b>Grid dimensions: </b><span id="gridx"></span>px X <span id="gridy"></span>px<br />
+                            <span id="cellstats">
+                                <b>Cell dimensions: </b><span id="cellx"></span>px X <span id="celly"></span>px<br />
+                                <b>Number of cells: </b><span id="clxcount"></span> X <span id="clycount"></span> =
+                                <span id="clcount"></span><br />
+                                <b>Current colour: </b><br /><span id="gcurrcolour"><input type="text" id="gdrawcolour" /></span>
+                            </span>
+                        </p>
+                        <h3>Main</h3>
+                        <p>
+                            <button id="gridset" class="gridcont">Set grid</button>
+                            <input id="gridsetnum" class="gridcont" type="text" /> X <span id="gsnxt"></span><br />
+                        </p>
+                        <h3>Animation</h3>
+                        <p></p>
+                        <h3>Borders</h3>
+                        <p></p>
+                    </div>
+                    <div id="gridcontrols2">
+                        <h3>Clear</h3>
+                        <p>
+                            <button id="gclearcells">Clear cells</button>
+                            <button id="gcleargrid">Clear grid</button>
+                        </p>
+                        <h3>Draw</h3>
+                        <p>
+                            <button id="gdrawpencil">Pencil</button>
+                            <button id="gdrawbrush">Brush</button>
+                            <button id="gdrawerase">Eraser</button>
+                            <button id="gdrawinspc">Inspect</button><br />
+                            Brush diameter: <br /><input type="text" id="gdrawdiam" value="3" />cells <br />
+                            Recent colours: <br />
+                            <div class="gdrawrc" id="gdrc0"></div><div class="gdrawrc" id="gdrc1">
+                            </div><div class="gdrawrc" id="gdrc2"></div><div class="gdrawrc" id="gdrc3">
+                            </div><br />
+                        </p>
+                        <h3>Layer</h3>
+                        <p></p>
+                        <h3>Modify</h3>
+                        <p></p>
+                    </div>
                 </div>
             </div>
         </div>

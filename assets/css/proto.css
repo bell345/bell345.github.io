@@ -593,6 +593,7 @@ button.calcbh {
     cursor:-webkit-grab;
     cursor:-moz-grab;
     cursor:grab;
+    position:relative;
 }
 #cart-plane.mdown {
     cursor:-webkit-grabbing;

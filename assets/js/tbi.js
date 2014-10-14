@@ -1,4 +1,4 @@
-﻿// TBI.JS - V6.6
+// TBI.JS - V6.6
 // Base functions, variables and helpers that are included and required in
 // all of my website pages.
 // START INCOMPATIBILITY CODE //
@@ -15,12 +15,13 @@ var now = new Date(),
     query = {},
     path = [],
     notePrevInfo = {
-        "head" : [], 
+        "head" : [],
         "text" : [],
         "type" : []
     },
     navbase = [],
     ASCII = "\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~\x80\x81\x82\x83\x84\x85\x86\x87\x88\x89\x8A\x8B\x8C\x8D\x8E\x8F\x90\x91\x92\x93\x94\x95\x96\x97\x98\x99\x9A\x9B\x9C\x9D\x9E\x9F\xA0\xA1\xA2\xA3\xA4\xA5\xA6\xA7\xA8\xA9\xAA\xAB\xAC\xAD\xAE\xAF\xB0\xB1\xB2\xB3\xB4\xB5\xB6\xB7\xB8\xB9\xBA\xBB\xBC\xBD\xBE\xBF\xC0\xC1\xC2\xC3\xC4\xC5\xC6\xC7\xC8\xC9\xCA\xCB\xCC\xCD\xCE\xCF\xD0\xD1\xD2\xD3\xD4\xD5\xD6\xD7\xD8\xD9\xDA\xDB\xDC\xDD\xDE\xDF\xE0\xE1\xE2\xE3\xE4\xE5\xE6\xE7\xE8\xE9\xEA\xEB\xEC\xED\xEE\xEF\xF0\xF1\xF2\xF3\xF4\xF5\xF6\xF7\xF8\xF9\xFA\xFB\xFC\xFD\xFE\xFF";
+// "
 // START CONSOLE NOTIFICATIONS //
 TBI.log = function (message, timeout) {
     console.log(message);
@@ -38,11 +39,15 @@ TBI.error = function (message, timeout) {
     if (typeof(message) == "object") message = message.message;
     timeout = isNull(timeout) ? 50000 : timeout;
     var onclick = "$($(this).parent()[0].getElementsByTagName(\"div\")[0]).slideToggle()";
-    if (typeof(orig) == "object")
-        TBI.notification("Error", 
-            orig.message+"<button onclick='"+onclick+"'>Show/Hide Stack</button><div style='display:none'>"+orig.stack+"</div>", 
-            timeout);
-    else TBI.notification("Error", message, timeout);
+    if (typeof(orig) == "object") {
+        var stack = orig.stack ? orig.stack.replaceAll("<", "&lt;").replaceAll(">", "&gt;") : "";
+        TBI.notification("Error",
+            orig.message +
+            "<button onclick='" + onclick + "'>Show/Hide Stack</button>\r\n" +
+            "<div style='display:none'>" + stack + "</div>",
+            timeout
+        );
+    } else TBI.notification("Error", message, timeout);
 }
 // END CONSOLE NOTIFICATIONS //
 $(function () {
@@ -111,8 +116,8 @@ TBI.requestManager = function () {
 }
 // Searches the navbar menu item database.
 TBI.searchNavbase = function (s) {
-    for (var i=0;i<navbase.length;i++) 
-        if (!isNull(navbase[i]) && navbase[i][0] == s) 
+    for (var i=0;i<navbase.length;i++)
+        if (!isNull(navbase[i]) && navbase[i][0] == s)
             return navbase[i][1];
     return null;
 }
@@ -120,43 +125,43 @@ TBI.searchNavbase = function (s) {
 TBI.navMoveTo = function (el) {
     if ($(el).length < 1) return false;
     var loc = $(el).offset().left;
-    var off = $("#top-ind").offset().left;
+    var off = $("#top .nav-indicator").offset().left;
     var alg = loc-off;
     if (alg<0) alg=0;
-    else if (alg+parseInt($("#top-ind div").css("width"))>window.innerWidth)
-        alg = parseInt(window.innerWidth-$("#top-ind div").css("width"));
-    var cn = $("#top-ind div")[0].className;
-    $("#top-ind div")[0].className = cn.replace(" focus", "");
-    $("#top-ind div").css("left", alg + "px");
+    else if (alg+parseInt($("#top .nav-indicator div").css("width"))>window.innerWidth)
+        alg = parseInt(window.innerWidth-$("#top .nav-indicator div").css("width"));
+    var cn = $("#top .nav-indicator div")[0].className;
+    $("#top .nav-indicator div")[0].className = cn.replace(" focus", "");
+    $("#top .nav-indicator div").css("left", alg + "px");
 }
 // A blanket function that handles the navbar indicator behaviour and when and where to place the sub-menus.
 TBI.checkNav = function () {
-    $("#top>div:not(.nav-ind)").off("mousemove");
+    $("#top>div:not(.nav-indicator)").off("mousemove");
     /** When mouse is moving on the navbar, move to its position. */
-    $("#top>div:not(.nav-ind)").mousemove(function (event) {
-        var width = parseInt($("#top-ind div").css("width"));
+    $("#top>div:not(.nav-indicator)").mousemove(function (event) {
+        var width = parseInt($("#top .nav-indicator div").css("width"));
         var half = width/2;
-        var off = $("#top-ind").offset().left;
+        var off = $("#top .nav-indicator").offset().left;
         var alg = event.clientX-half-off;
         var page = parseInt($("body").css("width"));
         if(alg<0)alg=0;
         else if(alg+off+width>page) alg=page-width-off;
-        var cn = $("#top-ind div")[0].className;
-        $("#top-ind div")[0].className = cn.search(" focus") != -1 ? cn : cn + " focus";
-        $("#top-ind div").css("left", alg+"px");
+        var cn = $("#top .nav-indicator div")[0].className;
+        $("#top .nav-indicator div")[0].className = cn.search(" focus") != -1 ? cn : cn + " focus";
+        $("#top .nav-indicator div").css("left", alg+"px");
     });
     /** When leaving or creating the navbar, move the indicator to the current menu item after 500ms. */
-    $("#top>div:not(.nav-ind)").off("mouseleave");
-    $("#top>div:not(.nav-ind)").mouseleave(function () { 
+    $("#top>div:not(.nav-indicator)").off("mouseleave");
+    $("#top>div:not(.nav-indicator)").mouseleave(function () {
         TBI.timerClear("curr");
         TBI.timerSet("curr", 500, function () { TBI.navMoveTo("#curr"); TBI.timerClear("curr") });
     });
     $("#top").off("mouseleave");
-    $("#top").mouseleave(function () { 
+    $("#top").mouseleave(function () {
         TBI.timerClear("curr");
-        TBI.timerSet("curr", 500, function () { TBI.navMoveTo("#curr"); TBI.timerClear("curr") }); 
+        TBI.timerSet("curr", 500, function () { TBI.navMoveTo("#curr"); TBI.timerClear("curr") });
     });
-    if ($("#top").length > 0) { 
+    if ($("#top").length > 0) {
         TBI.timerClear("curr");
         TBI.timerSet("curr", 500, function () { TBI.navMoveTo("#curr"); TBI.timerClear("curr") });
     }
@@ -166,14 +171,17 @@ TBI.checkNav = function () {
         if ($(".nav-"+item.id+" .inner-nav").length == 0) $(".nav-"+item.id).append("<ul class='inner-nav'></ul>");
         else $(".nav-"+item.id+" .inner-nav").empty();
         for (var j=0;j<TBI[item.name].length;j++) {
-            var sect = TBI[item.name][j];
-            $(".nav-"+item.id+" .inner-nav").append("<li><a href='/"+item.path+"/#"+sect.id+"'>"+sect.name+"</a></li>");
+            var sect = TBI[item.name][j],
+                text = "<li>";
+            if (!isNull(sect.link)) text += "<a href='"+sect.link+"' class='external'></a>";
+            text += "<a href='/"+item.path+"/#"+sect.id+"'>"+sect.name+"</a></li>";
+            $(".nav-"+item.id+" .inner-nav").append(text);
         }
     }
     TBI.updateUI();
-    
+
     /** A complicated for loop that handles the indicator behaviour relating to submenus. */
-    var nv = "#top>div:not(.nav-ind)";
+    var nv = "#top>div:not(.nav-indicator)";
     navbase = [];
     for (var i=0;i<$(nv).length;i++) {
         var parent = nv+":nth("+i+")";
@@ -184,7 +192,7 @@ TBI.checkNav = function () {
             $(parent).mouseover(function () {
                 var child = TBI.searchNavbase(this);
                 if (isNull(child)) return false;
-                $(child).show();
+                $(child).off("mouseenter");
                 $(child).mouseenter(function () {
                     $($(this).parent()).off("mousemove");
                     TBI.timerClear("curr");
@@ -192,43 +200,21 @@ TBI.checkNav = function () {
                     $(this).mouseenter(function () { TBI.navMoveTo($($(this).parent())) });
                     TBI.updateLinks();
                 });
+                $(child).off("mouseleave");
                 $(child).mouseleave(function () { TBI.checkNav(); TBI.timerClear("curr"); });
             });
-            $(parent).off("mouseleave");
-            $(parent).mouseleave(function () { $(TBI.searchNavbase(this)).hide(); });
-            var nv2 = child+">li";
-            for (var j=0;j<$(nv2).length;j++) {
-                var parent = nv2+":nth("+j+")";
-                var child = parent+">.inner-nav";
-                TBI.bindNav(parent, child);
-            }
         }
     }
     /** Whether or not to show the "to top" menu item. */
     if (window.scrollY > 0) $(".nav-top").slideDown();
     else $(".nav-top").slideUp();
 }
-TBI.bindNav = function (parent, child) {
-    if ($(child).length > 0) {
-        navbase.push([$(parent)[0], $(child)[0]]);
-        $(parent).off("mouseover");
-        $(parent).mouseover(function () { $(TBI.searchNavbase(this)).show(); });
-        $(parent).off("mouseleave");
-        $(parent).mouseleave(function () { $(TBI.searchNavbase(this)).hide(); });
-        var nv = child+">li";
-        for (var i=0;i<$(nv).length;i++) {
-            var parent = nv+":nth("+i+")";
-            var child = parent+">.inner-nav";
-            if ($(child).length > 0) TBI.bindNav(parent, child);
-        }
-    }
-}
 // Updates toggleable elements.
 TBI.updateUI = function () {
     for (var i=0;i<$(".img-mid:not(.done)").length;i++) {
         var currimg = $(".img-mid:not(.done)")[i];
         var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
-        if (isNull(currimg.id)) { 
+        if (isNull(currimg.id)) {
             do {
                 var rand = "";
                 for (var i=0;i<4;i++) rand += chars[randomInt(chars.length)];
@@ -240,20 +226,20 @@ TBI.updateUI = function () {
     }
     $("button.toggle").off("mousedown");
     $("button.toggle").mousedown(function (event) {
-        if (event.button != 0) return true;
+        if (event.button != 0 || this.className.search(" dwn") != -1) return true;
         var a = " dwn";
             c = this.className;
         this.className=c.search(a)!=-1?c:c+a;
     });
     $("button.toggle").off("mouseup");
     $("button.toggle").mouseup(function (event) {
-        if (event.button != 0 || this.className.search("dwn") == -1) return true;
+        if (event.button != 0 || this.className.search(" dwn") == -1) return true;
         var a = " on",
             c = this.className.replace(" dwn","");
         this.className=c.search(a)!=-1?c.replace(a,""):c+a;
     });
     $(".up-down").off("mouseup");
-    $(".up-down").mouseup(function () {
+    $(".up-down").mouseup(function (event) {
         if (event.button != 0) return true;
         var toSwitch = $($(this).attr("for"));
         if (toSwitch.length > 0) toSwitch.slideToggle();
@@ -270,8 +256,8 @@ TBI.updateUI = function () {
         $(currtble.querySelectorAll("th.sort")).click(function () {
             if ($(this).parent()[0].getElementsByTagName("th").length > 0) {
                 var updownList = $(this).parent()[0].getElementsByTagName("th");
-                for (var j=0;j<updownList.length;j++) 
-                    if (updownList[j] != this) 
+                for (var j=0;j<updownList.length;j++)
+                    if (updownList[j] != this)
                         updownList[j].className = updownList[j].className.replace(/( up| down)/, " none");
                     else var tIndex = j;
             }
@@ -286,15 +272,15 @@ TBI.updateUI = function () {
     }
     var headers = $("h2.item[id], h2.section[id]");
     if (headers.length > 0 && TBI.loaded) {
-        if ($("#sidebar .sections").length == 0)
+        if ($("#sidebar #sections").length == 0)
             $("#sidebar").html(
                 "<h3 class='span'>\
-                <a href='javascript:void(0)' class='up-down' for='.sections'>Sections</a></h3>\
-                <ul class='side para sections'></ul>"
+                <a href='javascript:void(0)' class='up-down' for='#sections'>Sections</a></h3>\
+                <ul class='side para' id='sections'></ul>"
                 + $("#sidebar").html());
-        else $("#sidebar .sections").empty();
+        else $("#sidebar #sections").empty();
         for (var i=0;i<headers.length;i++)
-            $("#sidebar .sections").append("<li><a href='/"+path+"/#"+headers[i].id+"'>"+headers[i].innerHTML+"</a></li>");
+            $("#sidebar #sections").append("<li><a href='/"+path+"/#"+headers[i].id+"'>"+headers[i].innerText+"</a></li>");
     }
 }
 // Returns first-level elements in an XML index.
@@ -303,7 +289,7 @@ TBI.findIndex = function (file, name) {
         var xml = $.parseXML(file.responseText);
     if (navigator.userAgent.indexOf("Trident") != -1)
         var xml = file.responseXML;
-    else 
+    else
         var xml = $.parseXML(file.response);
     return xml.getElementsByTagName(name);
 }
@@ -329,9 +315,9 @@ function zeroPrefix(num, len) {
 TBI.findPage = function () {
     var curr = path[0];
     if (isNull(curr)) curr = "";
-    var nav = "#top>div:not(.nav-ind)";
+    var nav = "#top>div:not(.nav-indicator)";
     var navbar = $(nav);
-    var links = $("#top>div:not(.nav-ind)>a");
+    var links = $("#top>div:not(.nav-indicator)>a");
     for (var i = 0; i < links.length; i++) {
         if ($(links[i]).attr("href").split("/")[1] == curr) {
             $(navbar[i]).attr("id","curr");
@@ -367,22 +353,158 @@ Array.prototype.isEqual = function (arr) { return isEqual(this, arr); }
 Array.prototype.contains = function (item) {
     for (var i=0;i<this.length;i++) if (isEqual(this[i], item)) return true; return false;
 }
-Array.dimensional = function (n, lengths, initial) {
-    for (var i=0,a=[];i<lengths[n-1];i++) a.push(n==1?initial:Array.dimensional(n-1, lengths, initial));
+// Creates a multi-dimensional array given the depths of the dimensions.
+Array.dimensional = function (lengths, initial) {
+    if (isNull(lengths)) lengths = [0];
+    Array.call(this);
+    var len = lengths.shift();
+    for (var i=0;i<len;i++) this.push(lengths.length==0?initial:new Array.dimensional(lengths, initial));
+    var _checkDimension = function (arr) {
+        var checked = false;
+        arr.forEach(function (el) {
+            if (el instanceof Array && !checked) {
+                currDimension++;
+                checked = true;
+                return _checkDimension(el, currDimension);
+            }
+        });
+        return currDimension;
+    }
+    Object.defineProperty(this, "dimension", {
+        get: function () { return _checkDimension(this, 1) },
+        enumerable: true
+    });
+    return this;
+}
+Array.dimensional.prototype = new Array();
+Array.dimensional.prototype.constructor = Array.dimensional;
+// Gemerates a dimensional array given a regular array.
+Array.dimensional.fromArray = function (arr) {
+    var a = new Array.dimensional([arr.length]);
+    for (var i in arr) {
+        if (arr[i] instanceof Array) a[i] = Array.dimensional.fromArray(arr[i]);
+        else a[i] = arr[i];
+    }
     return a;
 }
+// Copies a multi-dimensional array into another.
+Array.dimensional.prototype.copy = function () {
+    var a = new Array.dimensional([0]);
+    for (var i=0;i<this.length;i++) a.push(this[i]);
+    return a;
+}
+// replaces elements of an array given the source entry dimensions, the new array and its dimensions.
+Array.dimensional.prototype.replace = function (sdim, d, ddim) {
+    if (!(d instanceof Array.dimensional)) d = Array.dimensional.fromArray(d);
+    if (!(sdim instanceof Array.dimensional)) sdim = Array.dimensional.fromArray(sdim);
+    if (!(ddim instanceof Array.dimensional)) ddim = Array.dimensional.fromArray(ddim);
+    var sd = sdim.shift(),
+        dd = ddim.shift();
+    for (var i=sd[0],j=dd[0];i<sd[1],j<dd[1];i++,j++) {
+        if (this[i] instanceof Array.dimensional) this[i].replace(sdim.copy(), d[j], ddim.copy());
+        else this[i] = d[j];
+    }
+    return this;
+}
+// Turns a multi-dimensional array into a regular array.
+Array.dimensional.prototype.flatten = function () {
+    for (var i=0,a=[];i<this.length;i++) {
+        if (this[i] instanceof Array.dimensional) a = a.concat(this[i].flatten());
+        else a = a.concat(this[i]);
+    }
+    return a;
+}
+// Gets a section of a multi-dimensional array given entry and exit points for each dimension.
+Array.dimensional.prototype.getSection = function (sdim) {
+    var sd = sdim.shift(),
+        a = new Array.dimensional([0]);
+    if (!(sdim instanceof Array.dimensional)) sdim = Array.dimensional.fromArray(sdim);
+    for (var i=sd[0];i<sd[1];i++) {
+        if (this[i] instanceof Array.dimensional) a.push(this[i].getSection(sdim.copy()));
+        else a.push(this[i]);
+    }
+    return a;
+}
+// Transposes a two dimensional array.
+Array.dimensional.prototype.transpose2d = function (r) {
+    r = isNull(r) ? 1 : r;
+    for (var i=0,l=this[0].length,m=this.length,n=new Array.dimensional([l,m]);i<l;i++)
+        for (var j=0;j<m;j++) n[i][j] = this[j][i];
+    if (r > 1) return n.transpose2d(r-1);
+    else return n;
+}
+// Random midpoint displacement terrain generation algorithm. (broken)
+function randomDisplacement(seeds, complexity, modifier, debug) {
+    var ln = wd = 2*complexity+1,
+        hf = (ln-1)/2,
+        sd = Array.dimensional.fromArray(seeds),
+        ar = new Array.dimensional([wd,ln], 0),
+        midpoint = Math.mean(sd) + modifier * (Math.random() * complexity),
+        joinArrays = function (arrays) {
+            var idim = arrays[0].length,
+                l = 2*idim-1,
+                t = new Array.dimensional([l,l], 0),
+                h = (l-1)/2;
+
+            t.replace([[0,h],[0,h]], arrays[0], [[0,h+1],[0,h+1]]);
+            t.replace([[0,h],[h,l]], arrays[1], [[0,h+1],[0,h+1]]);
+            t.replace([[h,l],[0,h]], arrays[2], [[0,h+1],[0,h+1]]);
+            t.replace([[h,l],[h,l]], arrays[3], [[0,h+1],[0,h+1]]);
+
+            if (debug) TBI.log(t);
+
+            return t;
+        };
+
+    ar[0][0] = sd[0];
+    ar[0][hf] = Math.mean([sd[0], sd[1]]);
+    ar[0][wd-1] = sd[1];
+    ar[hf][0] = Math.mean([sd[0], sd[2]]);
+    ar[hf][hf] = midpoint;
+    ar[hf][wd-1] = Math.mean([sd[1], sd[3]]);
+    ar[ln-1][0] = sd[2];
+    ar[ln-1][hf] = Math.mean([sd[2], sd[3]]);
+    ar[ln-1][wd-1] = sd[3];
+
+    var recSeeds = [
+        [sd[0], ar[0][hf], ar[hf][0], midpoint],
+        [ar[0][hf], sd[1], midpoint, ar[hf][wd-1]],
+        [ar[hf][0], midpoint, sd[2], ar[ln-1][hf]],
+        [midpoint, ar[hf][wd-1], ar[ln-1][hf], sd[3]]
+    ];
+
+    if (debug) TBI.log(recSeeds);
+
+    if (complexity == 1) return ar;
+    else return joinArrays([
+        randomDisplacement(recSeeds[0], complexity-1, modifier),
+        randomDisplacement(recSeeds[1], complexity-1, modifier),
+        randomDisplacement(recSeeds[2], complexity-1, modifier),
+        randomDisplacement(recSeeds[3], complexity-1, modifier)
+    ]);
+}
+// Replaces all instances of a specified string or regular expression with the given replacement string.
 String.prototype.replaceAll = String.prototype.replaceAll || function (toReplace, replacement) {
     var str = this;
     while (str.search(toReplace) != -1) str = str.replace(toReplace, replacement);
     return str;
 }
+// A brute-force algorithm to generate the divisors of a number.
+function oldDivisors(num) {
+    for (var i=1,d=[],b=new Date().getTime();i<=num/2;i++)
+        if (num%i==0)
+            d.push(i);
+    d.push(num);
+    TBI.log((new Date().getTime()-b) + "ms");
+    return d;
+}
 // Returns the numbers that go into the specified number.
 function divisors(num) {
-    var divisors=[];
-    for (var i=1;i<=num/2;i++)
-        if (num%i==0)
-            divisors.push(i);
-    divisors.push(num);
+    var divisors=[], beginTime = new Date().getTime();
+    for (var i=1;i<=Math.sqrt(num);i++)
+        if (num%i==0 && divisors.indexOf(i) == -1)
+            divisors.push(i, num/i);
+    TBI.log((new Date().getTime() - beginTime) + "ms");
     return divisors;
 }
 // Translate an octet stream into the string of ASCII characters it represents.
@@ -407,7 +529,7 @@ function transformDecimal(dec, radix, len) {
         nw = "",
         neg = false,
         chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    if (radix > 10+chars.length || radix < 2) return null; // if the radix cannot be represented fully 
+    if (radix > 10+chars.length || radix < 2) return null; // if the radix cannot be represented fully
     if (Math.abs(dec) != dec) { neg = true; dec = Math.abs(dec) } // if this number is negative
     else if (dec == 0) return 0; // else if number is plain zero, return zero (that's what it always is)
     do { max++; } while (Math.pow(radix, max) <= dec) // finding the maximum power to raise radix to (the length of the string)
@@ -483,6 +605,7 @@ function Coords(x, y) {
     this.x = x;
     this.y = y;
 }
+// Declares a coordinate value given a string as follows: "(x, y)".
 Coords.parse = function (str) {
     var params = str.replaceAll(/[\(\)]/, "").split(/\, ?/);
     return new Coords(parseFloat(params[0]).fixFloat(), parseFloat(params[1]).fixFloat());
@@ -491,20 +614,25 @@ Coords.parse = function (str) {
 Coords.prototype.toArray = function () { return [this.x,this.y] }
 // Transforms coordinates into a string representation of "(x, y)".
 Coords.prototype.toString = function (spacing) { return "("+this.x+","+(isNull(spacing)?" ":spacing?" ":"")+this.y+")" }
+// Transforms cartesian coordinates into a polar form of (r, a).
 Coords.prototype.toPolar = function () {
     return new PolarCoords(Math.pythagoras(this.x, this.y), Math.atan2(this.y, this.x));
 }
+// Declares a set of polar coordinates as follows: {r,a}, where r is the radius and a is the azimuth.
 function PolarCoords(radius, azimuth) {
     this.radius = radius;
     this.azimuth = azimuth;
 }
+// Declares a polar coordinate value using a string as follows: "(r, a)".
 PolarCoords.parse = function (str) {
     var params = str.replaceAll(/[\(\)]/, "").split(/\, ?/);
     return new PolarCoords(params[0], params[1]);
 }
-PolarCoords.prototype.toCartesian = function () { 
+// Transforms polar coordinates into a cartesian form of (x, y).
+PolarCoords.prototype.toCartesian = function () {
     return new Coords(this.radius*Math.cos(this.azimuth), this.radius*Math.sin(this.azimuth));
 }
+// Transforms polar coordinates into a string representation of "(r, a)".
 PolarCoords.prototype.toString = function () { return "("+this.radius+", "+this.azimuth+")" }
 // Declares a line segment with the endpoints start and end.
 function LineSegment(start, end) {
@@ -514,7 +642,7 @@ function LineSegment(start, end) {
     this.end = end;
     this.length = Math.pythagoras(this.end.x-this.start.x, this.end.y-this.start.y);
     this.midpoint = new Coords(Math.mean([this.start.x, this.end.x]), Math.mean([this.start.y, this.end.y]));
-    this.gradient = ((this.end.y-this.start.y) / (this.end.x-this.start.x)).fixFloat(); 
+    this.gradient = ((this.end.y-this.start.y) / (this.end.x-this.start.x)).fixFloat();
     // simple: m = rise/run
     // the trick is to use two points
     // take away the first point's y values from the second y value (rise)
@@ -526,10 +654,11 @@ function LineSegment(start, end) {
     // I chose the "start" point, but it doesn't matter
     // the gradient was calculated previously with two of the points
     // simply take this point's y value
-    // and take away from it the value of mx, 
+    // and take away from it the value of mx,
     // where m is the gradient and x is the x value of the point
     // the formula is y-mx
 }
+// Declares a line segment using a string of the form: "((x1,y1),(x2,y2))".
 LineSegment.parse = function (str) {
     var params = str.replace("((", "(").replace("))", ")").split(/\), ?\(/);
     return new LineSegment(Coords.parse(params[0]), Coords.parse(params[1]));
@@ -538,8 +667,11 @@ LineSegment.parse = function (str) {
 LineSegment.prototype.midpoint = function () {
     return new Coords(Math.mean([this.start.x, this.end.x]), Math.mean([this.start.y, this.end.y]));
 }
+// Transforms a line segment into a linear function.
 LineSegment.prototype.toLinear = function () { return new LinearFunc(this.gradient, this.yIntercept); }
+// Transforms a line segment into a multi-dimensional array representation of [[x1,y1],[x2,y2]].
 LineSegment.prototype.toArray = function () { return [[this.start.x, this.start.y], [this.end.x, this.end.y]]; }
+// Transforms a line segment into a string representation of "((x1,y1),(x2,y2))".
 LineSegment.prototype.toString = function (spacing) {
     var s = spacing ? " " : "";
     return "(" + this.start.toString(s==" ") + "," + s + this.end.toString(s==" ") + ")";
@@ -566,22 +698,26 @@ LinearFunc.prototype.intersection = function (f2) {
     var x = ((f2.yIntercept-this.yIntercept) / (this.gradient-f2.gradient)).fixFloat()
     return new Coords(x, this.eval(x));
 }
+// Multiplies a linear function with another one to create a quadratic function.
 LinearFunc.prototype.multiply = function (f2) {
     if (f2 instanceof LinearFunc) return new QuadraticFunc(
-            this.gradient*f2.gradient, 
-            this.yIntercept*f2.gradient+this.gradient*f2.yIntercept, 
+            this.gradient*f2.gradient,
+            this.yIntercept*f2.gradient+this.gradient*f2.yIntercept,
             this.yIntercept*f2.yIntercept);
     else return new LinearFunc(this.gradient*f2, this.yIntercept*f2);
 }
+// Declares a quadratic function of the form ax^2 + bx + c.
 function QuadraticFunc(a, b, c) {
     if (a == 0) return new LinearFunc(b, c);
     this.a = a;
     this.b = b;
     this.c = c;
 }
+// Passes x through the quadratic function and returns the y value.
 QuadraticFunc.prototype.eval = function (x) {
     return this.a*Math.pow(x,2) + this.b*x + this.c;
 }
+// Transforms a quadratic function into a string representation of "f(x) = ax^2 + bx + c".
 QuadraticFunc.prototype.toString = function (spacing) {
     var s = isNull(spacing) ? "" : (spacing) ? " " : "";
     var a = this.a == 1 ? s : s + this.a;
@@ -591,6 +727,7 @@ QuadraticFunc.prototype.toString = function (spacing) {
     var c = this.c == 0 ? s : s + csign + s + Math.abs(this.c).toString();
     return "f(x)"+s+"="+a+"x^2"+b+"x"+c;
 }
+// Solves the quadratic formula given whether or not the result is going to be positive.
 QuadraticFunc.prototype.formula = function (sign) {
     var rt = Math.sqrt(Math.pow(this.b,2) - 4*this.a*this.c);
     return (-this.b+(sign?rt:-rt)) / (2*this.a);
@@ -615,16 +752,20 @@ RelationFunc.prototype.toString = function (spacing) {
         b = this.b == 1?"":Math.abs(this.b).toString();
     return a+"x"+s+sign+s+b+"y"+s+"="+s+this.c;
 }
+// Passes x through a relation and returns the y value.
 RelationFunc.prototype.eval = function (x) {
     return this.gradient*x+this.yIntercept;
 }
+// Declares a parametric function given a function to evaulate x and a function to evaluate y.
 function Parametric(xfunc, yfunc) {
     this.xfunc = xfunc;
     this.yfunc = yfunc;
 }
+// Passes a parameter, t, through the parametric function to return a set of coordinates.
 Parametric.prototype.eval = function (t) {
     return new Coords(this.xfunc(t), this.yfunc(t));
 }
+// Transforms a parametric function into a string representation of "f(t) = (fx, fy)".
 Parametric.prototype.toString = function (spacing) {
     var s = spacing ? " " : "",
         formstr = function (str) {
@@ -638,16 +779,19 @@ Parametric.prototype.toString = function (spacing) {
         ystr = formstr(this.yfunc.toString());
     return "f(t) = ("+xstr+","+s+ystr+")";
 }
+// Declares a parametric function that generates an ellipse.
 Parametric.ellipse = function (a, b) {
     return eval("new Parametric(\
         function(t){return "+a+"*Math.cos(t)},\
         function(t){return "+b+"*Math.sin(t)})");
 }
+// Declares a parametric function that generates a Lissajous curve.
 Parametric.lissajous = function (a, b, sigma) {
     return eval("new Parametric(\
         function(t){return Math.sin("+a+"*t+"+(isNull(sigma)?"0":sigma)+")},\
         function(t){return Math.sin("+b+"*t)})");
 }
+// Transforms an equation into a string representation.
 Function.equationToString = function (func, toReplace, replacement) {
     var str = func.toString(),
         regex = /function ?\(([a-zA-Z_]([a-zA-Z0-9_]{1,})?)\) ?= ?/,
@@ -666,6 +810,7 @@ Function.equationToString = function (func, toReplace, replacement) {
         .replace(new RegExp("^"+toReplace+"([^A-Za-z_])"), replacement+"$1")
         .replace(new RegExp("([^A-Za-z_])"+toReplace+"$"), "$1"+replacement);
 }
+// Declares a function using a string as input.
 String.parseFunction = function (text) {
     var val = (text
         .replaceAll("pi", "π")
@@ -680,12 +825,35 @@ String.parseFunction = function (text) {
     if (val.search(regex) != -1) typestr = val.match(regex)[1];
     else typestr = "x";
     val = val.replaceAll(regex, "");
-    try { 
+    try {
         eval("var func = function ("+typestr+") { return "+val+" }");
         func(1);
     } catch (e) { TBI.error(e); return null; }
     return func;
 }
+// Returns the highest common factor of two numbers.
+// thx euclid
+function hcf(a, b) {
+    if (b == 0) return a;
+    else return hcf(b, a%b);
+}
+// Declares a fraction with a numerator and a denominator.
+function Fraction(numerator, denominator) {
+    this.numerator = numerator;
+    this.denominator = denominator;
+}
+Fraction.prototype = {
+    constructor: Fraction,
+    simplify: function () {
+        var factor = hcf(this.numerator, this.denominator);
+        return new Fraction(this.numerator/hcf, this.denominator/hcf);
+    },
+    multiply: function (frac2) {
+        if (!(frac2 instanceof Fraction)) frac2 = new Fraction(frac2, 1);
+        return new Fraction(this.numerator*frac2.numerator, this.denominator*frac2.denominator).simplify();
+    },
+    eval: function () { return this.numerator / this.denominator; }
+};
 // Returns a preformatted array of the date object specified.
 function unixToString(date) {
     var month = date.getMonth()+1;
@@ -733,7 +901,7 @@ function formulaToCalc(formula, vars) {
     return result;
 }
 // Formula for calculating the hypotenuse of a right angled triangle, given sides a and b.
-Math.pythagoras = function (arg0, arg1, mode) { 
+Math.pythagoras = function (arg0, arg1, mode) {
     if (mode && arg0 > arg1) return Math.sqrt((arg0*arg0)-(arg1*arg1));
     else if (mode && arg0 < arg1) return Math.sqrt((arg1*arg1)-(arg0*arg0));
     else return Math.sqrt((arg0*arg0)+(arg1*arg1)).fixFloat();
@@ -749,8 +917,9 @@ function splice(list, index, howMany) {
 Number.prototype.isFloatEqual = function (num) { return Math.abs(num - this) < Number.EPSILON }
 // Fixes a malfunctioning floating-point value (e.g. 2.999999999995) by slightly reducing its precision.
 Number.prototype.fixFloat = function (num) { return parseFloat(this.toPrecision(num?(num<16?num:15):15)) }
-Number.prototype.fixMod = function (mod) { 
-    var temp = (this.fixFloat() % mod.fixFloat()).fixFloat(); 
+// Fixes a malfunctioning modulo function by fixing the arguments and the result.
+Number.prototype.fixMod = function (mod, num) {
+    var temp = (this.fixFloat(num) % mod.fixFloat(num)).fixFloat(num);
     if (temp.isFloatEqual(mod)) return 0; else return temp;
 }
 // arr.indexOf polyfill.
@@ -772,6 +941,37 @@ function sort(templst) {
         newarr.unshift(min);
         return newarr;
     }
+}
+// Proportions a number given from a function with limits a (top) to b (bottom), to a different function with limits c to d.
+Math.proportion = function (n, a, b, c, d) { return (c-d)/(a-b)*n+(d-b); }
+// Transforms a HSV colour value into its equivalent RGB value.
+function hsvToRgb(h,s,v) {
+    var bt = (1-s)*v,
+        sv = v-bt,
+        a = 0, b = 60, c = 180, d = 240,
+        g = function (k) { return k>=b&&h<=c?1:k<b&&k>a?(k-a)/(b-a):h>c&&h<d?(h-c)/(d-c):0 };
+    return [sv*g(h+120,a,b,c,d)+bt, sv*g(h,a,b,c,d)+bt, sv*g(h-120,a,b,c,d)+bt];
+}
+// Transforms an RGB colour value into its equivalent HSV value. (Not written by me)
+function rgbToHsv(r,g,b) {
+    var max = Math.max(r,g,b),
+        min = Math.min(r,g,b),
+        h = 0;
+    if (r == max) h = (g-b)/d;
+    else if (g == max) h = 120 + (b-r)/d;
+    else if (b == max) h = 240 + (r-g)/d;
+    return [h,1-min/max,max];
+}
+// Returns a set of instructions (chars) given a starting value and a set of rules that change characters into other sequences.
+function lsystem(start, rules, n) {
+    if (n < 1) return start;
+    var a = lsystem(start, rules, n-1);
+    for (var i=0,s="";i<a.length;i++) {
+        var b = a[i];
+        for (var rule in rules) if (rules.hasOwnProperty(rule)) if (a[i] == rule) b = rules[rule];
+        s += b;
+    }
+    return s;
 }
 // Finds the total of a list.
 Math.total = function (list) {
@@ -798,8 +998,8 @@ Math.mode = function (list) {
         if (freq[list[i]] == undefined) freq[list[i]] = 0;
         freq[list[i]]++;
     }
-    for (var i=0;i<Object.keys(freq).length;i++) if (freq[Object.keys(freq)[i]] > max) max = freq[Object.keys(freq)[i]];
-    for (var i=0;i<Object.keys(freq).length;i++) if (freq[Object.keys(freq)[i]] == max) modes.push(parseInt(Object.keys(freq)[i]));
+    for (var key in freq) if (freq.hasOwnProperty(key) && freq[key] > max) max = freq[key];
+    for (var key in freq) if (freq.hasOwnProperty(key) && freq[key] == max) modes.push(parseFloat(freq[key]));
     if (max < 2) return null;
     return modes.length == 1?modes[0]:modes;
 }
@@ -826,7 +1026,7 @@ Math.factorial = function (num) {
 Math.eratosthenes = function (num) {
     var sqrt = Math.sqrt(num),
         nums = [];
-    for (var i=0;i<num;i++) 
+    for (var i=0;i<num;i++)
         nums.push(true);
     for (var i=2;i<sqrt;i++)
         if (nums[i])
@@ -837,6 +1037,12 @@ Math.eratosthenes = function (num) {
 // Returns a value which, when added to a list of values, will change its mean to the specified number.
 Math.newValueForMean = function (list, num) {
     return num * (list.length + 1) - Math.total(list);
+}
+// Bounds a number by returning the low value if it is lower than it, and returns the high value if it is higher than it.
+Math.bound = function (num, low, high) {
+    low = isNull(low) ? -Infinity : low;
+    high = isNull(high) ? Infinity : high;
+    return num < low ? low : num > high ? high : num;
 }
 //         /|
 //        / |
@@ -860,17 +1066,19 @@ Math.newValueForMean = function (list, num) {
 // when given adj and a, adj*tan(a) gives opp
 // when given opp and a, opp/tan(a) gives adj
 // when given opp and adj, arctan(opp/adj) gives a
-// Converts a keypress event keycode into the character typed.
+//
+// A set of keycode definitions. Used for ease of use when writing programs with onkeydown events.
 var Keys = {
     SPACE:32,ESC:27,F1:112,F2:113,F3:114,F4:115,F5:116,F6:117,F7:118,F8:119,F9:120,F10:121,F11:122,F12:123,
     HOME:36,END:35,INSERT:45,DELETE:46,GRAVE:192,ZERO:48,ONE:49,TWO:50,THREE:51,FOUR:52,FIVE:53,SIX:54,
-    SEVEN:55,EIGHT:56,NINE:57,A:65,B:66,C:67,D:68,E:69,F:70,G:71,H:72,I:73,J:74,L:75,M:76,N:77,O:78,P:79,
-    Q:80,R:81,S:82,T:83,U:84,V:85,W:86,X:87,Y:88,Z:89,HYPHEN:189,EQUALS:187,LBRAC:219,BACKSLASH:220,
+    SEVEN:55,EIGHT:56,NINE:57,A:65,B:66,C:67,D:68,E:69,F:70,G:71,H:72,I:73,J:74,K:75,L:76,M:77,N:78,O:79,P:80,
+    Q:81,R:82,S:83,T:84,U:85,V:86,W:87,X:88,Y:89,Z:90,HYPHEN:189,EQUALS:187,LBRAC:219,BACKSLASH:220,
     RBRAC:221,QUOTE:222,SEMICOLON:186,COMMA:188,PERIOD:190,SLASH:191,CTRL:17,ALT:18,SHIFT:16,TAB:9,
     CAPS_LOCK:20,PAGE_UP:33,PAGE_DOWN:34,SUPER:91,UP:38,DOWN:40,LEFT:37,RIGHT:39,RETURN:13,BACKSPACE:8,
     NUM_7:103,NUM_8:104,NUM_9:105,NUM_4:100,NUM_5:101,NUM_6:102,NUM_1:97,NUM_2:98,NUM_3:99,NUM_0:96,
     NUM_PERIOD:110,NUM_DIVIDE:111,NUM_MULTIPLY:106,NUM_SUBTRACT:109,NUM_ADD:107
 };
+// Converts a keypress event into a string that represents the face value of the key.
 function convertKeyDown(event, mode) {
     var chars = {
         32:" ",27:"esc",112:"f1",113:"f2",114:"f3",115:"f4",116:"f5",117:"f6",118:"f7",119:"f8",120:"f9",
@@ -885,9 +1093,9 @@ function convertKeyDown(event, mode) {
     if (event.shiftKey && event.which != 16) return shiftUp(event.which, true);
     else return chars[event.which];
 }
-// Converts a normal key press into a shifted one. 
+// Converts a normal key press into a shifted one.
 // Only works on US keyboard layouts (no pounds or funny euroes)
-function shiftUp(key, isKeyDown) { 
+function shiftUp(key, isKeyDown) {
     if (isKeyDown) {
         var chars = {
             49:'!',50:'@',51:'#',52:'$',53:'%',54:'^',55:'&',56:'*',57:'(',48:')',189:'_',187:'+',192:'~',219:'{',
@@ -900,11 +1108,12 @@ function shiftUp(key, isKeyDown) {
             '1':'!','2':'@','3':'#','4':'$','5':'%','6':'^','7':'&','8':'*','9':'(','0':')','-':'_','=':'+','`':'~','[':'{',
             ']':'}','\\':'|',';':':','\'':'"',',':'<','.':'>','/':'?'
         };
-        if (key.search(/[a-z]/) != -1 && key.length == 1) return key.toUpperCase(); 
+        if (key.search(/[a-z]/) != -1 && key.length == 1) return key.toUpperCase();
         else if (isNull(chars[key])) return key.toString();
-        else return chars[key.toString()];s
+        else return chars[key.toString()];
     }
 }
+// Converts shifted characters back down into normal ones.
 function shiftDown(key) {
     var chars = {
         '!':'1','@':'2','#':'3','$':'4','%':'5','^':'6','&':'7','*':'8','(':'9',')':'0','_':'-','+':'=','~':'`','{':'[',
@@ -913,6 +1122,22 @@ function shiftDown(key) {
     if (key.search(/[A-Z]/) != -1 && key.length == 1) return key.toLowerCase();
     else if (isNull(chars[key])) return key.toString();
     else return chars[key.toString()];
+}
+// A set of functions designed to be used with the Pointer Lock API.
+var PointerLock = {
+    check: function (l) {
+        return document.pointerLockElement == el || document.mozPointerLockElement == el || document.webkitPointerLockElement == el;
+    },
+    set: function (l, callback) {
+        l.requestPointerLock = l.requestPointerLock || l.mozRequestPointerLock || l.webkitRequestPointerLock;
+        l.requestPointerLock();
+        if (callback) $(el).on("pointerlockchange", callback);
+    },
+    release: function (l) {
+        document.exitPointerLock = document.exitPointerLock || document.mozExitPointerLock || document.webkitExitPointerLock;
+        document.exitPointerLock();
+        $(el).off("pointerlockchange");
+    }
 }
 // Creates a customizable, absolutely positioned popup element.
 // There can only be one at a time.
@@ -962,7 +1187,7 @@ TBI.Popup.registry.add = function (element, head, text) {
 }
 // Removes an element from the registry.
 TBI.Popup.registry.remove = function (element) {
-    for (var i=0;i<TBI.Popup.registry.length;i++) 
+    for (var i=0;i<TBI.Popup.registry.length;i++)
         if (TBI.Popup.registry[i][0] == $(element)[0])
             TBI.Popup.registry[i] = undefined;
     $(element).off("mousemove");
@@ -1047,7 +1272,7 @@ TBI.sortTable = function (table, colIndex, direction) {
     else fields.sort();
     if (direction) fields.reverse(); // whether or not to reverse the order
     $(table.getElementsByTagName("tbody")[0]).empty(); // empty the table body (too bad if anything other than <tr>s are inside of it)
-    for (var i=0;i<fields.length;i++) table.getElementsByTagName("tbody")[0].appendChild(records[refs[fields[i]]]); 
+    for (var i=0;i<fields.length;i++) table.getElementsByTagName("tbody")[0].appendChild(records[refs[fields[i]]]);
     // and add in the rows in the right order
 }
 // Generates a desktop notification outside of the regular environment.
@@ -1070,7 +1295,7 @@ function Canvas2D(id) {
     return ctx;
 }
 Canvas2D.dotEnabled = true;
-// Adds a coordinate popup to a specified canvas.
+// Adds a coordinate popup to a specified canvas. (DO NOT USE)
 Canvas2D.inspector = function (context) {
     var cvs = context.canvas;
     $(cvs).off("mousemove");
@@ -1100,15 +1325,15 @@ Canvas2D.path = function (context, obj) {
     var type = obj.type;
     var style = obj.style;
     context.save();
-    switch (type) { 
-        case "stroke": context.strokeStyle = style; break; 
-        case "fill": context.fillStyle = style; break; 
+    switch (type) {
+        case "stroke": context.strokeStyle = style; break;
+        case "fill": context.fillStyle = style; break;
         default: return false;
     }
     context.beginPath();
     if (path[0] instanceof Coords) context.moveTo(path[0].x, path[0].y);
     else context.moveTo(path[0][0], path[0][1]);
-    for (var i = 1; i < path.length; i++) 
+    for (var i = 1; i < path.length; i++)
         if (path[i] instanceof Coords) context.lineTo(path[i].x, path[i].y)
         else context.lineTo(path[i][0], path[i][1]);
     context.closePath();
@@ -1131,12 +1356,18 @@ Canvas2D.dot = function (x, y, colour) {
     $("body").append("<div class='cvs-dot' style='background:"+colour+";left:"+
         x+"px;top:"+y+"px;visibility:"+v+";'></div>");
 }
+CanvasRenderingContext2D.prototype.endPath =
+CanvasRenderingContext2D.prototype.finishPath =
+CanvasRenderingContext2D.prototype.closePath;
+CanvasRenderingContext2D.prototype.startPath =
+CanvasRenderingContext2D.prototype.openPath =
+CanvasRenderingContext2D.prototype.beginPath;
 // A WebGL canvas constructor.
 function Canvas3D(cvs) {
     var gl = null;
     try { gl = cvs.getContext("webgl") || cvs.getContext("experimental-webgl"); }
-    catch (e) {} 
-    if (isNull(gl)) { 
+    catch (e) {}
+    if (isNull(gl)) {
         error("WebGL failed to initialize.");
         gl = null;
     }
@@ -1186,9 +1417,9 @@ var HTMLIncludes = {
                         TBI.timerClear("includes");
                         TBI.Loader.event("HTMLIncludes #"+curr+": "+HTMLIncludes.info[curr].source);
                         TBI.Loader.complete("HTMLIncludes", TBI.Loader.DONE);
-                    } else { 
-                        TBI.Loader.event("HTMLIncludes #"+curr+": "+HTMLIncludes.info[curr].source); 
-                        curr++; 
+                    } else {
+                        TBI.Loader.event("HTMLIncludes #"+curr+": "+HTMLIncludes.info[curr].source);
+                        curr++;
                     }
                 });
             }
@@ -1218,16 +1449,17 @@ TBI.setupContent = function (type) {
         $($("h2.item, h3.item")[i]).html(titleText);
         $($("h2.item, h3.item")[i]).attr("id",items[i].id);
         var toggleHTML = "";
-        toggleHTML += "<span class='right'><a href='javascript:void(0)' ";
+        toggleHTML += "<span class='right span'><a href='javascript:void(0)' ";
         toggleHTML += "class='up-down on' for='.item-info:nth("+i+")'>";
         toggleHTML += "Toggle</a></span>";
         $($(".version")[i]).html(items[i].version + toggleHTML);
     }
 }
+// Checks for when the web fonts have loaded.
 TBI.checkFonts = function () {
-    if ($("#fontload-rw").length == 0) { 
+    if ($("#fontload-rw").length == 0) {
         TBI.Loader.complete("Fonts", TBI.Loader.ERR);
-        return false; 
+        return false;
     }
     var fonts = ["os", "rw", "rwb", "ri"],
         ftimer = 0;
@@ -1254,71 +1486,54 @@ $(document).on("pageload", function () {
     TBI.updateLinks();
     TBI.updateUI();
     // interactive scrolling - marks the closest item to the scroll position
-    var tempscroll = false;
+    var tempscroll = false,
+        headers = $("h2.item[id], h2.section[id]"),
+        tries = 0;
     $(document).scroll(function () {
         var hash = "",
             currScroll = new Coords(window.scrollX, window.scrollY);
         if (currScroll.y > 0) $(".nav-top").slideDown();
         else $(".nav-top").slideUp();
         if (tempscroll) return tempscroll = false;
-        /*if (!isNull(TBI.content)) for (var i=0;i<TBI.content.length;i++) {
-            var item = TBI.content[i];
-            if (path.isEqual(item.path.split("/"))) {
-                for (var j=0;j<TBI[item.name].length;j++) {
-                    var sect = TBI[item.name][j];
-                    if ($("#"+sect.id).length > 0 && $("#"+sect.id).offset().top < currScroll.y + 58) hash = "#" + sect.id;
-                }
-            }
-        }*/
-        var headers = $("h2.item[id], h2.section[id]");
-        for (var i=0;i<headers.length;i++) if ($(headers[i]).offset().top < currScroll.y + 58) hash = headers[i].id;
-        location.hash = hash;
-        tempscroll = true;
-        scrollTo(currScroll.x, currScroll.y);
+        for (var i=0;i<headers.length;i++) if ($(headers[i]).offset().top < currScroll.y + 100) hash = "#"+headers[i].id;
+        if (hash != location.hash) {
+            location.hash = hash;
+            tempscroll = true;
+            scrollTo(currScroll.x, currScroll.y);
+        }
     });
     // scroll to current hash
     if (!isNull(location.hash) && !isNull($(location.hash.toString()))) {
         TBI.timerSet("scroll",10,function () {
             if (!isNull($(location.hash).offset())) {
-                $(document).scrollTop(parseInt($(location.hash).offset().top + 58));
+                $(document).scrollTop(parseInt($(location.hash).offset().top - 58));
                 TBI.timerClear("scroll");
             } else if (location.hash.length < 2) TBI.timerClear("scroll");
         });
     }
     // test page konami code (w/o enter)
-    var konami = ["up","up","down","down","left","right","left","right","b","a"],
+    var konami = [Keys.UP,Keys.UP,Keys.DOWN,Keys.DOWN,Keys.LEFT,Keys.RIGHT,Keys.LEFT,Keys.RIGHT,Keys.B,Keys.A],
         kCode = 0;
     $(document).keydown(function (event) {
-        if (convertKeyDown(event) == konami[kCode]) kCode++; 
+        if (event.which == konami[kCode]) kCode++;
         else kCode = 0;
-        if (kCode >= konami.length) 
+        if (kCode >= konami.length)
             if (!path.isEqual(["test"])) location.href = location.origin + "/test/";
             else if (!isNull(history)) history.back();
     });
+    $(window).blur(function () { $("body").toggleClass("in-focus", false) });
+    $(window).focus(function () { $("body").toggleClass("in-focus", true) });
+    $("body").toggleClass("in-focus", true);
 });
-window.onerror = function (message, url, line, column, e) { 
+window.onerror = function (message, url, line, column, e) {
     if (TBI.error == undefined) document.body.innerHTML = "Error encountered in "+url+":"+line+":"+column+"\n"+message;
-    else TBI.error(e); 
+    else TBI.error(e);
 }
 $(function () {
     TBI.Loader.event("Ready", true);
     TBI.requestManager();
     TBI.checkNav();
-    TBI.Loader.init();
-});
-TBI.Loader = {
-    ERR: -2,
-    TIMEOUT: -3,
-    DONE: -1,
-    progress: [],
-    completed: [],
-    timer: 0,
-    settings: {
-        timeout: 20000,
-        time_until_load_screen: 6000,
-        interval: 10
-    },
-    jobs: [
+    TBI.Loader.jobs.push(
         {
             func: HTMLIncludes.getIndex,
             id: "HTMLIncIndex",
@@ -1345,16 +1560,36 @@ TBI.Loader = {
             dependencies: [],
             conditions: [function(){return $("#fontload-rw").length>0}]
         }
-    ],
+    );
+    TBI.Loader.init();
+});
+TBI.Loader = {
+    ERR: -2,
+    TIMEOUT: -3,
+    DONE: -1,
+    progress: [],
+    completed: [],
+    timer: 0,
+    settings: {
+        timeout: 20000,
+        time_until_load_screen: 6000,
+        interval: 10
+    },
+    jobs: [],
     searchJobs: function (id) {
         for (var i=0;i<TBI.Loader.jobs.length;i++) if (TBI.Loader.jobs[i].id == id) return i;
         return null;
+    },
+    log: [],
+    event: function (message, important) {
+        TBI.Loader.log.push({time:new Date().getTime() - testtime,message:message});
+        if (important) console.log("["+(new Date().getTime() - testtime)+"ms] "+message);
     },
     init: function () {
         TBI.Loader.event("Loader initializing");
         TBI.timerSet("loader", TBI.Loader.settings.interval, function () {
             for (var i=0;i<TBI.Loader.jobs.length;i++) {
-                var job = TBI.Loader.jobs[i], 
+                var job = TBI.Loader.jobs[i],
                     depSatisfied = true,
                     condSatisfied = true;
                 if (TBI.Loader.progress.indexOf(job.id) == -1 && TBI.Loader.completed.indexOf(job.id) == -1) {
@@ -1386,12 +1621,7 @@ TBI.Loader = {
             default: var message = id;
         }
         TBI.Loader.event(message);
-    },
-    event: function (message, important) {
-        TBI.Loader.log.push({time:new Date().getTime() - testtime,message:message});
-        if (important) console.log("["+(new Date().getTime() - testtime)+"ms] "+message);
-    },
-    log: []
+    }
 }
 // START OF COOKIE CODES //
 function createCookie(name, value, days) {

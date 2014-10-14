@@ -24,23 +24,96 @@
                 games - specifically the programming of them. At the moment, my eyes are focused upon
                 Java and various engines (Java3D) and Unity, both of which I enjoy immensely.
             </p>
-            <h2 class="main item"><a href="spaceshooter">Space Shooter</a></h2>
+            <p>
+                Lots of this stuff is not only unfinished, but never going to be finished. Again, if I do
+                complete any of this, it'll go on the <a href="/apps">applications</a> page.
+            </p>
+            <h2 class="item">Monopoly Interpreter</h2>
+            <h3 class="version"></h3>
+            <div class="item-main">
+                <p>
+                    This program creates a Monopoly table from a set of JSON data. Coming up: fully functioning
+                    game!
+                </p>
+                <div id="mpoly-cont">
+                    <canvas id="mpoly-canvas" width="600" height="600">
+                        Your browser is not capable of recognising the HTML5 &lt;canvas&gt; graphics framework.
+                        Supported browsers include Google Chrome and Mozilla Firefox.
+                    </canvas>
+                    <div id="mpoly-board"></div>
+                </div>
+                <div class="control-row">
+                    <input type="range" id="mpoly-rotation" min="0" max="360" value="1" step="5" />
+                </div>
+                <div class="control-row">
+                    <input type="range" id="mpoly-scale" min="0.1" max="1" value="1" step="0.01" />
+                </div>
+            </div>
+            <h2 class="item">Pipe Game</h2>
+            <h3 class="version"></h3>
+            <div class="item-main">
+                <p>
+                    This game is a puzzle game based around transporting water from pipe A to pipe B.
+                </p>
+                <canvas id="pipeg-canvas" width="600" height="600">
+                    Your browser is not capable of recognising the HTML5 &lt;canvas&gt; graphics framework.
+                    Supported browsers include Google Chrome and Mozilla Firefox.
+                </canvas>
+            </div>
+            <h2 class="item">Treehouse</h2>
             <h3 class="version">0</h3>
             <div class="item-main">
                 <p>
-                    Using the free version of <a href="http://unity3d.com/unity/download">Unity Editor</a>, I
-                    followed a basic tutorial to make a top-down space shoot-em-up, to get a feel for Unity and
-                    how it works.
+                    This is an basic simulation game in which you are a kid with a big imagination
+                    and builds a treehouse near his house. Raising money through a lemonade stand, you
+                    have to upgrade your treehouse and make it into a world-famous attraction!
+                    At the moment, I have no art assets, or much experience to make good ones. Help would
+                    be appreciated.
                 </p>
+            </div>
+            <h2 class="item">Quadrominoes</h2>
+            <h3 class="version">0</h3>
+            <div class="item-main">
                 <p>
-                    About the game: WASD to move, Left-Click to fire, and R to restart once you explode.
-                    Simple and fun (to make, at least). I must note that this is at <em>least</em> 20 times
-                    better looking, more workable and more fun to play with than my most advanced
-                    <a href="http://yoyogames.com/studio/download">Game Maker</a> game. Bear in mind - I <em>
-                        had the
-                        same budget.
-                    </em>
+                    Because why not.
                 </p>
+                <p>BUGS/ISSUES:</p>
+                <ul class="main">
+                    <li><b>[B]: </b>When around 60 or so blocks have been placed, some future blocks will place solid "towers"
+                    of blocks that reach to the top of the board, blocking columns or ending the game immediately. No cause has
+                    been found.</li>
+                </ul>
+                <div class="game" id="qdr-game">
+                    <div id="qdr-gui">
+                        <div id="qdr-title">
+                            <button id="qdr-start">Start</button>
+                        </div>
+                        <div id="qdr-side">
+                            <div id="qdr-controls">
+                                <div>W</div>
+                                <br />
+                                <div>A</div>
+                                <div>S</div>
+                                <div>D</div>
+                            </div>
+                        </div>
+                        <div id="qdr-pause">
+                            <h2>Game paused.</h2>
+                            <p>To resume the game, move the<br />
+                            cursor inside the game space.</p>
+                        </div>
+                        <div id="qdr-overlay">
+                            <h2>Game Over!</h2>
+                            <div class="span">Congratulations! Your score was:</div>
+                            <div id="qdr-score"></div>
+                            <button id="qdr-retry">Try Again</button>
+                        </div>
+                    </div>
+                    <canvas id="qdr-canvas" height="600" width="400">
+                        Your browser is not capable of recognising the HTML5 &lt;canvas&gt; graphics framework.
+                        Supported browsers include Google Chrome and Mozilla Firefox.
+                    </canvas>
+                </div>
             </div>
             <h2 class="item"><a href="http://gabrielecirulli.github.io/2048/">2048</a> clone</h2>
             <h3 class="version">0</h3>
@@ -83,71 +156,23 @@
                     </div>
                 </div>
             </div>
-            <h2 class="item">Quadrominoes</h2>
+            <h2 class="main item"><a href="spaceshooter">Space Shooter</a></h2>
             <h3 class="version">0</h3>
             <div class="item-main">
                 <p>
-                    Because why not.
+                    Using the free version of <a href="http://unity3d.com/unity/download">Unity Editor</a>, I
+                    followed a basic tutorial to make a top-down space shoot-em-up, to get a feel for Unity and
+                    how it works.
                 </p>
-                <p>BUGS/ISSUES:</p>
-                <ul class="main">
-                    <li><b>[B]: </b>When around 60 or so blocks have been placed, some future blocks will place solid "towers" 
-                    of blocks that reach to the top of the board, blocking columns or ending the game immediately. No cause has 
-                    been found.</li>
-                </ul>
-                <div class="game" id="qdr-game">
-                    <div id="qdr-gui">
-                        <div id="qdr-title">
-                            <button id="qdr-start">Start</button>
-                        </div>
-                        <div id="qdr-side">
-                            <div id="qdr-controls">
-                                <div>W</div>
-                                <br />
-                                <div>A</div>
-                                <div>S</div>
-                                <div>D</div>
-                            </div>
-                        </div>
-                        <div id="qdr-pause">
-                            <h2>Game paused.</h2>
-                            <p>To resume the game, move the<br />
-                            cursor inside the game space.</p>
-                        </div>
-                        <div id="qdr-overlay">
-                            <h2>Game Over!</h2>
-                            <div class="span">Congratulations! Your score was:</div>
-                            <div id="qdr-score"></div>
-                            <button id="qdr-retry">Try Again</button>
-                        </div>
-                    </div>
-                    <canvas id="qdr-canvas" height="600" width="400">
-                        Your browser is not capable of recognising the HTML5 &lt;canvas&gt; graphics framework.
-                        Supported browsers include Google Chrome and Mozilla Firefox.
-                    </canvas>
-                </div>
-            </div>
-            <h2 class="item">Treehouse</h2>
-            <h3 class="version">0</h3>
-            <div class="item-main">
                 <p>
-                    This is an basic simulation game in which you are a kid with a big imagination 
-                    and builds a treehouse near his house. Raising money through a lemonade stand, you 
-                    have to upgrade your treehouse and make it into a world-famous attraction!
-                    At the moment, I have no art assets, or much experience to make good ones. Help would 
-                    be appreciated.
+                    About the game: WASD to move, Left-Click to fire, and R to restart once you explode.
+                    Simple and fun (to make, at least). I must note that this is at <em>least</em> 20 times
+                    better looking, more workable and more fun to play with than my most advanced
+                    <a href="http://yoyogames.com/studio/download">Game Maker</a> game. Bear in mind - I <em>
+                        had the
+                        same budget.
+                    </em>
                 </p>
-            </div>
-            <h2 class="item">Pipe Game</h2>
-            <h3 class="version"></h3>
-            <div class="item-main">
-                <p>
-                    This game is a puzzle game based around transporting water from pipe A to pipe B.
-                </p>
-                <canvas id="pipeg-canvas" width="600" height="600">
-                    Your browser is not capable of recognising the HTML5 &lt;canvas&gt; graphics framework.
-                    Supported browsers include Google Chrome and Mozilla Firefox.
-                </canvas>
             </div>
         </div>
         <div id="sidebar"></div>

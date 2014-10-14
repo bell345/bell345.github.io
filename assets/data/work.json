@@ -7,51 +7,9 @@
       "path": "proto",
       "projects": [
         {
-          "id": "grid",
-          "name": "Grid JavaScript Test",
-          "version": "1.5",
-          "link": null
-        },
-        {
-          "id": "calendar",
-          "name": "Calendar",
-          "version": "0.6.2",
-          "link": null
-        },
-        {
-          "id": "txteng",
-          "name": "tXtEng",
-          "version": "0.2.1",
-          "link": null
-        },
-        {
-          "id": "cdown",
-          "name": "CountDown",
-          "version": "3.1.1",
-          "link": "/proto/cdown3/"
-        },
-        {
-          "id": "calc",
-          "name": "Calculator",
-          "version": "2.2",
-          "link": "/proto/calc/"
-        },
-        {
-          "id": "canvas",
-          "name": "Canvas",
-          "version": "1.0.1",
-          "link": null
-        },
-        {
-          "id": "ttbl",
-          "name": "TimeTable",
-          "version": "0.6.1",
-          "link": null
-        },
-        {
-          "id": "psim",
-          "name": "Planetarium",
-          "version": "0.9.2",
+          "id": "crtplane",
+          "name": "Cartesian Plane",
+          "version": "0.11.2",
           "link": null
         },
         {
@@ -61,9 +19,51 @@
           "link": null
         },
         {
-          "id": "crtplane",
-          "name": "Cartesian Plane",
-          "version": "0.11",
+          "id": "psim",
+          "name": "Planetarium",
+          "version": "0.9.2",
+          "link": null
+        },
+        {
+          "id": "ttbl",
+          "name": "TimeTable",
+          "version": "0.6.1",
+          "link": null
+        },
+        {
+          "id": "canvas",
+          "name": "Canvas",
+          "version": "1.0.1",
+          "link": null
+        },
+        {
+          "id": "calc",
+          "name": "Calculator",
+          "version": "2.2",
+          "link": "/proto/calc/"
+        },
+        {
+          "id": "cdown",
+          "name": "CountDown",
+          "version": "3.1.1",
+          "link": "/proto/cdown3/"
+        },
+        {
+          "id": "txteng",
+          "name": "tXtEng",
+          "version": "0.2.1",
+          "link": null
+        },
+        {
+          "id": "calendar",
+          "name": "Calendar",
+          "version": "0.6.2",
+          "link": null
+        },
+        {
+          "id": "grid",
+          "name": "Grid JavaScript Test",
+          "version": "1.5",
           "link": null
         }
       ]
@@ -75,11 +75,29 @@
       "path": "games",
       "projects": [
         {
-          "id": "spaceshooter",
-          "name": "Space Shooter",
-          "version": "1.0",
-          "link": "/games/spaceshooter/"
-        },
+          "id": "mpoly",
+          "name": "Monopoly Interpreter",
+          "version": "0.8",
+          "link": "/games/monopoly"
+      },
+        {
+          "id": "pipeg",
+          "name": "Pipe Game",
+          "version": "0.0",
+          "link": null
+      },
+        {
+          "id": "treeh",
+          "name": "Treehouse",
+          "version": "0.2",
+          "link": "/games/treehouse/"
+      },
+        {
+          "id": "qdr",
+          "name": "Quadrominoes",
+          "version": "0.4",
+          "link": null
+      },
         {
           "id": "twf8",
           "name": "2048 clone",
@@ -87,22 +105,10 @@
           "link": "http://gabrielecirulli.github.io/2048"
         },
         {
-          "id": "qdr",
-          "name": "Quadrominoes",
-          "version": "0.4",
-          "link": null
-        },
-        {
-          "id": "treeh",
-          "name": "Treehouse",
-          "version": "0.2",
-          "link": "/games/treehouse/"
-        },
-        {
-          "id": "pipeg",
-          "name": "Pipe Game",
-          "version": "0.0",
-          "link": null
+          "id": "spaceshooter",
+          "name": "Space Shooter",
+          "version": "1.0",
+          "link": "/games/spaceshooter/"
         }
       ]
     },
@@ -113,17 +119,17 @@
       "path": "apps",
       "projects": [
         {
-          "id": "cdown",
-          "name": "CountDown",
-          "version": "3.2",
-          "link": "/apps/cdown"
-        },
-        {
           "id": "calc",
           "name": "Calculator",
           "version": "2.3.2",
           "link": "/apps/calc"
-        }
+        },
+          {
+            "id": "cdown",
+            "name": "CountDown",
+            "version": "3.2",
+            "link": "/apps/cdown"
+          }
       ]
     },
     {
@@ -133,17 +139,17 @@
       "path": "test",
       "projects": [
         {
-          "id": "scle",
-          "name": "Scale",
-          "version": "0.9",
-          "link": null
-        },
-        {
           "id": "tline",
           "name": "Timeline",
           "version": "0.0",
           "link": null
-        }
+      },
+          {
+            "id": "scle",
+            "name": "Scale",
+            "version": "0.9",
+            "link": null
+          }
       ]
     }
   ]
