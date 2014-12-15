@@ -1,8 +1,8 @@
-﻿/** 
+﻿/**
  *  VERSION 5 Stylesheet
  *  Licensed under Creative Commons Attribution-ShareAlike 4.0 International
  *  http://creativecommons.org/licenses/by-sa/4.0/
- *  (CC)-BY-SA 2014 Thomas Bell 
+ *  (CC)-BY-SA 2014 Thomas Bell
  */
 /* ================ */
 /* FONT DEFINITIONS */
@@ -64,7 +64,7 @@ body::before {
 body, html.no-js body::before {
     background:url(/assets/res/ddd-noise.png) #ddd;
 }
-html.no-js body::before { 
+html.no-js body::before {
     content:"This website requires JavaScript and an up-to-date web browser (Google Chrome, Mozilla Firefox) in order to function.";
     color:#333;
 }
@@ -285,7 +285,7 @@ ul.inner-nav li ul.inner-nav ~ a::after {
     display:inline-block;
     width:20px;
 }
-nav>div.nav-top { 
+nav>div.nav-top {
     background-image:url(/assets/res/icons/arrow.svg);
     position:fixed;
     top:0;
@@ -421,8 +421,8 @@ h2.item {
     margin-bottom:0;
     padding:12px 0 0;
 }
-h3.version { 
-    color:#777; 
+h3.version {
+    color:#777;
 }
 h3.version::before {
     content:"Version ";
@@ -451,8 +451,8 @@ p.small {
     color:#777;
 }
 tt, code, kbd, samp { font-family:"Audimat Mono", "Consolas", monospace }
-abbr { 
-    border-bottom:2px dotted #999; 
+abbr {
+    border-bottom:2px dotted #999;
     cursor:help;
 }
 ul.main {
@@ -587,11 +587,11 @@ button.major:active, input[type="submit"]:active {
     box-shadow:0 0 0 4px #e2e2e2;
 }
 .radio-input input[type="radio"] + label:hover::after {
-    box-shadow:0 0 0 4px #eee; 
+    box-shadow:0 0 0 4px #eee;
     background:#333;
 }
-.radio-input input[type="radio"] + label:active::after { 
-    box-shadow:0 0 0 4px #ddd; 
+.radio-input input[type="radio"] + label:active::after {
+    box-shadow:0 0 0 4px #ddd;
 }
 .radio-input input[type="radio"]:checked + label {
     background:#08d;
@@ -695,6 +695,17 @@ sub.frac {
 }
 .control-row {
     margin-bottom:6px;
+}
+.side-buttons {
+    position:absolute;
+    right:0;
+    top:0;
+    height:100%;
+    width:48px;
+}
+.dl-section {
+    margin-bottom:12px;
+    text-align:center;
 }
 /* ===== */
 /* LINKS */
@@ -816,7 +827,7 @@ div.popup ul {
     display:block;
     margin-bottom:8px;
 }
-#note-holder-inner .note li::before { 
+#note-holder-inner .note li::before {
     content:"-";
     display:inline-block;
     text-align:center;

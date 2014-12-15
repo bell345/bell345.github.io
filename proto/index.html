@@ -24,6 +24,65 @@
                 <a href="//creativecommons.org/licenses/by-sa/4.0" class="license"></a>
                 license.
             </p>
+            <h2 class="item">Cross-Solver</h2>
+            <h3 class="version"></h3>
+            <div class="item-info">
+                <p>
+                    This is a quick one, assembled very hastily. It's basically for
+                    people who want to take all the fun out of word searches (i.e. me).
+                </p>
+                <h3 class="span">Assemble Word Search</h3>
+                <div id="wss-controls">
+                    <label for="wss-rows-text">Rows</label>
+                    <div class="control-row">
+                        <button id="wss-remove-row">-</button>
+                        <input type="text" id="wss-rows-text" disabled />
+                        <button id="wss-add-row">+</button>
+                    </div>
+                    <label for="wss-columns-text">Columns</label>
+                    <div class="control-row">
+                        <button id="wss-remove-column">-</button>
+                        <input type="text" id="wss-columns-text" disabled />
+                        <button id="wss-add-column">+</button>
+                    </div>
+                </div>
+                <table id="wss-cword">
+                    <tbody>
+                        <tr>
+                            <td><div class="box" contenteditable></div></td>
+                            <td><div class="box" contenteditable></div></td>
+                            <td><div class="box" contenteditable></div></td>
+                        </tr>
+                        <tr>
+                            <td><div class="box" contenteditable></div></td>
+                            <td><div class="box" contenteditable></div></td>
+                            <td><div class="box" contenteditable></div></td>
+                        </tr>
+                        <tr>
+                            <td><div class="box" contenteditable></div></td>
+                            <td><div class="box" contenteditable></div></td>
+                            <td><div class="box" contenteditable></div></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="control-row">
+                    <button id="wss-clear-matches">Clear Matches</button>
+                    <button id="wss-clear-cword">Clear Word Search</button>
+                </div>
+                <h3 class="span">Solve Word Search</h3>
+                <input type="text" id="wss-new-word" placeholder="New word..." /><br />
+                <select id="wss-wordlist" multiple></select><br />
+                <div class="control-row">
+                    <button id="wss-search-rows" class="toggle on">Rows</button>
+                    <button id="wss-search-columns" class="toggle on">Columns</button>
+                    <button id="wss-search-diag" class="toggle on">Diagonals</button>
+                </div>
+                <div class="control-row">
+                    <button id="wss-word-delete">Delete Selection</button>
+                    <button id="wss-select-all">Select All</button>
+                    <button id="wss-submit-words" class="major">Search</button>
+                </div>
+            </div>
             <h2 class="item">Cartesian Plane</h2>
             <h3 class="version"></h3>
             <div class="item-info">
@@ -70,7 +129,7 @@
                             <label for="cart-mode-edit">Edit</label>
                         </div>
                     </div>
-                    <div id="cart-buttons">
+                    <div id="cart-buttons" class="side-buttons">
                         <button id="cart-plus">&plus;</button>
                         <button id="cart-reset">&curren;</button>
                         <button id="cart-minus">&minus;</button>
@@ -93,12 +152,44 @@
                     fractals, I decided to implement a few complex number functions in JavaScript. This is
                     the result.
                 </p>
+                <p>
+                    To generate a fractal (in this case, the Mandelbrot set), simply click on the blue "Generate"
+                    button at the bottom of the area. If you want to see more of the fractal, simply
+                    bump up the "Maximum Iterations" value. After a point (specifically >600) it starts to become
+                    ludicrously slow to generate, so I've stopped it there.
+                </p>
+                <p>
+                    Speaking of speed, you can decrease the quality by clicking on one of the "Quality" buttons.
+                    This will help with speed problems once you start exploring the fractal further.
+                </p>
+                <p>
+                    You can center the view anywhere on the screen. Simply click on your new center in the fractal
+                    area. To zoom in, increase the "Zoom Factor" by around 1. You can also view the path that the
+                    complex numbers take by toggling the "Line tracking" feature.
+                </p>
+                <p>
+                    "Switch Mode" allows you to toggle between Mandelbrot and Julia sets. With Julia sets, you can
+                    adjust the real and imaginary components to get different fractals. "Reset Settings" does
+                    what you think it does.
+                </p>
+                <p>
+                    Don't forget, to see your changes in action, click the "Generate" button. However, clicking on
+                    the fractal to set the pan values is immediate, so you might have to wait a bit for the
+                    fractal to generate.
+                </p>
                 <div class="item">
-                    <canvas id="cmp-canvas" height="600" width="600">
-                        Your browser is not capable of recognising the HTML5 &lt;canvas&gt; graphics framework.
-                        Supported browsers include Google Chrome and Mozilla Firefox.
-                    </canvas>
-                    <canvas id="cmp-mouse" height="600" width="600"></canvas>
+                    <div id="cmp-container">
+                        <canvas id="cmp-canvas" height="600" width="600">
+                            Your browser is not capable of recognising the HTML5 &lt;canvas&gt; graphics framework.
+                            Supported browsers include Google Chrome and Mozilla Firefox.
+                        </canvas>
+                        <canvas id="cmp-mouse" height="600" width="600"></canvas>
+                        <div id="cmp-buttons" class="side-buttons">
+                            <button id="cmp-plus">&plus;</button>
+                            <button id="cmp-centre">&curren;</button>
+                            <button id="cmp-minus">&minus;</button>
+                        </div>
+                    </div>
                     <div class="cmp-control">
                         <input type="text" id="cmp-asisinc" disabled />
                         <span class="help" id="cmp-asisinch"></span>

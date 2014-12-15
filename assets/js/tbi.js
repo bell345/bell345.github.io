@@ -69,6 +69,9 @@ HTMLElement.prototype.gecn = function (className) { return this.getElementsByCla
 // Shorthand for document.getElementsByTagName.
 function getn(tagName) { return document.getElementsByTagName(tagName); }
 HTMLElement.prototype.getn = function (tagName) { return this.getElementsByTagName(tagName) }
+// Shorthand for document.getElementsByName.
+function gebn(name) { return document.getElementsByName(name); }
+HTMLElement.prototype.gebn = function (name) { return this.getElementsByName(name) }
 // Checks the state of an XHR.
 function checkState(request) { return (request.readyState == 4); }
 // A XMLHttpRequest object constructor.
@@ -695,7 +698,16 @@ LinearFunc.prototype.toString = function (spacing) {
 }
 // Finds the intersection of two linear functions.
 LinearFunc.prototype.intersection = function (f2) {
-    var x = ((f2.yIntercept-this.yIntercept) / (this.gradient-f2.gradient)).fixFloat()
+    var x = ((f2.yIntercept-this.yIntercept) / (this.gradient-f2.gradient)).fixFloat();
+    // Car A is travelling at 50m/s, 120m ahead of car B, travelling at 80m/s.
+    // At which point will car B pass car A, and how long will it take to get there?
+    // A(x) = 50x + 120
+    // B(x) = 80x
+    // (0-120) / (50-80)
+    // -120 / -30 = 4
+    // x = 4 seconds
+    // A(4) = 50*4 + 120
+    // y = 320 metres
     return new Coords(x, this.eval(x));
 }
 // Multiplies a linear function with another one to create a quadratic function.
@@ -791,6 +803,19 @@ Parametric.lissajous = function (a, b, sigma) {
         function(t){return Math.sin("+a+"*t+"+(isNull(sigma)?"0":sigma)+")},\
         function(t){return Math.sin("+b+"*t)})");
 }
+// Declares a parametric function that generates a trochoid.
+Parametric.trochoid = function (a, b) {
+    return eval("new Parametric(\
+        function(t){return "+a+"*t - "+b+"*Math.sin(t)},\
+        function(t){return "+a+" - "+b+"*Math.cos(t)})");
+}
+// Declares a parametric function that generates a hypotrochoid.
+Parametric.hypotrochoid = function (R, r, d) {
+    var a = R-r;
+    return eval("new Parametric(\
+        function(t){return "+a+"*Math.cos(t)+"+d+"*Math.cos("+a+"/"+r+"*t)},\
+        function(t){return "+a+"*Math.sin(t)-"+d+"*Math.sin("+a+"/"+r+"*t)})")
+}
 // Transforms an equation into a string representation.
 Function.equationToString = function (func, toReplace, replacement) {
     var str = func.toString(),
@@ -846,7 +871,7 @@ Fraction.prototype = {
     constructor: Fraction,
     simplify: function () {
         var factor = hcf(this.numerator, this.denominator);
-        return new Fraction(this.numerator/hcf, this.denominator/hcf);
+        return new Fraction(this.numerator/factor, this.denominator/factor);
     },
     multiply: function (frac2) {
         if (!(frac2 instanceof Fraction)) frac2 = new Fraction(frac2, 1);
@@ -854,6 +879,201 @@ Fraction.prototype = {
     },
     eval: function () { return this.numerator / this.denominator; }
 };
+function Atom(symbol, number) {
+    this.symbol = symbol;
+    this.number = number || 1;
+}
+Atom.prototype.toString = function (bool) {
+    return this.symbol + (this.number < 2 ? "" : (bool ? "" : "_") + this.number);
+}
+Atom.fromString = function (str) {
+    if (str.search("_") != -1) return new Atom(str.split("_")[0], str.split("_")[1]*1);
+    else if (str.search(/[0-9]/) == -1) return new Atom(str.match(/[A-Z][a-z]*/)[0]);
+    else return new Atom(str.match(/[A-Z][a-z]*/)[0], str.match(/[0-9]+/)[0]*1);
+}
+function AtomGroup(atoms, number) {
+    this.atoms = atoms;
+    this.number = number || 1;
+}
+AtomGroup.prototype.toString = function (bool) {
+    for (var i=0,s="(";i<this.atoms.length;i++) s += this.atoms[i].toString(bool);
+    return s + ")" + (this.number < 2 ? "" : "_" + this.number);
+}
+AtomGroup.prototype.getAtomTotals = function () {
+    for (var i=0,o={};i<this.atoms.length;i++) {
+        var c = this.atoms[i];
+        o[c.symbol] = o[c.symbol] || 0;
+        o[c.symbol] += c.number;
+    }
+    for (var e in o) if (o.hasOwnProperty(e)) o[e] *= this.number;
+    return o;
+}
+AtomGroup.fromString = function (str) {
+    var numberRegExp = /\)_([0-9]+)/,
+        num = str.match(numberRegExp)[1],
+        atoms = [],
+        atomRegExp = /[A-Z][a-z]*(_?[0-9]+)?/;
+    str = str.replace("(", "").replace(numberRegExp, "");
+    while (str.search(atomRegExp) != -1) {
+        atoms.push(Atom.fromString(str.match(atomRegExp)[0]));
+        str = str.replace(atomRegExp, "");
+    }
+    return new AtomGroup(atoms, num*1);
+}
+function Molecule(atoms, number) {
+    this.atoms = atoms;
+    this.number = number || 1;
+}
+Molecule.prototype.toString = function (bool) {
+    for (var i=0,s="";i<this.atoms.length;i++) s += this.atoms[i].toString(bool);
+    return (this.number < 2 ? "" : this.number) + s;
+}
+Molecule.prototype.getAtomTotals = function () {
+    for (var i=0,o={};i<this.atoms.length;i++) {
+        var c = this.atoms[i];
+        if (c instanceof AtomGroup) {
+            var t = c.getAtomTotals();
+            for (var e in t) if (t.hasOwnProperty(e)) {
+                o[e] = o[e] || 0;
+                o[e] += t[e];
+            }
+        } else {
+            o[c.symbol] = o[c.symbol] || 0;
+            o[c.symbol] += c.number;
+        }
+    }
+    for (var e in o) if (o.hasOwnProperty(e)) o[e] *= this.number;
+    return o;
+}
+Molecule.fromString = function (str) {
+    var atoms = [],
+        num = 1,
+        prefixNumberRegExp = /^[0-9]+/,
+        atomRegExp = /[A-Z][a-z]*(_?[0-9]+)?/,
+        atomGroupRegExp = /^\([^\)]+\)_?[0-9]+/;
+    if (!isNull(str.match(prefixNumberRegExp))) {
+        num = str.match(prefixNumberRegExp)[0];
+        str = str.replace(prefixNumberRegExp, "");
+    }
+    while (str.search(atomRegExp) != -1) {
+        if (str.search(atomGroupRegExp) != -1) {
+            atoms.push(AtomGroup.fromString(str.match(atomGroupRegExp)[0]));
+            str = str.replace(atomGroupRegExp, "");
+        } else {
+            atoms.push(Atom.fromString(str.match(atomRegExp)[0]));
+            str = str.replace(atomRegExp, "");
+        }
+    }
+    return new Molecule(atoms, num*1);
+}
+function MoleculeGroup(molecules) {
+    this.molecules = molecules;
+}
+MoleculeGroup.prototype.toString = function (bool) {
+    for (var i=0,s="",l=this.molecules.length;i<l;i++)
+        s += this.molecules[i].toString(bool) + (i >= l-1 ? "" : " + ");
+    return s;
+}
+MoleculeGroup.prototype.getAtomTotals = function () {
+    for (var i=0,o={};i<this.molecules.length;i++) {
+        var c = this.molecules[i].getAtomTotals();
+        for (var e in c) if (c.hasOwnProperty(e)) {
+            o[e] = o[e] || 0;
+            o[e] += c[e];
+        }
+    }
+    return o;
+}
+MoleculeGroup.prototype.increaseElement = function (symbol) {
+    for (var i=0;i<this.molecules.length;i++) {
+        var c = this.molecules[i], f = false;
+        for (var j=0;j<c.atoms.length;j++) if (c.atoms[j].symbol == symbol) f = true;
+        if (f) { this.molecules[i].number++; return; }
+    }
+}
+MoleculeGroup.fromString = function (str) {
+    var group = str.split(/ ?\+ ?/),
+        garr = [];
+    for (var i=0;i<group.length;i++) garr.push(Molecule.fromString(group[i]));
+    return new MoleculeGroup(garr);
+}
+function ChemicalEquation(reactant, product) {
+    this.reactant = reactant;
+    this.product = product;
+}
+ChemicalEquation.prototype.toString = function (bool) {
+    return this.reactant.toString(bool) + " -> " + this.product.toString(bool);
+}
+ChemicalEquation.prototype.isBalanced = function () {
+    var before = this.reactant.getAtomTotals(),
+        after = this.product.getAtomTotals();
+    for (var e in before) if (before.hasOwnProperty(e)) {
+        if (!after.hasOwnProperty(e)) return false;
+        if (before[e] != after[e]) return false;
+    }
+    for (var e in after) if (after.hasOwnProperty(e)) {
+        if (!before.hasOwnProperty(e)) return false;
+        if (before[e] != after[e]) return false;
+    }
+    return true;
+}
+ChemicalEquation.prototype.findDeficiencies = function () {
+    var before = this.reactant.getAtomTotals(),
+        after = this.product.getAtomTotals(),
+        deficiencies = null;
+    for (var e in before) if (before.hasOwnProperty(e)) {
+        if (!after.hasOwnProperty(e)) return false;
+        if (isNull(deficiencies)) deficiencies = {};
+        deficiencies[e] = before[e] - after[e];
+    }
+    for (var e in after) if (after.hasOwnProperty(e))
+        if (!before.hasOwnProperty(e)) return false;
+    return deficiencies;
+}
+ChemicalEquation.prototype.findMostSignificantDeficiency = function () {
+    var def = this.findDeficiencies(),
+        max = -Infinity,
+        maxSign = 0,
+        maxSymbol = null;
+    for (var e in def) if (def.hasOwnProperty(e)) {
+        if (def[e] != 0 && Math.abs(def[e]) > max) {
+            max = Math.abs(def[e]);
+            maxSign = Math.sign(def[e]);
+            maxSymbol = e;
+        }
+    }
+    return new Atom(maxSymbol, max*maxSign);
+}
+ChemicalEquation.prototype.findLeastSignificantDeficiency = function () {
+    var def = this.findDeficiencies(),
+        min = Infinity,
+        minSign = 0,
+        minSymbol = null;
+    for (var e in def) if (def.hasOwnProperty(e)) {
+        if (def[e] != 0 && Math.abs(def[e]) < min) {
+            min = Math.abs(def[e]);
+            minSign = Math.sign(def[e]);
+            minSymbol = e;
+        }
+    }
+    return new Atom(minSymbol, min*minSign);
+}
+ChemicalEquation.prototype.balance = function (max, mode) {
+    var counter = 0;
+    while (!this.isBalanced() && counter++ < (max || 50)) {
+        if (mode) var def = this.findLeastSignificantDeficiency();
+        else var def = this.findMostSignificantDeficiency();
+        if (def.number > 0) this.product.increaseElement(def.symbol);
+        else if (def.number < 0) this.reactant.increaseElement(def.symbol);
+    }
+    return this;
+}
+ChemicalEquation.fromString = function (str) {
+    var compoundGroups = str.split(/ ?-> ?/);
+    var before = MoleculeGroup.fromString(compoundGroups[0])
+        after = MoleculeGroup.fromString(compoundGroups[1]);
+    return new ChemicalEquation(before, after);
+}
 // Returns a preformatted array of the date object specified.
 function unixToString(date) {
     var month = date.getMonth()+1;
@@ -1126,7 +1346,7 @@ function shiftDown(key) {
 // A set of functions designed to be used with the Pointer Lock API.
 var PointerLock = {
     check: function (l) {
-        return document.pointerLockElement == el || document.mozPointerLockElement == el || document.webkitPointerLockElement == el;
+        return document.pointerLockElement == l || document.mozPointerLockElement == l || document.webkitPointerLockElement == l;
     },
     set: function (l, callback) {
         l.requestPointerLock = l.requestPointerLock || l.mozRequestPointerLock || l.webkitRequestPointerLock;
@@ -1362,6 +1582,13 @@ CanvasRenderingContext2D.prototype.closePath;
 CanvasRenderingContext2D.prototype.startPath =
 CanvasRenderingContext2D.prototype.openPath =
 CanvasRenderingContext2D.prototype.beginPath;
+CanvasRenderingContext2D.prototype.drawCircle = function (x, y, r, s) {
+    this.beginPath();
+    this.arc(x, y, r, 0, dtr(360), false);
+    if (s) this.stroke();
+    else this.fill();
+    this.closePath();
+}
 // A WebGL canvas constructor.
 function Canvas3D(cvs) {
     var gl = null;
@@ -1404,22 +1631,23 @@ var HTMLIncludes = {
         });
     },
     get: function () {
-        var curr = 0;
+        var currInc = 0;
         HTMLIncludes.getDone = new Array(HTMLIncludes.info.length);
-        TBI.timerSet("includes", 0, function () {
-            if (!HTMLIncludes.getDone[curr]) {
-                HTMLIncludes.getDone[curr] = true;
-                TBI.AJAX(HTMLIncludes.info[curr].source, function (xhr) {
-                    HTMLIncludes.includes[curr] = xhr.response;
-                    var oldHTML = HTMLIncludes.info[curr].replace?"":$(HTMLIncludes.info[curr].insert).html();
-                    $(HTMLIncludes.info[curr].insert).html(oldHTML + xhr.response);
-                    if (curr == HTMLIncludes.getDone.length - 1) {
+        TBI.timerSet("includes", 1, function () {
+            if (!HTMLIncludes.getDone[currInc]) {
+                HTMLIncludes.getDone[currInc] = true;
+                TBI.AJAX(HTMLIncludes.info[currInc].source, function (xhr) {
+                    HTMLIncludes.includes[currInc] = xhr.response;
+                    var info = HTMLIncludes.info[currInc];
+                    var oldHTML = info.replace?"":$(info.insert).html();
+                    $(info.insert).html(oldHTML + xhr.response);
+                    if (currInc == HTMLIncludes.getDone.length - 1) {
                         TBI.timerClear("includes");
-                        TBI.Loader.event("HTMLIncludes #"+curr+": "+HTMLIncludes.info[curr].source);
+                        TBI.Loader.event("HTMLIncludes #"+currInc+": "+info.source);
                         TBI.Loader.complete("HTMLIncludes", TBI.Loader.DONE);
                     } else {
-                        TBI.Loader.event("HTMLIncludes #"+curr+": "+HTMLIncludes.info[curr].source);
-                        curr++;
+                        TBI.Loader.event("HTMLIncludes #"+currInc+": "+info.source);
+                        currInc++;
                     }
                 });
             }
@@ -1535,27 +1763,27 @@ $(function () {
     TBI.checkNav();
     TBI.Loader.jobs.push(
         {
-            func: HTMLIncludes.getIndex,
+            func: function () { HTMLIncludes.getIndex(); },
             id: "HTMLIncIndex",
             dependencies: [],
             conditions: [],
             done: "HTMLIncludes manifest loaded"
         },
         {
-            func: HTMLIncludes.get,
+            func: function () { HTMLIncludes.get(); },
             id: "HTMLIncludes",
             dependencies: ["HTMLIncIndex"],
             conditions: []
         },
         {
-            func: TBI.fetchIndex,
+            func: function () { TBI.fetchIndex(); },
             id: "protoIndex",
             dependencies: [],
             conditions: [],
             done: "Content manifest loaded"
         },
         {
-            func: TBI.checkFonts,
+            func: function () { TBI.checkFonts(); },
             id: "Fonts",
             dependencies: [],
             conditions: [function(){return $("#fontload-rw").length>0}]

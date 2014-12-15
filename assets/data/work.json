@@ -7,6 +7,12 @@
       "path": "proto",
       "projects": [
         {
+          "id": "wsearch",
+          "name": "Word Search Solver",
+          "version": "1.0",
+          "link": null
+        },
+        {
           "id": "crtplane",
           "name": "Cartesian Plane",
           "version": "0.11.2",
@@ -78,26 +84,26 @@
           "id": "mpoly",
           "name": "Monopoly Interpreter",
           "version": "0.8",
-          "link": "/games/monopoly"
-      },
+          "link": null
+        },
         {
           "id": "pipeg",
           "name": "Pipe Game",
           "version": "0.0",
           "link": null
-      },
+        },
         {
           "id": "treeh",
           "name": "Treehouse",
           "version": "0.2",
           "link": "/games/treehouse/"
-      },
+        },
         {
           "id": "qdr",
           "name": "Quadrominoes",
           "version": "0.4",
           "link": null
-      },
+        },
         {
           "id": "twf8",
           "name": "2048 clone",
@@ -119,17 +125,23 @@
       "path": "apps",
       "projects": [
         {
+          "id": "bgchanger",
+          "name": "Logon BG Changer",
+          "version": "1.0.5459",
+          "link": null
+        },
+        {
           "id": "calc",
           "name": "Calculator",
           "version": "2.3.2",
           "link": "/apps/calc"
         },
-          {
-            "id": "cdown",
-            "name": "CountDown",
-            "version": "3.2",
-            "link": "/apps/cdown"
-          }
+        {
+          "id": "cdown",
+          "name": "CountDown",
+          "version": "3.2",
+          "link": "/apps/cdown"
+        }
       ]
     },
     {
@@ -143,13 +155,13 @@
           "name": "Timeline",
           "version": "0.0",
           "link": null
-      },
-          {
-            "id": "scle",
-            "name": "Scale",
-            "version": "0.9",
-            "link": null
-          }
+        },
+        {
+          "id": "scle",
+          "name": "Scale",
+          "version": "0.9",
+          "link": null
+        }
       ]
     }
   ]

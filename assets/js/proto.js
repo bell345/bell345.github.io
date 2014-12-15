@@ -2442,7 +2442,7 @@ CmpCvs.reset = function () {
     CmpCvs.maxIter = 30;
     CmpCvs.factor = 110;
     CmpCvs.pan = [-0.75, 0];
-    CmpCvs.tracking = true;
+    CmpCvs.tracking = false;
     TBI.toggleButton($("#cmp-tracking")[0], CmpCvs.tracking);
     CmpCvs.jfunc = new Complex(0.3, 0.25);
     $("#cmp-asisinc").val(CmpCvs.asisIncrement);
@@ -2629,6 +2629,16 @@ CmpCvs.generate = function (asis, maxiter, factor, panx, pany, real, imaginary) 
         finally { TBI.timerClear("cmp-generation"); }
     });
 }
+CmpCvs.submit = function () {
+    if (!CmpCvs.validate()) return false;
+    else CmpCvs.generate(parseFloat($("#cmp-asisinc").val()),
+            parseInt($("#cmp-maxiter").val()),
+            Math.pow(10,parseFloat($("#cmp-factor").val())),
+            parseFloat($("#cmp-panx").val()),
+            parseFloat($("#cmp-pany").val()),
+            parseFloat($("#cmp-jreal").val()),
+            parseFloat($("#cmp-jimaginary").val()));
+}
 $(document).on("pageload",function () {
     CmpCvs.setup();
     CmpCvs.reset();
@@ -2640,14 +2650,7 @@ $(document).on("pageload",function () {
         var f = CmpCvs.factor;
         $("#cmp-panx").val(CmpCvs.location[0]/f);
         $("#cmp-pany").val(-(CmpCvs.location[1]/f));
-        if (!CmpCvs.validate()) return false;
-        else CmpCvs.generate(parseFloat($("#cmp-asisinc").val()),
-                parseInt($("#cmp-maxiter").val()),
-                Math.pow(10,parseFloat($("#cmp-factor").val())),
-                parseFloat($("#cmp-panx").val()),
-                parseFloat($("#cmp-pany").val()),
-                parseFloat($("#cmp-jreal").val()),
-                parseFloat($("#cmp-jimaginary").val()));
+        CmpCvs.submit();
     });
     $("#cmp-lquality").click(function () { $("#cmp-asisinc").val("2"); });
     $("#cmp-mquality").click(function () { $("#cmp-asisinc").val("1"); });
@@ -2668,16 +2671,33 @@ $(document).on("pageload",function () {
         }
     });
     $("#cmp-generate").click(function () {
-        if (!CmpCvs.validate()) return false;
-        else CmpCvs.generate(parseFloat($("#cmp-asisinc").val()),
-                parseInt($("#cmp-maxiter").val()),
-                Math.pow(10,parseFloat($("#cmp-factor").val())),
-                parseFloat($("#cmp-panx").val()),
-                parseFloat($("#cmp-pany").val()),
-                parseFloat($("#cmp-jreal").val()),
-                parseFloat($("#cmp-jimaginary").val()));
+        CmpCvs.submit();
     });
     $("#cmp-reset").click(function () { CmpCvs.reset(); });
+    $("#cmp-plus").click(function () {
+        if (!CmpCvs.validate()) return false;
+        else {
+            $("#cmp-factor").val($("#cmp-factor").val()*1+1);
+            CmpCvs.submit();
+        }
+    });
+    $("#cmp-minus").click(function () {
+        if (!CmpCvs.validate()) return false;
+        else {
+            $("#cmp-factor").val($("#cmp-factor").val()*1-1);
+            CmpCvs.submit();
+        }
+    });
+    $("#cmp-centre").click(function () {
+        if (!CmpCvs.validate()) return false;
+        else {
+            if (CmpCvs.mode == 1) $("#cmp-panx").val(-0.75);
+            else $("#cmp-panx").val(0);
+            $("#cmp-pany").val(0);
+            $("#cmp-factor").val(2);
+            CmpCvs.submit();
+        }
+    });
     TBI.Popup.registry.add(gebi("cmp-asisinch"), "Analysis Increment",
             "This controls the resolution and performance of the generation. A smaller number\
             leads to a more thorough analysis and a better looking picture. They also dramatically\
@@ -3136,3 +3156,219 @@ $(document).on("pageload", function () {
     });
 });
 // END CARTESIAN CODE //
+// START WORD SEARCH CODE //
+var WSearch = {};
+WSearch.newCell = function () {
+    var td = document.createElement("td"),
+        div = document.createElement("div");
+    div.className += "box ";
+    div.setAttribute("contenteditable", "");
+    td.appendChild(div);
+    return td;
+}
+WSearch.update = function (rows, columns) {
+    if (rows < 1 || columns < 1 || rows > 64 || columns > 64) return;
+    $("#wss-rows-text").val(rows);
+    $("#wss-columns-text").val(columns);
+    var table = $("#wss-cword")[0];
+
+    // remove extra rows
+    while (WSearch.getRows() > rows) {
+        table.getn("tr")[WSearch.getRows()-1].remove();
+    }
+    // add new rows
+    while (WSearch.getRows() < rows) {
+        var row = document.createElement("tr");
+        for (var i=0;i<WSearch.getColumns();i++) row.appendChild(WSearch.newCell());
+        table.appendChild(row);
+    }
+    // remove extra columns
+    while (WSearch.getColumns() > columns) {
+        var rows = table.getn("tr");
+        for (var i=0;i<rows.length;i++)
+            rows[i].getn("td")[WSearch.getColumns()-1].remove();
+    }
+    // add new columns
+    while (WSearch.getColumns() < columns) {
+        var rows = table.getn("tr");
+        for (var i=0;i<rows.length;i++) rows[i].appendChild(WSearch.newCell());
+    }
+
+    $("#wss-cword .box").off("keyup");
+    $("#wss-cword .box").off("keydown");
+    var boxes = $("#wss-cword .box");
+    $("#wss-cword .box").keydown(function () {
+        this.innerText = "";
+    });
+    $("#wss-cword .box").keyup(function (event) {
+        this.innerText = this.innerText.substr(this.innerText.length-1).toUpperCase();
+        var nextInput = boxes.get(boxes.index(this) + 1);
+        if (nextInput) {
+             nextInput.focus();
+             if (window.getSelection) {
+                 var selection = window.getSelection(),
+                     range = document.createRange();
+                range.selectNodeContents(nextInput);
+                selection.removeAllRanges();
+                selection.addRange(range);
+            } else if (document.body.createTextRange) {
+                var range = document.body.createTextRange();
+                range.moveToElementText(nextInput);
+                range.select();
+            }
+         }
+    });
+}
+WSearch.getRows = function () {
+    return $("#wss-cword")[0].getn("tr").length;
+}
+WSearch.getColumns = function () {
+    return $("#wss-cword")[0].getn("tr")[0].getn("td").length;
+}
+WSearch.searchRows = function(query) {
+    query = query.toUpperCase();
+    var rows = $("#wss-cword tr");
+    for (var i=0;i<rows.length;i++) {
+        var els = rows[i].getn("td"),
+            str = "",
+            resarr = [];
+        for (var j=0;j<els.length;j++) str += els[j].innerText;
+        var result = str.search(query);
+        if (result != -1) for (var j=0;j<els.length;j++) if (j >= result && j < result+query.length) resarr.push(els[j]);
+        if (resarr.length > 0) return resarr;
+    }
+    return null;
+}
+WSearch.searchColumns = function (query) {
+    query = query.toUpperCase();
+    var rows = $("#wss-cword tr"),
+        columns = [];
+    for (var i=0;i<WSearch.getColumns();i++) {
+        var curr = [];
+        for (var j=0;j<rows.length;j++) curr.push(rows[j].getn("td")[i]);
+        columns.push(curr);
+    }
+    for (var i=0;i<columns.length;i++) {
+        var curr = columns[i],
+            str = "",
+            resarr = [];
+        for (var j=0;j<curr.length;j++) str += curr[j].innerText;
+        var result = str.search(query);
+        if (result != -1) for (var j=0;j<curr.length;j++)
+            if (j >= result && j < result+query.length)
+                resarr.push(curr[j]);
+        if (resarr.length > 0) return resarr;
+    }
+    return null;
+}
+WSearch.searchDiagonals = function (query) {
+    query = query.toUpperCase();
+    var rows = $("#wss-cword tr"),
+        diagonals = [];
+    for (var i=0;i<WSearch.getRows();i++) {
+        var diag = [];
+        for (var x=i,y=0;x<WSearch.getRows()&&y<WSearch.getColumns();x++,y++)
+            diag.push(rows[x].getn("td")[y]);
+        diagonals.push(diag);
+    }
+    for (var i=1;i<WSearch.getColumns();i++) {
+        var diag = [];
+        for (var y=i,x=0;x<WSearch.getRows()&&y<WSearch.getColumns();x++,y++)
+            diag.push(rows[x].getn("td")[y]);
+        diagonals.push(diag);
+    }
+    for (var i=0;i<WSearch.getRows();i++) {
+        var diag = [];
+        for (var x=i,y=WSearch.getColumns()-1;x<WSearch.getRows()&&y>=0;x++,y--)
+            diag.push(rows[x].getn("td")[y]);
+        diagonals.push(diag);
+    }
+    for (var i=0;i<WSearch.getColumns()-1;i++) {
+        var diag = [];
+        for (var y=i,x=0;x<WSearch.getRows()&&y>=0;x++,y--)
+            diag.push(rows[x].getn("td")[y]);
+        diagonals.push(diag);
+    }
+    for (var i=0;i<diagonals.length;i++) {
+        var curr = diagonals[i],
+            str = "",
+            resarr = [];
+        for (var j=0;j<curr.length;j++) str += curr[j].innerText;
+        var result = str.search(query);
+        if (result != -1) for (var j=0;j<curr.length;j++)
+            if (j >= result && j < result+query.length)
+                resarr.push(curr[j]);
+        if (resarr.length > 0) return resarr;
+    }
+    return null;
+}
+function reverseString(str) {
+    for (var i=str.length-1,s="";i>=0;i--) s += str.charAt(i);
+    return s;
+}
+$(document).on("pageload", function () {
+    $("#wss-add-row").click(function () {
+        WSearch.update(WSearch.getRows()+1, WSearch.getColumns());
+    });
+    $("#wss-remove-row").click(function () {
+        WSearch.update(WSearch.getRows()-1, WSearch.getColumns());
+    });
+    $("#wss-add-column").click(function () {
+        WSearch.update(WSearch.getRows(), WSearch.getColumns()+1);
+    });
+    $("#wss-remove-column").click(function () {
+        WSearch.update(WSearch.getRows(), WSearch.getColumns()-1);
+    });
+    WSearch.update(3, 3);
+    $("#wss-new-word").keydown(function (event) {
+        if (event.which == Keys.RETURN) {
+            var value = this.value,
+                option = document.createElement("option");
+            this.value = "";
+            option.innerText = value;
+            option.setAttribute("value", value);
+            $("#wss-wordlist")[0].appendChild(option);
+        }
+    });
+    $("#wss-submit-words").click(function () {
+        $(".match").remove();
+        var options = $("#wss-wordlist")[0].selectedOptions,
+            found = false,
+            useRows = true,
+            useColumns = true,
+            useDiag = true;
+        if (options.length == 0) TBI.error("Select some words before searching for them.");
+        with (WSearch) for (var i=0;i<options.length;i++) {
+            var result = null;
+            if (useRows) result = searchRows(options[i].innerHTML) ||
+                searchRows(reverseString(options[i].innerHTML));
+            if (isNull(result) && useColumns) searchColumns(options[i].innerHTML) ||
+                searchColumns(reverseString(options[i].innerHTML));
+            if (isNull(result) && useDiag) result = searchDiagonals(options[i].innerHTML) ||
+                searchDiagonals(reverseString(options[i].innerHTML));
+            if (!isNull(result)) for (var j=0;j<result.length;j++) {
+                var curr = result[j],
+                    matchbox = document.createElement("div");
+                matchbox.className = "match match-"+(i%10);
+                curr.appendChild(matchbox);
+                found = true;
+            } else TBI.log("Cannot find "+options[i].innerHTML);
+        }
+        if (!found) TBI.log("No words found.");
+    });
+    $("#wss-select-all").click(function () {
+        $("#wss-wordlist option").attr("selected", true);
+    });
+    $("#wss-word-delete").click(function () {
+        var options = $("#wss-wordlist")[0].selectedOptions;
+        $(options).remove();
+    });
+    $("#wss-clear-matches").click(function () {
+        $(".match").remove();
+    });
+    $("#wss-clear-cword").click(function () {
+        $(".match").remove();
+        $("#wss-cword .box").html("");
+    });
+});
+// END WORD SEARCH CODE //

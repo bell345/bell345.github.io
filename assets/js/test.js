@@ -604,14 +604,20 @@ var Test3 = {
             definition: 2,
             modifier: 0.6,
             seeds: [0,10,12,4]
+        },
+        speeds: {
+            forward: 0.005,
+            backward: 0.005,
+            left: 0.005,
+            right: 0.005
         }
     },
     changeOverlay: function (message) {
-        $("#three-gl + .item-info .gl-overlay-container").show();
-        $("#three-gl + .item-info .gl-overlay").html(message);
+        $("#three-gl + .item-info .cvs-overlay-cont").show();
+        $("#three-gl + .item-info .cvs-overlay").html(message);
     },
     removeOverlay: function () {
-        $("#three-gl + .item-info .gl-overlay-container").hide();
+        $("#three-gl + .item-info .cvs-overlay-cont").hide();
     },
     init: function (id) {
         Test3.initStage(id);
@@ -642,7 +648,7 @@ var Test3 = {
         Test3.$ = Canvas2D("tgl-2dcanvas");
     },
     initObjects: function () {
-        var geometry = new THREE.IcosahedronGeometry(1),
+        var geometry = new THREE.OctahedronGeometry(1),
             material = new THREE.MeshPhongMaterial({ambient:0x555555,color:0x2299aa,specular:0xaaaaaa,shininess:20,shading:THREE.FlatShading});
         Test3.oct = new THREE.Mesh(geometry, material);
         Test3.oct.castShadow = true;
@@ -650,19 +656,17 @@ var Test3 = {
 
         var terrSet = Test3.settings.terrain,
             def = terrSet.definition;
-
-        geometry = new THREE.PlaneGeometry(120, 120, Math.pow(2,def), Math.pow(2,def));
+        geometry = new THREE.PlaneGeometry(120, 120, Math.pow(2,def), Math.pow(2,def));/*
         var terrain = randomDisplacement(terrSet.seeds, def, terrSet.modifier);
-        terrain.flatten().forEach(function (z, i) { geometry.vertices[i].setZ(z) });
+        terrain.flatten().forEach(function (z, i) { geometry.vertices[i].setZ(z) });*/
 
         material = new THREE.MeshPhongMaterial({
             ambient: 0x333333,
             color: 0x555555,
             specular: 0xaaaaaa,
-            shininess: 10000,
+            shininess: 10,
             shading:THREE.SmoothShading,
-            side:THREE.DoubleSide,
-            wireframe:true
+            side:THREE.DoubleSide
         });
         Test3.ground = new THREE.Mesh(geometry, material);
         Test3.ground.receiveShadow = true;
@@ -674,7 +678,7 @@ var Test3 = {
         Test3.sphere = new THREE.Mesh(geometry, material);
         Test3.sphere.position.z = 5;
         Test3.sphere.castShadow = true;
-        Test3.scene.add(Test3.sphere);
+        Test3.scene.add(Test3.sphere);/*
 
         geometry = new THREE.SphereGeometry(2000, 128, 128);
         material = new THREE.MeshBasicMaterial({color:0x00dddd,side:THREE.BackSide});
@@ -689,7 +693,7 @@ var Test3 = {
         head.position.set(0, 2.15, 0);
         head.castShadow = true;
         Test3.player.add(head);
-        
+
         geometry = new THREE.BoxGeometry(0.8, 1.2, 0.8);
         var body = new THREE.Mesh(geometry, material);
         body.castShadow = true;
@@ -716,10 +720,15 @@ var Test3 = {
 
         Test3.player.position.set(0, 0, -4);
 
-        Test3.scene.add(Test3.player);
+        Test3.scene.add(Test3.player);*/
+        var geometry = new THREE.SphereGeometry(1.5, 16, 16),
+            material = new THREE.MeshPhongMaterial({ambient:0x777777,color:0xdd3333,specular:0xffffff,shininess:20,shading:THREE.FlatShading});
+        Test3.physTestObj = new THREE.Mesh(geometry, material);
+        Test3.physTestObj.position.set(4.0, 0, 0);
+        Test3.scene.add(Test3.physTestObj);
     },
     initLighting: function () {
-        Test3.scene.add(new THREE.AmbientLight(0x333333));
+        Test3.scene.add(new THREE.AmbientLight(0x999999));
 
         /*var light = new THREE.SpotLight(0x00aaff);
         light.castShadow = true;
@@ -739,7 +748,7 @@ var Test3 = {
         light.shadowCameraFov = 80;
         light.position.set(0, 4, 0);
         Test3.scene.add(light);
-
+        /*
         Test3.sun = new THREE.Object3D();
 
         Test3.sun = new THREE.SpotLight(0xffffff, 1.0);
@@ -753,10 +762,11 @@ var Test3 = {
         Test3.sun.shadowCameraFar = 400;
         Test3.sun.shadowCameraNear = 40;
 
-        Test3.scene.add(Test3.sun);
+        Test3.scene.add(Test3.sun);*/
     },
     loop: function () {
         requestAnimationFrame(Test3.loop);
+        Test3.frames++;
         if (document.body.className.search(" in-focus") == -1) {
             Test3.changeOverlay("Lost focus. Please refocus the window to resume.");
             Test3.elapsedTime = -1;
@@ -774,7 +784,6 @@ var Test3 = {
             Test3.handleKeys();
             Test3.debugInfo();
             Test3.renderer.render(Test3.scene, Test3.camera);
-            Test3.frames++;
         }
     },
     moveRelative: function (obj, angle, speed, plane) {
@@ -794,8 +803,10 @@ var Test3 = {
             Test3.oct.rotation.y += dtr(0.08 * delta);
             Test3.oct.rotation.z += dtr(0.1 * delta);
 
-            //Test3.camera.rotation.x = dtr(Test3.pitch);
-            //Test3.camera.rotation.y = dtr(Test3.yaw);
+            Test3.camera.rotation.x = dtr(Test3.pitch);
+            Test3.camera.rotation.y = dtr(Test3.yaw);
+            Test3.pitch += Test3.pitchRate * delta;
+            /*
             var playPos = Test3.player.position,
                 playDist = Test3.camera.position.distanceTo(playPos);
             if (playDist > 12) Test3.moveRelative(Test3.camera, Test3.camera.rotation.y, 0.001*delta*playDist, "xz");
@@ -818,13 +829,13 @@ var Test3 = {
                 Test3.sun.intensity = intensity;
             } else Test3.sun.intensity = 1;
 
-            Test3.skybox.material.color = new THREE.Color(0x050577).lerp(new THREE.Color(0x00dddd), Test3.sun.intensity);
+            Test3.skybox.material.color = new THREE.Color(0x050577).lerp(new THREE.Color(0x00dddd), Test3.sun.intensity);*/
 
             /*$("#tgl-sangle").html(rtd(Test3.sunAngle));*/
-            $("#tgl-sintense").val(Test3.sun.intensity);
+            /*$("#tgl-sintense").val(Test3.sun.intensity);*/
 
             //Test3.sun.position.normalize();
-
+            /*
             if (Test3.forward != 0)
                 Test3.moveRelative(
                     Test3.player,
@@ -835,11 +846,21 @@ var Test3 = {
                     Test3.player,
                     dtr(Test3.yaw + 90),
                     Test3.strafe * delta * (Test3.activeKeys[Keys.SHIFT]?25:1), "xz");
-
+            */
+            /*Test3.moveRelative(
+                Test3.camera,
+                dtr(Test3.yaw),
+                Test3.forward * delta * (Test3.activeKeys[Keys.SHIFT]?3:1),
+                "xz"
+            );
+            Test3.moveRelative(
+                Test3.camera,
+                dtr(Test3.yaw + 90),
+                Test3.strafe * delta * (Test3.activeKeys[Keys.SHIFT]?3:1),
+                "xz"
+            );*/
             if (Test3.activeKeys[Keys.UP]) Test3.camera.position.y += 0.1 * delta;
             else if (Test3.activeKeys[Keys.DOWN]) Test3.camera.position.y -= 0.1 * delta;
-
-            Test3.pitch += Test3.pitchRate * delta;
         }
         Test3.elapsedTime = now;
     },
@@ -863,18 +884,20 @@ var Test3 = {
         else if (Test3.activeKeys[Keys.PAGE_DOWN]) Test3.pitchRate = -0.2;
         else Test3.pitchRate = 0;
 
-        if (Test3.activeKeys[Keys.A]) Test3.strafe = 0.0005;
-        else if (Test3.activeKeys[Keys.D]) Test3.strafe = -0.0005;
+        var speeds = Test3.settings.speeds;
+
+        if (Test3.activeKeys[Keys.A]) Test3.strafe = speeds.left;
+        else if (Test3.activeKeys[Keys.D]) Test3.strafe = -speeds.right;
         else Test3.strafe = 0;
 
-        if (Test3.activeKeys[Keys.W]) Test3.forward = 0.005;
-        else if (Test3.activeKeys[Keys.S]) Test3.forward = -0.001;
+        if (Test3.activeKeys[Keys.W]) Test3.forward = speeds.forward;
+        else if (Test3.activeKeys[Keys.S]) Test3.forward = -speeds.backward;
         else Test3.forward = 0;
     },
     toggleHandlers: {},
     bind: function (prop, el) {
-        Test3.toggleHandlers[el] = prop;
-        $(el).click(function () { Test3[Test3.toggleHandlers[this]] = TBI.isToggled(this); });
+        Test3.toggleHandlers[el.id] = prop;
+        $(el).click(function () { Test3[Test3.toggleHandlers[this.id]] = TBI.isToggled(this); });
         Test3[prop] = TBI.isToggled(el);
     }
 };
@@ -904,4 +927,356 @@ $(document).on("pageload", function () {
     Test3.bind("debug", gebi("tgl-debug"));
     Test3.bind("paused", gebi("tgl-pause"));
     $(window).focus(Test3.loop);
+});
+function Vector2D(x, y) { this.x = x; this.y = y; }
+Vector2D.prototype = {
+    constructor: Vector2D,
+    // Create a copy of the vector that won't change the original.
+    copy: function () { return new Vector2D(this.x, this.y); },
+    // add, subtract and multiply are self-explanatory.
+    add: function (a) { if (a instanceof Vector2D) return this.addVector(a); else return this.addScalar(a); },
+    // note: "scalar" here just means "number", as in "not vector".
+    addScalar: function (n) { this.x += n; this.y += n; return this; },
+    addVector: function (vec) { this.x += vec.x; this.y += vec.y; return this; },
+    subtract: function (a) { if (a instanceof Vector2D) return this.subtractVector(a); else return this.subtractScalar(a); },
+    subtractScalar: function (n) { this.x -= n; this.y -= n; return this;},
+    subtractVector: function (vec) { this.x -= vec.x; this.y -= vec.y; return this; },
+    // Returns the magnitude of the vector.
+    magnitude: function () { return Math.pythagoras(this.x, this.y); },
+    // Returns the square of the magnitude of the vector (less computationally intensive).
+    magnitudeSquared: function () { return this.dot(this); },
+    // Changes the vector into a unit vector.
+    normalise: function () { var mag = this.magnitude(); this.x /= mag; this.y /= mag; return this; },
+    // Rotates the vector into the first quadrant (++).
+    absolute: function () { this.x = Math.abs(this.x); this.y = Math.abs(this.y); return this; },
+    multiply: function (a) { if (a instanceof Vector2D) return this.multiplyVector(a); else return this.multiplyScalar(a); },
+    multiplyScalar: function (n) { this.x *= n; this.y *= n; return this; },
+    multiplyVector: function (vec) { this.x *= vec.x; this.y *= vec.y; return this; },
+    negate: function () { return this.multiply(-1); },
+    // Returns the dot product of two vectors.
+    dot: function (vec) { return this.x*vec.x + this.y*vec.y; },
+    // Returns the wedge product of two vectors.
+    wedge: function (vec) { return this.x*vec.y - this.y*vec.x; },
+    // Clamps the vector's x and y values to a minimum and maximum vector.
+    clamp: function (min, max) { this.x = Math.bound(min.x, max.x); this.y = Math.bound(min.y, max.y); return this; },
+    toMatrix: function () { return new Matrix([this.x, this.y]); },
+    // Returns the angle formed by the vector with the positive X axis.
+    angle: function () { return Math.atan2(this.y/this.x); },
+    // Projects the vector onto another.
+    project: function (vec) { return vec.multiplyScalar(this.dot(vec)/vec.dot(vec)); },
+    // Gets the normal of a vector.
+    normal: function (dir) { if (dir) return new Vector2D(-this.y, this.x); else return new Vector2D(this.y, -this.x); }
+};/*
+function P2DObject(id, geometry, material, position, rotation, scale) {
+    if (!isNull(id)) this.id = id;
+    else this.id = new Date().getTime()*Math.random();
+    this.geometry = geometry;
+    this.material = material;
+    this.position = position || new Vector2D(0, 0, 0);
+    this.rotation = rotation || 0;
+    this.scale = scale || 1;
+}
+P2DObject.prototype.testCollision = function (o2) {
+    var o1 = this,
+        b1 = this.geometry,
+        b2 = o2.geometry;
+    switch (b1.constructor) {
+        case P2DBoxGeometry: switch (b2.constructor) {
+            case P2DBoxGeometry:
+
+            break;
+        } break;
+    }
+    return null;
+}
+function P2DSolidMaterial(colour) {
+    this.colour = colour;
+}
+function P2DOutlineMaterial(colour, width) {
+    this.colour = colour;
+    this.width = width || 1;
+}
+function P2DPolygonGeometry(plot) {
+    for (var i=0;i<plot.length;i++)
+        if (plot instanceof Array) plot[i] = new Vector2D(plot[i][0], plot[i][1]);
+    this.plot = plot;
+}
+function P2DCircleGeometry(radius) {
+    this.radius = radius;
+}
+P2DCircleGeometry.prototype.isColliding = function (o2) {
+    var o1 = this,
+        g1 = this.geometry,
+        g2 = o2.geometry;
+    switch (g2.constructor) {
+        case P2DCircleGeometry:
+            return o1.position.subtract(o2.position).magnitude() -
+                (g1.radius + g2.radius) < 0;
+        break;
+        case P2DAxisAlignedBoundingBox:
+            var d = o1.position
+                .subtract(
+                    o1.position
+                    .subtract(o2.position)
+                    .clamp(
+                        g2.halfExtents
+                        .multiply(-1),
+                        g2.halfExtents
+                    )
+                ).magnitude() - g1.radius;
+            return d < 0;
+        break;
+        default: return false;
+    }
+}
+function P2DBoxGeometry(width, height) {
+    this.width = width;
+    this.height = height;
+    this.halfExtents = new Vector2D(width/2, height/2);
+}*/
+function P2DObject(id, position, rotation) {
+    if (!isNull(id)) this.id = id;
+    else this.id = btoa(parseInt(Math.random()*new Date().getTime())).substring(0, 16);
+    this.position = position || new Vector2D(0, 0);
+    this.rotation = rotation || 0;
+    this.vertices = [];
+}
+P2DObject.prototype.setPosition = function (vec) { this.position = vec; return this; }
+P2DObject.prototype.setRotation = function (angle) { this.rotation = angle; return this; }
+P2DObject.prototype.scale = function (num) {
+    for (var i=0;i<this.vertices.length;i++)
+        this.vertices[i] = this.vertices[i].subtractVector(this.position).multiplyScalar(num).addVector(this.position);
+    return this;
+}
+function circlePointV2D(angle, radius, centre) {
+    if (isNull(centre)) centre = new Vector2D(0, 0);
+    return centre.copy().add(new Vector2D(radius*Math.cos(angle), radius*Math.sin(angle)));
+}
+function P2DBoxObject(id, position, rotation, width, height) {
+    P2DObject.call(this, id, position, rotation);
+    this.width = width;
+    this.height = height;
+    this.halfExtents = new Vector2D(width/2, height/2);
+    this.setVertices();
+}
+P2DBoxObject.prototype = P2DObject.prototype;
+P2DBoxObject.prototype.constructor = P2DBoxObject;
+P2DBoxObject.prototype.setVertices = function () {
+    var extent = Math.pythagoras(this.width, this.height),
+        angle = Math.atan2(this.height, this.width);
+    this.vertices = [
+        circlePointV2D(this.rotation-angle, -extent, this.position), // top-left
+        circlePointV2D(this.rotation+angle, -extent, this.position), // bottom-left
+        circlePointV2D(this.rotation-angle, extent, this.position), // bottom-right
+        circlePointV2D(this.rotation+angle, extent, this.position) // top-right
+    ];
+}
+P2DBoxObject.prototype.setPosition = function (position) {
+    this.position = position;
+    this.setVertices();
+    return this;
+}
+P2DBoxObject.prototype.setRotation = function (angle) {
+    this.rotation = angle;
+    this.setVertices();
+    return this;
+}
+P2DBoxObject.prototype.setDimensions = function (width, height) {
+    this.width = width;
+    this.height = height;
+    this.halfExtents = new Vector2D(width/2, height/2);
+    this.setVertices();
+    return this;
+}
+P2DBoxObject.prototype.scale = function (num) {
+    this.height *= num;
+    this.width *= num;
+    this.setVertices();
+    return this;
+}
+P2DBoxObject.prototype.getMinkowskiSum = function (obj2) {
+    for (var i=0,v=[];i<this.vertices.length;i++) v[i] = this.vertices[i].copy().add(obj2.vertices[i]);
+    return v;
+}
+P2DBoxObject.prototype.getCollisionVector = function (obj2) {
+    var obj1 = this;
+    switch (obj2.constructor) {
+        case P2DBoxObject:
+
+        break;
+        default: return null;
+    }
+}
+function Matrix(arr) {
+    Array.call(this);
+    for (var i=0;i<arr.length;i++) this.push(arr[i]);
+    this.rows = arr.length;
+    this.columns = arr[0].length;
+}
+Matrix.fromMatrixCollection = function (matarr) {
+    for (var i=0,a=[];i<matarr.length;i++) a.push(matarr[i].toArray());
+    return new Matrix(a);
+}
+Matrix.prototype = new Array();
+Matrix.prototype.constructor = Matrix;
+Matrix.prototype.toArray = function () { for (var i=0,a=[];i<this.length;i++) a.push(this[i]); return a; }
+Matrix.prototype.getRow = function (row) { return this[row]; }
+Matrix.prototype.getColumn = function (column) { for (var i=0,a=[];i<this.length;i++) a.push(this[i][column]); return a; }
+Matrix.prototype.getElement = function (n) { return this[Math.floor(n/this.columns)][n%this.columns]; }
+Matrix.prototype.multiply = function (mat) {
+    if (this.columns != mat.rows) return undefined;
+    for (var i=0,a=[];i<this.rows;i++) {
+        for (var j=0,b=[];j<mat.columns;j++) {
+            for (var k=0,t=0;k<this.getRow(i).length;k++)
+                t += this.getRow(i)[k] * mat.getColumn(j)[k];
+            b.push(t);
+        }
+        a.push(b);
+    }
+    return new Matrix(a);
+}
+Matrix.prototype.transpose = function () {
+    for (var i=0,a=[];i<this.rows;i++) for (var j=0;j<this.columns;j++) a.push(this[j][i]);
+    return a;
+}
+var Phys2D = {
+    canvas: null,
+    frames: 0,
+    state: {
+        paused: false,
+        lastSecond: -1
+    },
+    settings: {
+
+    },
+    objects: [],
+    overlay: {
+        showMessage: function (message) {
+            $("#phys-2d + .item-info .cvs-overlay-cont").show();
+            $("#phys-2d + .item-info .cvs-overlay").html(message);
+        },
+        hide: function () {
+            $("#phys-2d + .item-info .cvs-overlay-cont").hide();
+        }
+    },
+    init: function () {
+        if (!isNull(Phys2D.canvas)) {
+            Phys2D.initStage();
+            Phys2D.initObjects();
+            Phys2D.loop();
+        } else TBI.log("Phys2D initialisation failed.");
+    },
+    initStage: function () {
+        Phys2D.$ = Phys2D.canvas.getContext("2d");
+        Phys2D.width = Phys2D.canvas.width;
+        Phys2D.height = Phys2D.canvas.height;
+        Phys2D.overlay.hide();
+        Phys2D.$.translate(0, Phys2D.height);
+    },
+    initObjects: function () {/*
+        Phys2D.objects.push(new P2DObject(
+            "circle-test",
+            new P2DCircleGeometry(20),
+            new P2DSolidMaterial("#00f"),
+            new Vector2D(0, 0)
+        ));
+        Phys2D.objects.push(new P2DObject(
+            "plot-test",                    // id
+            new P2DPolygonGeometry([        // geometry
+                [5,5],
+                [5,-5],
+                [-5,-5],
+                [-5,5],
+                [5,5]
+            ]),
+            new P2DOutlineMaterial("#f00"), // material
+            new Vector2D(100, 200),         // position (optional)
+            dtr(20),                             // angle (optional)
+            10                              // scale (optional)
+        ));*/
+        Phys2D.objects.push(new P2DBoxObject(
+            "box-test",
+            new Vector2D(100, 180),
+            dtr(20),
+            90, 30
+        ));
+        Phys2D.objects.push(new P2DBoxObject(
+            "box-test2",
+            new Vector2D(200, 200),
+            dtr(0),
+            40, 120
+        ));
+    },
+    getObjectById: function (id) {
+        for (var i=0;i<Phys2D.objects.length;i++)
+            if (Phys2D.objects[i].id == id)
+        return Phys2D.objects[i];
+    },
+    loop: function () {
+        requestAnimationFrame(Phys2D.loop);
+
+        if (document.body.className.search(" in-focus") == -1) { // lost focus
+            Phys2D.overlay.showMessage("Lost focus. Please re-focus the browser window to continue.");
+        } else if (Phys2D.state.paused) { // paused
+            Phys2D.overlay.showMessage("Paused.");
+        } else { // active
+            Phys2D.overlay.hide();
+            // time and frame control
+            if (new Date().getTime() > Phys2D.lastSecond + 1000) {
+                Phys2D.lastSecond = new Date().getTime();
+                Phys2D.fps = Phys2D.frames;
+                Phys2D.frames = 0;
+            } else Phys2D.frames++;
+            Phys2D.draw();
+            Phys2D.animate();
+        }
+    },
+    draw: function () {
+        Phys2D.$.clearRect(0, 0, Phys2D.width, -Phys2D.height);
+        Phys2D.$.fillStyle = "#eee";
+        Phys2D.$.fillRect(0, 0, Phys2D.width, -Phys2D.height);
+        for (var i=0;i<Phys2D.objects.length;i++) {
+            var curr = Phys2D.objects[i];
+
+            Phys2D.$.beginPath();
+            Phys2D.$.save();
+
+            switch (curr.constructor) {
+                case P2DBoxObject:
+                    Phys2D.$.fillStyle = Phys2D.$.strokeStyle = "#777";
+                    Phys2D.$.lineWidth = 2;
+
+                    for (var j=0;j<curr.vertices.length;j++) {
+                        var v = curr.vertices[j];
+                        Phys2D.$.fillStyle = "#f00|#0f0|#00f|#ff0|#aaa".split("|")[j<0||j>3?4:j];
+                        Phys2D.$.drawCircle(v.x, -v.y, 5, false);
+                    }
+
+                    Phys2D.$.fillStyle = Phys2D.$.strokeStyle = "#777";
+                    Phys2D.$.beginPath();
+                    Phys2D.$.moveTo(curr.vertices[0].x, -curr.vertices[0].y);
+                    for (var j=1;j<curr.vertices.length;j++)
+                        Phys2D.$.lineTo(curr.vertices[j].x, -curr.vertices[j].y);
+                    Phys2D.$.lineTo(curr.vertices[0].x, -curr.vertices[0].y);
+                    Phys2D.$.stroke();
+                    Phys2D.$.closePath();
+
+                    Phys2D.$.drawCircle(curr.position.x, -curr.position.y, 5, false);
+                    Phys2D.$.drawCircle(curr.position.x, -curr.position.y, curr.width, true);
+                    Phys2D.$.drawCircle(curr.position.x, -curr.position.y, curr.height, true);
+                    Phys2D.$.drawCircle(curr.position.x, -curr.position.y, Math.pythagoras(curr.width, curr.height), true);
+                break;
+            }
+
+            Phys2D.$.restore();
+            Phys2D.$.closePath();
+        }
+    },
+    animate: function () {
+
+    }
+};
+$(document).on("pageload", function () {
+    Phys2D.canvas = gebi("p2d-canvas");
+    Phys2D.init();
 });

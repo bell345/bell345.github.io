@@ -1,10 +1,10 @@
-/*  VERSION 5 Stylesheet - Prototypes
-*   Licensed under Creative Commons Attribution-ShareAlike 4.0 International
-*   http://creativecommons.org/licenses/by-sa/4.0/
-*   (CC)-BY-SA 2014 Thomas Bell */
-/* ==== */
-/* GRID */
-/* ==== */
+/* VERSION 5 Stylesheet - Prototypes
+ * Licensed under Creative Commons Attribution-ShareAlike 4.0 International
+ * http://creativecommons.org/licenses/by-sa/4.0/
+ * (CC)-BY-SA 2014 Thomas Bell */
+/* ====== */
+/*  GRID  */
+/* ====== */
 .grid {
     background:rgba(255,255,255,0.3);
     width:600px;
@@ -14,6 +14,8 @@
     -khtml-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
+    -o-user-select: none;
+    user-select:none;
     cursor:default;
 	outline:2px solid rgba(0,0,0,0.3);
 }
@@ -63,9 +65,9 @@
     left:0;
     text-align:right;
 }
-/* ======== */
-/* CALENDAR */
-/* ======== */
+/* ========== */
+/*  CALENDAR  */
+/* ========== */
 .calcol {
     display:inline-block;
 }
@@ -165,9 +167,9 @@
     position:relative;
     z-index:2;
 }
-/* ====== */
-/* TXTENG */
-/* ====== */
+/* ======== */
+/*  TXTENG  */
+/* ======== */
 #txtengarea {
     background:black;
     color:#00ff00;
@@ -187,9 +189,9 @@
     font-family:'Consolas',monospace;
     border:1px solid #00ff00;
 }
-/* ========= */
-/* COUNTDOWN */
-/* ========= */
+/* =========== */
+/*  COUNTDOWN  */
+/* =========== */
 .cdown {
 	min-width:540px;
 	color:#ffffff;
@@ -245,9 +247,9 @@
 #cd-fn-set input[type="text"]:not(#cdfn-name) {
 	width:120px;
 }
-/* ========== */
-/* CALCULATOR */
-/* ========== */
+/* ============ */
+/*  CALCULATOR  */
+/* ============ */
 #calc-out {
     background:#333;
     padding:12px;
@@ -384,9 +386,9 @@ button.calcbh {
 #calc-ac .calc-scut {
     color:#555;
 }
-/* ========= */
-/* TIMETABLE */
-/* ========= */
+/* =========== */
+/*  TIMETABLE  */
+/* =========== */
 .ttable {
     width:85%;
 }
@@ -540,9 +542,9 @@ button.calcbh {
 .ttb-highlight .ttable-cellh {
     color:#eee !important;
 }
-/* =========== */
-/* PLANETARIUM */
-/* =========== */
+/* ============= */
+/*  PLANETARIUM  */
+/* ============= */
 #psim-canvas {
     background:#003;
 }
@@ -552,9 +554,9 @@ button.calcbh {
 .psim-control input[type="range"] {
     width:300px;
 }
-/* ============= */
-/* COMPLEX PLANE */
-/* ============= */
+/* =============== */
+/*  COMPLEX PLANE  */
+/* =============== */
 .cmp-control input[type="text"] {
     width:134px;
 }
@@ -570,16 +572,18 @@ button.calcbh {
     top:0;
     cursor:crosshair;
 }
-/* =============== */
-/* CARTESIAN PLANE */
-/* =============== */
-#cart-buttons {
-    position:absolute;
-    top:0;
-    right:0;
+#cmp-container {
     height:600px;
-    width:48px;
+    position:relative;
 }
+#cmp-buttons button {
+    height:33%;
+    width:100%;
+    font-size:24px;
+}
+/* ================= */
+/*  CARTESIAN PLANE  */
+/* ================= */
 #cart-buttons button {
     height:33%;
     width:100%;
@@ -635,3 +639,50 @@ button.calcbh {
     display:block;
     margin:4px auto;
 }
+/* ============== */
+/*  CROSS-SOLVER  */
+/* ============== */
+#wss-cword {
+    border-spacing:0;
+    border:1px solid black;
+    margin-bottom:12px;
+}
+#wss-cword td {
+    position:relative;
+}
+#wss-rows-text, #wss-columns-text {
+    width:40px;
+}
+#wss-cword .box {
+    border:1px solid black;
+    width:20px;
+    height:26px;
+    display:table-cell;
+    vertical-align:middle;
+    text-align:center;
+    background:#eee;
+    color:#333;
+    outline:0;
+}
+#wss-wordlist {
+    min-width:200px;
+}
+#wss-cword td .match {
+    position:absolute;
+    top:0;
+    left:0;
+    height:100%;
+    width:100%;
+    opacity:0.3;
+    pointer-events:none;
+}
+#wss-cword .match-0 { background:#f00; }
+#wss-cword .match-1 { background:#0f0; }
+#wss-cword .match-2 { background:#00f; }
+#wss-cword .match-3 { background:#ff0; }
+#wss-cword .match-4 { background:#f0f; }
+#wss-cword .match-5 { background:#0ff; }
+#wss-cword .match-6 { background:#fa0; }
+#wss-cword .match-7 { background:#f0a; }
+#wss-cword .match-8 { background:#af0; }
+#wss-cword .match-9 { background:#0fa; }
