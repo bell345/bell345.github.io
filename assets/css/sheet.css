@@ -202,7 +202,7 @@ nav > div > a::before {
     background-color:rgba(0,0,0,0.05);
 }
 nav > div:not(.nav-indicator):hover {
-    background-color:rgba(0,0,0,0.1);
+    background-color:rgba(0,0,0,0.1) !important;
 }
 .nav-indicator {
     width:100%;

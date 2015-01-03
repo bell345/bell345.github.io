@@ -961,7 +961,7 @@ Vector2D.prototype = {
     clamp: function (min, max) { this.x = Math.bound(min.x, max.x); this.y = Math.bound(min.y, max.y); return this; },
     toMatrix: function () { return new Matrix([this.x, this.y]); },
     // Returns the angle formed by the vector with the positive X axis.
-    angle: function () { return Math.atan2(this.y/this.x); },
+    angle: function () { return Math.atan2(this.y, this.x); },
     // Projects the vector onto another.
     project: function (vec) { return vec.multiplyScalar(this.dot(vec)/vec.dot(vec)); },
     // Gets the normal of a vector.
@@ -1036,7 +1036,7 @@ function P2DBoxGeometry(width, height) {
 }*/
 function P2DObject(id, position, rotation) {
     if (!isNull(id)) this.id = id;
-    else this.id = btoa(parseInt(Math.random()*new Date().getTime())).substring(0, 16);
+    else this.id = btoa(parseInt(Math.random()*new Date().getTime())).reverse().substring(0, 16);
     this.position = position || new Vector2D(0, 0);
     this.rotation = rotation || 0;
     this.vertices = [];
@@ -1094,9 +1094,19 @@ P2DBoxObject.prototype.scale = function (num) {
     this.setVertices();
     return this;
 }
-P2DBoxObject.prototype.getMinkowskiSum = function (obj2) {
-    for (var i=0,v=[];i<this.vertices.length;i++) v[i] = this.vertices[i].copy().add(obj2.vertices[i]);
-    return v;
+P2DBoxObject.prototype.getSides = function () {
+    for (var i=1,a=[];i<this.vertices.length;i++)
+        a.push(this.vertices[i].copy().subtractVector(this.vertices[i-1]));
+    if (this.vertices.length > 1) a.push(this.vertices[this.vertices.length-1].copy().subtractVector(this.vertices[0]));
+    return a;
+}
+P2DBoxObject.prototype.getSeparatingAxes = function () {
+    var sides = this.getSides();
+    for (var i=0,a=[];i<sides.length;i++) {
+        var curr = sides[i].angle().fixFloat();
+        if (a.indexOf(curr) == -1) a.push(curr);
+    }
+    return a;
 }
 P2DBoxObject.prototype.getCollisionVector = function (obj2) {
     var obj1 = this;
@@ -1204,7 +1214,7 @@ var Phys2D = {
             "box-test2",
             new Vector2D(200, 200),
             dtr(0),
-            40, 120
+            90, 120
         ));
     },
     getObjectById: function (id) {

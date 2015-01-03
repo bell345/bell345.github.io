@@ -1,16 +1,31 @@
+.cdown .help {
+    display:none;
+}
 .cdown {
     margin:72px auto;
     margin-bottom:0;
     text-align:center;
 }
-.cdown.set .cdo, .cdown.out .cds {
-    display:none;
+.cdown:not(.out) .cdo, .cdown:not(.set) .cds, .cdown:not(.mul) .cdm {
+    display:none !important;
 }
-.cdown-head, .cdown-set, .cdown-out {
+.cdown > div {
     background:#eee;
     padding:12px 18px;
     margin:24px 48px;
     box-shadow:4px 4px 0px 0px rgba(0,0,0,0.1);
+    transition:0.2s all;
+}
+.cdo-active {
+    transition:0.2s all;
+}
+.cdown.simple > *:not(.smp), .cdown.simple .smp > *:not(.smp) {
+    display:none;
+}
+.cdown.simple .cdo-active {
+    font-size:84px;
+    padding:26px 52px;
+    text-shadow:5px 5px 0px rgba(0,0,0,0.1);
 }
 .cds-time {
     font-size:22px;
@@ -38,7 +53,7 @@
     margin-bottom:0;
     text-align:center;
 }
-.cdown-out h3, .cdown-set h2, .cds-date, .cdh-dest { text-align:center; }
+h3, h2, .cds-date, .cdh-dest { text-align:center; }
 .cdh-url {
     font-size:24px;
     margin-top:10px;
@@ -47,4 +62,7 @@
 .cdh-dest {
     font-size:32px;
     margin-bottom:20px;
+}
+.button-row {
+    margin-bottom:6px;
 }

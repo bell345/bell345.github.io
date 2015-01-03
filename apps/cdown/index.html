@@ -16,21 +16,33 @@
 </head>
 <body>
     <div class="cdown set" id="cdown3">
-        <div class="cdown-head">
-            <h1 class="cdh-title">Set CountDown</h1>
+        <div class="cdown-head smp">
+            <h1 class="cdh-title smp">Set CountDown</h1>
             <h2 class="cdh-dest cdo"><time datetime="1970-01-01T00:00:00"></time></h2>
-            <button class="cdh-format toggle cdo">Shorten</button>
-            <button class="cdh-mode toggle cds">Offset Mode</button>
-            <button class="cdh-timer toggle cds">Timer Mode</button>
-            <button class="cdh-geturl up-down cdo" for=".cdh-url">URL</button>
-            <button class="cdh-getdest up-down on cdo" for=".cdh-dest">Finish Time</button>
-            <button class="cdh-reset cdo">Reset</button>
-            <button class="cdh-tonow cds">Reset To Now</button>
-            <button class="cdh-submit cds">Submit</button>
+            <div class="button-row">
+                <button class="cdh-help toggle">Help</button>
+                <button class="cdh-setnew cdo">Set New CountDown</button>
+                <button class="cdh-view cds">View CountDown</button>
+                <button class="cdh-reset cdo major">Reset</button>
+                <button class="cdh-submit cds major">Submit</button>
+            </div>
             <div class="cdh-url cdo"></div>
         </div>
+        <div class="cdown-mul cdm cdo">
+            <select class="cdm-select"></select>
+            <button class="cdm-recent">Select Shortest</button>
+        </div>
         <div class="cdown-set cds">
+            <div class="button-row">
+                <button class="cdh-mode toggle">Offset Mode</button>
+                <span class="cdh-mode-help help"></span>
+                <button class="cdh-tonow">Reset To Now</button>
+                <span class="cdh-tonow-help help"></span>
+                <button class="cdh-timer toggle">Timer Mode</button>
+                <span class="cdh-timer-help help"></span>
+            </div>
             <input type="text" class="cds-title" placeholder="Title" />
+            <span class="cds-title-help help"></span>
             <fieldset class="cds-defined">
                 <div>
                     <select class="cds-zone">
@@ -75,13 +87,17 @@
                         <option value="13">[+13:00] Tonga, Phoenix Islands</option>
                         <option value="14">[+14:00] Line Island</option>
                     </select>
+                    <span class="cds-zone-help help"></span>
                     <button class="cds-dst toggle">Daylight Savings</button>
+                    <span class="cds-dst-help help"></span>
                 </div>
                 <input type="date" class="cds-date" name="cdsd" />
+                <span class="cds-date-help help"></span>
                 <fieldset class="cds-time">
                     <input type="text" class="cds-hour" />:
                     <input type="text" class="cds-minute" />:
                     <input type="text" class="cds-second" />
+                    <span class="cds-time-help help"></span>
                 </fieldset>
             </fieldset>
             <fieldset class="cds-fromnow">
@@ -97,8 +113,13 @@
                 </fieldset>
             </fieldset>
         </div>
-        <div class="cdown-out cdo">
-            <h2 class="cdo-active"></h2>
+        <div class="cdown-out cdo smp">
+            <div class="button-row smp">
+                <button class="cdh-geturl up-down" for=".cdh-url">URL</button>
+                <button class="cdh-getdest up-down on" for=".cdh-dest">Finish Time</button>
+                <button class="cdh-simple toggle smp">Simple Mode</button>
+            </div>
+            <h2 class="cdo-active smp"></h2>
         </div>
         <audio class="cdown-notify">
             <source src="assets/res/sounds/notify.ogg" type="audio/ogg" />

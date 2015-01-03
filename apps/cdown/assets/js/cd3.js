@@ -77,11 +77,11 @@ CD3.formatDiff = function (diff, formatstr) {
 }
 // Does what it advertises.
 CD3.dateToArray = function (time) {
-    return [time.getFullYear(), 
-            time.getMonth(), 
-            time.getDate(), 
-            time.getHours(), 
-            time.getMinutes(), 
+    return [time.getFullYear(),
+            time.getMonth(),
+            time.getDate(),
+            time.getHours(),
+            time.getMinutes(),
             time.getSeconds()
     ];
 }
@@ -98,7 +98,7 @@ CD3.arrayToDate = function (year, month, date, hour, minute, second) {
 }
 // Takes a date object and returns a formatted string referring to that object as specified in formatstr.
 CD3.format = function (time, formatstr) {
-    // formatstr has zero or more of the following letter sequences 
+    // formatstr has zero or more of the following letter sequences
     // surrounded by block (curly) brackets in addition to other
     // characters to specify the format of the moment in question.
     // e.g. "{yyyy}-{MM}-{DD} {HH}:{mm}:{ss}" would deliver an ISO
@@ -149,6 +149,11 @@ CD3.validate = function (year, month, date, hour, minute, second) {
     } catch (e) { TBI.error(e); return null }
     finally { return [year,month,date,hour,minute,second] }
 }
+function CountDown(title, time, mode) {
+    this.title = title;
+    this.time = time;
+    this.mode = mode == null ? false : mode;
+}
 // The object that runs the UI, timers and persistency.
 var CDown = {
     now: new Date(),
@@ -156,128 +161,271 @@ var CDown = {
     fromNow: false,
     mode: false,
     title: "",
-    shorten: false
+    shorten: false,
+    lastUpdate: null,
+    list: []
 };
 // Submits the values in the "form" (I hate forms, btw)
 CDown.submit = function () {
-    CDown.title = $(".cds-title").val();
-    if (isNull(CDown.title) && !confirm("A title is not required but recommended. Continue anyway?")) return false; 
+    var title = $(".cds-title").val();
+    if (isNull(title)) {
+        if (!confirm("A title is not required but recommended. Continue anyway?")) return false;
+        else title = CDown.findNewTitle();
+    }
     var temp = new Date();
     if (!CDown.fromNow) {
         var dte = $(".cds-date").val().split("-");
-        var valid = CD3.validate(dte[0],dte[1]-1,dte[2],$(".cds-hour").val(),$(".cds-minute").val(),$(".cds-second").val());
+        var valid = CD3.validate(
+            dte[0],
+            dte[1] - 1,
+            dte[2],
+            $(".cds-hour").val(),
+            $(".cds-minute").val(),
+            $(".cds-second").val()
+        );
         if (!isNull(valid)) {
             temp = CD3.arrayToDate.apply(null, valid);
             temp.setMinutes(temp.getMinutes() + ((-CD3.now.getTimezoneOffset()) - $(".cds-zone").val()*60) + (TBI.isToggled($(".cds-dst")[0])?60:0));
         } else return false;
-    } else if (!CDown.mode) { 
+    } else if (!CDown.mode) {
         temp = CD3.arrayToDate(
-            temp.getFullYear() + parseInt(isNull($(".cdsfn-year").val()) ? 0 : $(".cdsfn-year").val()),
-            temp.getMonth() + parseInt(isNull($(".cdsfn-month").val()) ? 0 : $(".cdsfn-month").val()),
-            temp.getDate() + parseInt(isNull($(".cdsfn-day").val()) ? 0 : $(".cdsfn-day").val()),
-            temp.getHours() + parseInt(isNull($(".cdsfn-hour").val()) ? 0 : $(".cdsfn-hour").val()),
-            temp.getMinutes() + parseInt(isNull($(".cdsfn-minute").val()) ? 0 : $(".cdsfn-minute").val()),
-            temp.getSeconds() + parseInt(isNull($(".cdsfn-second").val()) ? 0 : $(".cdsfn-second").val())
+            temp.getFullYear() + parseInt($(".cdsfn-year").val() || 0),
+            temp.getMonth() + parseInt($(".cdsfn-month").val() || 0),
+            temp.getDate() + parseInt($(".cdsfn-day").val() || 0),
+            temp.getHours() + parseInt($(".cdsfn-hour").val() || 0),
+            temp.getMinutes() + parseInt($(".cdsfn-minute").val() || 0),
+            temp.getSeconds() + parseInt($(".cdsfn-second").val() || 0)
         );
     } else {
         temp = CD3.arrayToDate(
-            temp.getFullYear() - parseInt(isNull($(".cdsfn-year").val()) ? 0 : $(".cdsfn-year").val()),
-            temp.getMonth() - parseInt(isNull($(".cdsfn-month").val()) ? 0 : $(".cdsfn-month").val()),
-            temp.getDate() - parseInt(isNull($(".cdsfn-day").val()) ? 0 : $(".cdsfn-day").val()),
-            temp.getHours() - parseInt(isNull($(".cdsfn-hour").val()) ? 0 : $(".cdsfn-hour").val()),
-            temp.getMinutes() - parseInt(isNull($(".cdsfn-minute").val()) ? 0 : $(".cdsfn-minute").val()),
-            temp.getSeconds() - parseInt(isNull($(".cdsfn-second").val()) ? 0 : $(".cdsfn-second").val())
+            temp.getFullYear() - parseInt($(".cdsfn-year").val() || 0),
+            temp.getMonth() - parseInt($(".cdsfn-month").val() || 0),
+            temp.getDate() - parseInt($(".cdsfn-day").val() || 0),
+            temp.getHours() - parseInt($(".cdsfn-hour").val() || 0),
+            temp.getMinutes() - parseInt($(".cdsfn-minute").val() || 0),
+            temp.getSeconds() - parseInt($(".cdsfn-second").val() || 0)
         );
     }
-    CDown.active = temp.getTime();
-    TBI.timerClear("CDown");
-    if (CDown.update()) { 
-        TBI.timerSet("CDown", 1000, CDown.update);
-        createCookie("CDown", CDown.active+(isNull(CDown.title)?"":" "+encodeURI(CDown.title))+(CDown.mode?" "+CDown.mode.toString():""));
+    CDown.new(title, temp.getTime(), TBI.isToggled($(".cdh-timer")[0]));
+}
+CDown.searchByTitle = function (title) {
+    for (var i=0;i<CDown.list.length;i++)
+        if (CDown.list[i].title == title) return i;
+    return -1;
+}
+CDown.findNewTitle = function () {
+    var n = 1;
+    while (CDown.searchByTitle("Untitled "+n) != -1) n++;
+    return "Untitled "+n;
+}
+CDown.findEarliest = function () {
+    for (var i=0,m=Infinity,a=0;i<CDown.list.length;i++) {
+        var curr = CDown.list[i].time;
+        if (curr > new Date().getTime() && curr < m) { m = curr; a = i; }
+    }
+    if (!isFinite(m)) return -1;
+    else return a;
+}
+CDown.new = function (title, time, mode) {
+    var cdown = new CountDown(title, time, mode);
+    if (CDown.searchByTitle(cdown.title) != -1) {
+        alert("There is already a countdown with the same name. Choose a different name.");
+        return null;
+    }
+    if (CDown.set(cdown)) {
+        CDown.list.push(cdown);
+        CDown.setCookie();
+        $(".cdm-select").append("<option value="+encodeURI(cdown.title)+">"+cdown.title+"</option>");
+        $(".cdm-select").val(encodeURI(cdown.title));
+        CDown.change("out");
     }
 }
-CDown.toggle = function (bool) { 
+CDown.setCookie = function () {
+    if (CDown.list.length < 1) return eraseCookie("CDown");
+    var cookie = "";
+    for (var i=0;i<CDown.list.length;i++) {
+        var curr = CDown.list[i];
+        cookie += curr.time;
+        if (!isNull(curr.title)) cookie += " "+encodeURI(curr.title);
+        if (curr.mode) cookie += " "+curr.mode.toString();
+        cookie += "|";
+    }
+    if (cookie.endsWith("|")) cookie = cookie.substring(0, cookie.length-1);
+    createCookie("CDown", cookie);
+}
+CDown.generateURL = function () {
+    var url = location.origin + location.pathname,
+        pairs = {};
+    for (var i=0;i<CDown.list.length;i++) {
+        var curr = CDown.list[i],
+            j = i == 0 ? "" : i;
+        pairs["t"+j] = curr.time;
+        pairs["n"+j] = curr.title;
+        if (curr.mode != false) pairs["m"+j] = curr.mode;
+    }
+    var firstVal = true;
+    for (var key in pairs) if (pairs.hasOwnProperty(key)) {
+        url += (firstVal ? "?" : "&");
+        url += encodeURI(key.toString());
+        url += "=";
+        url += encodeURI(pairs[key].toString());
+        firstVal = false;
+    }
+    return url;
+}
+CDown.generateTitle = function () {
+    if (gecn("cdown")[0].className.search(" out") != -1) {
+        var str = "";
+        str += "Count" + (CDown.mode ? "Up" : "Down");
+        if (!isNull(CDown.title)) str += " - " + CDown.title;
+        return str;
+    } else return "Set CountDown";
+}
+CDown.set = function (cdown) {
+    CDown.title = cdown.title;
+    CDown.active = cdown.time;
+    CDown.mode = cdown.mode;
+    TBI.timerClear("CDown");
+    if (CDown.update()) {
+        $(".cdm-select").val(encodeURI(CDown.title));
+        TBI.timerSet("CDown", 1000, CDown.update);
+        $(".cdh-title").html(CDown.generateTitle());
+        $(".cdh-url").html(CDown.generateURL());
+        $(".cdh-dest time").attr("datetime", new Date(CDown.active).toISOString());
+        $(".cdh-dest time").attr("title", $(".cdh-dest time").attr("datetime"));
+        $(".cdh-dest time").html(CD3.format(new Date(CDown.active), "{dddd} the {d} of {MMMM}, {yyyy} at {HH}:{mm}:{ss}"));
+        if (gecn("cdown")[0].className.search(" mul") == -1 && CDown.list.length > 1) CDown.change("mul");
+        return true;
+    } else return false;
+}
+CDown.change = function (mode) {
     var out = gecn("cdown")[0].className.search(" out") != -1;
-    if (bool && !out) {
-        gecn("cdown")[0].className = gecn("cdown")[0].className.replace(" set", " out");
-        $(".cds").slideUp();
-        $(".cdo").slideDown();
-        for (var i=0;i<$(".cdo[for]").length;i++) {
-            var el = $(".cdo[for]")[i];
-            if (TBI.isToggled(el)) $($(el).attr("for")).slideDown();
-            else $($(el).attr("for")).hide();
-        }
-    } else if (!bool && out) {
-        gecn("cdown")[0].className = gecn("cdown")[0].className.replace(" out", " set");
-        $(".cds").slideDown();
-        for (var i=0;i<$(".cds[for]").length;i++) {
+    if (mode == "out" || mode == "set") {
+        if (mode == "out" && !out) gecn("cdown")[0].className = gecn("cdown")[0].className.replace(" set", " out");
+        else if (mode == "set" && out) gecn("cdown")[0].className = gecn("cdown")[0].className.replace(" out", " set");
+        if ((mode == "set") == out) for (var i=0;i<$(".cds[for]").length;i++) {
             var el = $(".cds[for]")[i];
             if (TBI.isToggled(el)) $($(el).attr("for")).slideDown();
             else $($(el).attr("for")).hide();
         }
-        $(".cdo").slideUp();
+        $(".cdh-title").html(CDown.generateTitle());
+    } else if (mode == "mul") {
+        var cn = gecn("cdown")[0].className;
+        if (cn.search(" mul") == -1)
+            gecn("cdown")[0].className = cn += " mul";
+    } else if (mode == "mul-off") {
+        var cn = gecn("cdown")[0].className;
+        if (cn.search(" mul") != -1)
+            gecn("cdown")[0].className = cn.replace(" mul", "");
     }
+}
+CDown.remove = function () {
+    if (!isNull(CDown.active)) {
+        new Note("/assets/res/icons/time48.png", isNull(CDown.title)?"CountDown":CDown.title, "CountDown completed.");
+        $(".cdown-notify")[0].play();
+    }
+    TBI.timerClear("CDown");
+    CDown.active = null;
+    CDown.list.splice(CDown.searchByTitle(CDown.title), 1);
+    $(".cdm-select option[value=\""+encodeURI(CDown.title)+"\"]").remove();
+    $(".cdh-title").html("Set CountDown");
+    $(".cdown").toggleClass("simple", false);
+    CDown.setCookie();
+    if (CDown.lastUpdate != "set") CDown.change("set");
+    CDown.lastUpdate = "set";
+    CDown.change("mul-off");
+    document.title = "CountDown";
+    var earliest = CDown.findEarliest();
+    if (earliest != -1)
+        CDown.set(CDown.list[earliest]);
 }
 CDown.update = function () {
-    var diff = CDown.mode?CD3.difference(CDown.active, new Date().getTime(), CDown.shorten?CD3.SHORT_CDOWN:CD3.LONG_CDOWN):
-        CD3.difference(new Date().getTime(), CDown.active, CDown.shorten?CD3.SHORT_CDOWN:CD3.LONG_CDOWN);
-    if (isNull(diff)) { 
-        if (!isNull(CDown.active)) {
-            new Note("/assets/res/icons/time48.png", isNull(CDown.title)?"CountDown":CDown.title, "CountDown completed.");
-            $(".cdown-notify")[0].play();
-        }
-        TBI.timerClear("CDown"); 
-        CDown.active = null;
-        $(".cdh-title").html("Set CountDown");
-        eraseCookie("CDown");
-        CDown.toggle(false);
-        document.title = "CountDown";
-        return false; 
-    } else { 
-        CDown.toggle(true); 
-        $(".cdo-active").html(diff); 
-        $(".cdh-title").html((CDown.mode?"CountUp":"CountDown")+(isNull(CDown.title)?"":" - "+CDown.title));
-        $(".cdh-url").html(location.origin + location.pathname + "?t=" + CDown.active + (isNull(CDown.title) ? "" : "&n=" + CDown.title) + (CDown.mode?"&m=" + CDown.mode.toString():""));
-        $(".cdh-dest time").attr("datetime", new Date(CDown.active).toISOString());
-        $(".cdh-dest time").attr("title", $(".cdh-dest time").attr("datetime"));
-        $(".cdh-dest time").html(CD3.format(new Date(CDown.active), "{dddd} the {d} of {MMMM}, {yyyy} at {HH}:{mm}:{ss}"));
-        document.title = 
+    var diff = null;
+    if (CDown.mode) diff = CD3.difference(CDown.active, new Date().getTime(), CDown.shorten?CD3.SHORT_CDOWN:CD3.LONG_CDOWN)
+    else diff = CD3.difference(new Date().getTime(), CDown.active, CDown.shorten?CD3.SHORT_CDOWN:CD3.LONG_CDOWN);
+    if (isNull(diff)) CDown.remove();
+    else {
+        if (CDown.lastUpdate != "out") CDown.change("out");
+        $(".cdo-active").html(diff);
+        document.title =
             (CDown.mode?CD3.difference(CDown.active, new Date().getTime(), CD3.SHORT_CDOWN):
             CD3.difference(new Date().getTime(), CDown.active, CD3.SHORT_CDOWN))+" - "+
-            (isNull(CDown.title)?"CDown":CDown.title)
-        return true; 
+            (isNull(CDown.title)?"CDown":CDown.title);
+        CDown.lastUpdate = "out";
     }
+    return !isNull(diff);
 }
-CDown.check = function () {
-    var cookie = readCookie("CDown");
-    if (!isNull(query.t)) {
-        CDown.active = parseInt(query.t);
-        if (!isNull(query.n)) CDown.title = decodeURI(query.n);
-        CDown.mode = isNull(query.m) ? false : query.m != "false";
-        TBI.timerClear("CDown");
-        if (CDown.update()) TBI.timerSet("CDown", 1000, CDown.update);
-    } else if (!isNull(cookie)) {
-        cookie = cookie.split(" ");
-        CDown.active = parseInt(cookie[0]);
-        if (!isNull(cookie[1])) CDown.title = decodeURI(cookie[1]);
-        CDown.mode = isNull(cookie[2]) ? false : cookie[2] != "false";
-        TBI.timerClear("CDown");
-        if (CDown.update()) TBI.timerSet("CDown", 1000, CDown.update);
-        else eraseCookie("CDown");
+CDown.run = function (success, failure) {
+    TBI.timerClear("CDown");
+    if (CDown.update()) {
+        TBI.timerSet("CDown", 1000, CDown.update);
+        if (success) success();
+    } else if (failure) failure();
+}
+CDown.load = function () {
+    for (var i=0;!isNull(query["t"+(i==0?"":i)]);i++) {
+        var j = i == 0 ? "" : i;
+        CDown.new(
+            !isNull(query["n"+j]) ? decodeURI(query["n"+j]) : CDown.findNewTitle(),
+            parseInt(query["t"+j]),
+            isNull(query["m"+j]) ? false : query["m"+j] != "false"
+        );
     }
+    var cookie = readCookie("CDown"),
+        cookieUsed = false;
+    if (!isNull(cookie)) {
+        cookie = cookie.split("|");
+        for (var i=0;i<cookie.length;i++) {
+            var curr = cookie[i];
+            curr = curr.split(" ");
+            var title = !isNull(curr[1]) ? decodeURI(curr[1]) : CDown.findNewTitle();
+            if (CDown.searchByTitle(title) == -1) CDown.new(
+                title,
+                parseInt(curr[0]),
+                isNull(curr[2]) ? false : curr[2] != "false"
+            );
+            cookieUsed = true;
+        }
+    }
+    var earliest = CDown.findEarliest();
+    if (earliest != -1)
+        CDown.set(CDown.list[earliest]);
+    CDown.run(null, cookieUsed ? function () { eraseCookie("CDown"); } : function () {});
 }
-CDown.setup = function () {
+CDown.setup = function (mode) {
+    mode = mode || false;
     CD3.now = new Date();
-    var spinfunc = function (e,u) {
-        var n=$(this).spinner("option", "min")+1,x=$(this).spinner("option", "max")-1,v=u.value;
-        v=v>x?n:v<n?x:v;$(this).val(zeroPrefix(v));return false;
+    var overflowfunc = function (el, sign) {
+        var vals = ["cds-hour", "cds-minute", "cds-second"],
+            d = new Date($(".cds-date").val()),
+            ind = -1;
+        for (var i=0;i<vals.length;i++)
+            if (el.className.search(vals[i]) != -1) { ind = i; break; }
+        if (ind == 0) {
+            d.setDate(d.getDate()+sign);
+            $(".cds-date").pickadate("picker").set("select", d);
+            $(".cds-date").val(CD3.format(d, "{yyyy}-{MM}-{DD}"));
+        } else if (ind != -1) {
+            var c = $("."+vals[ind-1]);
+            c.spinner(sign == 1 ? "stepUp" : "stepDown");
+            $("."+vals[ind-1]).spinner().trigger("spin");
+        }
+    }, spinfunc = function (e,u) {
+        var n = $(this).spinner("option", "min")*1 + 1,
+            x = $(this).spinner("option", "max") - 1,
+            v = u.value;
+        if (v > x) { v = n; overflowfunc(this, 1); }
+        else if (v < n) { v = x; overflowfunc(this, -1); }
+        u.value = zeroPrefix(v);
+        $(this).val(u.value);
+        return false;
     };
     $(".cds-zone").val(-CD3.now.getTimezoneOffset()/60);
     $(".cds-date").attr("data-value",CD3.now.getFullYear()+"-"+zeroPrefix(CD3.now.getMonth()+1)+"-"+zeroPrefix(CD3.now.getDate()));
     $(".cds-date").pickadate({format:'yyyy-mm-dd',clear:false});
     $(".cds-date").pickadate().pickadate("picker").set("select", CD3.now);
-    $(".cds-date").pickadate().pickadate("picker").set("min",!CDown.mode);
-    $(".cds-date").pickadate().pickadate("picker").set("max",CDown.mode);
+    $(".cds-date").pickadate().pickadate("picker").set("min",!mode);
+    $(".cds-date").pickadate().pickadate("picker").set("max",mode);
     $(".cds-hour").spinner({min:-1,max:24,spin:spinfunc});
     $(".cds-hour").val(zeroPrefix(CD3.now.getHours()));
     $(".cds-minute").spinner({min:-1,max:60,spin:spinfunc});
@@ -286,17 +434,16 @@ CDown.setup = function () {
     $(".cds-second").val(zeroPrefix(CD3.now.getSeconds()));
 }
 CDown.reset = function () {
-    if (!isNull(query.t)) location.search = "";
     if (!isNull(CDown.active)) {
-        CDown.active = null; 
-        eraseCookie("CDown");
+        CDown.remove(CDown.title);
         CDown.setup();
-        CDown.update(); 
+        CDown.update();
     }
+    if (!isNull(query.t)) location.search = "";
 }
 $(document).on("pageload", function () {
     CDown.setup();
-    CDown.check();
+    CDown.load();
     $(".cdh-mode").click(function () {
         CDown.fromNow = TBI.isToggled(this);
         if (CDown.fromNow) {
@@ -307,9 +454,46 @@ $(document).on("pageload", function () {
             $(".cds-fromnow").hide();
         }
     });
-    $(".cdh-format").click(function () { CDown.shorten = TBI.isToggled(this); });
-    $(".cdh-reset").click(CDown.reset);
-    $(".cdh-tonow").click(CDown.setup);
-    $(".cdh-submit").click(CDown.submit);
-    $(".cdh-timer").click(function () { CDown.mode = TBI.isToggled(this); CDown.setup(); });
+    $(".cdh-reset").click(function () { CDown.reset(); });
+    $(".cdh-tonow").click(function () { CDown.setup(false); });
+    $(".cdh-submit").click(function () { CDown.submit(); });
+    $(".cdh-timer").click(function () { CDown.setup(TBI.isToggled(this)); });
+    $(".cdh-setnew").click(function () { CDown.change("set"); });
+    $(".cdh-view").click(function () { CDown.change("out"); });
+    $(".cdh-geturl").click(function () { $(".cdh-url").html(CDown.generateURL()); });
+    $(".cdm-recent").click(function () {
+        var earliest = CDown.findEarliest();
+        if (earliest != -1)
+            CDown.set(CDown.list[earliest]);
+    });
+    $(".cdh-simple").click(function () { $(".cdown").toggleClass("simple", TBI.isToggled(this)); });
+    $(".cdh-help").click(function () {
+        if (TBI.isToggled(this)) $(".cdown .help").show();
+        else $(".cdown .help").hide();
+    })
+    $(".cdm-select").change(function () {
+        var result = CDown.searchByTitle(decodeURI($(".cdm-select").val()));
+        if (result != -1) { CDown.set(CDown.list[result]); CDown.change("out"); }
+        else alert("The specified countdown was not found.");
+    });
+    TBI.Popup.registry.add($(".cds-zone-help")[0], "Time Zone",
+        "Select the time zone that your input will be in. It's already setup to be your own timezone. \
+        This is useful if you are given a countdown from another country and still want to track it accurately.");
+    TBI.Popup.registry.add($(".cdh-mode-help")[0], "Mode Toggle",
+        "This toggles between 'Offset Mode' and 'Absolute Mode'. In Absolute Mode, you select the exact \
+        time and date to count down to (e.g. 25th December, 2:00PM; midnight 1st January 2020). In Offset Mode, you select \
+        how long from now you wish to count down. (e.g. 5 minutes from now; 2 hours from now; 7 days and 8 hours from now)");
+    TBI.Popup.registry.add($(".cdh-tonow-help")[0], "Reset To Now",
+        "This resets the fields in Absolute Mode to be set to right now, so you can get your bearings back.");
+    TBI.Popup.registry.add($(".cdh-timer-help")[0], "Timer Mode",
+        "Instead of setting a count down, you can set a timer to count <em>up</em> from either a specific time in the past \
+        or right now.");
+    TBI.Popup.registry.add($(".cds-title-help")[0], "Title",
+        "This is what your count down is going to be called. Give it a unique name, as no two can share the same.");
+    TBI.Popup.registry.add($(".cds-date-help")[0], "Date",
+        "Select the date you wish to count down to. Simply click on the date and a date picker will appear. Use it to select \
+        the date that you want by navigating with the mouse. Clicking on a date will close the picker and submit your selection.");
+    TBI.Popup.registry.add($(".cds-time-help")[0], "Time",
+        "This is the time that you are going to count down to, along with the date. It is in 24 hour format. \
+        You may use the spinners to quickly modify the hour, minute and second values.");
 });
