@@ -20,7 +20,7 @@
     transition:0.2s all;
 }
 .cdown.simple > *:not(.smp), .cdown.simple .smp > *:not(.smp) {
-    display:none;
+    display:none !important;
 }
 .cdown.simple .cdo-active {
     font-size:84px;

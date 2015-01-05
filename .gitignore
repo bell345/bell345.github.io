@@ -22,3 +22,6 @@ $RECYCLE.BIN/
 # Config files
 [Ww]eb.config
 aspnet_client/
+
+
+*.bak

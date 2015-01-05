@@ -73,7 +73,7 @@ CD3.formatDiff = function (diff, formatstr) {
     // gets rid of the designations
     while (formatstr.search(/(\[[0-9]\]\([^\)]{1,}\)|\))/) != -1) formatstr = formatstr.replace(/(\)?\[[0-9]\]\(|\))/, "");
     // returns the string either as is, or if it has a space at the end instead of a character, return without the trailing space
-    return formatstr.charAt(formatstr.length-1) == ' ' ? formatstr.substring(0, formatstr.length-1) : formatstr;
+    return formatstr.trim();
 }
 // Does what it advertises.
 CD3.dateToArray = function (time) {
@@ -96,6 +96,14 @@ CD3.arrayToDate = function (year, month, date, hour, minute, second) {
     time.setSeconds(second);
     return time;
 }
+// Returns an ordinal suffix of a number (3 -> rd, 12 -> th, 181 -> st)
+CD3.getNth = function (num) {
+    if (Math.floor(num % 100 / 10) == 1) return "th";
+    else if (num % 10 == 1) return "st";
+    else if (num % 10 == 2) return "nd";
+    else if (num % 10 == 3) return "rd";
+    else return "th";
+}
 // Takes a date object and returns a formatted string referring to that object as specified in formatstr.
 CD3.format = function (time, formatstr) {
     // formatstr has zero or more of the following letter sequences
@@ -106,8 +114,8 @@ CD3.format = function (time, formatstr) {
     var formats = {
         "dddd": CD3.dayNames[time.getDay()], // long day (Sunday)
         "ddd": CD3.dayShort[time.getDay()], // short day (Sun)
-        "dd": zeroPrefix(time.getDate()) + (time.getDate()%10==1?"st":time.getDate()%10==2?"nd":time.getDate()%10==3?"rd":"th"), // prefixed dateth (01st)
-        "d": time.getDate() + (time.getDate()%10==1?"st":time.getDate()%10==2?"nd":time.getDate()%10==3?"rd":"th"), // dateth (1st)
+        "dd": zeroPrefix(time.getDate()) + CD3.getNth(time.getDate()), // prefixed dateth (01st)
+        "d": time.getDate() + CD3.getNth(time.getDate()), // dateth (1st)
         "DD": zeroPrefix(time.getDate()), // prefixed date (02)
         "D": time.getDate(), // date (2)
         "MMMM": CD3.monthNames[time.getMonth()], // long month (March)
@@ -118,8 +126,8 @@ CD3.format = function (time, formatstr) {
         "yy": time.getFullYear().toString().substring(2,4), // short year (04)
         "HH": zeroPrefix(time.getHours()), // prefixed hours (04)
         "H": time.getHours(), // hours (4)
-        "hh": (time.getHours()==0||time.getHours()==12?"12":zeroPrefix(time.getHours()%12)), // prefixed 12-hour (05) from (17)
-        "h": (time.getHours()==0||time.getHours()==12?"12":time.getHours()%12), // 12-hour (5) from (17)
+        "hh": (time.getHours() % 12 == 0 ? "12" : zeroPrefix(time.getHours() % 12)), // prefixed 12-hour (05) from (17)
+        "h": (time.getHours() % 12 == 0 ? "12" : time.getHours() % 12), // 12-hour (5) from (17)
         "mm": zeroPrefix(time.getMinutes()), // prefixed minutes (06)
         "m": time.getMinutes(), // minutes (6)
         "ss": zeroPrefix(time.getSeconds()), // prefixed seconds (07)

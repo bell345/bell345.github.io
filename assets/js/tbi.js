@@ -1168,7 +1168,7 @@ Array.prototype.indexOf = Array.prototype.indexOf || function (obj, start) {
     return -1;
 }
 // Sorts a number list in ascending order.
-function sort(templst) {
+function oldSort(templst) {
     // while an acceptable algorithm, it does not take very long to overcome the call stack limit.
     var min = Math.min.apply(null, templst),
         max = Math.max.apply(null, templst);
@@ -1202,12 +1202,6 @@ function sort(list) {
             else a.splice(n, 0, value); // shift after n
         };
     for (var i=0;i<list.length;i++) {
-        if (!isSorted(a)) TBI.log(
-            "Sorting algorithm failed.\n"+
-            "Last index: "+(i-1)+".\n"+
-            "Last number: "+list[i-1]+".\n"+
-            "List currently: "+a.toString()+"."
-        );
         if (a.length == 0) a.push(list[i]);
         else if (list[i] <= a[Math.floor(a.length/2)]) placeFromBottom(list[i]);
         else placeFromTop(list[i]);
