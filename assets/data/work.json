@@ -125,6 +125,12 @@
       "path": "apps",
       "projects": [
         {
+          "id": "crtpl2",
+          "name": "Cartesian Plane 2",
+          "version": "0.0",
+          "link": "/apps/crtpl2"
+        },
+        {
           "id": "bgchanger",
           "name": "Logon BG Changer",
           "version": "1.0.5459",

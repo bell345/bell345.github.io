@@ -421,6 +421,9 @@ h2.item {
     margin-bottom:0;
     padding:12px 0 0;
 }
+h2.item a::before {
+    content:" > "; 
+}
 h3.version {
     color:#777;
 }

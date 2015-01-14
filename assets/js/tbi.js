@@ -1737,21 +1737,24 @@ TBI.setupContent = function (type) {
 }
 // Checks for when the web fonts have loaded.
 TBI.checkFonts = function () {
-    if ($("#fontload-rw").length == 0) {
+    if ($("#fontload").length == 0) {
         TBI.Loader.complete("Fonts", TBI.Loader.ERR);
         return false;
     }
-    var fonts = ["os", "rw", "rwb", "ri"],
+    var fonts = $("#fontload span"),
+        refWidths = [],
         ftimer = 0;
+    for (var i=0;i<fonts.length;i++) refWidths.push(parseInt(fonts[i].css("width")));
+    $("#fontload").toggleClass("eval", true);
     TBI.timerSet("fontload", 10, function () {
-        var fontsLoaded = 0;
-        for (var i=0;i<fonts.length;i++) if (parseInt($("#fontload-"+fonts[i]).css("width")) > 8) fontsLoaded++;
-        if (fontsLoaded >= fonts.length || ftimer > 2000) {
+        for (var i=0,t=0;i<fonts.length;i++) if (parseInt(fonts[i].css("width")) != refWidths[i]) t++;
+        if (t >= fonts.length || ftimer > 2000) {
             TBI.timerClear("fontload");
             $("#fontload").remove();
-            TBI.Loader.complete("Fonts", TBI.Loader.DONE);
+            if (t >= fonts.length) TBI.Loader.complete("Fonts", TBI.Loader.DONE);
+            else TBI.Loader.complete("Fonts", TBI.Loader.TIMEOUT);
         }
-        ftimer+=10;
+        ftimer += 10;
     });
 }
 var testtime = new Date().getTime();
@@ -1816,31 +1819,55 @@ $(function () {
     var nav = "#top";
     TBI.checkNav(nav);
     TBI.Loader.jobs.push(
+        // job field description: (starred fields (*) are required):
+        // func (*): A function that runs an delayed async task and
+        //     provides appropriate callbacks to the loader (i.e. TBI.Loader.complete()).
+        // id (*): The unique id for the task. This will be used in some
+        //     default values as well as a unique identifier in callbacks.
+        // dependencies: A list of ids of other tasks that need to be
+        //     completed in order to run the task.
+        // conditions: An array of functions that return true
+        //     when satisfied. All functions need to return true for the task to run.
+        // msg: An object containing messages for the log when:
+        // msg.done: The task is completed successfully.
+        // msg.error: The task has encountered an error and cannot complete.
+        // msg.timeout: The task has taken too long to callback.
+        /* example:
+            {
+                func: function () { Namespace.doSomethingAsync(); },
+                id: "MyTask",
+                dependencies: ["MyTaskSetup"],
+                conditions: [function () { return Namespace.asyncReady; }],
+                msg: {
+                    done: "My task has completed successfully!",
+                    error: "Something went wrong with my task.",
+                    timeout: "My task took too long to respond."
+                }
+            }
+        */
         {
             func: function () { HTMLIncludes.getIndex(); },
             id: "HTMLIncIndex",
-            dependencies: [],
-            conditions: [],
-            done: "HTMLIncludes manifest loaded"
+            msg: {
+                done: "HTMLIncludes manifest loaded"
+            }
         },
         {
             func: function () { HTMLIncludes.get(); },
             id: "HTMLIncludes",
             dependencies: ["HTMLIncIndex"],
-            conditions: []
         },
         {
             func: function () { TBI.fetchIndex(); },
             id: "protoIndex",
-            dependencies: [],
-            conditions: [],
-            done: "Content manifest loaded"
+            msg: {
+                done: "Content manifest loaded"
+            }
         },
         {
             func: function () { TBI.checkFonts(); },
             id: "Fonts",
-            dependencies: [],
-            conditions: [function () { return $("#fontload-rw").length > 0 }]
+            conditions: [function () { return $("#fontload").length > 0 }]
         }
     );
     TBI.Loader.init();
@@ -1874,9 +1901,16 @@ TBI.Loader = {
                 var job = TBI.Loader.jobs[i],
                     depSatisfied = true,
                     condSatisfied = true;
+                if (isNull(job.dependencies)) job.dependencies = [];
+                if (isNull(job.conditions)) job.conditions = [];
+                if (isNull(job.msg)) job.msg = {};
                 if (TBI.Loader.progress.indexOf(job.id) == -1 && TBI.Loader.completed.indexOf(job.id) == -1) {
-                    job.dependencies.forEach(function (dep) { if (TBI.Loader.completed.indexOf(dep) == -1) depSatisfied = false });
-                    job.conditions.forEach(function (cond) { if (!cond()) condSatisfied = false });
+                    job.dependencies.forEach(function (dep) {
+                        if (TBI.Loader.completed.indexOf(dep) == -1) depSatisfied = false
+                    });
+                    job.conditions.forEach(function (cond) {
+                        if (!cond()) condSatisfied = false
+                    });
                     if (depSatisfied && condSatisfied) {
                         job.func();
                         TBI.Loader.event("Executed "+job.id);
@@ -1897,9 +1931,9 @@ TBI.Loader = {
         if (!isNull(loc) && TBI.Loader.completed.indexOf(id) == -1) TBI.Loader.completed.push(id);
         if (isNull(loc)) var message = id;
         else switch (status) {
-            case TBI.Loader.ERR: var message = TBI.Loader.jobs[loc].error || id + " failed"; break;
-            case TBI.Loader.TIMEOUT: var message = TBI.Loader.jobs[loc].timeout || id + " timed out"; break;
-            case TBI.Loader.DONE: var message = TBI.Loader.jobs[loc].done || id + " done"; break;
+            case TBI.Loader.ERR: var message = TBI.Loader.jobs[loc].msg.error || id + " failed"; break;
+            case TBI.Loader.TIMEOUT: var message = TBI.Loader.jobs[loc].msg.timeout || id + " timed out"; break;
+            case TBI.Loader.DONE: var message = TBI.Loader.jobs[loc].msg.done || id + " done"; break;
             default: var message = id;
         }
         TBI.Loader.event(message);

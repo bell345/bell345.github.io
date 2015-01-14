@@ -16,12 +16,14 @@ $RECYCLE.BIN/
 .DS_Store
 
 #############
-## IIS
+## Web server stuff
 #############
 
 # Config files
 [Ww]eb.config
 aspnet_client/
+srvonly/
 
 
 *.bak
+
