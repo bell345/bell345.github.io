@@ -245,6 +245,7 @@ CDown.new = function (title, time, mode) {
         CDown.setCookie();
         $(".cdm-select").append("<option value="+encodeURI(cdown.title)+">"+cdown.title+"</option>");
         $(".cdm-select").val(encodeURI(cdown.title));
+        if (gecn("cdown")[0].className.search(" mul") == -1 && CDown.list.length > 1) CDown.change("mul");
         CDown.change("out");
     }
 }
@@ -302,7 +303,6 @@ CDown.set = function (cdown) {
         $(".cdh-dest time").attr("datetime", new Date(CDown.active).toISOString());
         $(".cdh-dest time").attr("title", $(".cdh-dest time").attr("datetime"));
         $(".cdh-dest time").html(CD3.format(new Date(CDown.active), "{dddd} the {d} of {MMMM}, {yyyy} at {HH}:{mm}:{ss}"));
-        if (gecn("cdown")[0].className.search(" mul") == -1 && CDown.list.length > 1) CDown.change("mul");
         return true;
     } else return false;
 }
