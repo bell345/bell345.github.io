@@ -162,7 +162,7 @@ function isNull(thing) {
         for (var i=0;i<thing.length;i++)
             if (isNull(thing[i])) return true;
         return (thing.length == 0)
-    } else return (thing == undefined || thing === "" || thing == null || thing.toString() == "NaN")
+    } else return (thing == undefined || thing === "" || thing == null || thing !== thing)
 }
 // Determines whether a number is negative.
 function isNegative(num) { return (Math.abs(num) != num); }
