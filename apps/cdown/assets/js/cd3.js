@@ -27,8 +27,9 @@ CD3.difference = function (before, after, format) {
         diff = new Array(6),
         active = null,
         finalCountdown = "";
+    debugger;
     if (bTime[0] % 4 == 0) CD3.months[1] = 29; // yay for leap years
-    CD3.offset[2] = CD3.months[(aTime[1]+(CD3.months.length-1))%CD3.months.length];
+    CD3.offset[2] = CD3.months[(bTime[1]+(CD3.months.length-1))%CD3.months.length];
     for (var i=5;i>=0;i--) { // where the magic happens
         if (aTime[i] - bTime[i] < 0) { // if it turns out that the before value is larger
             aTime[i-1]--; // take away from the next (to the left) value
@@ -87,14 +88,7 @@ CD3.dateToArray = function (time) {
 }
 // Also does what it advertises.
 CD3.arrayToDate = function (year, month, date, hour, minute, second) {
-    var time = new Date();
-    time.setFullYear(year);
-    time.setMonth(month);
-    time.setDate(date);
-    time.setHours(hour);
-    time.setMinutes(minute);
-    time.setSeconds(second);
-    return time;
+    return new Date(year, month, date, hour, minute, second);
 }
 // Returns an ordinal suffix of a number (3 -> rd, 12 -> th, 181 -> st)
 CD3.getNth = function (num) {

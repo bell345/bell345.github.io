@@ -927,46 +927,7 @@ $(document).on("pageload", function () {
     Test3.bind("debug", gebi("tgl-debug"));
     Test3.bind("paused", gebi("tgl-pause"));
     $(window).focus(Test3.loop);
-});
-function Vector2D(x, y) { this.x = x; this.y = y; }
-Vector2D.prototype = {
-    constructor: Vector2D,
-    // Create a copy of the vector that won't change the original.
-    copy: function () { return new Vector2D(this.x, this.y); },
-    // add, subtract and multiply are self-explanatory.
-    add: function (a) { if (a instanceof Vector2D) return this.addVector(a); else return this.addScalar(a); },
-    // note: "scalar" here just means "number", as in "not vector".
-    addScalar: function (n) { this.x += n; this.y += n; return this; },
-    addVector: function (vec) { this.x += vec.x; this.y += vec.y; return this; },
-    subtract: function (a) { if (a instanceof Vector2D) return this.subtractVector(a); else return this.subtractScalar(a); },
-    subtractScalar: function (n) { this.x -= n; this.y -= n; return this;},
-    subtractVector: function (vec) { this.x -= vec.x; this.y -= vec.y; return this; },
-    // Returns the magnitude of the vector.
-    magnitude: function () { return Math.pythagoras(this.x, this.y); },
-    // Returns the square of the magnitude of the vector (less computationally intensive).
-    magnitudeSquared: function () { return this.dot(this); },
-    // Changes the vector into a unit vector.
-    normalise: function () { var mag = this.magnitude(); this.x /= mag; this.y /= mag; return this; },
-    // Rotates the vector into the first quadrant (++).
-    absolute: function () { this.x = Math.abs(this.x); this.y = Math.abs(this.y); return this; },
-    multiply: function (a) { if (a instanceof Vector2D) return this.multiplyVector(a); else return this.multiplyScalar(a); },
-    multiplyScalar: function (n) { this.x *= n; this.y *= n; return this; },
-    multiplyVector: function (vec) { this.x *= vec.x; this.y *= vec.y; return this; },
-    negate: function () { return this.multiply(-1); },
-    // Returns the dot product of two vectors.
-    dot: function (vec) { return this.x*vec.x + this.y*vec.y; },
-    // Returns the wedge product of two vectors.
-    wedge: function (vec) { return this.x*vec.y - this.y*vec.x; },
-    // Clamps the vector's x and y values to a minimum and maximum vector.
-    clamp: function (min, max) { this.x = Math.bound(min.x, max.x); this.y = Math.bound(min.y, max.y); return this; },
-    toMatrix: function () { return new Matrix([this.x, this.y]); },
-    // Returns the angle formed by the vector with the positive X axis.
-    angle: function () { return Math.atan2(this.y, this.x); },
-    // Projects the vector onto another.
-    project: function (vec) { return vec.multiplyScalar(this.dot(vec)/vec.dot(vec)); },
-    // Gets the normal of a vector.
-    normal: function (dir) { if (dir) return new Vector2D(-this.y, this.x); else return new Vector2D(this.y, -this.x); }
-};/*
+});/*
 function P2DObject(id, geometry, material, position, rotation, scale) {
     if (!isNull(id)) this.id = id;
     else this.id = new Date().getTime()*Math.random();

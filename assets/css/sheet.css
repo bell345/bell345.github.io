@@ -251,6 +251,7 @@ ul.inner-nav li {
     font-size:18px;
     line-height:36px;
     position:relative;
+    white-space:nowrap;
 }
 ul.inner-nav li:nth-child(even) {
     background:#eaeaea;
@@ -377,6 +378,7 @@ body.trident #sidebar {
     width:80%;
     margin:0 auto;
     text-align:center;
+    margin-bottom:8px;
 }
 .img-mid img {
     max-width:100%;
@@ -422,7 +424,7 @@ h2.item {
     padding:12px 0 0;
 }
 h2.item a::before {
-    content:" > "; 
+    content:" > ";
 }
 h3.version {
     color:#777;

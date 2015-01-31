@@ -127,14 +127,14 @@
         {
           "id": "crtpl2",
           "name": "Cartesian Plane 2",
-          "version": "0.0",
+          "version": "0.8",
           "link": "/apps/crtpl2"
         },
         {
           "id": "bgchanger",
           "name": "Logon BG Changer",
-          "version": "1.0.5459",
-          "link": null
+          "version": "1.0.5492",
+          "link": "https://github.com/bell345/logon-bg-changer/releases/latest"
         },
         {
           "id": "calc",

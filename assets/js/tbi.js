@@ -9,7 +9,7 @@ document.onreadystatechange = function () {
     }
 }
 // END INCOMPATIBILITY CODE //
-var TBI = { loaded: false, navbase: [] };
+var TBI = { loaded: false };
 var now = new Date(),
     unqid = now.getTime(),
     query = {},
@@ -98,7 +98,7 @@ TBI.requestManager = function () {
         search = search.replace("?","").split("&");
         for (var i=0;i<search.length;i++) {
             search[i] = search[i].split("=");
-            query[search[i][0]] = search[i][1];
+            if (search[i].length > 1) query[search[i][0]] = search[i][1];
         }
     }
     var hash = location.hash;
@@ -106,7 +106,7 @@ TBI.requestManager = function () {
         hash = hash.replace("#","").split("&");
         for (var i=0;i<hash.length;i++) {
             hash[i] = hash[i].split("=");
-            query[hash[i][0]] = hash[i][1];
+            if (hash[i].length > 1) query[hash[i][0]] = hash[i][1];
         }
     }
     if (location.pathname.length > 1) {
@@ -138,10 +138,10 @@ TBI.navMoveTo = function (ind, el) {
     $(inr)[0].className = cn.replace(" focus", "");
     $(inr).css("left", alg + "px");
 }
-// A blanket function that handles the navbar indicator behaviour and when and where to place the sub-menus.
+// A blanket function that handles the navbar indicator behaviour and dynamic navigation related content.
 TBI.checkNav = function (nav) {
     $(nav+">div:not(.nav-indicator)").off("mousemove");
-    /** When mouse is moving on the navbar, move to its position. */
+    // When mouse is moving on the navbar, move the indicator its position.
     $(nav+">div:not(.nav-indicator)").mousemove(function (event) {
         var width = parseInt($(nav+" .nav-indicator div").css("width"));
         var half = width/2;
@@ -154,12 +154,7 @@ TBI.checkNav = function (nav) {
         $(nav+" .nav-indicator div")[0].className = cn.search(" focus") != -1 ? cn : cn + " focus";
         $(nav+" .nav-indicator div").css("left", alg+"px");
     });
-    /** When leaving or creating the navbar, move the indicator to the current menu item after 500ms. */
-    $(nav+">div:not(.nav-indicator)").off("mouseleave");
-    $(nav+">div:not(.nav-indicator)").mouseleave(function () {
-        TBI.timerClear("curr");
-        TBI.timerSet("curr", 500, function () { TBI.navMoveTo(nav+" .nav-indicator", "#curr"); TBI.timerClear("curr") });
-    });
+    // When leaving or creating the navbar, move the indicator to the current menu item after 500ms.
     $(nav).off("mouseleave");
     $(nav).mouseleave(function () {
         TBI.timerClear("curr");
@@ -169,7 +164,8 @@ TBI.checkNav = function (nav) {
         TBI.timerClear("curr");
         TBI.timerSet("curr", 500, function () { TBI.navMoveTo(nav+" .nav-indicator", "#curr"); TBI.timerClear("curr") });
     }
-    /** Handles the dynamic content. */
+    // Handles the dynamic content.
+    // Soon to be redone without gratuitous jQuery usage.
     if (!isNull(TBI.content)) for (var i=0;i<TBI.content.length;i++) {
         var item = TBI.content[i];
         if ($(".nav-"+item.id+" .inner-nav").length == 0) $(".nav-"+item.id).append("<ul class='inner-nav'></ul>");
@@ -184,29 +180,29 @@ TBI.checkNav = function (nav) {
     }
     TBI.updateUI();
 
-    /** A complicated for loop that handles the indicator behaviour relating to submenus. */
-    var nv = nav+">div:not(.nav-indicator)";
-    TBI.navbase = [];
-    for (var i=0;i<$(nv).length;i++) {
-        var parent = nv+":nth("+i+")";
-        var child = parent+">.inner-nav";
-        if ($(child).length > 0) {
-            TBI.navbase.push([$(parent)[0], $(child)[0]]);
-            $(parent).off("mouseover");
-            $(parent).mouseover(function () {
-                var child = TBI.searchNavbase(this);
-                if (isNull(child)) return false;
-                $(child).off("mouseenter");
-                $(child).mouseenter(function () {
-                    $($(this).parent()).off("mousemove");
-                    TBI.timerClear("curr");
-                    TBI.navMoveTo(nav+" .nav-indicator", $($(this).parent()));
-                    $(this).mouseenter(function () { TBI.navMoveTo(nav+" .nav-indicator", $($(this).parent())) });
-                    TBI.updateLinks();
-                });
-                $(child).off("mouseleave");
-                $(child).mouseleave(function () { TBI.checkNav(nav); TBI.timerClear("curr"); });
-            });
+    // Handles the indicator behaviour relating to inner navigation menus.
+    var navItems = $(nav+" > div:not(.nav-indicator):not(.done)"); // gets array of unhandled items
+    for (var i=0;i<navItems.length;i++) {
+        var parent = navItems[i]; // the div containing the inner nav
+        var child = parent.gecn("inner-nav")[0]; // the inner nav itself
+        parent.className += " done"; // marks event handled-ness so you don't do it again and waste time
+        if (!isNull(child)) { // if the parent has an inner nav
+            $(child).off("mouseenter");
+            $(child).mouseenter(function (nav, parent) { // when you move into the inner nav...
+                return function () {
+                    $(parent).off("mousemove"); // remove indicator mouse tracking (for the moment)
+                    var moveFunc = function (nav, parent) {
+                        return function () { TBI.navMoveTo(nav+" .nav-indicator", parent); }; // move the indicator to the parent
+                    }(nav, parent);
+                    $(this).mousemove(moveFunc); // both when the mousemoves,
+                    moveFunc(); // and straight away
+                    TBI.updateLinks(); // update behaviour for inner nav links
+                }
+            }(nav, parent));
+            $(child).off("mouseleave");
+            $(child).mouseleave(function (nav) { // when you leave the inner nav...
+                return function () { TBI.checkNav(nav); } // restore mouse tracking
+            }(nav));
         }
     }
     /** Whether or not to show the "to top" menu item. */
@@ -217,33 +213,21 @@ TBI.checkNav = function (nav) {
 TBI.updateUI = function () {
     for (var i=0;i<$(".img-mid:not(.done)").length;i++) {
         var currimg = $(".img-mid:not(.done)")[i];
-        var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
-        if (isNull(currimg.id)) {
-            do {
-                var rand = "";
-                for (var i=0;i<4;i++) rand += chars[randomInt(chars.length)];
-            } while ($("#unq-"+rand).length > 0)
-            currimg.id = "unq-"+rand;
-        }
+        currimg.id = generateUUID();
         $(currimg.getElementsByClassName("img-toggle")[0]).attr("for", "#" + currimg.id + " img");
         currimg.className += " done";
     }
-    $("button.toggle").off("mousedown");
-    $("button.toggle").mousedown(function (event) {
+    $("button.toggle:not(.done)").mousedown(function (event) {
         if (event.button != 0 || this.className.search(" dwn") != -1) return true;
-        var a = " dwn";
-            c = this.className;
-        this.className=c.search(a)!=-1?c:c+a;
+        $(this).toggleClass("dwn", true);
     });
-    $("button.toggle").off("mouseup");
-    $("button.toggle").mouseup(function (event) {
+    $("button.toggle:not(.done)").mouseup(function (event) {
         if (event.button != 0 || this.className.search(" dwn") == -1) return true;
-        var a = " on",
-            c = this.className.replace(" dwn","");
-        this.className=c.search(a)!=-1?c.replace(a,""):c+a;
+        $(this).toggleClass("dwn", false);
+        $(this).toggleClass("on");
     });
-    $(".up-down").off("mouseup");
-    $(".up-down").mouseup(function (event) {
+    $("button.toggle:not(.done)").toggleClass("done", true);
+    $(".up-down:not(.done)").mouseup(function (event) {
         if (event.button != 0) return true;
         var toSwitch = $($(this).attr("for"));
         if (toSwitch.length > 0) toSwitch.slideToggle();
@@ -251,12 +235,13 @@ TBI.updateUI = function () {
             c = this.className;
         this.className=c.search(a)!=-1?c.replace(a,""):c+a;
     });
-    for (var i=0;i<$("table.sortable").length;i++) {
+    for (var i=0;i<$("table.sortable:not(.done)").length;i++) {
         var currtble = $("table.sortable")[i];
+        currtble.className += " done";
         var rows = currtble.querySelectorAll("tbody tr");
-        for (var j=0;j<rows.length;j++) if (rows[j].className.search(" torder") == -1) rows[j].className += " torder-"+j;
+        for (var j=0;j<rows.length;j++)
+            if (rows[j].className.search(" torder") == -1) rows[j].className += " torder-"+j;
         $(currtble.querySelectorAll("th.sort")).attr("class", "sort none");
-        $(currtble.querySelectorAll("th.sort")).off("click");
         $(currtble.querySelectorAll("th.sort")).click(function () {
             if ($(this).parent()[0].getElementsByTagName("th").length > 0) {
                 var updownList = $(this).parent()[0].getElementsByTagName("th");
@@ -310,18 +295,19 @@ function shorten(str, num) {
     }
 }
 // Pads a number to the specified length. Default is two (e.g. "2" to "02")
-function zeroPrefix(num, len) {
+// Optionally with a custom padding character (e.g. "  2" instead of "002")
+function zeroPrefix(num, len, char) {
     num = num.toString();
-    while (num.length < (len?len:2)) num = "0" + num;
+    while (num.length < (len?len:2)) num = (char?char:"0") + num;
     return num;
 }
 // Highlights the current navbar menu item.
-TBI.findPage = function () {
+TBI.findPage = function (nav) {
     var curr = path[0];
     if (isNull(curr)) curr = "";
-    var nav = "#top>div:not(.nav-indicator)";
-    var navbar = $(nav);
-    var links = $("#top>div:not(.nav-indicator)>a");
+    var navdivs = nav+">div:not(.nav-indicator)";
+    var navbar = $(navdivs);
+    var links = $(navdivs+">a");
     for (var i = 0; i < links.length; i++) {
         if ($(links[i]).attr("href").split("/")[1] == curr) {
             $(navbar[i]).attr("id","curr");
@@ -329,7 +315,6 @@ TBI.findPage = function () {
         }
     }
     $(".nav-home").attr("id","curr");
-    return true;
 }
 // Determines whether or not a number is even.
 function isEven(n) { return n%2==0 }
@@ -350,12 +335,6 @@ function isEqual(arr1, arr2) {
     else if (arr1.length != arr2.length) return false;
     for (var i=0;i<arr1.length;i++) if (!isEqual(arr1[i], arr2[i])) return false;
     return true;
-}
-// Returns whether or not two arrays are the same.
-Array.prototype.isEqual = function (arr) { return isEqual(this, arr); }
-// Determines whether or not an array contains a particular item.
-Array.prototype.contains = function (item) {
-    for (var i=0;i<this.length;i++) if (isEqual(this[i], item)) return true; return false;
 }
 // Creates a multi-dimensional array given the depths of the dimensions.
 Array.dimensional = function (lengths, initial) {
@@ -437,7 +416,8 @@ Array.dimensional.prototype.transpose2d = function (r) {
     if (r > 1) return n.transpose2d(r-1);
     else return n;
 }
-// Random midpoint displacement terrain generation algorithm. (broken)
+// Random midpoint displacement terrain generation algorithm.
+// Please ignore, as it is, like, fundamentally broken.
 function randomDisplacement(seeds, complexity, modifier, debug) {
     var ln = wd = 2*complexity+1,
         hf = (ln-1)/2,
@@ -487,15 +467,72 @@ function randomDisplacement(seeds, complexity, modifier, debug) {
         randomDisplacement(recSeeds[3], complexity-1, modifier)
     ]);
 }
-// Replaces all instances of a specified string or regular expression with the given replacement string.
-String.prototype.replaceAll = String.prototype.replaceAll || function (toReplace, replacement) {
-    var str = this;
-    while (str.search(toReplace) != -1) str = str.replace(toReplace, replacement);
-    return str;
+Object.prototype.toString = function () {
+    if (JSON.stringify) return JSON.stringify(this);
+    var s = "";
+    for (var prop in this) if (this.hasOwnProperty(prop)) {
+        if (isNull(this[prop])) s += prop+":"+(typeof(this[prop])=="string"?"":typeof(this[prop]))+",";
+        else s += prop+":"+this[prop].toString()+",";
+    }
+    return "{"+s.substring(0, s.length-1)+"}";
 }
+Array.prototype.oldToString = Array.prototype.toString;
+Array.prototype.toString = function () {
+    return "[" + this.oldToString() + "]";
+}
+// Returns whether or not two arrays are the same.
+Array.prototype.isEqual = function (arr) { return isEqual(this, arr); }
+// Determines whether or not an array contains a particular item.
+Array.prototype.contains = function (item) {
+    for (var i=0;i<this.length;i++) if (isEqual(this[i], item)) return true; return false;
+}
+// Takes an array and reverses the order of its elements (e.g. [0,1,2,3] to [3,2,1,0])
+Array.prototype.reverse = Array.prototype.reverse || function () {
+    for (var i=this.length-1,a=[];i>=0;i--) a.push(this[i]);
+    return a;
+}
+// Shorthand for removing a specific element index from an array.
+Array.prototype.remove = Array.prototype.remove || function (index) {
+    this.splice(index, 1);
+    return this;
+}
+// Copies the elements from one array to another to prevent unintended changes to another array.
+Array.prototype.copy = Array.prototype.copy || function () {
+    for (var i=0,a=[];i<this.length;i++) a.push(this[i]);
+    return a;
+}
+// Makes sure that a string doesn't get mistaken for meta-characters when constructing a RegExp from a string.
+RegExp.quote = function (str) {
+    return str.replace(/([.?*+^$[\]\\(){}-])/g, "\\$1");
+}
+// Replaces all instances of a specified string or regular expression with the given replacement string.
+// When using parentheses in a regular expression; the contents of them will
+// replace "$1"-"$9" in the replacement string in the order of where they are in the RegExp.
+String.prototype.replaceAll = String.prototype.replaceAll || function (toReplace, replacement) {
+    if (typeof(toReplace) == "string") toReplace = new RegExp(RegExp.quote(toReplace), 'g');
+    else if (toReplace instanceof RegExp) toReplace = new RegExp(toReplace.source, 'g');
+    return this.replace(toReplace, replacement);
+}
+// Removes all instances of each of the arguments from a string.
+String.prototype.removeAll = function () {
+    for (var i=0,s=this;i<arguments.length;i++)
+        s = s.replaceAll(arguments[i], "");
+    return s;
+}
+// Takes a string and reverses the order of its characters (e.g. "Hello world!" to "!dlrow olleH").
 String.prototype.reverse = String.prototype.reverse || function () {
     for (var i=this.length-1,s="";i>=0;i--) s += this.charAt(i);
     return s;
+}
+// Returns a bool indicating whether or not the current string contains str at the beginning.
+String.prototype.beginsWith = String.prototype.beginsWith || function (str) {
+    if (str.length > this.length) return false;
+    return this.indexOf(str) == 0;
+}
+// Returns a bool indicating whether or not the current string contains str at the end.
+String.prototype.endsWith = String.prototype.endsWith || function (str) {
+    if (str.length > this.length) return false;
+    return this.lastIndexOf(str) == this.length-str.length;
 }
 // A brute-force algorithm to generate the divisors of a number.
 function oldDivisors(num) {
@@ -506,7 +543,8 @@ function oldDivisors(num) {
     TBI.log((new Date().getTime()-b) + "ms");
     return d;
 }
-// Returns the numbers that go into the specified number.
+// Returns the numbers that divide perfectly into the specified number.
+// Thanks to Eratosthenes, one of my favourite Ancient Greeks.
 function divisors(num) {
     var divisors=[], beginTime = new Date().getTime();
     for (var i=1;i<=Math.sqrt(num);i++)
@@ -625,6 +663,7 @@ Coords.prototype.toString = function (spacing) { return "("+this.x+","+(isNull(s
 Coords.prototype.toPolar = function () {
     return new PolarCoords(Math.pythagoras(this.x, this.y), Math.atan2(this.y, this.x));
 }
+Coords.prototype.toVector = function () { return new Vector2D(this.x, this.y); }
 // Declares a set of polar coordinates as follows: {r,a}, where r is the radius and a is the azimuth.
 function PolarCoords(radius, azimuth) {
     this.radius = radius;
@@ -860,6 +899,51 @@ String.parseFunction = function (text) {
     } catch (e) { TBI.error(e); return null; }
     return func;
 }
+// A 2 dimensional vector quantity.
+function Vector2D(x, y) { this.x = x; this.y = y; }
+Vector2D.prototype = {
+    constructor: Vector2D,
+    // Create a copy of the vector that won't change the original.
+    copy: function () { return new Vector2D(this.x, this.y); },
+    // add, subtract and multiply are self-explanatory.
+    add: function (a) { if (a instanceof Vector2D) return this.addVector(a); else return this.addScalar(a); },
+    // note: "scalar" here just means "number", as in "not vector".
+    addScalar: function (n) { return new Vector2D(this.x + n, this.y + n); },
+    addVector: function (vec) { return new Vector2D(this.x + vec.x, this.y + vec.y); },
+    subtract: function (a) { if (a instanceof Vector2D) return this.subtractVector(a); else return this.subtractScalar(a); },
+    subtractScalar: function (n) { return new Vector2D(this.x - n, this.y - n); },
+    subtractVector: function (vec) { return new Vector2D(this.x - vec.x, this.y - vec.y); },
+    // Returns the magnitude of the vector.
+    magnitude: function () { return Math.pythagoras(this.x, this.y); },
+    // Returns the square of the magnitude of the vector (less computationally intensive).
+    magnitudeSquared: function () { return this.dot(this); },
+    // Changes the vector into a unit vector.
+    normalise: function () { var mag = this.magnitude(); this.x /= mag; this.y /= mag; return this; },
+    inverse: function () { return new Vector2D(1/this.x, 1/this.y); },
+    // Rotates the vector into the first quadrant (++).
+    absolute: function () { return new Vector2D(Math.abs(this.x), Math.abs(this.y)); },
+    multiply: function (a) { if (a instanceof Vector2D) return this.multiplyVector(a); else return this.multiplyScalar(a); },
+    multiplyScalar: function (n) { return new Vector2D(this.x * n, this.y * n); },
+    multiplyVector: function (vec) { return new Vector2D(this.x * vec.x, this.y * vec.y); },
+    divide: function (a) { if (a instanceof Vector2D) return this.divideVector(a); else return this.divideScalar(a); },
+    divideScalar: function (n) { return this.multiply(1/n); },
+    divideVector: function (vec) { return this.multiply(vec.inverse()); },
+    negate: function () { return this.multiply(-1); },
+    // Returns the dot product of two vectors.
+    dot: function (vec) { return this.x*vec.x + this.y*vec.y; },
+    // Returns the wedge product of two vectors.
+    wedge: function (vec) { return this.x*vec.y - this.y*vec.x; },
+    // Clamps the vector's x and y values to a minimum and maximum vector.
+    clamp: function (min, max) { return new Vector2D(Math.bound(this.x, min.x, max.x), Math.bound(this.y, min.y, max.y)); },
+    toMatrix: function () { return new Matrix([this.x, this.y]); },
+    toCoords: function () { return new Coords(this.x, this.y); },
+    // Returns the angle formed by the vector with the positive X axis.
+    angle: function () { return Math.atan2(this.y, this.x); },
+    // Projects the vector onto another.
+    project: function (vec) { return vec.multiplyScalar(this.dot(vec)/vec.dot(vec)); },
+    // Gets the normal of a vector.
+    normal: function (dir) { if (dir) return new Vector2D(-this.y, this.x); else return new Vector2D(this.y, -this.x); }
+};
 // Returns the highest common factor of two numbers.
 // thx euclid
 /* recursive algorithm
@@ -1270,7 +1354,10 @@ Math.mode = function (list) {
         freq[list[i]]++;
     }
     for (var key in freq) if (freq.hasOwnProperty(key) && freq[key] > max) max = freq[key];
-    for (var key in freq) if (freq.hasOwnProperty(key) && freq[key] == max) modes.push(parseFloat(freq[key]));
+    for (var key in freq) if (freq.hasOwnProperty(key) && freq[key] == max) {
+        if (parseFloat(key).toString() != key) modes.push(key);
+        else modes.push(parseFloat(key));
+    }
     if (max < 2) return null;
     return modes.length == 1?modes[0]:modes;
 }
@@ -1960,3 +2047,9 @@ function readCookie(name) {
 }
 function eraseCookie(name) { createCookie(name, "", -1) }
 // END OF COOKIE CODES //
+// PERFNOW - All thanks to Daniel Lamb <dlamb.open.source@gmail.com>
+// On GitHub at: https://github.com/daniellmb/perfnow.js
+function perfnow(o){"performance"in o||(o.performance={});var e=o.performance;o.performance.now=e.now||e.mozNow||e.msNow||e.oNow||e.webkitNow||Date.now||function(){return(new Date).getTime()}}perfnow(window);
+// GUID GENERATOR - All thanks to the StackExchange community
+// On StackExchange at: https://stackoverflow.com/a/8809472
+function generateUUID(){var d=performance.now(),uuid='xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,function(c){var r=(d+Math.random()*16)%16|0;d=Math.floor(d/16);return(c=='x'?r:(r&0x3|0x8)).toString(16)});return uuid}

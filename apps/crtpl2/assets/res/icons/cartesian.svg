@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- License Agreement at http://iconmonstr.com/license/ -->
+
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="512px" height="512px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
+<path id="cube-5-icon" d="M256,50L67.166,153v208.246L256,462l188.834-100.754V154.123L256,50z M238.833,413.92l-114.399-61.021
+	l72.12-48.08c18.541-12.34-1.141-40.504-21.341-27.025l-73.713,49.12V191.281l137.333,74.902V413.92z M120.946,162.782l117.887-64.3
+	v75.976c0,22.715,34.333,22.724,34.333,0V98.675l118.625,65.415l-135.707,72.405L120.946,162.782z M273.166,266.302L410.5,193.025
+	v133.888l-73.176-48.784c-20.269-13.471-39.883,14.686-21.375,27.023l71.617,47.746l-114.4,61.021V266.302z"/>
+</svg>
