@@ -137,6 +137,14 @@ TBI.updateUI = function () {
             c = this.className;
         this.className=c.search(a)!=-1?c.replace(a,""):c+a;
     });
+    var colourInputs = $("input[type='color'].with-fallback:not(.done)");
+    var fallbackInputs = $("input[type='color'].with-fallback:not(.done) + input[type='text'].fallback");
+    for (var i=0;i<colourInputs.length;i++) {
+        colourInputs[i].className += " done";
+        colourInputs[i].value = "not-a-colour-type-element";
+        if (colourInputs[i].value == "not-a-colour-type-element") colourInputs[i].remove();
+        else fallbackInputs[i].remove();
+    }
 }
 // Returns a string from the start of str that is num characters long.
 function shorten(str, num) {
@@ -175,13 +183,17 @@ function isEqual(arr1, arr2) {
     return true;
 }
 Object.prototype.toString = function () {
-    if (JSON.stringify) return JSON.stringify(this);
-    var s = "";
-    for (var prop in this) if (this.hasOwnProperty(prop)) {
-        if (isNull(this[prop])) s += prop+":"+(typeof(this[prop])=="string"?"":typeof(this[prop]))+",";
-        else s += prop+":"+this[prop].toString()+",";
+    try {
+        if (JSON.stringify) return JSON.stringify(this);
+        var s = "";
+        for (var prop in this) if (this.hasOwnProperty(prop)) {
+            if (isNull(this[prop])) s += prop+":"+(typeof(this[prop])=="string"?"":typeof(this[prop]))+",";
+            else s += prop+":"+this[prop].toString()+",";
+        }
+        return "{"+s.substring(0, s.length-1)+"}";
+    } catch (e) {
+        return "[" + this.constructor.name + " object]";
     }
-    return "{"+s.substring(0, s.length-1)+"}";
 }
 Array.prototype.oldToString = Array.prototype.toString;
 Array.prototype.toString = function () {
@@ -257,6 +269,40 @@ TBI.timerClear = function (timer) {
         TBI.Timers[timer] = undefined;
         $(document).off(timer + "_timertrig")
     }
+}
+TBI.TimerDB = {};
+// Extended wrapper for setInterval() and setTimeout().
+// Also supports a lookup table for global timer fun.
+TBI.Timer = function (onCompletion, duration, repeat, timerName) {
+    this.completed = false;
+    this.startTime = new Date().getTime();
+
+    this.timerName = isNull(timerName) ? timerName : generateUUID();
+    this.duration = isNaN(duration) ? 0 : duration;
+    this.onCompletion = typeof(onCompletion == "function") ? onCompletion : function () {};
+    this.repeat = isNull(repeat) ? false : repeat;
+
+    var setFunc = this.repeat ? setInterval : setTimeout;
+    this.timer = setFunc(function (func, timer) {
+        return function () { timer.completed = true; func(timer); };
+    }(this.onCompletion, this), this.duration);
+
+    this.clear = function () {
+        if (this.repeat) clearInterval(this.timer);
+        else clearTimeout(this.timer);
+        TBI.TimerDB[this.timerName] = undefined;
+    };
+    this.finish = function () {
+        this.clear();
+        this.onCompletion(this);
+    };
+
+    Object.defineProperty(this, "elapsedTime", {
+        get: function () {
+            return new Date().getTime() - this.startTime;
+        }
+    });
+    TBI.TimerDB[this.timerName] = this;
 }
 // non-recursive algorithm
 function highestCommonFactor(a, b) {
@@ -379,9 +425,10 @@ function Enum() {
         this[removeDashes(arguments[i])] = arguments[i];
     if (Object.freeze) Object.freeze(this);
 }
-function MathFunction(evalFunc, type) {
+function MathFunction(evalFunc, type, className) {
     this.eval = evalFunc;
     this.type = type || MathFunction.Types.Cartesian;
+    this.className = className || "MathFunction";
     this.toString = function (useHTML) {
         return equationToString(this.eval, false, useHTML);
     }
@@ -394,7 +441,7 @@ function PolynomialFunc() {
         for (var i=0;i<this.coefficients.length;i++)
             result += Math.pow(x, i) * this.coefficients[i];
         return result;
-    }, MathFunction.Types.Cartesian);
+    }, MathFunction.Types.Cartesian, "PolynomialFunc");
     this.correctCoefficients = function () {
         for (var i=this.coefficients.length-1,r=false,a=[];i>=0;i--) {
             var curr = this.coefficients[i];
@@ -436,7 +483,7 @@ function PolynomialFunc() {
                 else if (i == 1) variable = "x";
                 else if (useHTML) variable = "x<sup>"+i+"</sup>";
                 else variable = "x^"+i;
-                str = s+sign+s+(val == 1 ? "" : val.toString())+variable + str;
+                str = s+sign+s+(i != 0 && val == 1 ? "" : val.toString())+variable + str;
             }
         }
         var lastIndex = this.coefficients.length-1;
@@ -468,6 +515,7 @@ function PolynomialFunc() {
 PolynomialFunc.prototype = Object.create(MathFunction.prototype);
 function LinearFunc(gradient, yIntercept) {
     PolynomialFunc.call(this, gradient, yIntercept);
+    this.className = "LinearFunc";
     this.defineAliases({
         "gradient": 1,
         "yIntercept": 0
@@ -490,6 +538,7 @@ LinearFunc.prototype = Object.create(PolynomialFunc.prototype);
 function QuadraticFunc(a, b, c) {
     if (a == 0) return new LinearFunc(b, c);
     PolynomialFunc.call(this, a, b, c);
+    this.className = "QuadraticFunc";
     this.defineAliases({
         "a": 2,
         "b": 1,
@@ -512,7 +561,7 @@ QuadraticFunc.prototype = Object.create(PolynomialFunc.prototype);
 function RelationFunc(a, b, c) {
     MathFunction.call(this, function (x) {
         return this.gradient*x + this.yIntercept;
-    }, MathFunction.Types.Cartesian);
+    }, MathFunction.Types.Cartesian, "RelationFunc");
 
     this.a = a;
     this.b = b;
@@ -550,67 +599,135 @@ function RelationFunc(a, b, c) {
 }
 RelationFunc.prototype = Object.create(MathFunction.prototype);
 function PolarFunction(func) {
-    MathFunction.call(this, func, MathFunction.Types.Polar);
+    MathFunction.call(this, func, MathFunction.Types.Polar, "PolarFunction");
 }
-function ParametricFunc(xf, yf) {
+PolarFunction.parse = function (str) {
+    var func = null;
+    try {
+        func = stringToEquation(str);
+    } catch (e) {
+        TBI.error("The PolarFunction failed to parse: "+e.message);
+        return new PolarFunction(function (a) { return 0; });
+    }
+    return new PolarFunction(func);
+}
+function ParametricFunc(xf, yf, className) {
+    className = className || "ParametricFunc";
     MathFunction.call(this, function (t) {
         return new Vector2D(this.xf(t), this.yf(t));
-    }, MathFunction.Types.Parametric);
+    }, MathFunction.Types.Parametric, className);
     this.xf = xf;
     this.yf = yf;
     this.toString = function (useHTML) {
         return "f(t) = ("+equationToString(this.xf, true, useHTML)+", "+equationToString(this.yf, true, useHTML)+")";
     }
 }
+ParametricFunc.parse = function (xf, yf) {
+    try {
+        return new ParametricFunc(stringToEquation(xf), stringToEquation(yf));
+    } catch (e) {
+        TBI.error("The ParametricFunc failed to parse: "+e.message);
+        return new ParametricFunc(function(){return 0;}, function(){return 0;});
+    }
+}
 ParametricFunc.prototype = Object.create(MathFunction.prototype);
+ParametricFunc.Variable = function (xf, yf, varObj) {
+    ParametricFunc.call(this, xf, yf, "ParametricFunc_Variable");
+    var chars = "abcdefghijklmnopqrstuvwxyz";
+    var vars = [];
+    if (typeof(varObj) == "number") for (var i=2;i<arguments.length&&(i-2)<chars.length;i++) {
+        this[chars[i-2]] = arguments[i];
+        vars.push(chars[i-2]);
+    } else for (var prop in varObj) if (varObj.hasOwnProperty(prop)) {
+        this[prop] = varObj[prop];
+        vars.push(prop);
+    }
+    this.variables = vars;
+    this.toString = function (useHTML, funcOnly) {
+        var str = "f(t) = ("+equationToString(this.xf, true, useHTML)+", "+equationToString(this.yf, true, useHTML)+")";
+        if (!funcOnly) {
+            str += ", ";
+            if (useHTML) str += "<ul>";
+            for (var i=0;i<this.variables.length;i++) {
+                if (useHTML) str += "<li>";
+                str += this.variables[i] + " = "+this[this.variables[i]];
+                if (useHTML) str += "</li>";
+                if (!useHTML && i != this.variables.length - 1) str += ", ";
+            }
+            if (useHTML) str += "</ul>";
+        }
+        return str;
+    }
+}
+ParametricFunc.Variable.parse = function (xf, yf, varObj) {
+    try {
+        for (var prop in varObj) if (varObj.hasOwnProperty(prop)) {
+            xf = xf.replace(new RegExp("([^\\(]|^)\\$"+RegExp.quote(prop)+"([^\\)]|$)"), "$1(this."+prop+")$2");
+            xf = xf.replace(new RegExp("(\\()\\$"+RegExp.quote(prop)+"([^\\)])"), "$1(this."+prop+")$2");
+            xf = xf.replace(new RegExp("([^\\(])\\$"+RegExp.quote(prop)+"(\\))"), "$1(this."+prop+")$2");
+            xf = xf.replace(new RegExp("\\(\\$"+prop+"\\)"), "(this."+prop+")");
+            yf = yf.replace(new RegExp("([^\\(]|^)\\$"+RegExp.quote(prop)+"([^\\)]|$)"), "$1(this."+prop+")$2");
+            yf = yf.replace(new RegExp("(\\()\\$"+RegExp.quote(prop)+"([^\\)])"), "$1(this."+prop+")$2");
+            yf = yf.replace(new RegExp("([^\\(])\\$"+RegExp.quote(prop)+"(\\))"), "$1(this."+prop+")$2");
+            yf = yf.replace(new RegExp("\\(\\$"+prop+"\\)"), "(this."+prop+")");
+        }
+        return new ParametricFunc.Variable(stringToEquation(xf, true), stringToEquation(yf, true), varObj);
+    } catch (e) {
+        TBI.error("The ParametricFunc.Variable failed to parse: "+e.message);
+    }
+}
+ParametricFunc.Variable.prototype = Object.create(ParametricFunc.prototype);
 // Declares a parametric function that generates an ellipse.
 ParametricFunc.ellipse = function (a, b) {
-    ParametricFunc.call(this,
+    ParametricFunc.Variable.call(this,
         function (t) { return this.a*Math.cos(t); },
-        function (t) { return this.b*Math.sin(t); }
+        function (t) { return this.b*Math.sin(t); },
+        a, b
     );
-    this.a = a;
-    this.b = b;
-    this.toString = function () {
-        return "f(t) = ("+this.a+"cos(t), "+this.b+"sin(t))";
-    }
+    this.className = "Ellipse";
 }
-ParametricFunc.ellipse.prototype = Object.create(ParametricFunc.prototype);
+ParametricFunc.ellipse.prototype = Object.create(ParametricFunc.Variable.prototype);
 // Declares a parametric function that generates a Lissajous curve.
 ParametricFunc.lissajous = function (a, b, sigma) {
-    ParametricFunc.call(this,
-        function (t) { return Math.sin(this.a*t + this.sigma); },
-        function (t) { return Math.sin(this.b*t); }
+    ParametricFunc.Variable.call(this,
+        function (t) { return Math.sin(this.a*t + this.σ); },
+        function (t) { return Math.sin(this.b*t); },
+        { a:a, b:b, σ: isNaN(sigma) ? 0 : sigma }
     );
-    this.a = a;
-    this.b = b;
-    this.sigma = isNull(sigma) || isNaN(sigma) ? 0 : sigma;
-    this.toString = function () {
-        return "f(t) = (sin("+this.a+"t"+(this.sigma == 0 ? "" : " + "+this.sigma)+"), sin("+this.b+"t))";
-    }
+    this.className = "Lissajous";
 }
-ParametricFunc.lissajous.prototype = Object.create(ParametricFunc.prototype);
+ParametricFunc.lissajous.prototype = Object.create(ParametricFunc.Variable.prototype);
 // Declares a parametric function that generates a trochoid.
 ParametricFunc.trochoid = function (a, b) {
-    ParametricFunc.call(this,
+    ParametricFunc.Variable.call(this,
         function (t) { return this.a*t - this.b*Math.sin(t); },
-        function (t) { return this.a - this.b*Math.cos(t); }
+        function (t) { return this.a - this.b*Math.cos(t); },
+        { a:a, b:b }
     );
-    this.a = a;
-    this.b = b;
+    this.className = "Trochoid";
 }
-ParametricFunc.trochoid.prototype = Object.create(ParametricFunc.prototype);
+ParametricFunc.trochoid.prototype = Object.create(ParametricFunc.Variable.prototype);
 // Declares a parametric function that generates a hypotrochoid.
 ParametricFunc.hypotrochoid = function (R, r, d) {
-    ParametricFunc.call(this,
-        function (t) { var a = this.R - this.r; return a*Math.cos(t) + this.d*Math.cos(a/r*t); },
-        function (t) { var a = this.R - this.r; return a*Math.sin(t) - this.d*Math.sin(a/r*t); }
+    ParametricFunc.Variable.call(this,
+        function (t) { var d = this.R - this.r; return a*Math.cos(t) + this.d*Math.cos(a/r*t); },
+        function (t) { var d = this.R - this.r; return a*Math.sin(t) - this.d*Math.sin(a/r*t); },
+        { R:R, r:r, d:d }
     );
-    this.R = R;
-    this.r = r;
-    this.d = d;
+    this.className = "Hypotrochoid";
 }
-ParametricFunc.hypotrochoid.prototype = Object.create(ParametricFunc.prototype);
+ParametricFunc.hypotrochoid.prototype = Object.create(ParametricFunc.Variable.prototype);
+// The transcendental butterfly curve.
+// https://en.wikipedia.org/wiki/Butterfly_curve_(transcendental)
+ParametricFunc.butterfly = function (a, b) {
+    ParametricFunc.Variable.call(this,
+        function (t) { return (this.a-this.b)*Math.cos(t) + this.b*Math.cos(t*((this.a/this.b) - 1)); },
+        function (t) { return (this.a-this.b)*Math.sin(t) - this.b*Math.sin(t*((this.a/this.b) - 1)); },
+        { a:a||1, b:b||1 }
+    );
+    this.className = "Butterfly";
+}
+ParametricFunc.butterfly.prototype = Object.create(ParametricFunc.Variable.prototype);
 // because why not? I'm using UTF-8 anyway
 var π = Math.PI;
 // Transforms an equation into a string representation.
@@ -620,10 +737,10 @@ Function.equationToString = function (func, toReplace, replacement) {
 // Magic. Obfuscated to f**k.
 // Takes all instances of function r with b brackets and
 // interior regex specification n in s and replaces them with t.
-//               s                 r                      n                          t         b
+//             str                func                   interior                   replacement  brackets
 // e.g. "sin<84 * sin<2x + 4>>", "sin", "([0-9])([a-z]) ?[\\+\\-\\*\\/] ?([0-9])", "$1, $2, $3", "<>"
 // returns "sin<84 * 2, x, 4>"
-function replaceNestedFunctions(s, r, n, t, b) {
+/*function replaceNestedFunctions(s, r, n, t, b) {
     var q = RegExp.quote(r);
     if (isNull(b)) b = "()";
     var c = [RegExp.quote(b[0]), RegExp.quote(b[1])];
@@ -646,7 +763,42 @@ function replaceNestedFunctions(s, r, n, t, b) {
     }
     s2 = s2.replace(new RegExp("\uFFFF[0-9]+\uFFFF", 'g'), "");
     return s2;
-};
+};*/
+function replaceNestedFunctions(str, func, interior, replacement, brackets) {
+    if (isNull(brackets)) brackets = "()";
+    var result = "",
+        watchLayers = [],
+        resultLayers = [],
+        layer = 0,
+        u = "\uFFFF";
+    for (var i=0;i<str.length;i++) {
+        if (result.endsWith(func)) {
+            result += u + layer + u;
+            watchLayers.push(layer);
+        }
+        if (str[i] == brackets[0]) layer++;
+        else if (str[i] == brackets[1] && watchLayers.indexOf(--layer) != -1) {
+            resultLayers.push(layer);
+            watchLayers = watchLayers.remove(watchLayers.indexOf(layer));
+            result += u + layer + u;
+        }
+        result += str[i];
+    }
+
+    func = RegExp.quote(func);
+    brackets = [
+        RegExp.quote(brackets[0]),
+        RegExp.quote(brackets[1])
+    ];
+
+    for (var i=0;i<resultLayers.length;i++) {
+        var head = u + resultLayers[i] + u;
+                                        // func<marker>(...<marker>)
+        result = result.replace(new RegExp(func+head+brackets[0]+interior+head+brackets[1], 'g'), replacement);
+    }
+    result = result.replace(new RegExp(u+"[0-9]+"+u, 'g'), "");
+    return result;
+}
 function equationToString(func, noHeader, useHTML) {
     if (isNull(useHTML)) useHTML = false;
     var str = func.toString();
@@ -660,40 +812,48 @@ function equationToString(func, noHeader, useHTML) {
     str = str.replaceAll(/\; ?\, ?/, ", ");
     str = str.replaceAll(/(([A-Za-z_]|\\[0-9])+)([0-9])([A-Za-z0-9_]*)\(/, "$1\\$3$4(");
     str = str.replaceAll(/([A-Za-z_]+) ?\* ?([0-9]+)/, "$2$1");
-    str = str.replaceAll(/([^0-9]) *\* *([^A-Za-z_])/, "$1$2");
-    str = str.replaceAll(/([^A-Za-z_]) *\* *([^0-9])/, "$1$2");
     str = str.replaceAll(/\\([0-9])/, "$1");
-    str = str.removeAll("Math.");
+    str = str.removeAll("Math.", "var ", / *\* */);
+    str = str.replaceAll(/this\.([^ \+\-\*\/\)\(]+)/, "$\uFFFF$1").replaceAll("$\uFFFF", "$");
     str = str.removeAll(/;? ?\} */);
     str = replaceNestedFunctions(str, "pow", "([^,]+), ?(.*?)", useHTML?"$1<sup>$2</sup>":"$1^$2");
     str = str.replaceAll(/[pP][iI]/, "π");
     return str;
 }
 MathFunction.parse = function (str, type) {
+    var func = null;
+    try {
+        func = stringToEquation(str);
+    } catch (e) {
+        TBI.error("The MathFunction failed to parse: "+e.message);
+        return new MathFunction(function (x) { return 0; });
+    }
+    return new MathFunction(func, isNull(type) ? MathFunction.Types.Cartesian : type);
+}
+function stringToEquation(str, noVerify) {
     str = str.replaceAll("pi", "π");
     str = str.replaceAll(/(^ *| *$)/, "");
     if (str.search(/^f\([^\)]*/) == -1) str = "f(x) = " + str;
     str = str.replaceAll(/^f(\([^\)]*\)) ?= ?/, "function $1 { return ");
     str = str.replaceAll(/(([A-Za-z_]|\\[0-9])+)([0-9])([A-Za-z0-9_]*)\(/, "$1\\$3$4(");
-    str = str.replaceAll(/([0-9π\)]+)([\(a-zA-Z]+)/, "$1*$2");
-    str = str.replaceAll(/([a-zA-Z\)]+)([0-9π]+)/, "$1*$2");
+    str = str.replaceAll(/([0-9π\)]+)([\(a-zA-Zπ]+)/, "$1*$2");
+    str = str.replaceAll(/([a-zA-Zπ\)]+)([0-9π]+)/, "$1*$2");
     str = str.replaceAll(/\\([0-9])/, "$1");
     str = str.replaceAll(/([0-9a-zA-Z\.]+)\^(([0-9a-zA-Z\.]+|\([^\)]+?\)))/, "Math.pow($1,$2)");
     str = str.replace(/$/, "; }");
-    var funcs = str.match(/[a-zA-Z_][a-zA-Z0-9_]*\(/);
-    TBI.log(funcs);
+    var funcs = str.match(/[a-zA-Z_][a-zA-Z0-9_]*\(/g);
     if (funcs != null) for (var i=0;i<funcs.length;i++)
         if (typeof(Math[funcs[i].removeAll("(")]) != "undefined")
             str = str.replaceAll(new RegExp("([^\\.])("+RegExp.quote(funcs[i])+")", 'g'), "$1Math.$2");
     try {
         var func = null;
         eval("func = "+str);
-        func(1);
+        if (!noVerify) func(1);
     } catch (e) {
         TBI.error(e);
         return null;
     }
-    return new MathFunction(func, isNull(type) ? MathFunction.Types.Cartesian : type);
+    return func;
 }
 // Declares a function using a string as input.
 String.parseFunction = function (text) {
@@ -753,8 +913,6 @@ Vector2D.prototype = {
     wedge: function (vec) { return this.x*vec.y - this.y*vec.x; },
     // Clamps the vector's x and y values to a minimum and maximum vector.
     clamp: function (min, max) { return new Vector2D(Math.bound(this.x, min.x, max.x), Math.bound(this.y, min.y, max.y)); },
-    toMatrix: function () { return new Matrix([this.x, this.y]); },
-    toCoords: function () { return new Coords(this.x, this.y); },
     // Returns the angle formed by the vector with the positive X axis.
     angle: function () { return Math.atan2(this.y, this.x); },
     // Projects the vector onto another.
@@ -763,8 +921,13 @@ Vector2D.prototype = {
     normal: function (dir) { if (dir) return new Vector2D(-this.y, this.x); else return new Vector2D(this.y, -this.x); },
     equals: function (vec) { return this.x == vec.x && this.y == vec.y; },
     fix: function (num) { return new Vector2D(this.x.fixFloat(num), this.y.fixFloat(num)); },
-    toString: function (spacing) { if (isNull(spacing)) spacing = true; var s = spacing ? " " : ""; return "("+this.x+","+s+this.y+")"; },
+    toMatrix: function () { return new Matrix([this.x, this.y]); },
+    // Please don't use this.
+    toCoords: function () { return new Coords(this.x, this.y); },
+    // Use this one though, totally cool with it.
+    toString: function () { return "("+this.x+", "+this.y+")"; },
 };
+Vector2D.zero = new Vector2D(0, 0);
 // Returns a random positive integer below the specified number.
 function randomInt(num) { return parseInt(Math.random()*num) }
 // Returns a random integer between two numbers.
@@ -873,6 +1036,45 @@ Math.bound = function (num, low, high) {
     high = isNull(high) ? Infinity : high;
     return num < low ? low : num > high ? high : num;
 }
+// This assumes that num == low and num == high will not be corrected
+// Only difference is taken into account
+// Not good for arrays, great for floats.
+// Designed for such things as video game screen wrapping
+Math.wrap = function (num, low, high) {
+    // upper and lower bounds if low and/or high is not given
+    low = isNull(low) ? -Infinity : low;
+    high = isNull(high) ? Infinity : high;
+    // ensuring that low < high
+    if (low > high) {
+        var temp = high;
+        high = low;
+        low = temp;
+    }
+    // range of "return field" (between low and high)
+    var range = high - low;
+    // num when confined to the return field
+    var bound = Math.bound(num, low, high);
+    // if the num is inside the return field (it didn't have to be confined, so it stays the same)
+    if (num == bound) return bound;
+    // the distance away from the return field (+ if num > max, - if num < low, 0 if inside)
+    var diff = num - bound;
+    // never go range away from the return field, only record in closest return field unit
+    diff = diff % range;
+    // if num is bounded to the higher end (num > high)
+    // wrap from low side
+    if (high == bound) return low + diff;
+    // if num is bounded to the lower end (num < low)
+    // wrap from right side (diff is negative in this case)
+    else if (low == bound) return high + diff;
+    else return bound;
+}
+// arr[num % arr.length], but more generalised.
+Math.wrapArray = function (arr, num) {
+    return arr[((num % arr.length) + arr.length) % arr.length];
+}
+Math.bounce = function (num, low, high) {
+
+}
 // Creates a customizable, absolutely positioned popup element.
 // There can only be one at a time.
 TBI.Popup = function (x, y, head, text) {
@@ -926,6 +1128,47 @@ TBI.Popup.registry.remove = function (element) {
         if (TBI.Popup.registry[i][0].id == $(element)[0].id)
             TBI.Popup.registry[i] = undefined;
     $(element).off("mousemove");
+}
+TBI.HoverPopup = function (x, y, title, body) {
+    this.position = new Vector2D(x, y);
+    var popDiv = document.createElement("div");
+    popDiv.className = "popup";
+    popDiv.style.top = this.position.x + 20;
+    popDiv.style.left = this.position.y + 20;
+        var popHead = document.createElement("h3");
+        popHead.innerHTML = title;
+    popDiv.appendChild(popHead);
+        var popBody = document.createElement("div");
+        popBody.className = "popup-body";
+        popBody.innerHTML = body;
+    popDiv.appendChild(popBody);
+
+    $(".popup").remove();
+    document.body.appendChild(popDiv);
+    this.element = popDiv;
+
+    Object.defineProperty(this, "title", {
+        get: function () { return this.element.getn("h3")[0].innerHTML; },
+        set: function (title) { this.element.getn("h3")[0].innerHTML = title; }
+    });
+    Object.defineProperty(this, "body", {
+        get: function () { return this.element.gecn("popup-body")[0].innerHTML; },
+        set: function (body) { this.element.gecn("popup-body")[0].innerHTML = body; }
+    });
+}
+TBI.HoverPopup.bindElement = function (element, title, body) {
+    $(element).mousemove(function (title, body) {
+        return function (event) {
+            var popup = new TBI.HoverPopup(event.clientX, event.clientY, title, body);
+        }
+    }(title, body));
+    $(element).mouseleave(function () {
+        $(".popup").remove();
+    });
+}
+TBI.HoverPopup.bindElements = function (elementArray, title, body) {
+    for (var i=0;i<elementArray.length;i++)
+        TBI.HoverPopup.bindElement(elementArray[i], title, body);
 }
 // A predefined popup element that can be added to by using the same header.
 TBI.notification = function (group, text, timeout) {
@@ -981,7 +1224,7 @@ function Note(img, title, desc, link) {
             window.open(link);
             note.close();
         }
-    new Notification(title, note);
+    return new Notification(title, note);
 }
 TBI.Dialog = function (header, body, buttons) {
     this.header = header;
@@ -999,7 +1242,7 @@ TBI.Dialog = function (header, body, buttons) {
             diaHeaderTransform = this.parentElement.style.transform;
             if (diaHeaderTransform == "") diaHeaderTransform = "translateX(0px) translateY(0px)";
         }
-        diaHeader.onmousemove = function (event) {
+        diaDiv.onmousemove = function (event) {
             if (diaHeaderLoc != null) {
                 var loc = new Vector2D(event.clientX, event.clientY).subtract(diaHeaderLoc);
                 var xMatch = diaHeaderTransform.match(/translateX\((.*?)px\)/);
@@ -1007,7 +1250,19 @@ TBI.Dialog = function (header, body, buttons) {
                 var currX = isNull(xMatch) ? 0 : parseInt(xMatch[1]);
                 var currY = isNull(yMatch) ? 0 : parseInt(yMatch[1]);
                 var curr = new Vector2D(currX, currY).add(loc);
-                this.parentElement.style.transform = diaHeaderTransform
+
+                var zero = Vector2D.zero;
+                var lim = new Vector2D(window.innerWidth, window.innerHeight);
+                var s = getComputedStyle(this);
+                var dim = new Vector2D(parseInt(s.width), parseInt(s.height));
+
+                var begin = new Vector2D(lim.x/2 - dim.x/2, lim.y/2 - dim.y/2).add(curr);
+                var beginDiff = begin.clamp(zero, lim).subtract(begin);
+                var end = begin.add(dim);
+                var endDiff = end.clamp(zero, lim).subtract(end);
+                curr = curr.add(beginDiff).add(endDiff);
+
+                this.style.transform = diaHeaderTransform
                     .replace(/translateX\(.*?\)/, "translateX("+curr.x+"px)")
                     .replace(/translateY\(.*?\)/, "translateY("+curr.y+"px)");
             }
@@ -1016,7 +1271,8 @@ TBI.Dialog = function (header, body, buttons) {
             diaHeaderLoc = null;
             diaHeaderTransform = null;
         }
-        diaHeader.onmouseleave = diaHeader.onmouseup;
+        diaDiv.onmouseup = diaHeader.onmouseup;
+        diaDiv.onmouseleave = diaHeader.onmouseup;
             var diaHeaderText = document.createElement("h2");
             diaHeaderText.innerHTML = this.header;
         diaHeader.appendChild(diaHeaderText);
@@ -1077,13 +1333,19 @@ TBI.Dialog = function (header, body, buttons) {
     this.shadow = shadow;
 
     this.close = function (event) {
-        var cn = event.target.className.replace("dialog-", "");
-        var result = TBI.DialogResult.cancel;
-        for (var prop in TBI.DialogResult)
-            if (TBI.DialogResult[prop] == cn) result = TBI.DialogResult[prop];
-        if (this.onclose) this.onclose(result, event);
+        if (!isNull(event)) {
+            var cn = event.target.className.replace("dialog-", "");
+            var result = TBI.DialogResult.cancel;
+            for (var prop in TBI.DialogResult)
+                if (TBI.DialogResult[prop] == cn) result = TBI.DialogResult[prop];
+            if (this.onclose) this.onclose(result, event);
+        } else if (this.onclose) this.onclose(TBI.DialogResult.cancel);
         this.element.remove();
         this.shadow.className = this.shadow.className.replace(/ ?show/, "");
+    }
+
+    this.getElement = function (cls) {
+        return this.element.gecn(cls)[0];
     }
 }
 TBI.DialogButtons = new Enum("ok", "ok-cancel", "ok-cancel-apply", "abort-retry-fail");

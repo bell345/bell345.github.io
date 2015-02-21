@@ -27,7 +27,6 @@ CD3.difference = function (before, after, format) {
         diff = new Array(6),
         active = null,
         finalCountdown = "";
-    debugger;
     if (bTime[0] % 4 == 0) CD3.months[1] = 29; // yay for leap years
     CD3.offset[2] = CD3.months[(bTime[1]+(CD3.months.length-1))%CD3.months.length];
     for (var i=5;i>=0;i--) { // where the magic happens
@@ -335,7 +334,7 @@ CDown.remove = function () {
     CDown.setCookie();
     if (CDown.lastUpdate != "set") CDown.change("set");
     CDown.lastUpdate = "set";
-    CDown.change("mul-off");
+    if (CDown.list.length < 2) CDown.change("mul-off");
     document.title = "CountDown";
     var earliest = CDown.findEarliest();
     if (earliest != -1)

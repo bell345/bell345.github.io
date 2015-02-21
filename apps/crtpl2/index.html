@@ -42,19 +42,6 @@
                 </button>
             </li>
             <li class="separator"></li>
-            <li class="zoom-mode note-popup-left" data-note-popup="Center Zoom">
-                <button class="toggle pictoral">
-                    <!-- assets/res/icons/fullscreen.svg -->
-                    <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><path d="M415.51 209.562v22.78h-36.48v47.4h36.48v22.778L462 256.042l-46.49-46.48zm-319.02 92.96v-22.78h36.48v-47.4H96.49v-22.78L50 256.04l46.49 46.48zm113.03-184.906h22.78v36.48h47.4v-36.48h22.78L256 71.126l-46.48 46.49zm92.96 276.768H279.7v-36.48h-47.4v36.48h-22.78l46.48 46.49 46.48-46.49zM163.005 184.138v143.805h185.988V184.138H163.006z"/></svg>
-                </button>
-            </li>
-            <li class="keep-axes note-popup-left" data-note-popup="Keep Axes On Screen">
-                <button class="toggle pictoral">
-                    <!-- assets/res/icons/resize.svg -->
-                    <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><path d="M462 268.327h-75.953V125.952H243.673V50H462v218.327zM50 462h218.327v-75.952H125.953V243.673H50V462z"/></svg>
-                </button>
-            </li>
-            <li class="separator"></li>
             <li class="show-axes note-popup-left" data-note-popup="Show Scale">
                 <button class="toggle pictoral">
                     <!-- assets/res/icons/fullscreen.svg -->
@@ -65,6 +52,13 @@
                 <button class="toggle pictoral">
                     <!-- assets/res/icons/map.svg -->
                     <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><path d="M396.848 50.152c-35.983 0-65.155 29.172-65.155 65.152 0 53.506 51.245 59.164 65.155 140.542C410.758 174.466 462 168.81 462 115.306c0-35.982-29.17-65.154-65.152-65.154zm0 86.938c-12.906 0-23.366-10.46-23.366-23.364 0-12.905 10.46-23.367 23.366-23.367 12.904 0 23.365 10.46 23.365 23.366 0 12.903-10.46 23.364-23.365 23.364zm63.17 54.33c-10.782 13.498-21.106 26.437-28.067 47.12v143.452l-74.96 40.703V226.557c-4.376-9.463-9.528-17.23-15.024-24.545v219.043l-81.806-52.91v-215.84l70.95 35.895c-10.293-12.968-21.005-27.42-26.2-47.19l-51.915-26.41-93.81 48.743L50 105.243V399.52l109.185 62.328 93.81-62.32 95.815 62.32L462 399.52V188.932l-1.983 2.487zM151.002 422.694L80.05 381.992V155.06L151.003 193v229.695zm94.828-54.55l-79.8 52.91V193.69l79.8-41.385v215.84z"/></svg>
+                </button>
+            </li>
+            <li class="separator"></li>
+            <li class="settings-icon note-popup-left" data-note-popup="Settings">
+                <button class="pictoral">
+                    <!-- assets/res/icons/gear.svg -->
+                    <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><path d="M462 283.742v-55.485l-49.25-17.514c-3.4-11.792-8.094-23.032-13.918-33.563l22.448-47.227-39.234-39.234-47.226 22.448c-10.53-5.824-21.772-10.52-33.564-13.92L283.74 50h-55.483l-17.515 49.25c-11.792 3.398-23.032 8.094-33.563 13.918l-47.228-22.45-39.234 39.235 22.45 47.227c-5.824 10.53-10.52 21.77-13.92 33.563L50 228.257v55.485l49.25 17.514c3.397 11.792 8.094 23.032 13.918 33.563l-22.45 47.226 39.234 39.234 47.227-22.45c10.53 5.825 21.77 10.52 33.562 13.92L228.257 462h55.484l17.516-49.25c11.792-3.397 23.034-8.094 33.564-13.918l47.226 22.448 39.234-39.234-22.448-47.226c5.824-10.53 10.52-21.772 13.92-33.564L462 283.742zm-206 47.804c-41.724 0-75.548-33.823-75.548-75.546s33.824-75.547 75.548-75.547c41.723 0 75.546 33.824 75.546 75.547S297.723 331.546 256 331.546z"/></svg>
                 </button>
             </li>
         </ul>
@@ -102,6 +96,545 @@
             <ul class="function-list"></ul>
         </div>
         <div class="shadow">
+        </div>
+        <div class="comp-dialog hide">
+            <div class="control-row">
+                <p class="span">
+                    Select the function type:
+                </p>
+                <select class="comp-dia-type">
+                    <option value="none" selected>--(select one)--</option>
+                    <option value="cartesian">Cartesian (y = f(x))</option>
+                    <option value="polar">Polar (r = f(a))</option>
+                    <option value="parametric">Parametric ((x, y) = f(t))</option>
+                </select>
+            </div><div class="control-row selection-required">
+                <p class="span">
+                    Select a function class:
+                </p>
+                <select class="comp-dia-class-cartesian comp-dia-class" data-plane-type="cartesian">
+                    <option value="mathfunction" selected>MathFunction (generic type)</option>
+                    <option value="polynomialfunc">PolynomialFunc (ax^n + bx^(n-1) + cx^(n-2) + ...)</option>
+                    <option value="linearfunc">LinearFunc (ax + b)</option>
+                    <option value="relationfunc">RelationFunc (ax + by = c)</option>
+                </select>
+                <select class="comp-dia-class-polar comp-dia-class" data-plane-type="polar">
+                    <option value="polarfunction" selected>PolarFunction (generic type)</option>
+                </select>
+                <select class="comp-dia-class-parametric comp-dia-class" data-plane-type="parametric">
+                    <option value="parametricfunc" selected>ParametricFunc (generic type)</option>
+                    <option value="parametricfunc_variable">ParametricFunc, with variables (generic type)</option>
+                    <option value="ellipse">Ellipse</option>
+                    <option value="lissajous">Lissajous curve</option>
+                    <option value="trochoid">Trochoid</option>
+                    <option value="hypotrochoid">Hypotrochoid</option>
+                    <option value="butterfly">Butterfly curve</option>
+                </select>
+            </div><div class="control-row">
+                <div class="comp-dia-entry-mathfunction comp-dia-entry" data-plane-class="mathfunction">
+                    <label>f(x) = </label>
+                    <textarea class="comp-dia-field comp-dia-field-mathfunction">x</textarea>
+                </div>
+                <div class="comp-dia-entry-polynomialfunc comp-dia-entry" data-plane-class="polynomialfunc">
+                    <label>f(x) = </label>
+                    <span class="term">
+                        <input type="number" class="comp-dia-field comp-dia-field-polynomialfunc" />
+                        <span>x<sup>2</sup> + </span>
+                    </span>
+                    <span class="term">
+                        <input type="number" class="comp-dia-field comp-dia-field-polynomialfunc" />
+                        <span>x<sup></sup> + </span>
+                    </span>
+                    <span class="term">
+                        <input type="number" class="comp-dia-field comp-dia-field-polynomialfunc" />
+                        <span><sup></sup></span>
+                    </span>
+                    <button class="term-add">Add Term</button>
+                </div>
+                <div class="comp-dia-entry-linearfunc comp-dia-entry" data-plane-class="linearfunc">
+                    <label>f(x) = </label>
+                    <input type="number" class="comp-dia-field comp-dia-field-linearfunc-gradient" />
+                    <span>x + </span>
+                    <input type="number" class="comp-dia-field comp-dia-field-linearfunc-yintercept" />
+                </div>
+                <div class="comp-dia-entry-relationfunc comp-dia-entry" data-plane-class="relationfunc">
+                    <label>f(x) = </label>
+                    <input type="number" class="comp-dia-field comp-dia-field-relationfunc-a" />
+                    <span>x + </span>
+                    <input type="number" class="comp-dia-field comp-dia-field-relationfunc-b" />
+                    <span>y = </span>
+                    <input type="number" class="comp-dia-field comp-dia-field-relationfunc-c" />
+                </div>
+                <div class="comp-dia-entry-polarfunction comp-dia-entry" data-plane-class="polarfunction">
+                    <label>f(a) = </label>
+                    <textarea class="comp-dia-field comp-dia-field-polarfunction">a</textarea>
+                </div>
+                <div class="comp-dia-entry-parametricfunc comp-dia-entry" data-plane-class="parametricfunc">
+                    <div class="control-row">
+                        <label>x = </label>
+                        <textarea class="comp-dia-field comp-dia-field-parametricfunc-x">t</textarea>
+                    </div>
+                    <div class="control-row">
+                        <label>y = </label>
+                        <textarea class="comp-dia-field comp-dia-field-parametricfunc-y">t</textarea>
+                    </div>
+                </div>
+                <div class="comp-dia-entry-parametricfunc_variable comp-dia-entry" data-plane-class="parametricfunc_variable">
+                    <div class="control-row">
+                        <label>x = </label>
+                        <textarea class="comp-dia-field comp-dia-field-parametricfunc_variable-x">t</textarea>
+                    </div>
+                    <div class="control-row">
+                        <label>y = </label>
+                        <textarea class="comp-dia-field comp-dia-field-parametricfunc_variable-y">t</textarea>
+                    </div>
+                    <div class="variable-select">
+                        <div class="control-row">
+                            <label>Variable: </label>
+                            <select class="variable-select-select comp-dia-field">
+                                <option value="none" selected>New Variable</option>
+                            </select>
+                        </div>
+                        <div class="control-row">
+                            <label>Value: </label>
+                            <input type="number" class="variable-select-value" />
+                        </div>
+                        <div class="control-row">
+                            <button class="variable-select-delete">Delete Selected Variable</button>
+                        </div>
+                        <div class="control-row variable-select-newonly">
+                            <input type="text" class="variable-select-name" placeholder="Name" />
+                            <button class="variable-select-add">Add Variable</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="comp-dia-entry-ellipse comp-dia-entry" data-plane-class="ellipse">
+                    <div class="control-row">
+                        <label>x = </label>
+                        <input type="number" class="comp-dia-field comp-dia-field-ellipse" placeholder="a" />
+                        <span>cos(t)</span>
+                    </div>
+                    <div class="control-row">
+                        <label>y = </label>
+                        <input type="number" class="comp-dia-field comp-dia-field-ellipse" placeholder="b" />
+                        <span>sin(t)</span>
+                    </div>
+                </div>
+                <div class="comp-dia-entry-lissajous comp-dia-entry" data-plane-class="lissajous">
+                    <div class="control-row">
+                        <label>x = </label>
+                        <span>sin(</span>
+                        <input type="number" class="comp-dia-field comp-dia-field-lissajous" placeholder="a" />
+                        <span>t + </span>
+                        <input type="number" class="comp-dia-field comp-dia-field-lissajous" placeholder="σ" />
+                        <span>)</span>
+                    </div>
+                    <div class="control-row">
+                        <label>y = </label>
+                        <span>sin(</span>
+                        <input type="number" class="comp-dia-field comp-dia-field-lissajous" placeholder="a" />
+                        <span>t)</span>
+                    </div>
+                </div>
+            </div>
+            <div class="companion-cont">
+                <canvas id="companion" width="260" height="260">
+                    Your browser does not seem to support the HTML5 &lt;canvas&gt; framework.
+                    To use this application, please use an updated version of a modern browser
+                    such as <a href="//google.com/chrome">Google Chrome</a> or
+                    <a href="//firefox.com">Mozilla Firefox</a>.
+                </canvas>
+                <div class="companion-container plane-container">
+                    <ul class="right-ui">
+                        <li class="zoom-in note-popup-left" data-note-popup="Zoom In">
+                            <button class="pictoral">
+                                <!-- assets/res/icons/plus.svg -->
+                                <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><path d="M462 198.615H313.385V50h-114.77v148.615H50v114.77h148.615V462h114.77V313.385H462z"/></svg>
+                            </button>
+                        </li>
+                        <li class="zoom-out note-popup-left" data-note-popup="Zoom Out">
+                            <button class="pictoral">
+                                <!-- assets/res/icons/minus.svg -->
+                                <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><path d="M50 198.615h412v114.77H50z"/></svg>
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+                <button class="comp-dia-preview major">Preview</button>
+                <div class="companion-function function">
+                </div>
+                <div class="control-row">
+                    <span>Style: </span>
+                    <input type="color" class="comp-dia-style with-fallback" />
+                    <input type="text" class="comp-dia-style fallback narrow" />
+                </div>
+            </div>
+        </div>
+        <div class="settings-dialog hide">
+            <h3><a href="#" class="up-down on" for=".dialog .category.cat-common">Common</a></h3>
+            <div class="category cat-common">
+                <h4>Axes</h4>
+                <div class="control-row">
+                    <button class="toggle" data-plane-setting="settings.axes.stayOnScreen">Keep Axes On Screen</button>
+                </div>
+                <h4>Scale</h4>
+                <div class="radio-input">
+                    <div class="control-row">
+                        <input type="radio" name="setting-common-fixed" value="x" id="setting-common-fixed-x" data-plane-setting="settings.controls.xFixed" />
+                        <label for="setting-common-fixed-x">Fix X Scale</label>
+                    </div>
+                    <div class="control-row">
+                        <input type="radio" name="setting-common-fixed" value="y" id="setting-common-fixed-y" data-plane-setting="settings.controls.yFixed" />
+                        <label for="setting-common-fixed-y">Fix Y Scale</label>
+                    </div>
+                    <div class="control-row">
+                        <input type="radio" name="setting-common-fixed" value="none" id="setting-common-fixed-none" data-plane-setting="settings.scale.staySquare" />
+                        <label for="setting-common-fixed-none">Keep Scale Square (X/Y ratio always 1:1)</label>
+                    </div>
+                </div>
+                <div class="control-row">
+                    <label>Scale Interval:</label>
+                    <input type="text" data-plane-setting="settings.scale.minInterval" />
+                    <span>px - </span>
+                    <input type="text" data-plane-setting="settings.scale.maxInterval" />
+                    <span>px</span>
+                </div>
+                <div class="control-row">
+                    <label>Scale Interval (Minor):</label>
+                    <input type="text" data-plane-setting="settings.scale.minor.minInterval" />
+                    <span>px - </span>
+                    <input type="text" data-plane-setting="settings.scale.minor.maxInterval" />
+                    <span>px</span>
+                </div>
+                <h4>Controls</h4>
+                <div class="control-row">
+                    <button class="toggle" data-plane-setting="settings.controls.fixedZoom">Centre Zoom</button>
+                </div>
+                <div class="control-row">
+                    <label>Scroll +/- Button Speed</label>
+                    <input type="text" data-plane-setting="settings.controls.buttonZoomFactor" />
+                </div>
+                <div class="control-row">
+                    <label>Scroll Wheel Speed</label>
+                    <input type="text" data-plane-setting="settings.controls.scrollZoomFactor" />
+                </div>
+                <h4>Functions</h4>
+                <div class="control-row">
+                    <label>Detail</label>
+                    <input type="text" data-plane-setting="settings.functions.definition" />
+                </div>
+                <div class="control-row">
+                    <label>Polar/Parametric Threshold (start - end): </label>
+                    <input type="text" data-plane-setting="settings.functions.polarStart" />
+                    <span>π to </span>
+                    <input type="text" data-plane-setting="settings.functions.polarEnd" />
+                    <span>π</span>
+                </div>
+            </div>
+            <h3><a href="#" class="up-down" for=".dialog .category.cat-style">Style</a></h3>
+            <div class="category cat-style hide">
+                <div class="control-row">
+                    <label>Axis Colour</label>
+                    <input type="color" class="with-fallback" data-plane-setting="settings.axes.colour" />
+                    <input type="text" class="fallback narrow" data-plane-setting="settings.axes.colour" />
+                </div>
+                <div class="control-row">
+                    <label>Axis Margin Background Colour</label>
+                    <input type="color" class="with-fallback" data-plane-setting="settings.axes.blockMarginColour" />
+                    <input type="text" class="fallback narrow" data-plane-setting="settings.axes.blockMarginColour" />
+                </div>
+                <div class="control-row">
+                    <label>Scale Mark Colour</label>
+                    <input type="color" class="with-fallback" data-plane-setting="settings.scale.mark.colour" />
+                    <input type="text" class="fallback narrow" data-plane-setting="settings.scale.mark.colour" />
+                </div>
+                <div class="control-row">
+                    <label>Minor Scale Mark Colour</label>
+                    <input type="color" class="with-fallback" data-plane-setting="settings.scale.minor.colour" />
+                    <input type="text" class="fallback narrow" data-plane-setting="settings.scale.minor.colour" />
+                </div>
+                <div class="control-row">
+                    <label>Grid Colour</label>
+                    <input type="color" class="with-fallback" data-plane-setting="settings.scale.grid.colour" />
+                    <input type="text" class="fallback narrow" data-plane-setting="settings.scale.grid.colour" />
+                </div>
+                <div class="control-row">
+                    <label>Label Colour</label>
+                    <input type="color" class="with-fallback" data-plane-setting="settings.scale.label.colour" />
+                    <input type="text" class="fallback" data-plane-setting="settings.scale.label.colour" />
+                </div>
+                <div class="control-row">
+                    <label>Function Highlight Colour</label>
+                    <input type="color" class="with-fallback" data-plane-setting="settings.functions.highlightColour" />
+                    <input type="text" class="fallback narrow" data-plane-setting="settings.functions.highlightColour" />
+                </div>
+            </div>
+            <h3><a href="#" class="up-down" for=".dialog .category.cat-axes">Axes</a></h3>
+            <div class="category cat-axes hide">
+                <div class="control-row">
+                    <button class="toggle" data-plane-setting="settings.axes.visible">Enabled</button>
+                </div>
+                <div class="control-row">
+                    <label>Axis Width</label>
+                    <input type="text" data-plane-setting="settings.axes.width" />
+                    <span>px</span>
+                </div>
+                <div class="control-row">
+                    <label>Axis Colour</label>
+                    <input type="color" class="with-fallback" data-plane-setting="settings.axes.colour" />
+                    <input type="text" class="fallback narrow" data-plane-setting="settings.axes.colour" />
+                </div>
+                <h4>Fix Axes</h4>
+                <div class="control-row">
+                    <button class="toggle" data-plane-setting="settings.axes.xFixed">Fix X Axis</button>
+                </div>
+                <div class="control-row">
+                    <button class="toggle" data-plane-setting="settings.axes.yFixed">Fix Y Axis</button>
+                </div>
+                <div class="control-row">
+                    <button class="toggle" data-plane-setting="settings.axes.xOnTop">X Axis On Top</button>
+                </div>
+                <div class="control-row">
+                    <button class="toggle" data-plane-setting="settings.axes.yOnRight">Y Axis On Right</button>
+                </div>
+                <div class="control-row">
+                    <button class="toggle" data-plane-setting="settings.axes.stayOnScreen">Keep Axes On Screen</button>
+                </div>
+                <h4>Fixed Axis Margin</h4>
+                <div class="control-row">
+                    <label>Margin (top/right/bottom/left)</label>
+                    <input type="text" data-plane-setting="settings.axes.margin.top" />
+                    <span>/</span>
+                    <input type="text" data-plane-setting="settings.axes.margin.right" />
+                    <span>/</span>
+                    <input type="text" data-plane-setting="settings.axes.margin.bottom" />
+                    <span>/</span>
+                    <input type="text" data-plane-setting="settings.axes.margin.left" />
+                </div>
+                <div class="control-row">
+                    <button class="toggle" data-plane-setting="settings.axes.blockMargin">Draw Fixed Axis Margin</button>
+                </div>
+                <div class="control-row">
+                    <button class="toggle" data-plane-setting="settings.axes.fixedIntersect">Draw Other Axes Over Fixed Axes</button>
+                </div>
+                <div class="control-row">
+                    <label>Margin Background Colour</label>
+                    <input type="color" class="with-fallback" data-plane-setting="settings.axes.blockMarginColour" />
+                    <input type="text" class="fallback narrow" data-plane-setting="settings.axes.blockMarginColour" />
+                </div>
+            </div>
+            <h3><a href="#" class="up-down" for=".dialog .category.cat-scale">Scale</a></h3>
+            <div class="category cat-scale hide">
+                <div class="control-row">
+                    <button class="toggle" data-plane-setting="settings.scale.visible">Enabled</button>
+                </div>
+                <h4>Fix Scale</h4>
+                <div class="radio-input">
+                    <div class="control-row">
+                        <input type="radio" name="setting-scale-fixed" value="x" id="setting-scale-fixed-x" data-plane-setting="settings.controls.xFixed" />
+                        <label for="setting-scale-fixed-x">Fix X Scale</label>
+                    </div>
+                    <div class="control-row">
+                        <input type="radio" name="setting-scale-fixed" value="y" id="setting-scale-fixed-y" data-plane-setting="settings.controls.yFixed" />
+                        <label for="setting-scale-fixed-y">Fix Y Scale</label>
+                    </div>
+                    <div class="control-row">
+                        <input type="radio" name="setting-scale-fixed" value="none" id="setting-scale-fixed-none" data-plane-setting="settings.scale.staySquare" />
+                        <label for="setting-scale-fixed-none">Keep Scale Square (X/Y ratio always 1:1)</label>
+                    </div>
+                </div>
+                <h4>Scale Interval</h4>
+                <div class="control-row">
+                    <label>Interval (min - max):</label>
+                    <input type="text" data-plane-setting="settings.scale.minInterval" />
+                    <span>px - </span>
+                    <input type="text" data-plane-setting="settings.scale.maxInterval" />
+                    <span>px</span>
+                </div>
+                <div class="control-row">
+                    <label>Interval (Minor) (min - max):</label>
+                    <input type="text" data-plane-setting="settings.scale.minor.minInterval" />
+                    <span>px - </span>
+                    <input type="text" data-plane-setting="settings.scale.minor.maxInterval" />
+                    <span>px</span>
+                </div>
+                <h4>Scale Mark</h4>
+                <div class="control-row">
+                    <label>Colour</label>
+                    <input type="color" class="with-fallback" data-plane-setting="settings.scale.mark.colour" />
+                    <input type="text" class="fallback narrow" data-plane-setting="settings.scale.mark.colour" />
+                </div>
+                <div class="control-row">
+                    <label>Length</label>
+                    <input type="text" data-plane-setting="settings.scale.mark.length" />
+                    <span>px</span>
+                </div>
+                <div class="control-row">
+                    <label>Width</label>
+                    <input type="text" data-plane-setting="settings.scale.mark.width" />
+                    <span>px</span>
+                </div>
+                <h4>Scale Mark (Minor)</h4>
+                <div class="control-row">
+                    <label>Colour</label>
+                    <input type="color" class="with-fallback" data-plane-setting="settings.scale.minor.colour" />
+                    <input type="text" class="fallback narrow" data-plane-setting="settings.scale.minor.colour" />
+                </div>
+                <div class="control-row">
+                    <label>Length</label>
+                    <input type="text" data-plane-setting="settings.scale.minor.length" />
+                    <span>px</span>
+                </div>
+                <div class="control-row">
+                    <label>Width</label>
+                    <input type="text" data-plane-setting="settings.scale.minor.width" />
+                    <span>px</span>
+                </div>
+                <h4>Grid</h4>
+                <div class="control-row">
+                    <button class="toggle" data-plane-setting="settings.scale.grid.visible">Enabled</button>
+                </div>
+                <div class="control-row">
+                    <label>Colour</label>
+                    <input type="color" class="with-fallback" data-plane-setting="settings.scale.grid.colour" />
+                    <input type="text" class="fallback narrow" data-plane-setting="settings.scale.grid.colour" />
+                </div>
+                <div class="control-row">
+                    <label>Width</label>
+                    <input type="text" data-plane-setting="settings.scale.grid.width" />
+                    <span>px</span>
+                </div>
+                <h4>Labels</h4>
+                <div class="control-row">
+                    <label>Font Face</label>
+                    <input type="text" class="wide" data-plane-setting="settings.scale.label.font" />
+                </div>
+                <div class="control-row">
+                    <label>Font Size</label>
+                    <input type="text" data-plane-setting="settings.scale.label.size" />
+                    <span>px</span>
+                </div>
+                <div class="control-row">
+                    <label>Colour</label>
+                    <input type="color" class="with-fallback" data-plane-setting="settings.scale.label.colour" />
+                    <input type="text" class="fallback" data-plane-setting="settings.scale.label.colour" />
+                </div>
+                <div class="control-row">
+                    <label>Offset (top/right/bottom/left)</label>
+                    <input type="text" data-plane-setting="settings.scale.label.offset.top" />
+                    <span>/</span>
+                    <input type="text" data-plane-setting="settings.scale.label.offset.right" />
+                    <span>/</span>
+                    <input type="text" data-plane-setting="settings.scale.label.offset.bottom" />
+                    <span>/</span>
+                    <input type="text" data-plane-setting="settings.scale.label.offset.left" />
+                </div>
+                <div class="control-row">
+                    <label>Padding</label>
+                    <input type="text" data-plane-setting="settings.scale.label.padding" />
+                    <span>px</span>
+                </div>
+                <div class="control-row">
+                    <label>X Label Position</label>
+                    <select data-plane-setting="settings.scale.label.xPosition">
+                        <option value="auto">Auto</option>
+                        <option value="top">Top</option>
+                        <option value="bottom">Bottom</option>
+                    </select>
+                </div>
+                <div class="control-row">
+                    <label>Y Label Position</label>
+                    <select data-plane-setting="settings.scale.label.yPosition">
+                        <option value="auto">Auto</option>
+                        <option value="left">Left</option>
+                        <option value="right">Right</option>
+                    </select>
+                </div>
+            </div>
+            <h3><a href="#" class="up-down" for=".dialog .category.cat-legend">Legend</a></h3>
+            <div class="category cat-legend hide">
+                <div class="control-row">
+                    <button class="toggle" data-plane-setting="settings.legend.visible">Enabled</button>
+                </div>
+                <div class="control-row">
+                    <label>Entry Style Opacity</label>
+                    <input type="text" data-plane-setting="settings.legend.entryOpacity" />
+                </div>
+            </div>
+            <h3><a href="#" class="up-down" for=".dialog .category.cat-controls">Controls</a></h3>
+            <div class="category cat-controls hide">
+                <div class="control-row">
+                    <button class="toggle" data-plane-setting="settings.controls.fixedZoom">Centre Zoom</button>
+                </div>
+                <h4>Scrolling Speed</h4>
+                <div class="control-row">
+                    <label>+/- Button Speed</label>
+                    <input type="text" data-plane-setting="settings.controls.buttonZoomFactor" />
+                </div>
+                <div class="control-row">
+                    <label>Scroll Wheel Speed</label>
+                    <input type="text" data-plane-setting="settings.controls.scrollZoomFactor" />
+                </div>
+                <h4>Size Limitations</h4>
+                <div class="control-row">
+                    <label>Minimum Extents</label>
+                    <span>(</span>
+                    <input type="text" data-plane-setting="settings.controls.minExtents.x" />
+                    <span>, </span>
+                    <input type="text" data-plane-setting="settings.controls.minExtents.y" />
+                    <span>)</span>
+                </div>
+                <div class="control-row">
+                    <label>Maximum Extents</label>
+                    <span>(</span>
+                    <input type="text" data-plane-setting="settings.controls.maxExtents.x" />
+                    <span>, </span>
+                    <input type="text" data-plane-setting="settings.controls.maxExtents.y" />
+                    <span>)</span>
+                </div>
+                <h4>Timing</h4>
+                <div class="control-row">
+                    <label>Panning Refresh Timeout</label>
+                    <input type="text" data-plane-setting="settings.controls.panTimeout" />
+                    <span>ms</span>
+                </div>
+            </div>
+            <h3><a href="#" class="up-down" for=".dialog .category.cat-functions">Functions</a></h3>
+            <div class="category cat-functions hide">
+                <!-- TODO: colours -->
+                <div class="control-row">
+                    <label>Width</label>
+                    <input type="text" data-plane-setting="settings.functions.width" />
+                </div>
+                <div class="control-row">
+                    <label>Detail</label>
+                    <input type="text" data-plane-setting="settings.functions.definition" />
+                </div>
+                <div class="control-row">
+                    <label>Polar/Parametric Threshold (start - end): </label>
+                    <input type="text" data-plane-setting="settings.functions.polarStart" />
+                    <span>π to </span>
+                    <input type="text" data-plane-setting="settings.functions.polarEnd" />
+                    <span>π</span>
+                </div>
+                <h4>Highlight</h4>
+                <div class="control-row">
+                    <label>Colour</label>
+                    <input type="color" class="with-fallback" data-plane-setting="settings.functions.highlightColour" />
+                    <input type="text" class="fallback narrow" data-plane-setting="settings.functions.highlightColour" />
+                </div>
+                <div class="control-row">
+                    <label>Fuzz</label>
+                    <input type="text" data-plane-setting="settings.functions.highlightFuzz" />
+                    <span>px</span>
+                </div>
+            </div>
+            <div class="hide">
+                <h3><a href="#" class="up-down" for=".dialog .category.cat-animation">Animation</a></h3>
+                <div class="category cat-animation hide">
+                    <p>This one, too.</p>
+                </div>
+            </div>
         </div>
     </div>
 </body>

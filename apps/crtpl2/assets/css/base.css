@@ -169,18 +169,22 @@ div.item, div.item-info {
 /* ==== */
 h1 {
     font-size:52px;
-    font-family:"Righteous","Georgia",serif;
     margin-bottom:20px;
     color:#222;
+}
+h1, h1 > * {
+    font-family:"Righteous","Georgia",serif;
     text-shadow:4px 4px 0px rgba(0,0,0,0.1);
     text-align:center;
     font-weight:normal;
 }
 h2 {
     font-size:36px;
-    font-family:"Raleway","Calibri",sans-serif;
     margin-bottom:14px;
     color:#222;
+}
+h2, h2 > * {
+    font-family:"Raleway","Calibri",sans-serif;
     text-shadow:2px 2px 0px rgba(0,0,0,0.1);
     text-align:left;
 }
@@ -199,15 +203,18 @@ h3.version::before {
 }
 h3 {
     font-size:26px;
-    font-family:"Raleway","Calibri",sans-serif;
     margin-bottom:12px;
     color:#222;
+}
+h3, h3 > * {
+    font-family:"Raleway","Calibri",sans-serif;
     text-shadow:2px 2px 0px rgba(0,0,0,0.1);
     text-align:left;
 }
 h4 {
     font-size:20px;
     font-family:"Raleway","Calibri",sans-serif;
+    margin-bottom:10px;
     color:#222;
     text-align:left;
 }
@@ -268,11 +275,12 @@ button:active, input[type="button"]:active {
     box-shadow:inset 0px 2px 0px rgba(0,0,0,0.1);
 }
 button:focus, input[type]:focus, select:focus { outline:0 }
-input[type], *[contenteditable], select {
+input[type], *[contenteditable], select, textarea {
     padding:4px 8px;
     margin:4px;
+    transition:0s all;
 }
-input[type], select {
+input[type], select, textarea {
     font-size:14px;
 }
 .ui-widget input[type="text"] {
@@ -428,10 +436,8 @@ table.sortable th.sort.down:after {
 .para { margin-bottom:8px }
 .invisible { display:none; }
 sup.no-break {
-    vertical-align:inherit;
-    position:relative;
-    bottom:8px;
-    font-size:small;
+    vertical-align:text-top;
+    font-size:60%;
 }
 sup.frac {
     vertical-align:inherit;
@@ -464,7 +470,7 @@ sub.frac {
     content:" \25b4";
 }
 .control-row {
-    margin-bottom:6px;
+    margin-bottom:8px;
 }
 .side-buttons {
     position:absolute;
@@ -492,15 +498,15 @@ a.link-pdf {
     font-size:24px;
     line-height:48px;
 }
-#content a, .inner-nav a {
+a, .inner-nav a {
     color:#08d;
     transition:0.2s all;
     text-decoration:none;
 }
-#content a:hover, .inner-nav a:hover {
+a:hover, .inner-nav a:hover {
     color:#2cf;
 }
-#content a:active, .inner-nav a:active {
+a:active, .inner-nav a:active {
     color:#555;
 }
 a.license::before {
@@ -634,7 +640,6 @@ div.popup ul {
     width:60%;
     box-shadow:0px 0px 4px rgba(0,0,0,0.5);
     z-index:9999;
-    padding:12px 16px;
     transition:0s all;
 }
 .dialog-control {
@@ -649,12 +654,12 @@ div.popup ul {
     background:#ddd;
     font-size:0;
 }
-.dialog button {
+.dialog-control button, .dialog-header button {
     height:100%;
     width:15%;
     font-size:20px;
 }
-.dialog button { display:none; }
+.dialog-control button { display:none; }
 .dialog.dbuttons-ok button.dialog-ok,
 .dialog.dbuttons-ok-cancel button.dialog-ok,
 .dialog.dbuttons-ok-cancel button.dialog-cancel,
@@ -700,6 +705,12 @@ div.popup ul {
     bottom:0;
     width:auto;
 }
+.dialog-header-buttons button:hover {
+    box-shadow:none;
+}
+.dialog-header-buttons button:active {
+    box-shadow:none;
+}
 button.dialog-header-close {
     height:100%;
     width:38px;
@@ -717,28 +728,52 @@ button.dialog-header-close:active {
 .dialog-body {
     position:absolute;
     top:38px;
-    bottom:0;
+    bottom:48px;
     left:0;
     right:0;
     padding:12px 18px;
     display:block;
+    overflow:hidden;
+    overflow-y:auto;
 }
-meter::-webkit-meter-bar {
+meter::-webkit-meter-bar, progress::-webkit-progress-bar {
     -webkit-appearance:none;
     appearance:none;
     background:none;
     background-color:#e2e2e2;
     box-shadow:inset 0px -2px 0px rgba(0,0,0,0.1);
+    transition:0.4s all;
 }
-meter {
+meter, progress {
     -webkit-appearance:none;
     appearance:none;
     height:20px;
     width:600px;
+    transition:0.4s all;
+    position:relative;
 }
-meter::-webkit-meter-optimum-value {
+meter::-webkit-meter-optimum-value, progress::-webkit-progress-value {
+    -webkit-appearance:none;
+    appearance:none;
     background:none;
-    background-color:rgba(0,0,0,0.4);
+    background-color:#08d;
+    box-shadow:inset 0px -2px 0px rgba(0,0,0,0.1);
+    transition:0.4s all;
+    position:relative;
+}
+meter[value]::after, progress[value]::after {
+    content:"";
+    content:attr(value);
+    position:absolute;
+    top:0;
+    right:0;
+    height:20px;
+    padding:0 12px;
+    color:#eee;
+    text-align:center;
+    font-size:13px;
+    background:rgba(0,0,0,0.2);
+    box-shadow:0 0 8px 2px rgba(0,0,0,0.2);
 }
 /* ============ */
 /* FONT AWESOME */

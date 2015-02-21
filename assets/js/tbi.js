@@ -66,13 +66,14 @@ function gebi(id) { return document.getElementById(id); }
 HTMLElement.prototype.gebi = function (id) { return this.getElementById(id) }
 // Shorthand for document.getElementsByClassName.
 function gecn(className) { return document.getElementsByClassName(className); }
-HTMLElement.prototype.gecn = function (className) { return this.getElementsByClassName(className) }
+HTMLElement.prototype.gecn = function (className) { return this.getElementsByClassName(className); }
 // Shorthand for document.getElementsByTagName.
 function getn(tagName) { return document.getElementsByTagName(tagName); }
-HTMLElement.prototype.getn = function (tagName) { return this.getElementsByTagName(tagName) }
+HTMLElement.prototype.getn = function (tagName) { return this.getElementsByTagName(tagName); }
 // Shorthand for document.getElementsByName.
 function gebn(name) { return document.getElementsByName(name); }
-HTMLElement.prototype.gebn = function (name) { return this.getElementsByName(name) }
+HTMLElement.prototype.gebn = function (name) { return this.getElementsByName(name); }
+HTMLElement.prototype.getStyle = function (name) { return getComputedStyle(this)[name]; }
 // Checks the state of an XHR.
 function checkState(request) { return (request.readyState == request.DONE); }
 // A XMLHttpRequest object constructor.
@@ -211,66 +212,105 @@ TBI.checkNav = function (nav) {
 }
 // Updates toggleable elements.
 TBI.updateUI = function () {
+    var items = $("h2.item[id], h2.section[id]");
+    if (items.length > 0 && TBI.loaded) {
+        if ($("#sidebar #sections").length == 0) {
+            var header = document.createElement("h3");
+            header.className = "span";
+                var link = document.createElement("a");
+                link.href = "javascript:void(0)";
+                link.className = "up-down";
+                link.setAttribute("for", "#sections");
+                link.innerText = "Sections";
+            header.appendChild(link);
+            var list = document.createElement("ul");
+            list.className = "side para";
+            list.id = "sections";
+            var sidebar = gebi("sidebar");
+            sidebar.insertBefore(list, sidebar.firstChild);
+            sidebar.insertBefore(header, sidebar.firstChild);
+        } else $("#sidebar #sections").empty();
+        for (var i=0;i<items.length;i++) {
+            var sectionsList = $("#sidebar #sections")[0];
+            var item = document.createElement("li");
+                var link = document.createElement("a");
+                link.href = location.origin + location.pathname + "#" + items[i].id;
+                link.innerText = items[i].innerText;
+            item.appendChild(link);
+            sectionsList.appendChild(item);
+        }
+    }
+
     for (var i=0;i<$(".img-mid:not(.done)").length;i++) {
         var currimg = $(".img-mid:not(.done)")[i];
         currimg.id = generateUUID();
-        $(currimg.getElementsByClassName("img-toggle")[0]).attr("for", "#" + currimg.id + " img");
+        currimg.getElementsByClassName("img-toggle")[0].setAttribute("for", "#" + currimg.id + " img");
         currimg.className += " done";
     }
-    $("button.toggle:not(.done)").mousedown(function (event) {
-        if (event.button != 0 || this.className.search(" dwn") != -1) return true;
-        $(this).toggleClass("dwn", true);
-    });
-    $("button.toggle:not(.done)").mouseup(function (event) {
-        if (event.button != 0 || this.className.search(" dwn") == -1) return true;
-        $(this).toggleClass("dwn", false);
+    $("button.toggle:not(.done)").click(function (event) {
+        if (event.button != 0) return true;
         $(this).toggleClass("on");
     });
     $("button.toggle:not(.done)").toggleClass("done", true);
-    $(".up-down:not(.done)").mouseup(function (event) {
+    $(".up-down:not(.done)").click(function (event) {
         if (event.button != 0) return true;
         var toSwitch = $($(this).attr("for"));
         if (toSwitch.length > 0) toSwitch.slideToggle();
-        var a = " on";
-            c = this.className;
-        this.className=c.search(a)!=-1?c.replace(a,""):c+a;
+        $(this).toggleClass("on");
     });
+    $(".up-down:not(.done)").toggleClass("done", true);
+    var popups = $("*[data-popup-title]:not(.popup-done), *[data-popup-body]:not(.popup-done)");
+    for (var i=0;i<popups.length;i++) {
+        TBI.HoverPopup.bindElement(popups[i],
+            popups[i].attributes["data-popup-title"].value,
+            popups[i].attributes["data-popup-body"].value);
+    }
+    popups.toggleClass("done", true);
     for (var i=0;i<$("table.sortable:not(.done)").length;i++) {
-        var currtble = $("table.sortable")[i];
-        currtble.className += " done";
-        var rows = currtble.querySelectorAll("tbody tr");
+        var curr = $("table.sortable:not(.done)")[i];
+
+        // recording original table order
+        var rows = curr.querySelectorAll("tbody tr");
         for (var j=0;j<rows.length;j++)
             if (rows[j].className.search(" torder") == -1) rows[j].className += " torder-"+j;
-        $(currtble.querySelectorAll("th.sort")).attr("class", "sort none");
-        $(currtble.querySelectorAll("th.sort")).click(function () {
-            if ($(this).parent()[0].getElementsByTagName("th").length > 0) {
-                var updownList = $(this).parent()[0].getElementsByTagName("th");
-                for (var j=0;j<updownList.length;j++)
-                    if (updownList[j] != this)
-                        updownList[j].className = updownList[j].className.replace(/( up| down)/, " none");
-                    else var tIndex = j;
+
+        var sortHeaders = curr.querySelectorAll("thead th.sort");
+        $(sortHeaders).toggleClass("none", true);
+        $(sortHeaders).click(function (table) {
+            return function () {
+                var upDownList = table.querySelectorAll("thead th.sort");
+                var index = -1;
+                // find current column index
+                for (var i=0;i<upDownList.length;i++) {
+                    if (upDownList[i] == this) index = i;
+                    else upDownList[i].className = upDownList[i].className.replace(/( )*(up|down)/, "$1none");
+                }
+
+                var conditions = ["none", "up", "down"];
+                if (index != -1) for (var i=0;i<conditions.length;i++) {
+                    var condition = conditions[i];
+                    if (this.className.search(condition) != -1) {
+                        var futureCondition = conditions[(i + 1) % conditions.length];
+                        // switch condition to next in line
+                        $(this).toggleClass(condition, false);
+                        $(this).toggleClass(futureCondition, true);
+                        // according to current condition...
+                        switch (futureCondition) {
+                            // sort up
+                            case "up": TBI.sortTable(table, index, false); break;
+                            // sort down
+                            case "down": TBI.sortTable(table, index, true); break;
+                            // or restore original order
+                            default: TBI.sortTable(table, -1, false);
+                        }
+                        break;
+                    }
+                // if index is invalid, sort table anyway to restore order
+                } else TBI.sortTable(table, -1, false);
             }
-            var currclass = this.className;
-            if (currclass.search(" none") != -1) this.className = currclass.replace(" none", " up");
-            else if (currclass.search(" up") != -1) this.className = currclass.replace(" up", " down");
-            else if (currclass.search(" down") != -1) this.className = currclass.replace(" down", " none");
-            if (this.className.search(" down") != -1) TBI.sortTable($(this).parent().parent().parent()[0], tIndex, true);
-            else if (this.className.search(" up") != -1) TBI.sortTable($(this).parent().parent().parent()[0], tIndex, false);
-            else if (this.className.search(" none") != -1) TBI.sortTable($(this).parent().parent().parent()[0], -1, false);
-        });
+        }(curr));
     }
-    var headers = $("h2.item[id], h2.section[id]");
-    if (headers.length > 0 && TBI.loaded) {
-        if ($("#sidebar #sections").length == 0)
-            $("#sidebar").html(
-                "<h3 class='span'>\
-                <a href='javascript:void(0)' class='up-down' for='#sections'>Sections</a></h3>\
-                <ul class='side para' id='sections'></ul>"
-                + $("#sidebar").html());
-        else $("#sidebar #sections").empty();
-        for (var i=0;i<headers.length;i++)
-            $("#sidebar #sections").append("<li><a href='/"+path+"/#"+headers[i].id+"'>"+headers[i].innerText+"</a></li>");
-    }
+    $("table.sortable:not(.done)").toggleClass("done", true);
 }
 // Returns first-level elements in an XML index.
 TBI.findIndex = function (file, name) {
@@ -540,18 +580,71 @@ function oldDivisors(num) {
         if (num%i==0)
             d.push(i);
     d.push(num);
-    TBI.log((new Date().getTime()-b) + "ms");
     return d;
 }
 // Returns the numbers that divide perfectly into the specified number.
 // Thanks to Eratosthenes, one of my favourite Ancient Greeks.
-function divisors(num) {
-    var divisors=[], beginTime = new Date().getTime();
+function getDivisors(num) {
+    var factors = [];
     for (var i=1;i<=Math.sqrt(num);i++)
-        if (num%i==0 && divisors.indexOf(i) == -1)
-            divisors.push(i, num/i);
-    TBI.log((new Date().getTime() - beginTime) + "ms");
-    return divisors;
+        if (num%i==0 && factors.indexOf(i) == -1)
+            factors.push(i, num/i);
+    return factors;
+}
+var divisors = getDivisors;
+// Returns groups of numbers, that when multiplied together, return
+// the original number passed to the function.
+function getDivisorPairs(num) {
+    var factors = [], factorPairs = [];
+    for (var i=1,r=Math.sqrt(num);i<r;i++) {
+        if (num % i == 0 && factors.indexOf(i) == -1) {
+            factors.push(i, num/i);
+            factorPairs.push([i, num/i]);
+        }
+    }
+    return factorPairs;
+}
+function factoriseTrinomial(a, b, c) {
+    var factors = [];
+    // searching for common factors...
+    var hcf = highestCommonFactor(a, b, c);
+    if (hcf != 1) {
+        factors.push(hcf.toString());
+        a /= hcf; b /= hcf; c /= hcf;
+    }
+
+    var goodPair;
+    var divisorPairs = getDivisorPairs(a * c);
+    for (var i=0;i<divisorPairs.length;i++) {
+        var pair = divisorPairs[i];
+        if (pair[0] + pair[1] == b) { goodPair = pair; break; }
+        else if (pair[0] - pair[1] == b) { goodPair = [pair[0], -pair[1]]; break; }
+        else if (pair[1] - pair[0] == b) { goodPair = [pair[1], -pair[0]]; break; }
+        else if (-pair[1] - pair[0] == b) { goodPair = [-pair[1], -pair[0]]; break; }
+    }
+    TBI.log(goodPair);
+
+    var aHcf = highestCommonFactor(a, goodPair[0]);
+    var cHcf = highestCommonFactor(goodPair[1], c);
+
+    var divvedFactorsA = [a/aHcf, goodPair[0]/aHcf];
+    var divvedFactorsC = [goodPair[1]/cHcf, c/cHcf];
+
+    TBI.log(divvedFactorsA);
+    TBI.log(divvedFactorsC);
+
+    if ((
+            divvedFactorsA[0] == divvedFactorsC[0]
+            && divvedFactorsA[1] == divvedFactorsC[1]
+        ) || (
+            divvedFactorsA[1] == divvedFactorsC[0]
+            && divvedFactorsA[0] == divvedFactorsC[1]
+        )) {
+        factors.push(new LinearFunc(divvedFactorsA[0], divvedFactorsA[1]).toString());
+        factors.push(new LinearFunc(aHcf, cHcf).toString());
+    } else factors.push(new QuadraticFunc(a, b, c));
+
+    return factors;
 }
 // Translate an octet stream into the string of ASCII characters it represents.
 function translateOctetStream(str, radix, len, delimit) {
@@ -952,13 +1045,18 @@ function highestCommonFactor(a, b) {
     else return highestCommonFactor(b, a%b);
 } */
 // non-recursive algorithm
-function highestCommonFactor(a, b) {
-    while (b != 0) {
-        var c = a;
-        a = b;
-        b = c % b;
+function highestCommonFactor() {
+    var args = [];
+    for (var i=0;i<arguments.length;i++) args.push(arguments[i]);
+    while (args.length > 2) {
+        var l2 = args.length-2, l1 = args.length-1;
+        args[l2] = highestCommonFactor(args[l2], args[l1]);
+        args.remove(l1);
     }
-    return a;
+
+    var a = args[0], b = args[1];
+    if (b == 0) return a;
+    else return highestCommonFactor(b, a % b);
 }
 /* these are code golfed versions of the above
 function h(a,b){return b?h(b,a%b):a}
@@ -1551,6 +1649,105 @@ TBI.Popup.registry.remove = function (element) {
             TBI.Popup.registry[i] = undefined;
     $(element).off("mousemove");
 }
+// *stolen* off
+// http://www.fleegix.org/articles/2006/05/30/getting-the-scrollbar-width-in-pixels
+var scrollerWidth = -1;
+function getScrollerWidth() {
+    if (scrollerWidth != -1) return scrollerWidth;
+
+    var scr = null;
+    var inn = null;
+    var wNoScroll = 0;
+    var wScroll = 0;
+
+    // Outer scrolling div
+    scr = document.createElement('div');
+    scr.style.position = 'absolute';
+    scr.style.top = '-1000px';
+    scr.style.left = '-1000px';
+    scr.style.width = '100px';
+    scr.style.height = '50px';
+    // Start with no scrollbar
+    scr.style.overflow = 'hidden';
+
+    // Inner content div
+    inn = document.createElement('div');
+    inn.style.width = '100%';
+    inn.style.height = '200px';
+
+    // Put the inner div in the scrolling div
+    scr.appendChild(inn);
+    // Append the scrolling div to the doc
+    document.body.appendChild(scr);
+
+    // Width of the inner div sans scrollbar
+    wNoScroll = inn.offsetWidth;
+    // Add the scrollbar
+    scr.style.overflow = 'auto';
+    // Width of the inner div width scrollbar
+    wScroll = inn.offsetWidth;
+
+    // Remove the scrolling div from the doc
+    document.body.removeChild(
+        document.body.lastChild);
+
+    // Pixel width of the scroller
+    scrollerWidth = (wNoScroll - wScroll);
+    return scrollerWidth;
+}
+TBI.HoverPopup = function (x, y, title, body) {
+    this.position = new Vector2D(x, y);
+    var popDiv = document.createElement("div");
+    popDiv.className = "popup";
+    popDiv.style.left = (this.position.x + 20) + "px";
+    popDiv.style.top = (this.position.y + 20) + "px";
+        var popHead = document.createElement("h3");
+        popHead.innerHTML = title;
+    popDiv.appendChild(popHead);
+        var popBody = document.createElement("div");
+        popBody.className = "popup-body";
+        popBody.innerHTML = body;
+    popDiv.appendChild(popBody);
+
+    $(".popup").remove();
+    document.body.appendChild(popDiv);
+    this.element = popDiv;
+
+    if (this.element.offsetWidth + this.element.offsetLeft + getScrollerWidth() >= window.innerWidth) {
+        this.element.className += " right";
+        this.element.style.left = (this.element.offsetLeft - this.element.offsetWidth - getScrollerWidth() - 20) + "px";
+    }
+    if (this.element.offsetHeight + this.element.offsetTop + getScrollerWidth() >= window.innerHeight) {
+        this.element.className += " bottom";
+        this.element.style.top = (this.element.offsetTop - this.element.offsetHeight - getScrollerWidth() - 20) + "px";
+    }
+
+    Object.defineProperty(this, "title", {
+        get: function () { return this.element.getn("h3")[0].innerHTML; },
+        set: function (title) { this.element.getn("h3")[0].innerHTML = title; }
+    });
+    Object.defineProperty(this, "body", {
+        get: function () { return this.element.gecn("popup-body")[0].innerHTML; },
+        set: function (body) { this.element.gecn("popup-body")[0].innerHTML = body; }
+    });
+}
+TBI.HoverPopup.bindElement = function (element, title, body) {
+    if (element instanceof Array || element instanceof $) TBI.HoverPopup.bindElements(element, title, body);
+    else {
+        $(element).mousemove(function (title, body) {
+            return function (event) {
+                var popup = new TBI.HoverPopup(event.clientX, event.clientY, title, body);
+            }
+        }(title, body));
+        $(element).mouseleave(function () {
+            $(".popup").remove();
+        });
+    }
+}
+TBI.HoverPopup.bindElements = function (elementArray, title, body) {
+    for (var i=0;i<elementArray.length;i++)
+        TBI.HoverPopup.bindElement(elementArray[i], title, body);
+}
 // A predefined popup element that can be added to by using the same header.
 TBI.notification = function (group, text, timeout) {
     var groupId = "note-group-"+group.toLowerCase(),
@@ -1660,9 +1857,9 @@ Canvas2D.inspector = function (context) {
     $(cvs).off("mousemove");
     if (context.inspector) {
         $(cvs).mousemove(function (event) {
-            new TBI.Popup(
-                event.clientX + 20,
-                event.clientY + 20,
+            new TBI.HoverPopup(
+                event.clientX,
+                event.clientY,
                 "Canvas Inspector",
                 event.offsetX + "X, " + event.offsetY + "Y"
             );
@@ -1903,8 +2100,6 @@ window.onerror = function (message, url, line, column, e) {
 $(function () {
     TBI.Loader.event("Ready", true);
     TBI.requestManager();
-    var nav = "#top";
-    TBI.checkNav(nav);
     TBI.Loader.jobs.push(
         // job field description: (starred fields (*) are required):
         // func (*): A function that runs an delayed async task and

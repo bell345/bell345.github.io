@@ -618,6 +618,7 @@ button.major:active, input[type="submit"]:active {
 /* ====== */
 table.main {
     border-spacing:0;
+    width:100%;
 }
 table.main td {
     padding:4px 8px;
@@ -628,7 +629,7 @@ table.main thead {
 }
 table.main th {
     font-family:Raleway, Georgia, serif;
-    font-size:18px;
+    font-size:16px;
     padding:6px 12px;
     position:relative;
     -webkit-user-select:none;
@@ -636,14 +637,27 @@ table.main th {
     -o-user-select:none;
     user-select:none;
 }
+table.main tbody th {
+    background:#e2e2e2;
+}
+table.main thead th {
+    font-size:18px;
+}
+table.main tbody td, table.main tbody th {
+    border-bottom:1px dotted #aaa;
+}
+table.main tbody tr:last-child td, table.main tbody tr:last-child th {
+    border-bottom:none;
+}
 table.sortable th.sort {
-    padding:6px 32px;
+    padding:6px 8px;
     cursor:pointer;
+    padding-right:28px;
 }
 table.sortable th.sort:after {
     position:absolute;
     top:0;
-    right:6px;
+    right:4px;
 }
 table.sortable th.sort.none:after {
     content:" \25be\25b4";
@@ -663,10 +677,8 @@ table.sortable th.sort.down:after {
 .para { margin-bottom:8px }
 .invisible { display:none; }
 sup.no-break {
-    vertical-align:inherit;
-    position:relative;
-    bottom:8px;
-    font-size:small;
+    vertical-align:text-top;
+    font-size:60%;
 }
 sup.frac {
     vertical-align:inherit;
@@ -699,7 +711,7 @@ sub.frac {
     content:" \25b4";
 }
 .control-row {
-    margin-bottom:6px;
+    margin-bottom:8px;
 }
 .side-buttons {
     position:absolute;
@@ -860,53 +872,149 @@ div.popup ul {
 #note-holder-inner .note li[data-instances]::before { content:attr(data-instances); }
 .dialog {
     position:fixed;
-    top:calc(50% - 100px);
-    left:calc(50% - 200px);
-    background:#f2f2f2;
+    top:20%;
+    left:20%;
+    background:#eee;
     min-height:200px;
     min-width:400px;
-    box-shadow:0px 0px 0px 20000px rgba(0,0,0,0.5);
+    height:60%;
+    width:60%;
+    box-shadow:0px 0px 4px rgba(0,0,0,0.5);
     z-index:9999;
-    padding:12px 16px;
+    transition:0s all;
 }
-.dialog::before {
-    content:"";
-    box-shadow:4px 4px 0px rgba(0,0,0,0.5);
-}
-.dialog-action {
+.dialog-control {
     position:absolute;
-    bottom:12px;
+    bottom:0;
     left:0;
-    width:100%;
-    height:42px;
+    right:0;
+    height:15%;
+    max-height:48px;
+    text-align:right;
+    padding:0 28px;
     background:#ddd;
+    font-size:0;
 }
-.dialog button {
+.dialog-control button, .dialog-header button {
     height:100%;
-    width:100px;
+    width:15%;
     font-size:20px;
-    margin-left:14px;
-    margin-right:14px;
 }
-.dialog button:hover { box-shadow:none; }
-.dialog button:active { box-shadow:none; }
-.dialog-right { float:right; }
-meter::-webkit-meter-bar {
+.dialog-control button { display:none; }
+.dialog.dbuttons-ok button.dialog-ok,
+.dialog.dbuttons-ok-cancel button.dialog-ok,
+.dialog.dbuttons-ok-cancel button.dialog-cancel,
+.dialog.dbuttons-ok-cancel-apply button.dialog-ok,
+.dialog.dbuttons-ok-cancel-apply button.dialog-cancel,
+.dialog.dbuttons-ok-cancel-apply button.dialog-apply,
+.dialog.dbuttons-abort-retry-fail button.dialog-abort,
+.dialog.dbuttons-abort-retry-fail button.dialog-retry,
+.dialog.dbuttons-abort-retry-fail button.dialog-fail {
+    display:inline-block;
+}
+.dialog-header {
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    padding:0 56px;
+    background:#555;
+    box-shadow:inset 0 0 2px #333;
+    color:#eee;
+    height:38px;
+    cursor:-webkit-grab;
+    cursor:grab;
+}
+.dialog-header:active {
+    cursor:-webkit-grabbing;
+    cursor:grabbing;
+}
+.dialog-header h2 {
+    font-size:18px;
+    font-weight:normal;
+    font-style:italic;
+    color:#eee;
+    margin:0;
+    line-height:38px;
+    -webkit-user-select:none;
+    user-select:none;
+}
+.dialog-header-buttons {
+    position:absolute;
+    left:0;
+    top:0;
+    bottom:0;
+    width:auto;
+}
+.dialog-header-buttons button:hover {
+    box-shadow:none;
+}
+.dialog-header-buttons button:active {
+    box-shadow:none;
+}
+button.dialog-header-close {
+    height:100%;
+    width:38px;
+    display:inline-block;
+    background:none;
+    color:#eee;
+    line-height:100%;
+}
+button.dialog-header-close:hover {
+    background:#c00 !important;
+}
+button.dialog-header-close:active {
+    background:#a00 !important;
+}
+.dialog-body {
+    position:absolute;
+    top:38px;
+    bottom:0;
+    left:0;
+    right:0;
+    padding:12px 18px;
+    display:block;
+    overflow:hidden;
+    overflow-y:auto;
+}
+meter::-webkit-meter-bar, progress::-webkit-progress-bar {
     -webkit-appearance:none;
     appearance:none;
     background:none;
     background-color:#e2e2e2;
     box-shadow:inset 0px -2px 0px rgba(0,0,0,0.1);
+    transition:0.4s all;
 }
-meter {
+meter, progress {
     -webkit-appearance:none;
     appearance:none;
     height:20px;
     width:600px;
+    transition:0.4s all;
+    position:relative;
 }
-meter::-webkit-meter-optimum-value {
+meter::-webkit-meter-optimum-value, progress::-webkit-progress-value {
+    -webkit-appearance:none;
+    appearance:none;
     background:none;
-    background-color:rgba(0,0,0,0.4);
+    background-color:#08d;
+    box-shadow:inset 0px -2px 0px rgba(0,0,0,0.1);
+    transition:0.4s all;
+    position:relative;
+}
+meter[value]::after, progress[value]::after {
+    content:"";
+    content:attr(value);
+    position:absolute;
+    top:0;
+    right:0;
+    height:20px;
+    padding:0 12px;
+    color:#eee;
+    text-align:center;
+    font-size:13px;
+    background:rgba(0,0,0,0.2);
+    box-shadow:0 0 8px 2px rgba(0,0,0,0.2);
 }
 /* ============ */
 /* FONT AWESOME */

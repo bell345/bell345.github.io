@@ -1824,7 +1824,7 @@ $(document).on("pageload", function () {
             $("#ttb-test").css("visibility","visible");
         }, 10000);
     });
-    TBI.Popup.registry.add($("#ttb-clear")[0], "Clear timetable",
+    TBI.HoverPopup.bindElement($("#ttb-clear")[0], "Clear timetable",
     "The 'Test timetable' button will be unavailable for a few seconds");
     $(".ttbs-mode").buttonset();
     if (!isNull(localStorage.TTBL2)) {
@@ -2371,7 +2371,7 @@ $(document).on("pageload", function () {
     $("#psim-zoom").mouseup(function () { zoomed = false });
     $("#psim-zoom").mousemove(function () { if (zoomed) PSim.zoom = +Math.pow($("#psim-zoom").val(), 8).toFixed(6) });
     $("#psim-zoom").val(PSim.zoom = 1);
-    TBI.Popup.registry.add(gebi("psim-zoom-help"), "Zoom", "Zooms in and out relative to the simulation's center point.<br /><em>\
+    TBI.HoverPopup.bindElement(gebi("psim-zoom-help"), "Zoom", "Zooms in and out relative to the simulation's center point.<br /><em>\
     The sun stops zooming out when it appears to be around 4 pixels wide.</em>");
     // Scale
     $("#psim-scale").mousedown(function () { scaled = true });
@@ -2379,9 +2379,9 @@ $(document).on("pageload", function () {
     $("#psim-scale").mousemove(function () { if (scaled) PSim.scale = +Math.pow($("#psim-scale").val(), 4).toFixed(6) });
     $("#psim-scale-reset").click(function () { $("#psim-scale").val(PSim.scale = 1) });
     $("#psim-scale-reset").trigger("click");
-    TBI.Popup.registry.add(gebi("psim-scale-help"), "Scale", "Scales the planet sizes to make them more easily visible.<br /><em>Does not \
+    TBI.HoverPopup.bindElement(gebi("psim-scale-help"), "Scale", "Scales the planet sizes to make them more easily visible.<br /><em>Does not \
     increase the size of the Sun.</em>");
-    TBI.Popup.registry.add(gebi("psim-scale-reset"), "Scale Reset", "Resets the planet sizes to realistic values.");
+    TBI.HoverPopup.bindElement(gebi("psim-scale-reset"), "Scale Reset", "Resets the planet sizes to realistic values.");
     // Speed
     $("#psim-speed").mousedown(function () { speeded = true });
     $("#psim-speed").mouseup(function () { speeded = false });
@@ -2392,9 +2392,9 @@ $(document).on("pageload", function () {
     $("#psim-speed-reset").click(function () { $("#psim-speed").val(PSim.speed = 1) });
     $("#psim-speed-pause").click(function () { $("#psim-speed").val(PSim.speed = 0) });
     $("#psim-speed-reset").trigger("click");
-    TBI.Popup.registry.add(gebi("psim-speed-help"), "Speed", "Speeds up or pauses the simulation.");
-    TBI.Popup.registry.add(gebi("psim-speed-reset"), "Speed Reset", "Resets the simulation speed to realistic values.");
-    TBI.Popup.registry.add(gebi("psim-speed-pause"), "Speed Pause", "Stops the simulation completely.");
+    TBI.HoverPopup.bindElement(gebi("psim-speed-help"), "Speed", "Speeds up or pauses the simulation.");
+    TBI.HoverPopup.bindElement(gebi("psim-speed-reset"), "Speed Reset", "Resets the simulation speed to realistic values.");
+    TBI.HoverPopup.bindElement(gebi("psim-speed-pause"), "Speed Pause", "Stops the simulation completely.");
     // Checkboxes / Boolean values
     $("#psim-plines").click(function () { PSim.planetLines = TBI.isToggled(this); });
     $("#psim-porbits").click(function () { PSim.planetOrbits = TBI.isToggled(this); });
@@ -2698,19 +2698,19 @@ $(document).on("pageload",function () {
             CmpCvs.submit();
         }
     });
-    TBI.Popup.registry.add(gebi("cmp-asisinch"), "Analysis Increment",
+    TBI.HoverPopup.bindElement(gebi("cmp-asisinch"), "Analysis Increment",
             "This controls the resolution and performance of the generation. A smaller number\
             leads to a more thorough analysis and a better looking picture. They also dramatically\
             increase the time required to generate the image.");
-    TBI.Popup.registry.add(gebi("cmp-maxiterh"), "Maximum Iterations",
+    TBI.HoverPopup.bindElement(gebi("cmp-maxiterh"), "Maximum Iterations",
             "This number is the number of tries each value is tested against. A higher number\
             generates a more detailed image, but impacts performance. Increase this number when\
             you want to see more of the fractal.");
-    TBI.Popup.registry.add(gebi("cmp-factorh"), "Zoom Factor",
+    TBI.HoverPopup.bindElement(gebi("cmp-factorh"), "Zoom Factor",
             "This is a number that controls the zoom level of the image. Increase this to see at\
             a deeper level. This can only be increased to 15.");
     for (var i=0;i<gecn("cmp-panh").length;i++) {
-        TBI.Popup.registry.add(gecn("cmp-panh")[i], "Pan",
+        TBI.HoverPopup.bindElement(gecn("cmp-panh")[i], "Pan",
                 "These values control the panning of the image. These can be set manually, or\
                 alternatively set by clicking on the image where you want it to be centered.");
     }
@@ -3138,11 +3138,11 @@ $(document).on("pageload", function () {
         else $("#cart-minus").click();
         event.preventDefault();
     }
-    TBI.Popup.registry.add(gebi("cart-reset"), "Centre view", "Resets the pan on the origin point (0,0).\
+    TBI.HoverPopup.bindElement(gebi("cart-reset"), "Centre view", "Resets the pan on the origin point (0,0).\
     The pan can be modified by dragging on the plane area.");
-    TBI.Popup.registry.add([gebi("cart-plus"), gebi("cart-minus")], "Zoom in/out", "You can also scroll \
+    TBI.HoverPopup.bindElement([gebi("cart-plus"), gebi("cart-minus")], "Zoom in/out", "You can also scroll \
     on the plane area to achieve the same result.");
-    TBI.Popup.registry.add(gebi("cart-funcrender"), "Fast rendering", "This rendering is less accurate, \
+    TBI.HoverPopup.bindElement(gebi("cart-funcrender"), "Fast rendering", "This rendering is less accurate, \
     but also drastically reduces lag, especially when zoomed out.");
     $("#cart-mode").click(function () {
         var list = document.getElementsByName("cart-mode"), selection = ModeTypes.HIDE;
