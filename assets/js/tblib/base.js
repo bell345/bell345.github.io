@@ -1,14 +1,17 @@
 if (!window.jQuery) {
     throw new Error("[tblib/base.js] jQuery has not been loaded");
-    
+
     document.body.innerHTML = "<P style='text-align:center;color:#333333;background:#EEEEEE;font-size:32px;padding:24px 48px;margin-top:300px;'>Either jQuery has failed to load, or your browser is too outdated to display this website properly. Please consider updating your browser to either <A href='http://google.com/chrome'>Google Chrome</A> or <A href='http://firefox.com'>Mozilla Firefox</A>.</P>";
 } else {
 
-$("body").toggleClass("no-js", false);
-$("body").toggleClass("js", true);
-$("body").toggleClass("init", true);
+$("html").toggleClass("no-js", false);
+$("html").toggleClass("js", true);
 
-var TBI = {};
+var now = new Date();
+
+if (!window.TBI) var TBI = {};
+if (!window.TBI.Files) TBI.Files = {};
+if (!window.TBI.UserSettings) TBI.UserSettings = {};
 
 var query, path;
 // Sets up the query variable with the search criteria.
@@ -18,15 +21,17 @@ TBI.requestManager = function () {
         search = search.replace("?","").split("&");
         for (var i=0;i<search.length;i++) {
             search[i] = search[i].split("=");
-            query[search[i][0]] = search[i][1];
+            if (search[i] != undefined && search[i].length > 1)
+                query[search[i][0]] = search[i][1];
         }
     }
-    var hash = location.hash;S
+    var hash = location.hash;
     if (!isNull(location.hash)) {
         hash = hash.replace("#","").split("&");
         for (var i=0;i<hash.length;i++) {
             hash[i] = hash[i].split("=");
-            query[hash[i][0]] = hash[i][1];
+            if (hash[i].length != undefined && hash[i].length > 1)
+                query[hash[i][0]] = hash[i][1];
         }
     }
     if (location.pathname.length > 1) {
@@ -36,7 +41,7 @@ TBI.requestManager = function () {
         if (pathname.lastIndexOf("/") == pathname.length-1)
             pathname = shorten(pathname, pathname.length-1);
         path = pathname.split("/");
-    }
+    } else path = [];
 }
 
 TBI.TimerDB = {};
@@ -46,15 +51,15 @@ TBI.Timer = function (onCompletion, duration, repeat, timerName) {
     this.completed = false;
     this.startTime = new Date().getTime();
 
-    this.timerName = isNull(timerName) ? timerName : generateUUID();
+    this.timerName = isNull(timerName) ? generateUUID() : timerName;
     this.duration = isNaN(duration) ? 0 : duration;
-    this.onCompletion = typeof(onCompletion == "function") ? onCompletion : function () {};
+    this.onCompletion = typeof onCompletion == "function" ? onCompletion : function () {};
     this.repeat = isNull(repeat) ? false : repeat;
 
     var setFunc = this.repeat ? setInterval : setTimeout;
-    this.timer = setFunc(function (func, timer) {
-        return function () { timer.completed = true; func(timer); };
-    }(this.onCompletion, this), this.duration);
+    this.timer = setFunc(function (timer) {
+        return function () { timer.completed = true; timer.onCompletion(timer); };
+    }(this), this.duration);
 
     this.clear = function () {
         if (this.repeat) clearInterval(this.timer);
@@ -66,14 +71,23 @@ TBI.Timer = function (onCompletion, duration, repeat, timerName) {
         this.onCompletion(this);
     };
 
-    Object.defineProperty(this, "elapsedTime", {
+    if (this.elapsedTime == undefined) Object.defineProperty(this, "elapsedTime", {
         get: function () {
             return new Date().getTime() - this.startTime;
         }
     });
     TBI.TimerDB[this.timerName] = this;
 }
-
+// Returns a string from the start of str that is num characters long.
+function shorten(str, num) {
+    var tempstr = [];
+    if (str.length > 0 && !isNull(str)) {
+        for (var i = 0; i < str.length; i++) {
+            if (i < num) tempstr.push(str[i]);
+            else if (i == num) return tempstr.join("");
+        }
+    }
+}
 // Determines whether or not a number is even.
 function isEven(n) { return n%2==0 }
 // Determines whether or not a variable is nothing at all.
@@ -109,7 +123,27 @@ $(function () {
     TBI.requestManager();
 });
 
-
+// START OF COOKIE CODES //
+function createCookie(name, value, days) {
+    if (days) {
+        var date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        var expires = "; expires=" + date.toGMTString();
+    } else var expires = "";
+    document.cookie = name + "=" + value + expires + "; path=/";
+}
+function readCookie(name) {
+    var nameEQ = name + "=";
+    var ca = document.cookie.split(';');
+    for (var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+    }
+    return null;
+}
+function eraseCookie(name) { createCookie(name, "", -1) }
+// END OF COOKIE CODES //
 // PERFNOW - All thanks to Daniel Lamb <dlamb.open.source@gmail.com>
 // On GitHub at: https://github.com/daniellmb/perfnow.js
 function perfnow(o){"performance"in o||(o.performance={});var e=o.performance;o.performance.now=e.now||e.mozNow||e.msNow||e.oNow||e.webkitNow||Date.now||function(){return(new Date).getTime()}}perfnow(window);

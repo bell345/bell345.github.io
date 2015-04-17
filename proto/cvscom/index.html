@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Fractal Generator</title>
+    <meta charset="utf-8" />
+    <base href="../../" />
+    <link rel="stylesheet" href="assets/css/site.css" />
+    <link rel="stylesheet" href="assets/css/proto/cvscom.css" />
+    <script src="assets/js/jquery2.min.js"></script>
+    <script src="assets/js/tbi.js"></script>
+    <script src="assets/js/proto/cvscom.js"></script>
+</head>
+<body>
+    <div class="cmp-control cmp-buttonr">
+        <button id="cmp-reset">Reset Settings</button>
+        <button id="cmp-mode">Switch Mode</button>
+        <button class="major" id="cmp-generate">Generate Mandelbrot Set</button>
+    </div>
+    <div id="cmp-container">
+        <canvas id="cmp-canvas" height="600" width="600">
+            Your browser is not capable of recognising the HTML5 &lt;canvas&gt; graphics framework.
+            Supported browsers include Google Chrome and Mozilla Firefox.
+        </canvas>
+        <canvas id="cmp-mouse" height="600" width="600"></canvas>
+        <div id="cmp-buttons" class="side-buttons">
+            <button id="cmp-plus">&plus;</button>
+            <button id="cmp-centre">&curren;</button>
+            <button id="cmp-minus">&minus;</button>
+        </div>
+    </div>
+    <div class="cmp-control">
+        <input type="text" id="cmp-asisinc" disabled />
+        <span class="help" id="cmp-asisinch"></span>
+        <span class="main">Analysis Increment</span>
+    </div>
+    <div class="cmp-control cmp-buttonr">
+        <button id="cmp-lquality">Low Quality</button>
+        <button id="cmp-mquality">Medium Quality</button>
+        <button id="cmp-hquality">High Quality</button>
+    </div>
+    <div class="cmp-control">
+        <input type="text" id="cmp-maxiter" />
+        <span class="help" id="cmp-maxiterh"></span>
+        <span class="main">Maximum Iterations (detail, &gt; is better)</span>
+    </div>
+    <div class="cmp-control">
+        <input type="text" id="cmp-factor" />
+        <span class="help" id="cmp-factorh"></span>
+        <span class="main">Zoom Factor (zoom, &gt; is better)</span>
+    </div>
+    <div class="cmp-control">
+        <input type="text" id="cmp-panx" />
+        <span class="help cmp-panh"></span>
+        <span class="main">X Pan</span>
+    </div>
+    <div class="cmp-control">
+        <input type="text" id="cmp-pany" />
+        <span class="help cmp-panh"></span>
+        <span class="main">Y Pan</span>
+    </div>
+    <div class="cmp-control cmp-jonly">
+        <input type="text" id="cmp-jreal" />
+        <span class="help" id="cmp-jrealh"></span>
+        <span class="main">Real component</span>
+    </div>
+    <div class="cmp-control cmp-jonly">
+        <input type="text" id="cmp-jimaginary" />
+        <span class="help" id="cmp-jimaginaryh"></span>
+        <span class="main">Imaginary component</span>
+    </div>
+    <div class="cmp-control cmp-buttonr">
+        <button id="cmp-tracking" class="toggle">Line tracking</button>
+    </div>
+</body>
+</html>

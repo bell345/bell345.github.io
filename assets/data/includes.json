@@ -1,24 +1,25 @@
 {
     "includes": [
         {
+            "id": "fontload",
             "source": "/assets/html/fontload.htm",
+            "insert": "body",
+            "replace": false,
+            "requires": [
+                ""
+            ]
+        },
+        {
+            "id": "header",
+            "source": "/assets/html/header.htm",
             "insert": "body",
             "replace": false
         },
         {
-            "source": "/assets/html/header.htm",
-            "insert": "header",
-            "replace": true
-        }, 
-        {
+            "id": "sidebar",
             "source": "/assets/html/sidebar.htm",
-            "insert": "#sidebar",
-            "replace": true
-        },
-        {
-            "source": "/assets/html/footer.htm",
-            "insert": "footer",
-            "replace": true
+            "insert": "body",
+            "replace": false
         }
     ]
 }

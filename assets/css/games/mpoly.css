@@ -1,0 +1,41 @@
+#mpoly-cont {
+    position:relative;
+    width:600px;
+    height:600px;
+    overflow:hidden;
+}
+#mpoly-board {
+    position:absolute;
+    width:600px;
+    height:600px;
+    top:0;
+    left:0;
+    -webkit-pointer-events:none;
+    pointer-events:none;
+}
+.mpoly-side {
+    width:600px;
+    height:600px;
+    position:absolute;
+    top:0;
+    left:0;
+}
+#mpoly-board .mpoly-name-container {
+    position:absolute;
+    width:600px;
+    height:600px;
+    top:0;
+    left:0;
+    -webkit-pointer-events:none;
+    pointer-events:none;
+}
+#mpoly-board .mpoly-name {
+    font-family:"Raleway", "Calibri", sans-serif;
+    font-size:6px;
+    position:absolute;
+    top:0;
+    left:0;
+    text-align:center;
+    pointer-events:initial;
+    word-wrap:break-word;
+}

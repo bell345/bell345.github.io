@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>TimeTable</title>
+    <meta charset="utf-8" />
+    <base href="../../" />
+    <link rel="stylesheet" href="assets/css/site.css" />
+    <link rel="stylesheet" href="assets/css/proto/ttbl.css" />
+    <script src="assets/js/jquery2.min.js"></script>
+    <script src="assets/js/tbi.js"></script>
+    <script src="assets/js/proto/ttbl.js"></script>
+</head>
+<body>
+    <div id="ttable-proto" class="ttable item">
+        <div class="ttb-set">
+            <textarea class="main" disabled style='width:80%; height:220px;'></textarea>
+            <div class="ttbs-mode">
+                <input type="radio" id="ttbs-modev" checked name="ttbs-mode" />
+                <label for="ttbs-modev">View</label>
+                <input type="radio" id="ttbs-modee" name="ttbs-mode" />
+                <label for="ttbs-modee">Edit</label>
+            </div>
+        </div>
+        <button id="ttbs-hlnow">Highlight Now</button>
+        <button id="ttbs-test">Test TimeTable</button>
+        <div class="ttb-body">
+        </div>
+        <div class="ttb-info">
+        </div>
+    </div>
+</body>
+</html>

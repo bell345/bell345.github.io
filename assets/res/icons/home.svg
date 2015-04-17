@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- The icon can be used freely in both personal and commercial projects with no attribution required, but always appreciated. 
+<!-- The icon can be used freely in both personal and commercial projects with no attribution required, but always appreciated.
 You may NOT sub-license, resell, rent, redistribute or otherwise transfer the icon without express written permission from iconmonstr.com -->
 
 <svg
@@ -48,6 +48,6 @@ You may NOT sub-license, resell, rent, redistribute or otherwise transfer the ic
 <path
    id="home-4-icon"
    d="M419.492,275.815v166.213H300.725v-90.33h-89.451v90.33H92.507V275.815H50L256,69.972l206,205.844H419.492   z M394.072,88.472h-47.917v38.311l47.917,48.023V88.472z"
-   style="fill:#555555;fill-opacity:1" />
+   style="fill:#eeeeee;fill-opacity:1" />
 
 </svg>

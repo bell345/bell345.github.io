@@ -1,0 +1,35 @@
+{
+    "version": 2,
+    "role": "project-declaration",
+    "id": "games",
+    "path": "games",
+    "projects": [
+        {   "id": "mpoly",
+            "type": "app",
+            "path": "$page_path/$id",
+            "title": "Monopoly Interpreter",
+            "version": "0.8",
+            "description": "$path/desc.htm",
+            "thumbnail": "assets/img/$id.png",
+            "updated": "2015-04-11"
+        },
+        {   "id": "treeh",
+            "type": "app",
+            "path": "$page_path/$id",
+            "title": "Treehouse",
+            "version": "0.2",
+            "description": "$path/desc.htm",
+            "thumbnail": "assets/img/$id.png",
+            "updated": "2015-04-11"
+        },
+        {   "id": "qdr",
+            "type": "app",
+            "path": "$page_path/$id",
+            "title": "Quadrominoes",
+            "version": "0.4",
+            "description": "$path/desc.htm",
+            "thumbnail": "assets/img/$id.png",
+            "updated": "2015-04-10"
+        }
+    ]
+}

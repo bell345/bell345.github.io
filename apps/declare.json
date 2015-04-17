@@ -1,0 +1,60 @@
+{
+    "version": 2,
+    "role": "project-declaration",
+    "id": "apps",
+    "path": "apps",
+    "projects": [
+        {   "id": "sc-edit",
+            "type": "repo",
+            "path": "https://bell345.github.io/sclicker-editor",
+            "title": "Scholar Clicker Editor",
+            "version": "1.0",
+            "preview": "iframe",
+            "preview_iframe": "https://bell345.github.io/sclicker-editor",
+            "description": "$page_path/$id/desc.htm",
+            "thumbnail": "assets/img/$id.png",
+            "source": "https://github.com/bell345/sclicker-editor/tree/gh-pages",
+            "updated": "2014-04-17"
+        },
+        {   "id": "crtpl2",
+            "type": "app",
+            "path": "$page_path/$id",
+            "title": "Cartesian Plane",
+            "version": "1.1",
+            "description": "$path/desc.htm",
+            "thumbnail": "assets/img/$id.png",
+            "updated": "2015-04-09"
+        },
+        {   "id": "bgchanger",
+            "type": "github",
+            "preview": "repo",
+            "preview_repo": "bell345/logon-bg-changer",
+            "path": "https://github.com/bell345/logon-bg-changer/releases/latest",
+            "title": "Logon BG Changer",
+            "version": "1.0.5492",
+            "description": "$page_path/$id/desc.htm",
+            "thumbnail": "assets/img/$id.png",
+            "source": "https://github.com/bell345/logon-bg-changer",
+            "updated": "2015-03-30"
+        },
+        {   "id": "cdown",
+            "type": "app",
+            "path": "$page_path/$id",
+            "title": "CountDown",
+            "version": "3.4.4",
+            "description": "$path/desc.htm",
+            "thumbnail": "assets/img/$id.png",
+            "updated": "2015-03-30"
+        },
+        {
+            "id": "calc",
+            "type": "app",
+            "path": "$page_path/$id",
+            "title": "Calculator",
+            "version": "2.3.2",
+            "description": "$path/desc.htm",
+            "thumbnail": "assets/img/$id.png",
+            "updated": "2015-04-14"
+        }
+    ]
+}

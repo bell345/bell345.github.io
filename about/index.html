@@ -1,71 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Thomas Bell - About</title>
+    <title>Thomas Bell</title>
     <meta charset="utf-8" />
-    <link rel="shortcut icon" href="/favicon.png" />
-    <link rel="stylesheet" href="/assets/css/jquery-ui.css" />
-    <link rel="stylesheet" href="/assets/css/sheet.css" />
-    <script src="/assets/js/jquery2.min.js"></script>
-    <script src="/assets/js/jquery-ui.min.js"></script>
-    <script src="/assets/js/tbi.js"></script>
-    <script>$(function(){for(var i=0;i<$(".email-link").length;i++)TBI.Popup.registry.add($(".email-link")[i],"","tom.aus@outlook.com")})</script>
+    <base href="../" />
+    <link rel="stylesheet" href="assets/css/site.css" />
+    <script src="assets/js/jquery2.min.js"></script>
+    <script src="assets/js/require.js"></script>
+    <script src="assets/js/site.js"></script>
 </head>
 <body>
-    <header></header>
-    <div id="content">
-        <div id="maincontent">
-            <h1>About</h1>
-            <h2>Who I Am</h2>
-            <p>
-                I am a fourteen year old hobbyist web developer / high school student highly interested in
-                computer science and information technology. Most of the time, when I'm not at school, I 
-                browse the Internet and develop websites and web applications. I don't believe in using 
-                templates or "cheating" to get ahead - when I do something, I tend to do it from scratch. I 
-                fuss over projects, making sure they not only meet their standards, but mine as well. I am 
-                very excited for the future of both myself and technology in general.
-            </p>
-            <h2>Feedback</h2>
-            <p>
-                This site is proudly hosted by GitHub; a web interface for the popular version control system, Git. 
-                If you know what all of those words mean, you can fork or star my <a href="//github.com/bell345/bell345.github.io">
-                repository</a> on GitHub. If you have any questions or inquiries about my work or what I do, send me an 
-                <a href="mailto:tom.aus@outlook.com" class="email-link">email</a>!
-            </p>
-            <h2>Contact</h2>
-            <p>
-                Since I am generally not very outgoing, it may be a little difficult for you to contact me. I'll most likely 
-                get back to you if you <a href="mailto:tom.aus@outlook.com" class="email-link">email</a> me,
-                however.
-            </p>
-            <h2 id="license" class="section">Content</h2>
-            <p>
-                All content on this website, unless explicitly mentioned below, is made by me and licensed under the 
-                <a href="//creativecommons.org/licenses/by-sa/4.0">Creative Commons Attribution-ShareAlike 4.0 International license - (CC) BY-SA</a>, 
-                and is available for free reuse in any project and for any purpose, under the following conditions:
-            </p>
-            <ul class="main">
-                <li>The work in question <em>must</em> include a link back to this website and a mention of my name. Example: 
-                    <em>(CC)BY-SA Thomas Bell &lt;http://bell345.github.io&gt; 2014</em>.
-                </li>
-                <li>You must distribute your work under this license.</li>
-            </ul>
-            <h3>Graphics</h3>
-            <p>
-                The icons you see up the top are courtesy of <a href="//iconmonstr.com">iconmonstr.com</a>. Use is bound under their 
-                <a href="//iconmonstr.com/license/">terms and conditions</a>.
-            </p>
-            <h3>Code</h3>
-            <p>
-                The <a href="//jquery.com">jQuery</a> and <a href="//jqueryui.com">jQuery UI</a> JavaScript libraries are used throughout 
-                the site and all of the prototypes to make it go round. They are licensed under the 
-                <a href="//jquery.org/license">MIT license</a>, and the copyright headers are kept intact in both files. 
-                <a href="//amsul.ca/pickadate.js">pickadate.js</a> is used to display date and time pickers in the 
-                <a href="/proto/#cdown">CDown</a> prototype, and is also licensed under the <a href="//amsul.ca/MIT">MIT license</a>.
-            </p>
-        </div>
-        <div id="sidebar"></div>
-        <div id="footer"></div>
-    </div>
+    <main>
+        <h1>About</h1>
+        <h2 id="me">Me</h2>
+        <p>
+            I am a fourteen year old high school student who likes to program and make websites in my spare time. I am highly interested
+            in computer science and technology. I am very keen to learn about technological subjects and to expand my knowledge. When I'm
+            not programming, I'm on <a href="http://reddit.com/u/isurvived12">Reddit</a> and playing games on
+            <a href="http://steamcommunity.com/id/bell345">Steam</a>. Personally, I am greatly excited about the future of computer science
+            and technology &mdash; it's a better time than ever to get into the industry!
+        </p><p>
+            I own two computers, one I built myself (i3-4160 and GTX 750 Ti if anyone's asking) and one for school. I'm a big Linux nut, and
+            I pray for the day that it finally becomes accepted enough that I'll be able to play all my games on it, no problems. I like listening
+            to Spotify, especially alternative rock and electronic music. Say what you will about my music tastes. I'm adaptable with programming
+            languages, but I'm most comfortable with JavaScript, C++ and the like.
+        </p>
+        <h2 id="website">This Website</h2>
+        <p>
+            It started out as a side project after I had finished working on a website assignment for school. I would make quick little applications
+            and put it on this website on a local web server. It only got off the ground and into the cloud once I moved to GitHub Pages. It's still
+            nothing that remarkable, but I'd like to think that one day it'll be one of those things you can look back on when I'm all grown up.
+        </p>
+        <h2 id="contact">Contacting Me</h2>
+        <p>
+            Want to talk? I am very reserved, so I don't go on social media websites that often. Your best bet at having a conversation is to
+            <a href="mailto:tom.aus@outlook.com">email me</a>. I do have Facebook, Twitter, Skype, all that, but I'd rather not share
+            to people whom I don't necessarily know anything about. My <a href="http://github.com/bell345">GitHub profile</a> has a few
+            more projects that I might not have uploaded to this website yet (probably because they're unremarkable). I should get into
+            the habit of making more commits.
+        </p>
+        <h2 id="license">Content Licensing</h2>
+        <p>
+            Legal stuff is a pain, so I release all my <em>coding</em> work under the <a href="http://opensource.org/licenses/MIT">MIT License</a>.
+            What that means is that you can copy, edit, redistribute, remix and even commercially sell things based upon my work under one condition:
+            <strong>You must attribute me in the product.</strong> My name and a link back to the website should suffice as attribution.
+            The words, creative works and styling that I have produced are covered under the
+            <a href="http://creativecommons.org/licenses/by/4.0">CC BY</a> license. You can do the same as the MIT License, under the same conditions
+            as well; it's a little more formal. Any concerns can be redirected to <a href="mailto:tom.aus@outlook.com">my email</a>.
+        </p>
+        <h3>Other People's Work</h3>
+        <p>
+            The above does not apply to stuff that other people have made, but I am using in the website. Here is a short rundown of things that I haven't made:
+        </p>
+        <ul class="txt">
+            <li>
+                The icons for the navigation to the left and right, excluding the "V6" logo down the lower right, are courtesy of
+                <a href="http://iconmonstr.com">iconmonstr.com</a>. It's a pretty cool free icon website that lets you use as many
+                icons as you want without attribution. There are still <em>some</em> <a href="http://iconmonstr.com/license">terms and conditions</a> you
+                have to follow, however.
+            </li>
+            <li>
+                <a href="https://jquery.com">jQuery</a> is an excellent JavaScript library that handles a lot of things, and which I use liberally. It belongs to the
+                <a href="https://jquery.org">jQuery Foundation</a>, and is licensed under the <a href="https://jquery.org/license">MIT License</a>.
+            </li>
+            <li>
+                Any other people's code which I use will be pointed at by documentation and in the descriptions for the projects themselves.
+            </li>
+        </ul>
+    </main>
 </body>
 </html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Planetarium</title>
+    <meta charset="utf-8" />
+    <base href="../../" />
+    <link rel="stylesheet" href="assets/css/site.css" />
+    <link rel="stylesheet" href="assets/css/proto/psim.css" />
+    <script src="assets/js/jquery2.min.js"></script>
+    <script src="assets/js/tbi.js"></script>
+    <script src="assets/js/proto/psim.js"></script>
+</head>
+<body>
+    <div class="psim-control"><button id="psim-power" class="toggle on">Simulation state</button></div>
+    <canvas id="psim-canvas" height="600" width="600">
+        Your browser is not capable of recognising the HTML5 &lt;canvas&gt; graphics framework.
+        Supported browsers include Google Chrome and Mozilla Firefox.
+    </canvas>
+    <div class="psim-control">
+        <span class="main">Zoom</span>
+        <span class="help" id="psim-zoom-help"></span><br />
+        <input type="range" min="0.2" max="2" step="0.005" id="psim-zoom" />
+    </div>
+    <div class="psim-control">
+        <span class="main">Scale</span>
+        <span class="help" id="psim-scale-help"></span>
+        <button id="psim-scale-reset">Reset</button><br />
+        <input type="range" min="1" max="8" step="0.05" id="psim-scale" />
+    </div>
+    <div class="psim-control">
+        <span class="main">Speed</span>
+        <span class="help" id="psim-speed-help"></span>
+        <button id="psim-speed-reset">Reset</button>
+        <button id="psim-speed-pause">Pause</button><br />
+        <input type="range" min="-30" max="30" step="0.2" id="psim-speed" />
+    </div>
+    <div class="psim-control">
+        <button id="psim-plines" class="toggle">Location lines</button>
+        <button id="psim-porbits" class="toggle on">Orbits</button>
+        <button id="psim-plabels" class="toggle on">Labels</button>
+        <button id="psim-debug" class="toggle">Debug mode</button>
+    </div>
+    <div class="psim-control">
+        <button id="psim-reset">Reset simulation</button>
+    </div>
+</body>
+</html>

@@ -1,107 +1,32 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="no-js">
 <head>
-    <title>Thomas's WebSite</title>
+    <title>Thomas Bell</title>
+    <base href="../" />
     <meta charset="utf-8" />
-    <link rel="shortcut icon" href="/favicon.png" />
-    <link rel="stylesheet" href="/assets/css/jquery-ui.css" />
-    <link rel="stylesheet" href="/assets/css/sheet.css" />
-    <script src="/assets/js/jquery2.min.js"></script>
-    <script src="/assets/js/jquery-ui.min.js"></script>
-    <script src="/assets/js/tbi.js"></script>
+    <link rel="stylesheet" href="assets/css/site.css" />
+    <script src="assets/js/jquery2.min.js"></script>
+    <script src="assets/js/require.js"></script>
+    <script src="assets/js/site.js"></script>
 </head>
 <body>
-    <header></header>
-    <div id="content">
-        <div id="maincontent">
-            <h1>Applications</h1>
-            <p>
-                This is a collection of stuff I'm working on or have finished. This is different from the
-                <a href="/proto/">prototypes</a> page, where unfinished prototypes and code snippets are
-                hosted.
-            </p>
-            <h2 class="item">Cartesian Plane 2</h2>
-            <h3 class="version">0.0</h3>
-            <div class="item-info">
-                <p>
-                    This is a redesign of the original <a href="/proto/#crtplane">Cartesian Plane</a>,
-                    featuring a swanky fullscreen UI, more optimisation, better maths support and more
-                    ease of use.
-                </p><p>
-                    The current version is fully featured, the only improvements left are to flesh out
-                    the UI, especially the function addition/editing and plot legend UI. I also might
-                    need to improve the scale generation code.
-                </p>
-            </div>
-            <h2 class="item">Logon Background Changer</h2>
-            <h3 class="version"></h3>
-            <div class="item-info">
-                <p>
-                    This is a simple Windows application that helps to change the logon background in
-                    Windows Vista/7. Tested to work on Windows 7 64-bit, and it does require administrator
-                    access (as it modifies the registry).
-                </p><p>
-                    This might be labelled internally as "LogonBGChanger2" - for a good reason - I had to
-                    make the program <em>again from scratch</em> because I lost the source while configuring
-                    Git with Visual Studio. They do not play nice. Anyway, click the ">" link above to get the
-                    latest release.
-                </p>
-            </div>
-            <h2 class="item"><a href="/apps/calc">Calculator</a></h2>
-            <h3 class="version"></h3>
-            <div class="item-info">
-                <p>
-                    An advanced JavaScript calculator that supports proper floating-point arithmetic, shifting,
-                    mathematical variables, advanced trigonometry functions and is extensible (to a degree).
-                </p>
-                <figure class="img-mid">
-                    <figcaption class="img-toggle up-down" title="Calc v. 2.2"></figcaption>
-                    <img src="/assets/img/calc2.2.png" alt="Calc version 2.2." />
-                </figure>
-            </div>
-            <h2 class="item"><a href="/apps/cdown/">CountDown</a></h2>
-            <h3 class="version"></h3>
-            <div class="item-info">
-                <p>
-                    A JavaScript countdown web app that supports URL encoded countdowns, easy input, sharing your
-                    countdowns and a timer.
-                </p>
-                <figure class="img-mid">
-                    <figcaption class="img-toggle up-down" title="CDown v. 3.1.1"></figcaption>
-                    <img src="/assets/img/cdown3.1.1.png" alt="CDown (CountDown) version 3.1.1." />
-                </figure>
-                <p>
-                    A port for desktop written in C# also supports multiple countdowns and Windows PC support.
-                    You can download this port with the button below (only Windows is supported in the meanwhile).
-                </p>
-                <div class="dl-section">
-                    <button class="major">
-                        <a href="/apps/cdown/desktop/CD3PC_11.exe" download class="pc">
-                            Download CD3PC v1.1 (.exe)
-                        </a>
-                    </button>
-                </div>
-            </div>
-            <h2 class="section" id="userscripts">Userscripts</h2>
-            <p>
-                These are simple scripts that can be used on a webpage or website which can change or override
-                interaction, styling or information dynamically. They can be activated with the TamperMonkey
-                extension for <a href="//google.com/chrome">Google Chrome</a>. With the extension installed,
-                click the header links to install the userscript.
-            </p>
-            <h3><a href="userscripts/YTUI.tamper.js">YTUI</a></h3>
-            <p>
-                This changes the style of YouTube pages and the HTML5 player.
-                <a href="userscripts/YTUI.tamper.js#bypass=true">Source.</a>
-            </p>
-            <h3><a href="userscripts/min-twitter.tamper.js">Minimalistic Twitter</a></h3>
-            <p>
-                Changes the Twitter website style to a more minimal, darker theme.
-                <a href="userscripts/min-twitter.tamper.js#bypass=true">Source.</a>
-            </p>
-        </div>
-        <div id="sidebar"></div>
-        <div id="footer"></div>
-    </div>
+    <main>
+        <h1>Applications</h1>
+        <p>
+            Projects that have graduated from <a href="proto">Prototype</a> stage end up here:
+            refined web apps with clear purpose. I'm hoping to update this page a lot more often
+            with some cool stuff, once I find something to do.
+        </p>
+        <p>
+            If you have any issues with these, hit me up with an
+            <a href="mailto:tom.aus@outlook.com">email (tom.aus@outlook.com)</a>
+            with your issue and I'll make sure to look into it.
+        </p>
+        <p>
+            Licensing of all of these applications, unless mentioned, falls under the MIT License,
+            a permissive license that allows for free use, reuse and modification, even commercially,
+            as long as I am attributed sufficiently.
+        </p>
+    </main>
 </body>
 </html>
