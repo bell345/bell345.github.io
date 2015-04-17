@@ -1,8 +1,17 @@
 bell345.github.io
 =================
 
-This is the website and platform that I will be uploading my work and prototype code for all of the world to see. Not much else to say about it, really.
+Where I put all my stuff. This is a website dedicated to showcasing some of my work that I do in my spare time.
 
-If you are here to copy/edit my code; `/assets/js/tbi.js` is the site-wide code used by everything, and `/assets/js/proto.js` is the code for the prototypes.
+* `/apps/` contains interactive applications written both for the Web and for desktop. These are more worked on 
+and rigorously tested.
+* `/games/` contains, you guessed it, games. Mostly quick JavaScript things that I thought of doing, but I might 
+consider completing some real games in an engine of some sort.
+* `/projects/` will contain major works that are too large for a single URL. They are ambitious and take up a lot 
+of time. I hope to make some more of these in the future.
+* `/proto/` is where the concepts for applications are born - they are simple, rudimentary and put together with a
+single goal in mind; will it work?
 
-Each individual application (inside of `/apps/`) does not depend on the `/assets/` folder; rather, they use a separate `./assets/` folder inside of each application sub-folder that contains a similar hierarchy to the main asset folder. This conserves code by only including what it uses and makes sure that the applications can be directly lifted out of the website and into standalone applications.
+This website uses a custom-built content management system that uses JSON to store all sorts of data about all this
+work and display them in a thumbnail gallery format. I might consider upgrading it to be a little bit more user-friendly,
+but it works well for now.
