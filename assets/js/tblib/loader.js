@@ -1,4 +1,4 @@
-// A JS-based loader that executes onload tasks and then triggers a 
+// A JS-based loader that executes onload tasks and then triggers a
 // "pageload" event to synchronise XHR loaded resources and other
 // async requirements.
 // jQuery required.
@@ -11,20 +11,24 @@ if (!window.jQuery) {
     throw new Error("[tblib/loader.js] util.js has not been loaded");
 } else {
 
+$("body").toggleClass("init", true);
+
 if (!window.globalStartTime) var globalStartTime = new Date().getTime();
 
-TBI.Loader = function () {
-    this.loaderInterval = 20;
+TBI.Loader = function (eventName) {
+    this.eventName = eventName;
+    this.loaderInterval = 100;
     this.loadingScreenTimeout = 6000;
     this.defaultTimeout = 20000;
     this.emergencyTimeout = 80000;
-    
+
     this.terminate = false;
-    
+    this.completed = false;
+
     this.log = [];
     this.tasks = [];
     this.getTaskById = function (id) {
-        for (var i=0;i<this.tasks.length;i++) 
+        for (var i=0;i<this.tasks.length;i++)
             if (this.tasks[i].id == id) return this.tasks[i];
         return null;
     }
@@ -39,45 +43,46 @@ TBI.Loader = function () {
                 + this.message
         };
     };
-    
-    var LoaderTask = function (loader) { 
+
+    var LoaderTask = function (loader) {
         return function (id, func, timeout, depends, conditions) {
             this.id = isNull(id) ? generateUUID() : id;
             this.func = func || function (resolve, reject) { resolve(); };
             this.timeout = timeout || loader.defaultTimeout;
             this.depends = depends || [];
             this.conditions = conditions || [];
-            
+
             this.inProgress = false;
             this.completed = false;
             this.successful = false;
             this.promise = null;
-            
+
             this.execute = function () {
                 for (var i=0;i<this.depends.length;i++) {
                     var task = loader.getTaskById(this.depends[i]);
-                    if (!isNull(task) && !task.completed) return;
+                    if (isNull(task)) return;
+                    if (!task.completed) return;
                 }
-                
+
                 for (var i=0;i<this.conditions.length;i++)
                     if (!this.conditions[i]()) return;
-                
-                this.promise = new Promise(function (task, loader) { 
+
+                this.promise = new Promise(function (task, loader) {
                     return function (resolve, reject) {
-                        task.func(resolve, reject);
+                        task.func(resolve, reject, loader);
                         task.inProgress = true;
                         loader.milestone("Executed "+task.id);
-                        
+
                         setTimeout(function (reject) {
                             reject("timeout");
                         }, task.timeout, reject);
-                    } 
-                }(this, loader)).then(function (task, loader) { 
+                    }
+                }(this, loader)).then(function (task, loader) {
                     return function () {
                         task.completed = true;
                         task.successful = true;
                         loader.milestone(task.id+" completed successfully");
-                    } 
+                    }
                 }(this, loader)).catch(function (task, loader) {
                     return function (error) {
                         task.completed = true;
@@ -85,55 +90,72 @@ TBI.Loader = function () {
                         var reason = "timeout";
                         if (error instanceof Error) {
                             reason = error.message;
-                        } else reason = reason;
-                        loader.milestone(task.id+" completed unsuccessfully due to: "+reason);
+                        } else reason = error;
+                        loader.milestone(task.id+" completed unsuccessfully due to: "+reason, true);
                     }
                 }(this, loader));
             }
-        } 
+        }
     }(this);
+
+    this.addTask = function (func, timeout, id, depends, conditions) {
+        this.tasks.push(new LoaderTask(id, func, timeout, depends, conditions));
+    };
 
     this.milestone = function (message, isImportant) {
         var entry = new LogEntry(message);
         this.log.push(new LogEntry(message));
         if (isImportant) console.log(entry.print());
     };
-    
+
     this.loop = function () {
         var allDone = true;
         for (var i=0;i<this.tasks.length;i++) {
             if (!this.tasks[i].completed) {
-                if (!this.tasks[i].inProgress) 
+                if (!this.tasks[i].inProgress)
                     this.tasks[i].execute();
                 allDone = false;
             }
         }
-        
-        if (allDone) $(document).trigger("pageload");
-        else if (this.terimate) {
+
+        if (allDone) {
+            this.completed = true;
+            $(document).trigger(this.eventName);
+        }
+        else if (this.termiate) {
             this.milestone("Loader terminated prematurely");
-            $(document).trigger("pageload");
-        } else setTimeout(function (loader) { 
-            return function () { loader.loop(); }; 
-        }, this.loaderInterval, this);
+            this.completed = true;
+            $(document).trigger(this.eventName);
+        } else setTimeout(function (loader) {
+            return function () { loader.loop(); };
+        }(this), this.loaderInterval);
+    };
+
+    this.start = function () {
+        setTimeout(function (loader) {
+            return function () { loader.loop(); }
+        }(this), this.loaderInterval);
+
+        setTimeout(function (loader) { return function () {
+            if (!loader.completed)
+                $("body").toggleClass("loading", true);
+        }; }(this), this.loadingScreenTimeout);
+
+        setTimeout(function (loader) {
+            return function () { loader.terminate = true; };
+        }(this), this.emergencyTimeout);
     }
-    
-    setTimeout(function (loader) {
-        return function () { loader.loop(); }
-    }, this.loaderInterval, this);
-    
-    setTimeout(function () { 
-        $("body").toggleClass("loading", true);
-    }, this.loadingScreenTimeout);
-    
-    setTimeout(function (loader) {
-        return function () { loader.terminate = true; };
-    }, this.emergencyTimeout, this);
 };
 
+var loader;
 $(function () {
-    var loader = new TBI.Loader();
+    loader = new TBI.Loader("pageload");
     loader.milestone("Ready", true);
+});
+
+$(document).on("pageload", function () {
+    loader.milestone("Page loaded", true);
+    $("body").toggleClass("init", false);
 });
 
 }

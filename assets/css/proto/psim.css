@@ -1,0 +1,9 @@
+#psim-canvas {
+    background:#003;
+}
+.psim-control {
+    margin-bottom:12px;
+}
+.psim-control input[type="range"] {
+    width:300px;
+}

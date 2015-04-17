@@ -1,3 +1,8 @@
+// THIS IS LEGACY CODE
+// FOR THE LOVE OF ALL THAT IS HOLY, DO NOT USE THIS
+// TBLIB HAS ALL YOU NEED
+
+
 // TBI.JS - V6.6
 // Base functions, variables and helpers that are included and required in
 // all of my website pages.
@@ -265,7 +270,7 @@ TBI.updateUI = function () {
             popups[i].attributes["data-popup-title"].value,
             popups[i].attributes["data-popup-body"].value);
     }
-    popups.toggleClass("done", true);
+    popups.toggleClass("popup-done", true);
     for (var i=0;i<$("table.sortable:not(.done)").length;i++) {
         var curr = $("table.sortable:not(.done)")[i];
 
@@ -2100,58 +2105,6 @@ window.onerror = function (message, url, line, column, e) {
 $(function () {
     TBI.Loader.event("Ready", true);
     TBI.requestManager();
-    TBI.Loader.jobs.push(
-        // job field description: (starred fields (*) are required):
-        // func (*): A function that runs an delayed async task and
-        //     provides appropriate callbacks to the loader (i.e. TBI.Loader.complete()).
-        // id (*): The unique id for the task. This will be used in some
-        //     default values as well as a unique identifier in callbacks.
-        // dependencies: A list of ids of other tasks that need to be
-        //     completed in order to run the task.
-        // conditions: An array of functions that return true
-        //     when satisfied. All functions need to return true for the task to run.
-        // msg: An object containing messages for the log when:
-        // msg.done: The task is completed successfully.
-        // msg.error: The task has encountered an error and cannot complete.
-        // msg.timeout: The task has taken too long to callback.
-        /* example:
-            {
-                func: function () { Namespace.doSomethingAsync(); },
-                id: "MyTask",
-                dependencies: ["MyTaskSetup"],
-                conditions: [function () { return Namespace.asyncReady; }],
-                msg: {
-                    done: "My task has completed successfully!",
-                    error: "Something went wrong with my task.",
-                    timeout: "My task took too long to respond."
-                }
-            }
-        */
-        {
-            func: function () { HTMLIncludes.getIndex(); },
-            id: "HTMLIncIndex",
-            msg: {
-                done: "HTMLIncludes manifest loaded"
-            }
-        },
-        {
-            func: function () { HTMLIncludes.get(); },
-            id: "HTMLIncludes",
-            dependencies: ["HTMLIncIndex"],
-        },
-        {
-            func: function () { TBI.fetchIndex(); },
-            id: "protoIndex",
-            msg: {
-                done: "Content manifest loaded"
-            }
-        },
-        {
-            func: function () { TBI.checkFonts(); },
-            id: "Fonts",
-            conditions: [function () { return $("#fontload").length > 0 }]
-        }
-    );
     TBI.Loader.init();
 });
 TBI.Loader = {

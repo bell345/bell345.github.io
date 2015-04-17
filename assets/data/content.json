@@ -1,0 +1,36 @@
+{
+    "version": 2,
+    "role": "page-declaration",
+    "pages": [
+        {
+            "id": "proto",
+            "title": "Prototypes",
+            "path": "proto",
+            "declare": "$path/declare.json"
+        },
+        {
+            "id": "apps",
+            "title": "Applications",
+            "path": "apps",
+            "declare": "$path/declare.json"
+        },
+        {
+            "id": "games",
+            "title": "Games",
+            "path": "games",
+            "declare": "$path/declare.json"
+        },
+        {
+            "id": "test",
+            "title": "Testing",
+            "path": "test",
+            "declare": "$path/declare.json"
+        },
+        {
+            "id": "proj",
+            "title": "Projects",
+            "path": "projects",
+            "declare": "$path/declare.json"
+        }
+    ]
+}

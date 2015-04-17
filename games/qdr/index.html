@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Quadrominoes</title>
+    <meta charset="utf-8" />
+    <base href="../../" />
+    <link rel="stylesheet" href="assets/css/site.css" />
+    <link rel="stylesheet" href="assets/css/games/qdr.css" />
+    <script src="assets/js/jquery2.min.js"></script>
+    <script src="assets/js/tbi.js"></script>
+    <script src="assets/js/games/qdr.js"></script>
+</head>
+<body>
+    <div class="game" id="qdr-game">
+        <div id="qdr-gui">
+            <div id="qdr-title">
+                <button id="qdr-start">Start</button>
+            </div>
+            <div id="qdr-side">
+                <div id="qdr-controls">
+                    <div>W</div>
+                    <br />
+                    <div>A</div>
+                    <div>S</div>
+                    <div>D</div>
+                </div>
+            </div>
+            <div id="qdr-pause">
+                <h2>Game paused.</h2>
+                <p>To resume the game, move the<br />
+                cursor inside the game space.</p>
+            </div>
+            <div id="qdr-overlay">
+                <h2>Game Over!</h2>
+                <div class="span">Congratulations! Your score was:</div>
+                <div id="qdr-score"></div>
+                <button id="qdr-retry">Try Again</button>
+            </div>
+        </div>
+        <canvas id="qdr-canvas" height="600" width="400">
+            Your browser is not capable of recognising the HTML5 &lt;canvas&gt; graphics framework.
+            Supported browsers include Google Chrome and Mozilla Firefox.
+        </canvas>
+    </div>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<p>
+    This is a redesign of the original prototype Cartesian Plane,
+    featuring a swanky fullscreen UI, more optimisation, better maths support and more
+    ease of use.
+</p><p>
+    In my maths class, I wanted to visualise the linear functions that we were studying without using
+    a tedious pen and paper, so I created a <code>&lt;canvas&gt;</code> program to plot them for me!
+    This started off as a small test app, but it's recently become my most worked-on project.
+</p>
+<h3>Control</h3>
+<p>
+    Using the mouse, you can scroll in, out and around the plane to explore the functions. The plus
+    and minus buttons on the side scroll without a mouse wheel, while the crosshair button centres the
+    view. Use the "Show Scale" and "Show Legend" for handy shortcuts for hiding UI elements.
+</p>
+<h3>Legend</h3>
+<p>
+    On the left side there will be a legend. This legend controls the mathematical functions you see
+    displayed, and each is assigned a colour by default. There are three different behaviours when
+    you click on a function: "hide/show", "remove" and "edit". "Hide/show" is default, and is marked
+    by an eye icon. Clicking on a function while in this mode will toggle whether or not you can see
+    the function. The "remove" behaviour is marked by a cross. Click the cross to change to "remove" mode.
+    Now when you click on a function, it will permanently delete it from the app (until you reload the page).
+</p>
+<h3>The Creation Dialog</h3>
+<p>
+    The "add" button and the "edit" behaviour do pretty much the same thing with the same interface. Click on
+    the plus icon to enter the function creation screen, which shares the same interface as the "edit" behaviour
+    marked with a pencil icon. There are three function types: the basic, Cartesian (y = f(x)) type that you see
+    everywhere, the polar function (r = f(&theta;)) which deals with angles and the parametric function ((x, y) = f(t))
+    which is super cool.
+</p><p>
+    There are quite a few function classes that can help in creating common functions. Cartesian mode utilises
+    the PolynomialFunc and RelationFunc classes. LinearFunc is a special case of PolynomialFunc. Parametric mode
+    has a few default shapes with customisable parameters that you can try out. All modes have a "generic type",
+    where the program will try its best to transform your text into a mathematical function.
+</p><p>
+    In relation to the "generic type", you can use all the basic operators (<code>+</code>, <code>-</code>, <code>*</code>,
+    <code>/</code>) with <code>^</code> for exponentation, as well as algebra-style syntax (<code>2a</code> instead of
+    <code>2*a</code>). You can use a variety of trigonometric functions (<code>sin()</code>, <code>cos()</code>,
+    <code>tan()</code>) as well as a few constants such as <code>pi</code>. You can also use some advanced mathematical
+    functions such as <code>sqrt()</code> or <code>ln()</code>.
+</p><p>
+    By clicking the "Preview" button in the window, you can try out your brand new function in the small preview plane,
+    as well as seeing how it will look in the legend. Here, you can also change the colour that the program will use to
+    draw the function line (black by default). Click "OK" to confirm your changes.
+</p>
+<h3>Settings</h3>
+<p>
+    The gear icon holds a settings menu, where many dozens of wondrous and marvellous options are at your disposal. I've
+    attempted to give a small summary of what each of them does, but you're going to have to go in blind with these ones.
+</p>
+<h2>Bugs</h2>
+<ul class="txt">
+    <li>BUG: In certain configurations a long way away from the origin, the scale marking algorithm will lock up and hold
+        up the page until it is dealt with by killing/reloading the page.</li>
+</ul>
+<h2>Future Features</h2>
+<ul class="txt">
+    <li>Better support for basic line plots</li>
+    <li>More default classes</li>
+    <li>Persistency (file format, perhaps?)</li>
+</ul>

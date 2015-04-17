@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- The icon can be used freely in both personal and commercial projects with no attribution required, but always appreciated. 
+<!-- The icon can be used freely in both personal and commercial projects with no attribution required, but always appreciated.
 You may NOT sub-license, resell, rent, redistribute or otherwise transfer the icon without express written permission from iconmonstr.com -->
 
 <svg
@@ -48,7 +48,7 @@ You may NOT sub-license, resell, rent, redistribute or otherwise transfer the ic
 <g
    id="g2999"
    transform="matrix(0,-1,1,0,0,512)"><polygon
-     style="fill:#555555;fill-opacity:1"
+     style="fill:#eeeeee;fill-opacity:1"
      points="402.5,256 197.48,462 142.332,407.113 292.727,256 142.332,104.886 197.48,50 "
      id="arrow-25-icon" /></g>
 

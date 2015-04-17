@@ -1,0 +1,32 @@
+.cmp-control input[type="text"] {
+    width:134px;
+}
+.cmp-buttonr {
+    margin:4px;
+}
+.cmp-control>span {
+    vertical-align:middle;
+}
+#cmp-mouse {
+    position:absolute;
+    left:0;
+    top:0;
+    cursor:crosshair;
+}
+#cmp-container {
+    height:600px;
+    position:relative;
+}
+#cmp-buttons button {
+    height:33%;
+    width:100%;
+    font-size:24px;
+}
+
+.side-buttons {
+    position:absolute;
+    right:0;
+    top:0;
+    height:100%;
+    width:48px;
+}

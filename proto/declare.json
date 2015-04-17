@@ -1,0 +1,41 @@
+{
+    "version": 2,
+    "role": "project-declaration",
+    "id": "proto",
+    "path": "proto",
+    "projects": [
+        {   "id": "cvscom",
+            "type": "app",
+            "path": "$page_path/$id",
+            "preview": "iframe",
+            "preview_iframe": "$page_path/$id",
+            "title": "Fractal Generator",
+            "version": "1.6",
+            "description": "$path/desc.htm",
+            "thumbnail": "assets/img/$id.png",
+            "updated": "2015-03-30"
+        },
+        {   "id": "psim",
+            "type": "app",
+            "path": "$page_path/$id",
+            "preview": "iframe",
+            "preview_iframe": "$page_path/$id",
+            "title": "Planetarium",
+            "version": "0.9.2",
+            "description": "$path/desc.htm",
+            "thumbnail": "assets/img/$id.png",
+            "updated": "2015-03-29"
+        },
+        {   "id": "ttbl",
+            "type": "app",
+            "path": "$page_path/$id",
+            "preview": "iframe",
+            "preview_iframe": "$page_path/$id",
+            "title": "Timetable",
+            "version": "0.6.1",
+            "description": "$path/desc.htm",
+            "thumbnail": "assets/img/$id.png",
+            "updated": "2015-03-26"
+        }
+    ]
+}
