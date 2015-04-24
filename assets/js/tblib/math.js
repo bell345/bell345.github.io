@@ -782,4 +782,52 @@ Math.bounce = function (num, low, high) {
 
 }
 
+// TODO: implement logic gate adding machine
+
+function BigNumber(n, b, s) {
+    if (n == undefined) n = 0;
+    if (b == undefined) b = 10;
+    if (s == undefined) s = 1;
+
+    this.base = b;
+    this.sign = s;
+
+    if (!(n instanceof Array)) {
+        n = n.toString();
+        if (n[0] == "-") this.negative = true;
+        for (var i=0,a=[];i<n.length;i++) {
+            var curr = parseInt(n[i]);
+            if (!isNaN(curr)) a.push(curr);
+        }
+        this.stream = a;
+    } else this.stream = n;
+}
+BigNumber.prototype.getDigit = function (p) {
+    var place = this.stream.length - 1 - p;
+    if (this.stream.length <= place || place < 0) return undefined;
+    return this.stream[place];
+}
+BigNumber.prototype.addDigit = function (p, num) {
+    while (this.getDigit(p) == undefined) this.stream.unshift(0);
+
+    var result = this.getDigit(p) + num * this.sign;
+    if (result >= this.base || result <= -this.base) this.addDigit(p + 1, Math.floor(num / this.base));
+    if (result <= -this.base)
+    else this.stream[place] = result % this.base;
+}
+BigNumber.prototype.subtractDigit = function (p, num) { // num > 0
+    if (num < 0) num = Math.abs(num);
+
+
+}
+BigNumber.prototype.add = function (num) {
+    if (!(num instanceof BigNumber)) num = new BigNumber(num);
+
+    for (var i=0;i<num.stream.length;i++) {
+        this.addDigit(i, num.getDigit(i));
+    }
+
+
+}
+
 }

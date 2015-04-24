@@ -84,6 +84,7 @@ function loadProjectDescription(figure, proj) {
                         }
                     desc.appendChild(buttonDiv);
                 figure.appendChild(desc);
+
                 resolve();
             } catch (e) {
                 reject("An error occured: "+e.message);
@@ -290,6 +291,10 @@ Require(["assets/js/tblib/base.js",     // Concurrently loading the dependencies
                 }
             }
         });
+
+        // location.hash == "#crtpl2" == clicking cartesian plane
+        $(location.hash).find("figcaption").click();
+
         $("header").mouseenter(function () {
             $("body").toggleClass("in-shadow", true);
         });
