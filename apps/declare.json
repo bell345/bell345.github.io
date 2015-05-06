@@ -4,6 +4,15 @@
     "id": "apps",
     "path": "apps",
     "projects": [
+        {   "id": "ptable",
+            "type": "app",
+            "path": "$page_path/$id",
+            "title": "Periodic Table",
+            "version": "1.1",
+            "description": "$path/desc.htm",
+            "thumbnail": "assets/img/$id.png",
+            "updated": "2015-05-04"
+        },
         {   "id": "sc-edit",
             "type": "repo",
             "path": "https://bell345.github.io/sclicker-editor",

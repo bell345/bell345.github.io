@@ -1,0 +1,305 @@
+#ptable {
+    border-spacing:0;
+    margin:auto;
+}
+tr {
+    height:50px;
+}
+.symbol {
+    font-family:"Raleway";
+    font-size:14px;
+    font-weight:bold;
+}
+.name {
+    font-size:10px;
+    display:none;
+}
+.number {
+    font-size:11px;
+}
+.mass {
+    font-size:8px;
+}
+#ptable:not(.small) td:hover .name {
+    display:block;
+    padding-bottom:15%;
+    line-height:85%;
+}
+.element {
+    -webkit-user-select:none;
+    user-select:none;
+    width:50px;
+    max-width:50px;
+    text-align:center;
+    overflow:visible;
+    background:#eee;
+    cursor:pointer;
+    transition:0.4s all;
+    position:relative;
+}
+#ptable .number {
+    position:absolute;
+    top:0;
+    right:0;
+    text-align:right;
+    padding-right:5%;
+}
+#ptable .mass {
+    position:absolute;
+    bottom:0;
+    left:0;
+    text-align:left;
+    padding-left:10%;
+}
+#ptable.small td {
+    width:20px;
+    max-width:20px;
+}
+#ptable.small tr {
+    height:20px;
+}
+#ptable.small td.element .number,
+#ptable.small td.element .mass {
+    display:none;
+}
+#ptable.small td.element .symbol {
+    font-size:8px;
+}
+#ptable.small input, #ptable.small button {
+    font-size:8px;
+    padding:2px 4px;
+    margin:0;
+}
+#ptable.small button.toggle {
+    padding-right:28px;
+}
+#ptable.small button.toggle::after {
+    padding:2px 4px;
+    width:15px;
+}
+#ptable      td#element-h { background:#eee; }
+#ptable.type td.element.transition { background:rgb(204, 255, 204); }
+#ptable.type td.element.post-transition { background:rgb(146, 208, 80); }
+#ptable.type td.element.non-metal { background:#f00; }
+#ptable.type td.element.metalloid { background:rgb(255, 153, 51); }
+#ptable.type td.element.halogen { background:rgb(255, 51, 153); }
+#ptable.type td.element.noble { background:rgb(204, 0, 204); }
+#ptable.type td.element.alkali { background:rgb(0, 176, 240); }
+#ptable.type td.element.alkaline-earth { background:rgb(0, 112, 192); }
+#lanthanides td.element { background:rgb(255, 255, 0); }
+#actinides td.element { background:rgb(204, 153, 0); }
+
+#legend li.alkaline-earth::before { background:rgb(0, 112, 192); }
+#legend li.alkaline-earth::after { content:"Alkaline earth metals"; }
+#ptable.small #legend li.alkaline-earth::after { content:"Alkaline earth"; }
+#legend li.alkali::before { background:rgb(0, 176, 240); }
+#legend li.alkali::after { content:"Alkali metals"; }
+#legend li.noble::before { background:rgb(204, 0, 204); }
+#legend li.noble::after { content:"Noble gases"; }
+#legend li.halogen::before { background:rgb(255, 51, 153); }
+#legend li.halogen::after { content:"Halogens"; }
+#legend li.metalloid::before { background:rgb(255, 153, 51); }
+#legend li.metalloid::after { content:"Metalloids"; }
+#legend li.non-metal::before { background:#f00; }
+#legend li.non-metal::after { content:"Non-metals"; }
+#legend li.post-transition::before { background:rgb(146, 208, 80); }
+#legend li.post-transition::after { content:"Post-transition metals"; }
+#ptable.small #legend li.post-transition::after { content:"Post-trans."; }
+#legend li.transition::before { background:rgb(204, 255, 204); }
+#legend li.transition::after { content:"Transition metals"; }
+#ptable.small #legend li.transition::after { content:"Transition"; }
+
+.element.liquid .symbol { color:#00f; }
+.element.gas .symbol { color:#0ca; }
+
+#search.error {
+    color:#f00;
+}
+#ptable.search td.element:not(.selected) { opacity:0.3; }
+#options {
+    text-align:center;
+    vertical-align:middle;
+}
+#title-container {
+    text-align:center;
+    vertical-align:middle;
+}
+#ptable.small #options {
+    vertical-align:middle;
+}
+#maincontent #ptable tr td.element.highlighted {
+    background:rgba(150,230,255,0.35);
+}
+#title {
+    font-size:34px;
+    font-family:"Righteous";
+}
+#ptable.small #title {
+    font-size:14px;
+}
+#ptable.small #valencies, #ptable.small #cat {
+    display:none;
+}
+#legend {
+    -webkit-column-count:4;
+}
+#legend li {
+    padding-left:26px;
+    position:relative;
+    font-size:13px;
+}
+#ptable.small #legend li {
+    font-size:8px;
+    padding-left:16px;
+}
+#ptable.small #legend li::before {
+    width:10px;
+    height:10px;
+}
+#legend li::before {
+    position:absolute;
+    top:0;
+    left:0;
+    height:20px;
+    width:20px;
+    background:#f00;
+    content:"";
+}
+.la-label {
+    text-align:center;
+    font-size:16px;
+}
+.la-placeholder {
+    position:relative;
+    -webkit-user-select:none;
+    user-select:none;
+    cursor:pointer;
+}
+#ptable.small .la-label {
+    font-size:8px;
+}
+#info-box {
+    position:fixed;
+    bottom:0;
+    left:0;
+    width:100%;
+    height:40%;
+    background:rgba(70, 70, 70, 0.4);
+    z-index:5;
+    display:none;
+}
+#info-hider {
+    position:absolute;
+    top:0;
+    right:0;
+    width:40px;
+    height:40px;
+    color:#fff;
+    font-size:24px;
+    background:none;
+    cursor:pointer;
+}
+#ptable.small .radio-input input[type="radio"] + label {
+    font-size:8px;
+    padding:2px 4px;
+    padding-right:28px;
+}
+#ptable.small .radio-input input[type="radio"] + label::after {
+    width:6px;
+    height:6px;
+    margin:6px;
+}
+
+.group-guide {
+    height:40px;
+}
+.element::before {
+    content:"";
+    position:absolute;
+    top:-20px;
+    display:block;
+    width:inherit;
+    -webkit-pointer-events:none;
+    pointer-events:none;
+    font-size:12px;
+    color:#000;
+}
+#ptable.small .element::before {
+    display:none;
+}
+#element-h::before { content:"IA"; }
+#element-be::before { content:"IIA"; }
+#element-sc::before { content:"IIIB"; }
+#element-ti::before { content:"IVB"; }
+#element-v::before { content:"VB"; }
+#element-cr::before { content:"VIB"; }
+#element-mn::before { content:"VIIB"; }
+#element-fe::before {
+    content:"VIII";
+    padding:0 100%;
+}
+#element-cu::before { content:"IB"; }
+#element-zn::before { content:"IIB"; }
+#element-b::before { content:"IIIA"; }
+#element-c::before { content:"IVA"; }
+#element-n::before { content:"VA"; }
+#element-o::before { content:"VIA"; }
+#element-f::before { content:"VIIA"; }
+#element-he::before { content:"VIIIA"; }
+#ptable.valencies #element-h::before { content:"+1"; }
+#ptable.valencies #element-be::before { content:"+2"; }
+#ptable.valencies #element-b::before { content:"+3"; }
+#ptable.valencies #element-c::before { content:"±4"; }
+#ptable.valencies #element-n::before { content:"-3"; }
+#ptable.valencies #element-o::before { content:"-2"; }
+#ptable.valencies #element-f::before { content:"-1"; }
+#ptable.valencies #element-he::before { content:"0"; }
+.element.radioactive::before {
+    content:"";
+    display:block;
+    position:absolute;
+    top:0;
+    left:0;
+    width:25%;
+    height:25%;
+    background:url(../res/radiation.svg);
+    background-size:contain;
+    background-repeat:no-repeat;
+}
+
+#info-element-container {
+    display:inline-block;
+    width:20%;
+    height:100%;
+    text-align:center;
+    position:relative;
+}
+#info-element {
+    position:absolute;
+    margin:auto;
+    top:0;
+    left:0;
+    bottom:0;
+    right:0;
+    width:40%;
+    height:50%;
+    background:#eee;
+    max-width:50%;
+    min-height:130px;
+    cursor:initial;
+}
+#info-element .symbol {
+    font-size:24px;
+}
+#info-element .name {
+    display:block;
+    font-size:16px;
+}
+#info-element .number {
+    display:block;
+    font-size:30px;
+}
+#info-element .mass {
+    display:block;
+    font-size:22px;
+}

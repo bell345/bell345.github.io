@@ -24,7 +24,8 @@
             "id": "test",
             "title": "Testing",
             "path": "test",
-            "declare": "$path/declare.json"
+            "declare": "$path/declare.json",
+            "hidden": true
         },
         {
             "id": "proj",

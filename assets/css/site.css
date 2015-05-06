@@ -77,10 +77,10 @@
         width:0;
     }
 }
-@-webkit-keyframes shadow-fadein {0%{background:rgba(0,0,0,0.0);width:0}1%{width:100%}100%{background:rgba(0,0,0,0.6);width:100%}}
-@-webkit-keyframes shadow-fadeout{0%{background:rgba(0,0,0,0.6);width:100%}99%{width:100%}100%{background:rgba(0,0,0,0.0);width:0}}
-@-moz-keyframes shadow-fadein {0%{background:rgba(0,0,0,0.0);width:0}1%{width:100%}100%{background:rgba(0,0,0,0.6);width:100%}}
-@-moz-keyframes shadow-fadeout{0%{background:rgba(0,0,0,0.6);width:100%}99%{width:100%}100%{background:rgba(0,0,0,0.0);width:0}}
+@-webkit-keyframes shadow-fadein  {0%{background:rgba(0,0,0,0.0);width:0}01%{width:100%}100%{background:rgba(0,0,0,0.6);width:100%}}
+@-webkit-keyframes shadow-fadeout {0%{background:rgba(0,0,0,0.6);width:100%}99%{width:100%}100%{background:rgba(0,0,0,0.0);width:0}}
+@-moz-keyframes shadow-fadein     {0%{background:rgba(0,0,0,0.0);width:0}01%{width:100%}100%{background:rgba(0,0,0,0.6);width:100%}}
+@-moz-keyframes shadow-fadeout    {0%{background:rgba(0,0,0,0.6);width:100%}99%{width:100%}100%{background:rgba(0,0,0,0.0);width:0}}
 /* ============= */
 /*  GLOBAL/ROOT  */
 /* ============= */
@@ -158,7 +158,6 @@ header {
 main {
     display:inline-block;
     width:58%;
-    min-width:940px;
     margin:auto;
     position:absolute;
     left:0;
@@ -769,12 +768,44 @@ table.sortable th.sort.down:after {
     left:0;
     height:100%;
     width:50%;
+    transition:0s all;
 }
 .dialog.project-show img.proj-preview {
     position:absolute;
     top:0;
     left:0;
     height:100%;
+    transition:0s all;
+}
+.dialog.project-show .proj-resizer {
+    position:absolute;
+    top:0;
+    left:50%;
+    width:0;
+    transition:0s all;
+    cursor:ew-resize;
+}
+.dialog.project-show .proj-resizer:active::before {
+    content:"";
+    position:absolute;
+    left:-128px;
+    top:-128px;
+    bottom:-128px;
+    right:-128px;
+    cursor:ew-resize;
+}
+.dialog.project-show .proj-resizer::after {
+    content:"";
+    position:absolute;
+    top:0;
+    bottom:0;
+    left:-10px;
+    width:20px;
+    height:30px;
+    margin:auto;
+    background:#555;
+    transition:0s all;
+    cursor:ew-resize;
 }
 .dialog.project-show .dialog-body {
     padding-left:52%;

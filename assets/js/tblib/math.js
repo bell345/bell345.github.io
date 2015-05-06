@@ -812,8 +812,8 @@ BigNumber.prototype.addDigit = function (p, num) {
 
     var result = this.getDigit(p) + num * this.sign;
     if (result >= this.base || result <= -this.base) this.addDigit(p + 1, Math.floor(num / this.base));
-    if (result <= -this.base)
-    else this.stream[place] = result % this.base;
+    //if (result <= -this.base)
+    //else this.stream[place] = result % this.base;
 }
 BigNumber.prototype.subtractDigit = function (p, num) { // num > 0
     if (num < 0) num = Math.abs(num);

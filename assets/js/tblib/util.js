@@ -695,6 +695,9 @@ function Colour(arg0, g, b, a) {
             default: return this.toRGBA();
         }
     };
+    this.copy = function () {
+        return new Colour(this.r, this.g, this.b, this.a);
+    }
 }
 
 // not mine: repurposed from the ActionScript functions in http://gizma.com/easing/. Thanks to Robert Penner.
@@ -855,9 +858,13 @@ CvsHelper.prototype = {
     correctCoordinate: function (coord) {
         return new Vector2D(coord.x, -coord.y);
     },
+    // Makes sure that the coordinate is located inside of the canvas borders.
+    bound: function (coord) {
+        return coord.clamp(Vector2D.zero, new Vector2D(this.$.canvas.width, this.$.canvas.height));
+    },
     // Returns whether or not the specified coordinate is inside of the canvas borders.
     isBounded: function (coord) {
-        return coord.clamp(Vector2D.zero, new Vector2D(this.$.canvas.width, this.$.canvas.height)).equals(coord);
+        return this.bound(coord).equals(coord);
     },
     // Draws an array of points on the canvas as a line plot.
     // The 'fuzz' refers to the glow (rather, shadow) behind a drawn line.
@@ -865,6 +872,7 @@ CvsHelper.prototype = {
     linePlot: function (points, width, style, fuzz, fuzzColour) {
         points = this.convertToVectorList(points);
         if (points.length == 0) return;
+        this.$.save();
         this.$.beginPath();
         if (!isNull(width)) this.$.lineWidth = width;
         if (!isNull(style)) this.$.strokeStyle = style;
@@ -878,23 +886,42 @@ CvsHelper.prototype = {
             this.$.lineTo(points[i].x, points[i].y);
         this.$.stroke();
         this.$.closePath();
+        this.$.restore();
     },
     // Draws an array of points representing a polygon on the screen.
     polygon: function (points, style, borderWidth, borderStyle) {
         points = this.convertToVectorList(points);
+        this.$.save();
         this.$.beginPath();
         if (!isNull(style)) this.$.fillStyle = style;
         this.$.moveTo(points[0].x, points[0].y);
         for (var i=1;i<points.length;i++)
             this.$.lineTo(points[i].x, points[i].y);
         this.$.lineTo(points[0].x, points[0].y);
-        this.$.fill();
+        if (!isNull(style)) this.$.fill();
         if (!isNull(borderWidth) || !isNull(borderStyle)) {
             if (!isNull(borderWidth)) this.$.lineWidth = borderWidth;
             if (!isNull(borderStyle)) this.$.strokeStyle = borderStyle;
             this.$.stroke();
         }
         this.$.closePath();
+        this.$.restore();
+    },
+    // Draws a circle centred at the specified position.
+    circle: function (centre, radius, style, borderWidth, borderStyle) {
+        centre = this.convertToVector(centre);
+        this.$.save();
+        this.$.beginPath();
+        if (!isNull(style)) this.$.fillStyle = style;
+        this.$.arc(centre.x, centre.y, radius, 0, dtr(360), false);
+        if (!isNull(style)) this.$.fill();
+        if (!isNull(borderWidth) || !isNull(borderStyle)) {
+            if (!isNull(borderWidth)) this.$.lineWidth = borderWidth;
+            if (!isNull(borderStyle)) this.$.strokeStyle = borderStyle;
+            this.$.stroke();
+        }
+        this.$.closePath();
+        this.$.restore();
     },
     // Writes text to the screen.
     // pos: the position of the text on the canvas. (e.g. (150, 300))
@@ -905,6 +932,7 @@ CvsHelper.prototype = {
     // width: the width of the container used to draw the text. The text will be squished to fit.
     write: function (text, pos, font, style, align, baseline, width) {
         pos = this.convertToVector(pos);
+        this.$.save();
         if (!isNull(font)) this.$.font = font;
         if (!isNull(style)) this.$.fillStyle = style;
         if (!isNull(align)) this.$.textAlign = align;
@@ -913,6 +941,7 @@ CvsHelper.prototype = {
         if (isNull(width)) this.$.fillText(text, pos.x, pos.y);
         else this.$.fillText(text, pos.x, pos.y, width);
         this.$.closePath();
+        this.$.restore();
     }
 }
 

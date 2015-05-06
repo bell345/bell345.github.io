@@ -13,6 +13,14 @@ body {
     color:#333;
     transition:0s all;
 }
+.plane-cplane-container {
+    position:fixed;
+    top:0;bottom:0;left:0;right:0;
+    overflow:hidden;
+    overflow-y:auto;
+    -moz-pointer-events:none;
+    pointer-events:none;
+}
 .axis-colour {
     color:#555;
 }
@@ -52,6 +60,7 @@ body {
     right:0;
     height:100%;
     width:64px;
+    pointer-events:all;
 }
 .right-ui:hover li:not(.separator), .legend:hover > div, .legend:hover > li {
     background:#eee;
@@ -70,6 +79,7 @@ body {
     height:100%;
     background:rgba(0,0,0,0.4);
     display:none;
+    pointer-events:all;
 }
 .shadow.show {
     display:block;
@@ -266,12 +276,15 @@ ul.plot-list > li.plot:hover {
 .legend {
     transform:translateX(-100%);
     transition:1s all;
+    max-height:100%;
 }
 .legend.show {
     transform:none;
     max-width:400px;
     white-space:nowrap;
     overflow:hidden;
+    overflow-y:auto;
+    pointer-events:all;
 }
 .legend.show:hover {
     max-width:100%;

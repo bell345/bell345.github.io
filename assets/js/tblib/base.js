@@ -13,7 +13,7 @@ if (!window.TBI) var TBI = {};
 if (!window.TBI.Files) TBI.Files = {};
 if (!window.TBI.UserSettings) TBI.UserSettings = {};
 
-var query, path;
+var query = {}, path = [];
 // Sets up the query variable with the search criteria.
 TBI.requestManager = function () {
     var search = location.search;

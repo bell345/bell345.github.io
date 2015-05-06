@@ -59,6 +59,9 @@ function loadProjectDescription(figure, proj) {
                             frame.setAttribute("data-src", src);
                             //frame.src = proj.path;
                         desc.appendChild(frame);
+                        var sizer = document.createElement("div");
+                            sizer.className = "proj-resizer";
+                        desc.appendChild(sizer);
                     } else if (proj.preview == "image") {
                         var img = document.createElement("img");
                             img.className = "proj-preview";
@@ -160,16 +163,17 @@ function parseContentManifest(manifest) {
             // resolve the sigil variables
             page.path = replaceWithVariables(page.path, {"id": page.id});
             page.declare = replaceWithVariables(page.declare, {"id": page.id, "path": page.path});
-
-            // append a navigation item
-            if ($("header nav .nav-"+page.id).length > 0)
-                var navListItem = $("header nav .nav-"+page.id)[0];
-            else var navListItem = document.createElement("li");
-            navListItem.className = "nav-"+page.id;
-                var navLink = document.createElement("a");
-                navLink.href = page.path;
-                navLink.innerHTML = page.title;
-            navListItem.appendChild(navLink);
+            if (!page.hidden) {
+                // append a navigation item
+                if ($("header nav .nav-"+page.id).length > 0)
+                    var navListItem = $("header nav .nav-"+page.id)[0];
+                else var navListItem = document.createElement("li");
+                navListItem.className = "nav-"+page.id;
+                    var navLink = document.createElement("a");
+                    navLink.href = page.path;
+                    navLink.innerHTML = page.title;
+                navListItem.appendChild(navLink);
+            }
 
             // and load the page manifest
             loader.addTask(loadProjectPage(page), null, "projectPage "+page.path);
@@ -183,13 +187,15 @@ function parseContentManifest(manifest) {
         if (manifest.path.replace(/\/$/, "") == location.pathname.replace(/^\//, "").replace(/\/$/, "")) // pretty hacky
             isCurrentPage = true;
 
-        // create an inner-nav list for later reference
-        var navListItem = $("header nav .nav-"+manifest.id);
-        var innerNav = navListItem.find("ul");
-        if (innerNav.length == 0)
-            innerNav = navListItem[0].appendChild(document.createElement("ul"));
-        else innerNav = innerNav[0];
-        innerNav.className = "inner-nav";
+        if (!manifest.hidden) {
+            // create an inner-nav list for later reference
+            var navListItem = $("header nav .nav-"+manifest.id);
+            var innerNav = navListItem.find("ul");
+            if (innerNav.length == 0)
+                innerNav = navListItem[0].appendChild(document.createElement("ul"));
+            else innerNav = innerNav[0];
+            innerNav.className = "inner-nav";
+        }
 
         // loop through all the specified projects...
         for (var i=0;i<projects.length;i++) {
@@ -207,7 +213,7 @@ function parseContentManifest(manifest) {
             proj.preview_image = replaceWithVariables(proj.preview_image, urlReplacer);
 
             // create an inner nav item for the project
-            createInnerNavItem(innerNav, proj.title, manifest.path+"#"+proj.id, proj.external);
+            if (!manifest.hidden) createInnerNavItem(innerNav, proj.title, manifest.path+"#"+proj.id, proj.external);
 
             // do extra stuff if this is meant for the current page
             if (isCurrentPage) {
@@ -252,9 +258,12 @@ function handleLayoutModification() {
     var left = $("header");
     var right = $(".sidebar");
     var main = $("main");
+    var mstyle = getComputedStyle(main[0]);
+    var lstyle = getComputedStyle(left[0]);
+    var rstyle = getComputedStyle(right[0]);
 
-    main.css("left", left.css("width"));
-    main.css("right", right.css("width"));
+    if (mstyle.left != lstyle.width) main.css("left", left.css("width"));
+    if (mstyle.right != rstyle.width) main.css("right", right.css("width"));
 }
 
 Require(["assets/js/tblib/base.js",     // Concurrently loading the dependencies for the website.
@@ -289,11 +298,34 @@ Require(["assets/js/tblib/base.js",     // Concurrently loading the dependencies
                 for (var i=0;i<iframes.length;i++) {
                     iframes[i].src = iframes[i].getAttribute("data-src");
                 }
+                var sizer = $(dialog.element).find(".proj-resizer")[0];
+                if (sizer != undefined) {
+                    sizer.onmousedown = function (frame) { return function (event) {
+                        this.startX = event.clientX;
+                        this.startWidth = parseInt($(frame).css("width"));
+                    }; }(iframes[0]);
+                    sizer.onmouseup = function () { this.startX = this.startWidth = undefined; }
+                    sizer.onmouseleave = sizer.onmouseup;
+                    sizer.onmousemove = function (frame) { return function (event) {
+                        if (this.startX != undefined) {
+                            var resultX = event.clientX - this.startX;
+                            var resultWidth = this.startWidth + resultX;
+                            $(this).css("left", resultWidth + "px");
+                            $(frame).css("width", resultWidth + "px");
+                        }
+                    }; }(iframes[0]);
+                    window.setInterval(function (dialog, frame, sizer) { return function () {
+                        $(frame).css("height", $(dialog).css("height"));
+                        $(sizer).css("height", $(frame).css("height"));
+                    }; }(dialog.element.gecn("dialog-body")[0], iframes[0], sizer), 50);
+                }
             }
         });
 
         // location.hash == "#crtpl2" == clicking cartesian plane
-        $(location.hash).find("figcaption").click();
+        //$(location.hash).find("figcaption").click();
+        var hashEl = gebi(location.hash.replace("#", ""));
+        if (hashEl != undefined) $(hashEl).find("figcaption").click();
 
         $("header").mouseenter(function () {
             $("body").toggleClass("in-shadow", true);

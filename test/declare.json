@@ -1,0 +1,31 @@
+{
+    "version": 2,
+    "role": "project-declaration",
+    "id": "test",
+    "path": "test",
+    "hidden": true,
+    "projects": [
+        {   "id": "trigcircle",
+            "type": "app",
+            "path": "$page_path/$id",
+            "preview": "iframe",
+            "preview_iframe": "$page_path/$id",
+            "title": "Unit Circle Trigonometry",
+            "version": "0.1",
+            "description": "$path/desc.htm",
+            "thumbnail": "assets/img/$id.png",
+            "updated": "2015-05-01"
+        },
+        {   "id": "phys2d",
+            "type": "app",
+            "path": "$page_path/$id",
+            "preview": "iframe",
+            "preview_iframe": "$page_path/$id",
+            "title": "2D Physics Engine",
+            "version": "0.1",
+            "description": "$path/desc.htm",
+            "thumbnail": "assets/img/$id.png",
+            "updated": "2015-04-27"
+        }
+    ]
+}

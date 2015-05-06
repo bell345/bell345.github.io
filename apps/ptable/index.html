@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Interactive Periodic Table</title>
+    <meta charset="utf-8" />
+    <link rel="shortcut icon" href="favicon.png" />
+    <link rel="stylesheet" href="assets/css/sheet.css" />
+    <link rel="stylesheet" href="assets/css/ptable.css" />
+    <script src="assets/js/jquery2.min.js"></script>
+    <script src="assets/js/tbi.js"></script>
+    <script src="assets/js/ptable.js"></script>
+    <script src="assets/js/rts.min.js"></script>
+</head>
+<body>
+    <div id="maincontent">
+        <table id="ptable" class="type">
+            <tbody>
+                <tr class="group-guide">
+                    <td></td>
+                    <td colspan="16" rowspan="2" id="title-container">
+                        <div id="title">The Periodic Table of the Elements</div>
+                    </td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td id="element-h" class="gas element">
+                        <div class="symbol">H</div>
+                        <div class="name">Hydrogen</div>
+                        <div class="number">1</div>
+                        <div class="mass">1.008</div>
+                    </td>
+                    <td id="element-he" class="noble gas element">
+                        <div class="symbol">He</div>
+                        <div class="name">Helium</div>
+                        <div class="number">2</div>
+                        <div class="mass">4.003</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td id="element-li" class="alkali element">
+                        <div class="symbol">Li</div>
+                        <div class="name">Lithium</div>
+                        <div class="number">3</div>
+                        <div class="mass">6.941</div>
+                    </td>
+                    <td id="element-be" class="alkaline-earth element">
+                        <div class="symbol">Be</div>
+                        <div class="name">Beryllium</div>
+                        <div class="number">4</div>
+                        <div class="mass">9.012</div>
+                    </td>
+                    <td colspan="10" rowspan="2" id="options">
+                        <input type="text" id="search" placeholder="Search" />
+                        <button class="toggle" id="small-mode">Small</button>
+                        <button class="toggle" id="valencies">Valencies</button>
+                    </td>
+                    <td id="element-b" class="group-3 metalloid element">
+                        <div class="symbol">B</div>
+                        <div class="name">Boron</div>
+                        <div class="number">5</div>
+                        <div class="mass">10.811</div>
+                    </td>
+                    <td id="element-c" class="group-4 non-metal element">
+                        <div class="symbol">C</div>
+                        <div class="name">Carbon</div>
+                        <div class="number">6</div>
+                        <div class="mass">12.011</div>
+                    </td>
+                    <td id="element-n" class="group-5 gas element non-metal">
+                        <div class="symbol">N</div>
+                        <div class="name">Nitrogen</div>
+                        <div class="number">7</div>
+                        <div class="mass">14.007</div>
+                    </td>
+                    <td id="element-o" class="group-6 gas element non-metal">
+                        <div class="symbol">O</div>
+                        <div class="name">Oxygen</div>
+                        <div class="number">8</div>
+                        <div class="mass">15.999</div>
+                    </td>
+                    <td id="element-f" class="halogen gas element">
+                        <div class="symbol">F</div>
+                        <div class="name">Flourine</div>
+                        <div class="number">9</div>
+                        <div class="mass">18.998</div>
+                    </td>
+                    <td id="element-ne" class="noble gas element">
+                        <div class="symbol">Ne</div>
+                        <div class="name">Neon</div>
+                        <div class="number">10</div>
+                        <div class="mass">20.180</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td id="element-na" class="alkali element">
+                        <div class="symbol">Na</div>
+                        <div class="name">Sodium</div>
+                        <div class="number">11</div>
+                        <div class="mass">22.990</div>
+                    </td>
+                    <td id="element-mg" class="alkaline-earth element">
+                        <div class="symbol">Mg</div>
+                        <div class="name">Magnesium</div>
+                        <div class="number">12</div>
+                        <div class="mass">24.305</div>
+                    </td>
+                    <td id="element-al" class="group-3 element post-transition">
+                        <div class="symbol">Al</div>
+                        <div class="name">Aluminium</div>
+                        <div class="number">13</div>
+                        <div class="mass">26.892</div>
+                    </td>
+                    <td id="element-si" class="group-4 metalloid element">
+                        <div class="symbol">Si</div>
+                        <div class="name">Silicon</div>
+                        <div class="number">14</div>
+                        <div class="mass">28.086</div>
+                    </td>
+                    <td id="element-p" class="group-5 non-metal element">
+                        <div class="symbol">P</div>
+                        <div class="name">Phosphorous</div>
+                        <div class="number">15</div>
+                        <div class="mass">30.974</div>
+                    </td>
+                    <td id="element-s" class="group-6 non-metal element">
+                        <div class="symbol">S</div>
+                        <div class="name">Sulfur</div>
+                        <div class="number">16</div>
+                        <div class="mass">32.066</div>
+                    </td>
+                    <td id="element-cl" class="halogen gas element">
+                        <div class="symbol">Cl</div>
+                        <div class="name">Chlorine</div>
+                        <div class="number">17</div>
+                        <div class="mass">35.453</div>
+                    </td>
+                    <td id="element-ar" class="noble gas element">
+                        <div class="symbol">Ar</div>
+                        <div class="name">Argon</div>
+                        <div class="number">18</div>
+                        <div class="mass">39.948</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td id="element-k" class="alkali element">
+                        <div class="symbol">K</div>
+                        <div class="name">Potassium</div>
+                        <div class="number">19</div>
+                        <div class="mass">39.098</div>
+                    </td>
+                    <td id="element-ca" class="alkaline-earth element">
+                        <div class="symbol">Ca</div>
+                        <div class="name">Calcium</div>
+                        <div class="number">20</div>
+                        <div class="mass">40.078</div>
+                    </td>
+                    <td id="element-sc" class="transition element">
+                        <div class="symbol">Sc</div>
+                        <div class="name">Scandium</div>
+                        <div class="number">21</div>
+                        <div class="mass">44.956</div>
+                    </td>
+                    <td id="element-ti" class="transition element">
+                        <div class="symbol">Ti</div>
+                        <div class="name">Titanium</div>
+                        <div class="number">22</div>
+                        <div class="mass">47.867</div>
+                    </td>
+                    <td id="element-v" class="transition element">
+                        <div class="symbol">V</div>
+                        <div class="name">Vanadium</div>
+                        <div class="number">23</div>
+                        <div class="mass">50.942</div>
+                    </td>
+                    <td id="element-cr" class="transition element">
+                        <div class="symbol">Cr</div>
+                        <div class="name">Chromium</div>
+                        <div class="number">24</div>
+                        <div class="mass">51.996</div>
+                    </td>
+                    <td id="element-mn" class="transition element">
+                        <div class="symbol">Mn</div>
+                        <div class="name">Manganese</div>
+                        <div class="number">25</div>
+                        <div class="mass">54.938</div>
+                    </td>
+                    <td id="element-fe" class="transition element">
+                        <div class="symbol">Fe</div>
+                        <div class="name">Iron</div>
+                        <div class="number">26</div>
+                        <div class="mass">55.845</div>
+                    </td>
+                    <td id="element-co" class="transition element">
+                        <div class="symbol">Co</div>
+                        <div class="name">Cobalt</div>
+                        <div class="number">27</div>
+                        <div class="mass">58.933</div>
+                    </td>
+                    <td id="element-ni" class="transition element">
+                        <div class="symbol">Ni</div>
+                        <div class="name">Nickel</div>
+                        <div class="number">28</div>
+                        <div class="mass">58.693</div>
+                    </td>
+                    <td id="element-cu" class="transition element">
+                        <div class="symbol">Cu</div>
+                        <div class="name">Copper</div>
+                        <div class="number">29</div>
+                        <div class="mass">63.546</div>
+                    </td>
+                    <td id="element-zn" class="transition element">
+                        <div class="symbol">Zn</div>
+                        <div class="name">Zinc</div>
+                        <div class="number">30</div>
+                        <div class="mass">65.39</div>
+                    </td>
+                    <td id="element-ga" class="group-3 post-transition element">
+                        <div class="symbol">Ga</div>
+                        <div class="name">Gallium</div>
+                        <div class="number">31</div>
+                        <div class="mass">69.723</div>
+                    </td>
+                    <td id="element-ge" class="group-4 metalloid element">
+                        <div class="symbol">Ge</div>
+                        <div class="name">Germanium</div>
+                        <div class="number">32</div>
+                        <div class="mass">72.61</div>
+                    </td>
+                    <td id="element-as" class="group-5 metalloid element">
+                        <div class="symbol">As</div>
+                        <div class="name">Arsenic</div>
+                        <div class="number">33</div>
+                        <div class="mass">74.922</div>
+                    </td>
+                    <td id="element-se" class="group-6 non-metal element">
+                        <div class="symbol">Se</div>
+                        <div class="name">Selenium</div>
+                        <div class="number">34</div>
+                        <div class="mass">78.96</div>
+                    </td>
+                    <td id="element-br" class="halogen liquid element">
+                        <div class="symbol">Br</div>
+                        <div class="name">Bromine</div>
+                        <div class="number">35</div>
+                        <div class="mass">79.904</div>
+                    </td>
+                    <td id="element-kr" class="noble gas element">
+                        <div class="symbol">Kr</div>
+                        <div class="name">Krypton</div>
+                        <div class="number">36</div>
+                        <div class="mass">83.80</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td id="element-rb" class="alkali element">
+                        <div class="symbol">Rb</div>
+                        <div class="name">Rubidium</div>
+                        <div class="number">37</div>
+                        <div class="mass">84.468</div>
+                    </td>
+                    <td id="element-sr" class="alkaline-earth element">
+                        <div class="symbol">Sr</div>
+                        <div class="name">Strontium</div>
+                        <div class="number">38</div>
+                        <div class="mass">87.62</div>
+                    </td>
+                    <td id="element-y" class="transition element">
+                        <div class="symbol">Y</div>
+                        <div class="name">Yttrium</div>
+                        <div class="number">39</div>
+                        <div class="mass">88.906</div>
+                    </td>
+                    <td id="element-zr" class="transition element">
+                        <div class="symbol">Zr</div>
+                        <div class="name">Zirconium</div>
+                        <div class="number">40</div>
+                        <div class="mass">91.224</div>
+                    </td>
+                    <td id="element-nb" class="transition element">
+                        <div class="symbol">Nb</div>
+                        <div class="name">Niobium</div>
+                        <div class="number">41</div>
+                        <div class="mass">92.906</div>
+                    </td>
+                    <td id="element-mo" class="transition element">
+                        <div class="symbol">Mo</div>
+                        <div class="name">Molybdenum</div>
+                        <div class="number">42</div>
+                        <div class="mass">95.94</div>
+                    </td>
+                    <td id="element-tc" class="transition element radioactive">
+                        <div class="symbol">Tc</div>
+                        <div class="name">Technetium</div>
+                        <div class="number">43</div>
+                        <div class="mass">98.907</div>
+                    </td>
+                    <td id="element-ru" class="transition element">
+                        <div class="symbol">Ru</div>
+                        <div class="name">Ruthenium</div>
+                        <div class="number">44</div>
+                        <div class="mass">101.07</div>
+                    </td>
+                    <td id="element-rh" class="transition element">
+                        <div class="symbol">Rh</div>
+                        <div class="name">Rhodium</div>
+                        <div class="number">45</div>
+                        <div class="mass">102.906</div>
+                    </td>
+                    <td id="element-pd" class="transition element">
+                        <div class="symbol">Pd</div>
+                        <div class="name">Palladium</div>
+                        <div class="number">46</div>
+                        <div class="mass">106.42</div>
+                    </td>
+                    <td id="element-ag" class="transition element">
+                        <div class="symbol">Ag</div>
+                        <div class="name">Silver</div>
+                        <div class="number">47</div>
+                        <div class="mass">107.868</div>
+                    </td>
+                    <td id="element-cd" class="transition element">
+                        <div class="symbol">Cd</div>
+                        <div class="name">Cadmium</div>
+                        <div class="number">48</div>
+                        <div class="mass">112.411</div>
+                    </td>
+                    <td id="element-in" class="group-3 post-transition element">
+                        <div class="symbol">In</div>
+                        <div class="name">Indium</div>
+                        <div class="number">49</div>
+                        <div class="mass">114.818</div>
+                    </td>
+                    <td id="element-sn" class="group-4 post-transition element">
+                        <div class="symbol">Sn</div>
+                        <div class="name">Tin</div>
+                        <div class="number">50</div>
+                        <div class="mass">118.71</div>
+                    </td>
+                    <td id="element-sb" class="group-5 metalloid element">
+                        <div class="symbol">Sb</div>
+                        <div class="name">Antimony</div>
+                        <div class="number">51</div>
+                        <div class="mass">121.76</div>
+                    </td>
+                    <td id="element-te" class="group-6 metalloid element">
+                        <div class="symbol">Te</div>
+                        <div class="name">Tellurium</div>
+                        <div class="number">52</div>
+                        <div class="mass">127.6</div>
+                    </td>
+                    <td id="element-i" class="halogen element">
+                        <div class="symbol">I</div>
+                        <div class="name">Iodine</div>
+                        <div class="number">53</div>
+                        <div class="mass">126.904</div>
+                    </td>
+                    <td id="element-xe" class="noble gas element">
+                        <div class="symbol">Xe</div>
+                        <div class="name">Xenon</div>
+                        <div class="number">54</div>
+                        <div class="mass">131.29</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td id="element-cs" class="alkali element">
+                        <div class="symbol">Cs</div>
+                        <div class="name">Caesium</div>
+                        <div class="number">55</div>
+                        <div class="mass">132.905</div>
+                    </td>
+                    <td id="element-ba" class="alkaline-earth element">
+                        <div class="symbol">Ba</div>
+                        <div class="name">Barium</div>
+                        <div class="number">56</div>
+                        <div class="mass">137.327</div>
+                    </td>
+                    <td id="la-placeholder" class="la-placeholder">
+                        <div class="number">57-71</div>
+                    </td>
+                    <td id="element-hf" class="transition element">
+                        <div class="symbol">Hf</div>
+                        <div class="name">Hafnium</div>
+                        <div class="number">72</div>
+                        <div class="mass">178.49</div>
+                    </td>
+                    <td id="element-ta" class="transition element">
+                        <div class="symbol">Ta</div>
+                        <div class="name">Tantalum</div>
+                        <div class="number">73</div>
+                        <div class="mass">180.948</div>
+                    </td>
+                    <td id="element-w" class="transition element">
+                        <div class="symbol">W</div>
+                        <div class="name">Tungsten</div>
+                        <div class="number">74</div>
+                        <div class="mass">183.85</div>
+                    </td>
+                    <td id="element-re" class="transition element">
+                        <div class="symbol">Re</div>
+                        <div class="name">Rhenium</div>
+                        <div class="number">75</div>
+                        <div class="mass">186.207</div>
+                    </td>
+                    <td id="element-os" class="transition element">
+                        <div class="symbol">Os</div>
+                        <div class="name">Osmium</div>
+                        <div class="number">76</div>
+                        <div class="mass">190.23</div>
+                    </td>
+                    <td id="element-ir" class="transition element">
+                        <div class="symbol">Ir</div>
+                        <div class="name">Iridium</div>
+                        <div class="number">77</div>
+                        <div class="mass">192.22</div>
+                    </td>
+                    <td id="element-pt" class="transition element">
+                        <div class="symbol">Pt</div>
+                        <div class="name">Platinum</div>
+                        <div class="number">78</div>
+                        <div class="mass">195.08</div>
+                    </td>
+                    <td id="element-au" class="transition element">
+                        <div class="symbol">Au</div>
+                        <div class="name">Gold</div>
+                        <div class="number">79</div>
+                        <div class="mass">196.967</div>
+                    </td>
+                    <td id="element-hg" class="transition liquid element">
+                        <div class="symbol">Hg</div>
+                        <div class="name">Mercury</div>
+                        <div class="number">80</div>
+                        <div class="mass">200.59</div>
+                    </td>
+                    <td id="element-tl" class="group-3 post-transition element">
+                        <div class="symbol">Tl</div>
+                        <div class="name">Thallium</div>
+                        <div class="number">81</div>
+                        <div class="mass">204.383</div>
+                    </td>
+                    <td id="element-pb" class="group-4 post-transition element">
+                        <div class="symbol">Pb</div>
+                        <div class="name">Lead</div>
+                        <div class="number">82</div>
+                        <div class="mass">207.2</div>
+                    </td>
+                    <td id="element-bi" class="group-5 post-transition element radioactive">
+                        <div class="symbol">Bi</div>
+                        <div class="name">Bismuth</div>
+                        <div class="number">83</div>
+                        <div class="mass">208.980</div>
+                    </td>
+                    <td id="element-po" class="group-6 metalloid element radioactive">
+                        <div class="symbol">Po</div>
+                        <div class="name">Polonium</div>
+                        <div class="number">84</div>
+                        <div class="mass">[208.982]</div>
+                    </td>
+                    <td id="element-at" class="halogen element radioactive">
+                        <div class="symbol">At</div>
+                        <div class="name">Astatine</div>
+                        <div class="number">85</div>
+                        <div class="mass">209.987</div>
+                    </td>
+                    <td id="element-rn" class="noble gas element radioactive">
+                        <div class="symbol">Rn</div>
+                        <div class="name">Radon</div>
+                        <div class="number">86</div>
+                        <div class="mass">222.018</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td id="element-fr" class="alkali element radioactive">
+                        <div class="symbol">Fr</div>
+                        <div class="name">Francium</div>
+                        <div class="number">87</div>
+                        <div class="mass">223.020</div>
+                    </td>
+                    <td id="element-r" class="alkaline-earth element radioactive">
+                        <div class="symbol">Ra</div>
+                        <div class="name">Radium</div>
+                        <div class="number">88</div>
+                        <div class="mass">226.025</div>
+                    </td>
+                    <td id="ac-placeholder" class="la-placeholder">
+                        <div class="number">89-103</div>
+                    </td>
+                    <td id="element-rf" class="transition element radioactive">
+                        <div class="symbol">Rf</div>
+                        <div class="name">Rutherfordium</div>
+                        <div class="number">104</div>
+                        <div class="mass">[261]</div>
+                    </td>
+                    <td id="element-db" class="transition element radioactive">
+                        <div class="symbol">Db</div>
+                        <div class="name">Dubnium</div>
+                        <div class="number">105</div>
+                        <div class="mass">[262]</div>
+                    </td>
+                    <td id="element-sg" class="transition element radioactive">
+                        <div class="symbol">Sg</div>
+                        <div class="name">Seaborgium</div>
+                        <div class="number">106</div>
+                        <div class="mass">[266]</div>
+                    </td>
+                    <td id="element-bh" class="transition element radioactive">
+                        <div class="symbol">Bh</div>
+                        <div class="name">Bohrium</div>
+                        <div class="number">107</div>
+                        <div class="mass">[264]</div>
+                    </td>
+                    <td id="element-hs" class="transition element radioactive">
+                        <div class="symbol">Hs</div>
+                        <div class="name">Hassium</div>
+                        <div class="number">108</div>
+                        <div class="mass">[269]</div>
+                    </td>
+                    <td id="element-mt" class="transition element radioactive">
+                        <div class="symbol">Mt</div>
+                        <div class="name">Meitnerium</div>
+                        <div class="number">109</div>
+                        <div class="mass">[268]</div>
+                    </td>
+                    <td id="element-ds" class="transition element radioactive">
+                        <div class="symbol">Ds</div>
+                        <div class="name">Darmstadium</div>
+                        <div class="number">110</div>
+                        <div class="mass">[269]</div>
+                    </td>
+                    <td id="element-rg" class="transition element radioactive">
+                        <div class="symbol">Rg</div>
+                        <div class="name">Roentgenium</div>
+                        <div class="number">111</div>
+                        <div class="mass">[272]</div>
+                    </td>
+                    <td id="element-cn" class="transition element radioactive">
+                        <div class="symbol">Cn</div>
+                        <div class="name">Copernicum</div>
+                        <div class="number">112</div>
+                        <div class="mass">[277]</div>
+                    </td>
+                    <td id="element-uut" class="group-3 post-transition element radioactive">
+                        <div class="symbol">Uut</div>
+                        <div class="name">Ununtrium</div>
+                        <div class="number">113</div>
+                        <div class="mass">unknown</div>
+                    </td>
+                    <td id="element-fl" class="group-4 post-transition element radioactive">
+                        <div class="symbol">Fl</div>
+                        <div class="name">Flevorium</div>
+                        <div class="number">114</div>
+                        <div class="mass">[289]</div>
+                    </td>
+                    <td id="element-uup" class="group-5 post-transition element radioactive">
+                        <div class="symbol">Uup</div>
+                        <div class="name">Ununpentium</div>
+                        <div class="number">115</div>
+                        <div class="mass">unknown</div>
+                    </td>
+                    <td id="element-lv" class="group-6 post-transition element radioactive">
+                        <div class="symbol">Lv</div>
+                        <div class="name">Livermorium</div>
+                        <div class="number">116</div>
+                        <div class="mass">[298]</div>
+                    </td>
+                    <td id="element-uus" class="halogen element radioactive">
+                        <div class="symbol">Uus</div>
+                        <div class="name">Ununseptium</div>
+                        <div class="number">117</div>
+                        <div class="mass">unknown</div>
+                    </td>
+                    <td id="element-uuo" class="noble element radioactive">
+                        <div class="symbol">Uuo</div>
+                        <div class="name">Ununoctium</div>
+                        <div class="number">118</div>
+                        <div class="mass">unknown</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="18">
+                        <ul id="legend">
+                            <li class="alkali"></li>
+                            <li class="alkaline-earth"></li>
+                            <li class="transition"></li>
+                            <li class="post-transition"></li>
+                            <li class="metalloid"></li>
+                            <li class="non-metal"></li>
+                            <li class="halogen"></li>
+                            <li class="noble"></li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr id="lanthanides">
+                    <td colspan="3" class="la-label">Lanthanides</td>
+                    <td id="element-la" class="element lanthanide">
+                        <div class="symbol">La</div>
+                        <div class="name">Lanthanum</div>
+                        <div class="number">57</div>
+                        <div class="mass">138.906</div>
+                    </td>
+                    <td id="element-ce" class="element lanthanide">
+                        <div class="symbol">Ce</div>
+                        <div class="name">Cerium</div>
+                        <div class="number">58</div>
+                        <div class="mass">140.115</div>
+                    </td>
+                    <td id="element-pr" class="element lanthanide">
+                        <div class="symbol">Pr</div>
+                        <div class="name">Praseodymium</div>
+                        <div class="number">59</div>
+                        <div class="mass">140.908</div>
+                    </td>
+                    <td id="element-nd" class="element lanthanide">
+                        <div class="symbol">Nd</div>
+                        <div class="name">Neodymium</div>
+                        <div class="number">60</div>
+                        <div class="mass">144.24</div>
+                    </td>
+                    <td id="element-pm" class="element lanthanide radioactive">
+                        <div class="symbol">Pm</div>
+                        <div class="name">Promethium</div>
+                        <div class="number">61</div>
+                        <div class="mass">144.913</div>
+                    </td>
+                    <td id="element-sm" class="element lanthanide">
+                        <div class="symbol">Sm</div>
+                        <div class="name">Samarium</div>
+                        <div class="number">62</div>
+                        <div class="mass">150.36</div>
+                    </td>
+                    <td id="element-eu" class="element lanthanide">
+                        <div class="symbol">Eu</div>
+                        <div class="name">Europium</div>
+                        <div class="number">63</div>
+                        <div class="mass">151.966</div>
+                    </td>
+                    <td id="element-gd" class="element lanthanide">
+                        <div class="symbol">Gd</div>
+                        <div class="name">Gadolinium</div>
+                        <div class="number">64</div>
+                        <div class="mass">157.25</div>
+                    </td>
+                    <td id="element-tb" class="element lanthanide">
+                        <div class="symbol">Tb</div>
+                        <div class="name">Terbium</div>
+                        <div class="number">65</div>
+                        <div class="mass">158.925</div>
+                    </td>
+                    <td id="element-dy" class="element lanthanide">
+                        <div class="symbol">Dy</div>
+                        <div class="name">Dysprosium</div>
+                        <div class="number">66</div>
+                        <div class="mass">162.5</div>
+                    </td>
+                    <td id="element-ho" class="element lanthanide">
+                        <div class="symbol">Ho</div>
+                        <div class="name">Holmium</div>
+                        <div class="number">67</div>
+                        <div class="mass">164.93</div>
+                    </td>
+                    <td id="element-er" class="element lanthanide">
+                        <div class="symbol">Er</div>
+                        <div class="name">Erbium</div>
+                        <div class="number">68</div>
+                        <div class="mass">167.26</div>
+                    </td>
+                    <td id="element-tm" class="element lanthanide">
+                        <div class="symbol">Tm</div>
+                        <div class="name">Thulium</div>
+                        <div class="number">69</div>
+                        <div class="mass">168.934</div>
+                    </td>
+                    <td id="element-yb" class="element lanthanide">
+                        <div class="symbol">Yb</div>
+                        <div class="name">Ytterbium</div>
+                        <div class="number">70</div>
+                        <div class="mass">173.04</div>
+                    </td>
+                    <td id="element-lu" class="element lanthanide">
+                        <div class="symbol">Lu</div>
+                        <div class="name">Lutetium</div>
+                        <div class="number">71</div>
+                        <div class="mass">174.967</div>
+                    </td>
+                </tr>
+                <tr id="actinides">
+                    <td colspan="3" class="la-label">Actinides</td>
+                    <td id="element-ac" class="element actinide radioactive">
+                        <div class="symbol">Ac</div>
+                        <div class="name">Actinium</div>
+                        <div class="number">89</div>
+                        <div class="mass">227.028</div>
+                    </td>
+                    <td id="element-th" class="element actinide radioactive">
+                        <div class="symbol">Th</div>
+                        <div class="name">Thorium</div>
+                        <div class="number">90</div>
+                        <div class="mass">232.028</div>
+                    </td>
+                    <td id="element-pa" class="element actinide radioactive">
+                        <div class="symbol">Pa</div>
+                        <div class="name">Proactinium</div>
+                        <div class="number">91</div>
+                        <div class="mass">231.036</div>
+                    </td>
+                    <td id="element-u" class="element actinide radioactive">
+                        <div class="symbol">U</div>
+                        <div class="name">Uranium</div>
+                        <div class="number">92</div>
+                        <div class="mass">238.029</div>
+                    </td>
+                    <td id="element-np" class="element actinide radioactive">
+                        <div class="symbol">Np</div>
+                        <div class="name">Neptunium</div>
+                        <div class="number">93</div>
+                        <div class="mass">237.048</div>
+                    </td>
+                    <td id="element-pu" class="element actinide radioactive">
+                        <div class="symbol">Pu</div>
+                        <div class="name">Plutonium</div>
+                        <div class="number">94</div>
+                        <div class="mass">244.064</div>
+                    </td>
+                    <td id="element-am" class="element actinide radioactive">
+                        <div class="symbol">Am</div>
+                        <div class="name">Americium</div>
+                        <div class="number">95</div>
+                        <div class="mass">243.061</div>
+                    </td>
+                    <td id="element-cm" class="element actinide radioactive">
+                        <div class="symbol">Cm</div>
+                        <div class="name">Curium</div>
+                        <div class="number">96</div>
+                        <div class="mass">247.07</div>
+                    </td>
+                    <td id="element-bk" class="element actinide radioactive">
+                        <div class="symbol">Bk</div>
+                        <div class="name">Berkelium</div>
+                        <div class="number">97</div>
+                        <div class="mass">247.07</div>
+                    </td>
+                    <td id="element-cf" class="element actinide radioactive">
+                        <div class="symbol">Cf</div>
+                        <div class="name">Californium</div>
+                        <div class="number">98</div>
+                        <div class="mass">251.08</div>
+                    </td>
+                    <td id="element-es" class="element actinide radioactive">
+                        <div class="symbol">Es</div>
+                        <div class="name">Einsteinium</div>
+                        <div class="number">99</div>
+                        <div class="mass">[254]</div>
+                    </td>
+                    <td id="element-fm" class="element actinide radioactive">
+                        <div class="symbol">Fm</div>
+                        <div class="name">Fermium</div>
+                        <div class="number">100</div>
+                        <div class="mass">257.095</div>
+                    </td>
+                    <td id="element-md" class="element actinide radioactive">
+                        <div class="symbol">Md</div>
+                        <div class="name">Mendelevium</div>
+                        <div class="number">101</div>
+                        <div class="mass">258.l</div>
+                    </td>
+                    <td id="element-no" class="element actinide radioactive">
+                        <div class="symbol">No</div>
+                        <div class="name">Nobelium</div>
+                        <div class="number">102</div>
+                        <div class="mass">259.101</div>
+                    </td>
+                    <td id="element-lr" class="element actinide radioactive">
+                        <div class="symbol">Lr</div>
+                        <div class="name">Lawrencium</div>
+                        <div class="number">103</div>
+                        <div class="mass">[262]</div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div id="info-box">
+            <button id="info-hider">X</button>
+            <div id="info-element-container">
+                <div id="info-element">
+                    <div class="symbol">Xx</div>
+                    <div class="name">Missingno</div>
+                    <div class="number">0</div>
+                    <div class="mass">0</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
