@@ -116,7 +116,13 @@ body::after {
     left:0;
     right:0;
     bottom:0;
+    text-align:center;
+    padding-top:20%;
+    color:#eee;
+    text-shadow:0 0 8px #000;
     background:rgba(0,0,0,0.6);
+    font-size:24px;
+    font-weight:bold;
 }
 body:not(.in-shadow)::after {
     -webkit-animation:shadow-fadeout 0.6s linear;
@@ -132,6 +138,7 @@ body.in-shadow::after, body.init::after {
 }
 body.init::after {
     animation-duration:0s;
+    content:"Loading...";
 }
 
 header, .sidebar {
@@ -169,9 +176,6 @@ main {
     box-shadow:2px 2px 0 rgba(0,0,0,0.4);
     transition:0s all;
     margin-bottom:28px;
-}
-main * {
-    color:#333;
 }
 
 .thumb-gallery {
@@ -451,8 +455,21 @@ figcaption span.version {
 }
 
 img.img-error {
+    min-height:256px;
+}
+img.img-error::before {
+    content:attr(alt);
+    position:absolute;
+    top:0;
+    bottom:0;
+    left:0;
+    right:0;
+    color:#eee;
+    font-weight:bold;
+    font-size:18px;
+    line-height:256px;
+    text-shadow:0 0 16px #000, 0 0 8px #555;
     background:url(../res/missing.png) center / 75% #aaa;
-    min-height:128px;
 }
 
 /* ============== */
@@ -499,18 +516,18 @@ a[download].mac::before, a[download].ios::before { content:"\f179"; }
 a[download].pc::before { content:"\f17a"; }
 a[download].linux::before { content:"\f17c"; }
 
-ul.txt {
+ul.txt, ul.main {
     list-style-type:none;
     margin-bottom:18px;
 }
-ul.txt li {
+ul.txt li, ul.main li {
     color:#555;
     border-left:4px solid transparent;
     padding:3px 6px;
     padding-left:28px;
     position:relative;
 }
-ul.txt li::before {
+ul.txt li::before, ul.main li::before {
     content:"";
     position:absolute;
     top:0;
@@ -523,8 +540,9 @@ ul.txt li::before {
     border-top:8px solid transparent;
     border-bottom:8px solid transparent;
 }
-ul.txt li,
-ul.txt li *:not(a) {
+ul.txt li, ul.main li
+ul.txt li *:not(a),
+ul.main li *:not(a) {
     color:#555;
 }
 
@@ -533,6 +551,11 @@ tt, code, kbd, samp {
     color:#555;
     font-family:monospace;
     padding:0 4px;
+    display:inline-block;
+}
+sup {
+    vertical-align:text-top;
+    font-size:60%;
 }
 /* ============ */
 /* INPUTS/FORMS */
@@ -560,15 +583,18 @@ button:active, input[type="button"]:active {
     box-shadow:inset 0px 2px 0px rgba(0,0,0,0.1);
 }
 button:focus, input[type]:focus, select:focus { outline:0 }
-input[type], *[contenteditable], select {
+input[type], *[contenteditable], select, option {
     padding:8px 12px;
     margin:4px;
 }
-input[type], select {
+input[type], select, option {
     font-size:14px;
 }
 input[type="text"].short {
     width:80px;
+}
+.control-row {
+    margin-bottom:8px;
 }
 .ui-widget input[type="text"] {
     margin:0;
@@ -600,8 +626,9 @@ button.major:active, input[type="submit"]:active {
     top:0;
     bottom:0;
     right:0;
-    line-height:22px;
+    line-height:24px;
     width:42px;
+    font-size:16px;
     transition:0.2s all;
 }
 .toggle.on::after {
@@ -787,11 +814,11 @@ table.sortable th.sort.down:after {
 }
 .dialog.project-show .proj-resizer:active::before {
     content:"";
-    position:absolute;
-    left:-128px;
-    top:-128px;
-    bottom:-128px;
-    right:-128px;
+    position:fixed;
+    left:0;
+    top:0;
+    bottom:0;
+    right:0;
     cursor:ew-resize;
 }
 .dialog.project-show .proj-resizer::after {
@@ -803,7 +830,7 @@ table.sortable th.sort.down:after {
     width:20px;
     height:30px;
     margin:auto;
-    background:#555;
+    background:url(../res/resizer.png) #555;
     transition:0s all;
     cursor:ew-resize;
 }

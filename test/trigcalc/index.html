@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Trigonometry Calculator</title>
+    <meta charset="utf-8" />
+    <base href="../../" />
+    <link rel="stylesheet" href="assets/css/site.css" />
+    <link rel="stylesheet" href="assets/css/test/trigcalc.css" />
+    <script src="assets/js/jquery2.min.js"></script>
+    <script src="assets/js/require.js"></script>
+    <script src="assets/js/test/trigcalc.js"></script>
+</head>
+<body>
+    <main>
+        <div class="control-row">
+            <fieldset>
+                <select id="intype-1">
+                    <option value="a">Side 'a'</option>
+                    <option value="b">Side 'b'</option>
+                    <option value="c">Side 'c'</option>
+                    <option value="A" selected>Angle 'A' opposite side 'a'</option>
+                    <option value="B">Angle 'B' opposite side 'b'</option>
+                    <option value="C">Angle 'C' opposite side 'c'</option>
+                </select>
+                <input type="text" id="input-1" />
+            </fieldset>
+            <fieldset>
+                <select id="intype-2">
+                    <option value="a" selected>Side 'a'</option>
+                    <option value="b">Side 'b'</option>
+                    <option value="c">Side 'c'</option>
+                    <option value="A">Angle 'A' opposite side 'a'</option>
+                    <option value="B">Angle 'B' opposite side 'b'</option>
+                    <option value="C">Angle 'C' opposite side 'c'</option>
+                </select>
+                <input type="text" id="input-2" />
+            </fieldset>
+            <fieldset>
+                <select id="intype-3">
+                    <option value="-">-</option>
+                    <option value="a">Side 'a'</option>
+                    <option value="b">Side 'b'</option>
+                    <option value="c">Side 'c'</option>
+                    <option value="A">Angle 'A' opposite side 'a'</option>
+                    <option value="B" selected>Angle 'B' opposite side 'b'</option>
+                    <option value="C">Angle 'C' opposite side 'c'</option>
+                </select>
+                <input type="text" id="input-3" />
+            </fieldset>
+        </div>
+        <div class="control-row">
+            <fieldset>
+                <select id="outtype">
+                    <option value="a">Side 'a'</option>
+                    <option value="b" selected>Side 'b'</option>
+                    <option value="c">Side 'c'</option>
+                    <option value="A">Angle 'A' opposite side 'a'</option>
+                    <option value="B">Angle 'B' opposite side 'b'</option>
+                    <option value="C">Angle 'C' opposite side 'c'</option>
+                </select>
+                <input type="text" id="output" disabled />
+            </fieldset>
+        </div>
+        <div class="control-row">
+            <button class="major" id="calculate">Calculate</button>
+            <span id="formula">a<sup>2</sup> + b<sup>2</sup> = c<sup>2</sup></span>
+        </div>
+    </main>
+</body>
+</html>

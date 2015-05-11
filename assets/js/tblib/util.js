@@ -517,6 +517,8 @@ function Colour(arg0, g, b, a) {
             this.b = parseInt(hexStr[4]+hexStr[5], 16);
             this.a = 1;
         }
+
+        return this;
     };
     // Sets a Colour object with the colour represented by three
     // red, green and blue bytes.
@@ -525,6 +527,8 @@ function Colour(arg0, g, b, a) {
         this.r = r;
         this.g = g;
         this.b = b;
+
+        return this;
     };
     // Sets a Colour object with the colour represented by three
     // red, green and blue bytes and an alpha channel intensity.
@@ -534,6 +538,8 @@ function Colour(arg0, g, b, a) {
         this.g = g;
         this.b = b;
         this.a = isNull(a) ? 1 : a;
+
+        return this;
     }
     // Sets a Colour object with the colour represented by
     // three hue [0-360), saturation [0-1] and value [0-1] values.
@@ -557,6 +563,8 @@ function Colour(arg0, g, b, a) {
         this.g = (rgb[1] + m)*255;
         this.b = (rgb[2] + m)*255;
         this.a = 1;
+
+        return this;
     };
 
     // To hell with using instanceofs and checks to make sure the
@@ -575,7 +583,7 @@ function Colour(arg0, g, b, a) {
         this.b = b;
         this.a = a || 1;
     // here comes the string parsing
-    } else {
+    } else if (!isNull(arg0)) {
         var str = arg0;
         // hex is simple, just call the function with the string intact
         if (str.startsWith("#")) {
@@ -618,9 +626,12 @@ function Colour(arg0, g, b, a) {
             var g = this.g/255;
             var b = this.b/255;
 
-            var delta = Math.max(r, g, b) - Math.min(r, g, b);
+            var M = Math.max(r, g, b);
+            var m = Math.min(r, g, b);
+            var delta = M - m;
+            if (delta == 0) return 0;
 
-            switch (delta) {
+            switch (M) {
                 case r: return 60 * (((g - b)/delta) % 6); break;
                 case g: return 60 * (((b - r)/delta) + 2); break;
                 case b: return 60 * (((r - g)/delta) + 4); break;

@@ -38,6 +38,7 @@ function HTMLInclude(source, insert, replace) {
 // info can either be the URL of a manifest or an array of HTMLInclude objects.
 function executeHTMLIncludes(info) {
     var asyncFunction = function (data, resolve, reject, loader) {
+        if (data.length == 0) resolve();
         var completed = 0;
         var updateIncludes = function () {
             completed++;
