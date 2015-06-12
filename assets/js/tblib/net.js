@@ -27,10 +27,11 @@ TBI.AJAX = function (url, func) {
 
 TBI.Files.HTMLIncludesManifest = "/assets/data/includes.json";
 
-function HTMLInclude(source, insert, replace) {
+function HTMLInclude(source, insert, replace, before) {
     this.source = source;
     this.insert = insert;
     this.replace = isNull(replace) ? true : replace;
+    this.before = isNull(before) ? false : before;
 }
 
 // Returns a task function that can be used in a TBI.Loader().
@@ -46,7 +47,7 @@ function executeHTMLIncludes(info) {
         };
 
         for (var i=0;i<data.length;i++) {
-            var include = new HTMLInclude(data[i].source, data[i].insert, data[i].replace);
+            var include = new HTMLInclude(data[i].source, data[i].insert, data[i].replace, data[i].before);
             if ($(include.insert).length > 0) {
                 loader.addTask(function (info) {
                     return function (resolve, reject, loader) {
@@ -54,7 +55,8 @@ function executeHTMLIncludes(info) {
                             if ($(info.insert).length > 0) {
                                 var element = $(info.insert)[0];
                                 var oldHTML = info.replace == true ? "" : element.innerHTML;
-                                element.innerHTML = oldHTML + xhr.response;
+                                if (!info.before) element.innerHTML = oldHTML + xhr.response;
+                                else element.innerHTML = xhr.response + oldHTML;
                             }
                             resolve();
                             updateIncludes();
