@@ -17,6 +17,22 @@ function highestCommonFactor(a, b) {
     }
     return a;
 }
+
+function sprintf(format) {
+    var str = format;
+    var args = []; for (var i=1;i<arguments.length;i++) args.push(arguments[i]);
+    var j = 0;
+    for (var i=0,f=false,s="";i<format.length;i++) {
+        if (f) {
+            s += format[i];
+            if (s == "s") str.replace(/%s/, args[j++]);
+            else if (s == "f") str.replace(/%f/, parseFloat(args[j++]));
+        }
+        if (format[i] == "%") { f = true; s = ""; }
+        else if (f) f = false;
+    }
+    return str;
+}
 // Proportions a number given from a function with limits a (top) to b (bottom), to a different function with limits c to d.
 Math.proportion = function (n, a, b, c, d) { return (c-d)/(a-b)*n+(d-b); }
 // Transforms a HSV colour value into its equivalent RGB value.
@@ -131,6 +147,11 @@ Fraction.prototype = {
         if (!(frac2 instanceof Fraction)) frac2 = new Fraction(frac2, 1);
         return new Fraction(this.numerator*frac2.numerator, this.denominator*frac2.denominator).simplify();
     },
+    add: function (frac2) {
+        if (!(frac2 instanceof Fraction)) frac2 = new Fraction(frac2, 1);
+        var deno = this.denominator * frac2.denominator;
+        return new Fraction(this.numerator * frac2.denominator + frac2.numerator * this.denominator, deno).simplify();
+    },
     eval: function () { return this.numerator / this.denominator; }
 };
 // Declares an object of {x,y} to represent a coordinate value.
@@ -213,7 +234,7 @@ LineSegment.prototype.toString = function (spacing) {
 }
 function Enum() {
     var removeDashes = function (str) {
-        str = str.split("");
+        str = str.replace(/ /g, "_").split("");
         for (var i=0,a=false,s="";i<str.length;i++) {
             if (a) {
                 str[i] = str[i].toUpperCase();
@@ -531,6 +552,72 @@ ParametricFunc.butterfly = function (a, b) {
     this.className = "Butterfly";
 }
 ParametricFunc.butterfly.prototype = Object.create(ParametricFunc.Variable.prototype);
+
+var Stat = {};
+// Works just like big sigma summation, but specifically designed to go over all of the elements of an array.
+Math.sigmaSum = function (arr, func) {
+    for (var i=0,t=0;i<arr.length;i++)
+        t += func(arr[i], i, arr);
+    return t;
+}
+Stat.sum = function (arr) { return Math.sigmaSum(arr, function (a) { return a; }); }
+Stat.mean = function (arr) {
+    return Stat.sum(arr) / arr.length;
+}
+Stat.median = function (arr) {
+    var even = arr.length % 2 == 0;
+    if (!even) return arr[arr.length/2];
+    else {
+        var mid = arr.length / 2;
+        return (arr[Math.floor(mid)] + arr[Math.ceil(mid)]) / 2;
+    }
+}
+Stat.mode = function (arr) {
+    var freqs = {};
+    for (var i=0;i<arr.length;i++) {
+        if (freqs[arr[i]] == undefined) freqs[arr[i]] = 0;
+        freqs[arr[i]]++;
+    }
+    var result = [],
+        resultFreq = -1;
+    for (var prop in freqs) if (freqs.hasOwnProperty(prop)) {
+        if (freqs[prop] > resultFreq) {
+            result = [prop];
+            resultFreq = freqs[prop];
+        } else if (freqs[prop] == resultFreq)
+            result.push(prop);
+    }
+    return result;
+}
+Stat.quartiles = function (arr) {
+    var q2 = Stat.median(arr);
+    var even = arr.length % 2 == 0;
+
+    var list = arr;
+    if (!even) list.splice(Math.floor(list.length / 2), 1);
+
+    var firstHalf = list.splice(0, list.length / 2);
+    var secondHalf = list;
+    var first = Stat.median(firstHalf);
+    var second = Stat.median(secondHalf);
+
+    return { lower: first, upper: second, median: q2, range: second - first };
+}
+Stat.trendline = function (arr) {
+    for (var i=0,a=[];i<arr.length;i++) a.push(new Vector2D(arr[i].x, arr[i].y));
+
+    var xmean = Stat.mean(a.map(function (e) { return e.x; }));
+    var ymean = Stat.mean(a.map(function (e) { return e.y; }));
+
+    var gradient = Math.sigmaSum(a, function (e) {
+        return (e.x - xmean) * (e.y - ymean);
+    }) / Math.sigmaSum(a, function (e) {
+        return Math.pow(e.x - xmean, 2);
+    });
+
+    return new LinearFunc(gradient, ymean - gradient*xmean);
+}
+
 // because why not? I'm using UTF-8 anyway
 var π = Math.PI;
 // Transforms an equation into a string representation.

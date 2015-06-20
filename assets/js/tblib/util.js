@@ -241,6 +241,25 @@ function sort(list) {
     }
     return a;
 }
+/*
+function sort(list) {
+    var swapListItems = function (a, i, j) { var temp = a[i]; a[i] = a[j]; a[j] = temp; }
+    var determinePivot = function (a, istart, iend) {
+
+    }
+    var quicksort = function (a, istart, iend, pivot) {
+        var running = istart;
+        for (var i=istart;i<iend;i++) {
+            if (a[i] >= pivot)
+                swapListItems(a, i, running++);
+        }
+        if (iend - istart < 2) {
+            quicksort(a, istart, running);
+            quicksort(a, running, iend);
+        }
+    }
+}
+*/
 function isSorted(list) {
     for (var i=1;i<list.length;i++)
         if (list[i-1] > list[i]) return false;

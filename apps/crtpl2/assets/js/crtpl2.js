@@ -361,7 +361,7 @@ Tween.Colour = function (start, end, ms, func) {
         },
         writable: false,
         configurable: true
-    })
+    });
 }
 Tween.Colour.prototype = Object.create(Tween.prototype);
 
@@ -399,6 +399,7 @@ CvsHelper.prototype = {
     linePlot: function (points, width, style, fuzz, fuzzColour) {
         points = this.convertToVectorList(points);
         if (points.length == 0) return;
+        this.$.save();
         this.$.beginPath();
         if (!isNull(width)) this.$.lineWidth = width;
         if (!isNull(style)) this.$.strokeStyle = style;
@@ -410,8 +411,38 @@ CvsHelper.prototype = {
         this.$.moveTo(points[0].x, points[0].y);
         for (var i=1;i<points.length;i++)
             this.$.lineTo(points[i].x, points[i].y);
-        this.$.stroke();
         this.$.closePath();
+        this.$.stroke();
+        this.$.restore();
+    },
+    genericDotPlot: function (points, drawFunc, style, strokeStyle) {
+        points = this.convertToVectorList(points);
+        if (points.length == 0) return;
+        this.$.save();
+        if (!isNull(style)) this.$.fillStyle = style;
+        if (!isNull(strokeStyle)) this.$.strokeStyle = strokeStyle;
+        for (var i=0;i<points.length;i++) {
+            this.$.save();
+            this.$.translate(points[i].x, points[i].y);
+            drawFunc(this.$, points[i]);
+            this.$.restore();
+        }
+        this.$.restore();
+    },
+    crossPlot: function (points, length, width, style) {
+        debugger;
+        if (isNull(length)) length = 12;
+        if (isNull(width)) width = 2;
+        this.genericDotPlot(points, function (l, w) {
+            return function ($, point) {
+                $.rotate(dtr(45));
+                $.moveTo(-l/2, 0);
+                $.lineTo(l/2, 0);
+                $.moveTo(0, -l/2);
+                $.lineTo(0, l/2);
+                $.stroke();
+            }
+        }(length, width), null, style);
     },
     // Draws an array of points representing a polygon on the screen.
     polygon: function (points, style, borderWidth, borderStyle) {
@@ -449,6 +480,8 @@ CvsHelper.prototype = {
         this.$.closePath();
     }
 }
+
+var PlotTypes = new Enum("line", "scatter");
 
 // Defines a Cartesian plane.
 // id: The text identification for the plane. Not *really* that important.
@@ -651,10 +684,11 @@ function CrtPlane2(id, canvas, simple, settings) {
     };
     this.plots = [
     ];
-    this.addPlot = function (plot, style) {
+    this.addPlot = function (plot, type, style) {
         var obj = {};
         obj.plot = plot;
         if (!isNull(style)) obj.style = style;
+        if (!isNull(type)) obj.type = type;
         this.plots.push(obj);
         this.triggerNextUpdate = true;
     };
@@ -1026,7 +1060,7 @@ function CrtPlane2(id, canvas, simple, settings) {
         this.helper.linePlot(plot, set.width, style, fuzz);
         this.$.globalCompositeOperation = "source-over";
     };
-    this.plotPoints = function (points, style, fuzz) {
+    this.plotPoints = function (points, type, style, fuzz) {
         // TODO: Support drawing plots a *lot* better.
         var set = this.settings.functions;
         points = this.helper.convertToVectorList(points);
@@ -1036,7 +1070,12 @@ function CrtPlane2(id, canvas, simple, settings) {
                 a.push(loc);
         }
         this.$.globalCompositeOperation = "destination-over";
-        this.helper.linePlot(a, set.width, style, fuzz);
+        switch (type) {
+            case PlotTypes.scatter: this.helper.crossPlot(a, null, set.width, style); break;
+            case PlotTypes.line:
+            default: this.helper.linePlot(a, set.width, style, fuzz);
+        }
+        //this.helper.linePlot(a, set.width, style, fuzz);
         this.$.globalCompositeOperation = "source-over";
     };
     this.drawFunctions = function () {
@@ -1080,7 +1119,8 @@ function CrtPlane2(id, canvas, simple, settings) {
                 curr.hidden = false;
                 curr.hiddenStyle = style;
             } else if (curr.hidden) style = curr.hiddenStyle;
-            this.plotPoints(curr.plot, style.toString(), curr.highlighted ? set.highlightFuzz : 0);
+            if (isNull(curr.type)) curr.type = PlotTypes.line;
+            this.plotPoints(curr.plot, curr.type, style.toString(), curr.highlighted ? set.highlightFuzz : 0);
         }
     };
     this.computeScale = function (factor, min, max) {
