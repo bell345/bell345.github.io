@@ -411,8 +411,8 @@ CvsHelper.prototype = {
         this.$.moveTo(points[0].x, points[0].y);
         for (var i=1;i<points.length;i++)
             this.$.lineTo(points[i].x, points[i].y);
-        this.$.closePath();
         this.$.stroke();
+        this.$.closePath();
         this.$.restore();
     },
     genericDotPlot: function (points, drawFunc, style, strokeStyle) {
@@ -424,13 +424,14 @@ CvsHelper.prototype = {
         for (var i=0;i<points.length;i++) {
             this.$.save();
             this.$.translate(points[i].x, points[i].y);
+            this.$.beginPath();
             drawFunc(this.$, points[i]);
+            this.$.closePath();
             this.$.restore();
         }
         this.$.restore();
     },
     crossPlot: function (points, length, width, style) {
-        debugger;
         if (isNull(length)) length = 12;
         if (isNull(width)) width = 2;
         this.genericDotPlot(points, function (l, w) {
@@ -480,6 +481,28 @@ CvsHelper.prototype = {
         this.$.closePath();
     }
 }
+
+function PlaneNode(style) {
+    this.id = generateUUID();
+    this.style = new Colour(style);
+    this.hidden = false;
+    this.hiddenStyle = new Colour("rgba(0,0,0,0)");
+    this.highlighted = false;
+    this.highlightedStyle = this.style;
+    this.children = [];
+}
+
+function FunctionNode(func, style) {
+    PlaneNode.call(this, style);
+    this.func = func;
+}
+FunctionNode.prototype = Object.create(PlaneNode.prototype);
+function PlotNode(plot, type, style) {
+    PlaneNode.call(this, style);
+    this.plot = plot;
+    this.type = type;
+}
+PlotNode.prototype = Object.create(PlaneNode.prototype);
 
 var PlotTypes = new Enum("line", "scatter");
 
@@ -1129,8 +1152,10 @@ function CrtPlane2(id, canvas, simple, settings) {
         function decreaseScale() {
             while (factor * scale > max) {
                 // divide until number you want to divide by breaks the limit
-                if (factor * (scale / 2) <= max) scale /= 2;
-                else if (factor * (scale / 5) <= max) scale /= 5;
+                if (factor * (scale / 2) <= max
+                    && factor * (scale / 4) > max) scale /= 2;
+                else if (factor * (scale / 5) <= max
+                    && factor * (scale / 4) <= max) scale /= 5;
                 else scale /= 10;
             }
         }
@@ -1138,8 +1163,10 @@ function CrtPlane2(id, canvas, simple, settings) {
         function increaseScale() {
             while (factor * scale < min) {
                 // divide until number you want to divide by breaks the limit
-                if (factor * (scale * 2) >= min) scale *= 2;
-                else if (factor * (scale * 5) >= min) scale *= 5;
+                if (factor * (scale * 2) >= min
+                    && factor * (scale * 4) < min) scale *= 2;
+                else if (factor * (scale * 5) >= min
+                    && factor * (scale * 4) >= min) scale *= 5;
                 else scale *= 10;
             }
         }
