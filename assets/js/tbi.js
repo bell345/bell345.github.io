@@ -1,7 +1,10 @@
-// THIS IS LEGACY CODE
-// FOR THE LOVE OF ALL THAT IS HOLY, DO NOT USE THIS
-// TBLIB HAS ALL YOU NEED
-
+// *cue sirens*
+// WARNING: THE FOLLOWING IS LEGACY CODE.
+// AND YOU KNOW WHAT THAT MEANS: OLD AND BROKEN.
+// PLEASE DO NOT USE.
+// USE require.js AND tblib.
+// THAT IS ALL.
+// *sirens end*
 
 // TBI.JS - V6.6
 // Base functions, variables and helpers that are included and required in

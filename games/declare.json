@@ -4,31 +4,24 @@
     "id": "games",
     "path": "games",
     "projects": [
+        {   "id": "pong",
+            "title": "JS Pong",
+            "version": "1.0",
+            "updated": "2015-07-06"
+        },
         {   "id": "mpoly",
-            "type": "app",
-            "path": "$page_path/$id",
             "title": "Monopoly Interpreter",
             "version": "0.8",
-            "description": "$path/desc.htm",
-            "thumbnail": "assets/img/$id.png",
             "updated": "2015-04-11"
         },
         {   "id": "treeh",
-            "type": "app",
-            "path": "$page_path/$id",
             "title": "Treehouse",
             "version": "0.2",
-            "description": "$path/desc.htm",
-            "thumbnail": "assets/img/$id.png",
             "updated": "2015-04-11"
         },
         {   "id": "qdr",
-            "type": "app",
-            "path": "$page_path/$id",
             "title": "Quadrominoes",
             "version": "0.4",
-            "description": "$path/desc.htm",
-            "thumbnail": "assets/img/$id.png",
             "updated": "2015-04-10"
         }
     ]

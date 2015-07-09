@@ -1,0 +1,102 @@
+.playing-field {
+    position:fixed;
+    top:50px;
+    bottom:0;
+    left:0;
+    right:0;
+    background:#000;
+    color:#fff;
+}
+.top-ui {
+    background:#fff;
+    box-shadow:inset 0 -8px 8px -8px #555;
+    color:#000;
+    top:0;
+    left:0;
+    right:0;
+    position:absolute;
+    height:50px;
+    text-align:center;
+}
+.paddle {
+    background:#fff;
+    position:absolute;
+    top:0;
+    height:40%;
+    width:40px;
+    transition:0s all;
+    z-index:9;
+}
+.slack.paddle {
+    background:rgba(255, 255, 255, 0.2);
+    z-index:1;
+}
+.left-paddle {
+    left:10%;
+}
+.right-paddle {
+    right:10%;
+}
+
+.ball {
+    background:#fff;
+    width:50px;
+    height:50px;
+    position:absolute;
+    margin:auto;
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
+    transition:0s all;
+    z-index:8;
+}
+.slack.ball {
+    background:rgba(255, 255, 255, 0.1);
+    box-shadow:0 0 32px rgba(255, 255, 255, 0.3);
+    z-index:1;
+}
+#debug-cvs {
+    position:fixed;
+    top:0;
+    left:0;
+    z-index:99;
+}
+
+.score {
+    display:inline-block;
+    margin:0 15%;
+    line-height:30px;
+}
+.score-inner {
+    font-size:42px;
+    font-weight:bold;
+    display:inline-block;
+    padding:10px 12px;
+    transition:1.5s color;
+}
+.score-inner.just-scored {
+    color:#eee;
+    transition:0s color;
+}
+.left-score {
+    float:left;
+}
+.right-score {
+    float:right;
+}
+.wins {
+    display:inline-block;
+    float:right;
+}
+.right-score .wins {
+    float:left;
+}
+.win {
+    width:10px;
+    height:50px;
+    background:gold;
+    margin:0 4px;
+    display:inline-block;
+    box-shadow:inset 0 -8px 8px -8px #555;
+}

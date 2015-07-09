@@ -13,6 +13,16 @@ if (!window.TBI) var TBI = {};
 if (!window.TBI.Files) TBI.Files = {};
 if (!window.TBI.UserSettings) TBI.UserSettings = {};
 
+TBI.log = function (message) {
+    console.log(message);
+}
+TBI.warn = function (message) {
+    console.warn(message);
+}
+TBI.error = function (message) {
+    console.error(message);
+}
+
 var query = {}, path = [];
 // Sets up the query variable with the search criteria.
 TBI.requestManager = function () {
@@ -76,6 +86,7 @@ TBI.Timer = function (onCompletion, duration, repeat, timerName) {
             return new Date().getTime() - this.startTime;
         }
     });
+    if (TBI.TimerDB[this.timerName]) TBI.TimerDB[this.timerName].clear();
     TBI.TimerDB[this.timerName] = this;
 }
 // Returns a string from the start of str that is num characters long.

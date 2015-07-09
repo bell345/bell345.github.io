@@ -24,9 +24,6 @@ TBI.AJAX = function (url, func) {
     }
     return xhr;
 }
-
-TBI.Files.HTMLIncludesManifest = "/assets/data/includes.json";
-
 function HTMLInclude(source, insert, replace, before) {
     this.source = source;
     this.insert = insert;

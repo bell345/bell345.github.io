@@ -33,13 +33,13 @@ function createInnerNavItem(ul, name, href, external) {
 // Creates a button with an embedded link. More obvious than plain <a> elements. Also accepts an optional
 // className parameter for modifying the button ("major", for example, makes the button featured).
 function createButtonLink(href, html, className) {
+    var link = document.createElement("a");
+    link.href = href;
     var button = document.createElement("button");
-    button.className = className;
-        var link = document.createElement("a");
-        link.href = href;
-        link.innerHTML = html;
-    button.appendChild(link);
-    return button;
+        button.className = className;
+        button.innerHTML = html;
+    link.appendChild(button);
+    return link;
 }
 // This function returns a TBI.Loader task function that retrieves and parses the description for a specified
 // website project item.
@@ -50,7 +50,19 @@ function loadProjectDescription(figure, proj) {
             try {
                 var desc = document.createElement("div");
                     desc.className = "description";
-                    desc.innerHTML = xhr.response;
+                    var buttonDiv = document.createElement("div");
+                        buttonDiv.className = "action-buttons control-row";
+                        buttonDiv.appendChild(createButtonLink(proj.path, "Open "+proj.title, "open-path major"));
+                        if (proj.source) {
+                            var sourceName = "View Source on "+ new URL(proj.source).hostname;
+                            buttonDiv.appendChild(createButtonLink(proj.source, sourceName, "source-link"));
+                        }
+                        if (proj.external) {
+                            var externalName = "External Link ("+ new URL(proj.external).hostname +")";
+                            buttonDiv.appendChild(createButtonLink(proj.external, externalName, "external-link"));
+                        }
+                    desc.appendChild(buttonDiv);
+                    desc.innerHTML += xhr.response;
                     if (proj.preview == "iframe" || proj.preview == undefined) {
                         var frame = document.createElement("iframe");
                             frame.className = "proj-preview";
@@ -74,18 +86,6 @@ function loadProjectDescription(figure, proj) {
                             frame.setAttribute("data-src", "assets/html/loadrepo.html?repo="+proj.preview_repo);
                         desc.appendChild(frame);
                     }
-                    var buttonDiv = document.createElement("div");
-                        buttonDiv.className = "action-buttons";
-                        buttonDiv.appendChild(createButtonLink(proj.path, "Open "+proj.title, "open-path major"));
-                        if (proj.source) {
-                            var sourceName = "View Source on "+ new URL(proj.source).hostname;
-                            buttonDiv.appendChild(createButtonLink(proj.source, sourceName, "source-link"));
-                        }
-                        if (proj.external) {
-                            var externalName = "External Link ("+ new URL(proj.external).hostname +")";
-                            buttonDiv.appendChild(createButtonLink(proj.external, externalName, "external-link"));
-                        }
-                    desc.appendChild(buttonDiv);
                 figure.appendChild(desc);
 
                 resolve();
@@ -197,9 +197,22 @@ function parseContentManifest(manifest) {
             innerNav.className = "inner-nav";
         }
 
+        var defaultProject = {
+            "type": "app",
+            "path": "$page_path/$id",
+            "preview": "iframe",
+            "preview_iframe": "$page_path/$id",
+            "description": "$page_path/$id/desc.htm",
+            "thumbnail": "assets/img/$id.png"
+        };
+
         // loop through all the specified projects...
         for (var i=0;i<projects.length;i++) {
-            var proj = projects[i];
+            var rawProj = projects[i];
+            // set using defaults
+            var proj = {};
+            for (var prop in defaultProject) if (defaultProject.hasOwnProperty(prop)) proj[prop] = defaultProject[prop];
+            for (var prop in rawProj) if (rawProj.hasOwnProperty(prop)) proj[prop] = rawProj[prop];
 
             // resolve the sigil variables
             proj.path = replaceWithVariables(proj.path, {"page_id": manifest.id, "page_path": manifest.path, "id": proj.id});
@@ -273,7 +286,7 @@ Require(["assets/js/tblib/base.js",     // Concurrently loading the dependencies
          "assets/js/tblib/ui.js"], function () {
 
     // Defined in tblib/net.js
-    loader.addTask(executeHTMLIncludes(TBI.Files.HTMLIncludesManifest), null, "HTMLIncludes"); // loads the common sections of the page
+    loader.addTask(executeHTMLIncludes("assets/data/includes.json"), null, "HTMLIncludes"); // loads the common sections of the page
     loader.addTask(executeFontLoading(), 5000, "Fonts", ["HTMLIncludes"]); // loads the webfonts
 
     fixHashLinks();

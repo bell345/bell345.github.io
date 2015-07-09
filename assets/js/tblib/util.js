@@ -384,8 +384,8 @@ var PointerLock = {
     }
 }
 // A 2 dimensional vector quantity.
-function Vector2D(x, y) { this.x = x; this.y = y; }
-Vector2D.fromPolar = function (azimuth, radius) { return new Vector2D(radius*Math.sin(azimuth), radius*Math.cos(azimuth)); };
+function Vector2D(x, y) { if (isNull(y)) y = x; this.x = x; this.y = y; }
+Vector2D.fromPolar = function (azimuth, radius) { return new Vector2D(radius*Math.cos(azimuth), radius*Math.sin(azimuth)); };
 Vector2D.prototype = {
     constructor: Vector2D,
     // Create a copy of the vector that won't change the original.
@@ -420,17 +420,20 @@ Vector2D.prototype = {
     wedge: function (vec) { return this.x*vec.y - this.y*vec.x; },
     // Clamps the vector's x and y values to a minimum and maximum vector.
     clamp: function (min, max) { return new Vector2D(Math.bound(this.x, min.x, max.x), Math.bound(this.y, min.y, max.y)); },
-    // Returns the angle formed by the vector with the positive X axis.
+    // Returns the angle formed by the vector with the positive X axis in the anticlockwise direction.
     angle: function () { return Math.atan2(this.y, this.x); },
     // Projects the vector onto another.
-    project: function (vec) { return vec.multiplyScalar(this.dot(vec)/vec.dot(vec)); },
+    project: function (vec) { return vec.multiply(this.dot(vec)/vec.dot(vec)); },
     // Gets the normal of a vector.
     normal: function (dir) { if (dir) return new Vector2D(-this.y, this.x); else return new Vector2D(this.y, -this.x); },
+    // Law of reflection, assuming instaced vector is the incidence vector and argument is the surface normal.
+    reflect: function (nml) { return nml.multiply(2*this.dot(nml)).subtract(this); },
     equals: function (vec) { return this.x == vec.x && this.y == vec.y; },
     fix: function (num) { return new Vector2D(this.x.fixFloat(num), this.y.fixFloat(num)); },
     toMatrix: function () { return new Matrix([this.x, this.y]); },
     // Use this one though, totally cool with it.
     toString: function () { return "("+this.x+", "+this.y+")"; },
+    valueOf: function () { throw new TypeError("Vector2D maths failed: Use the member functions .add, .subtract, .multiply, etc. You're doing it wrong, somewhere."); return 0; }
 };
 Vector2D.zero = new Vector2D(0, 0);
 // Returns a random positive integer below the specified number.
@@ -871,6 +874,10 @@ function CvsHelper(context) {
 }
 CvsHelper.prototype = {
     constructor: CvsHelper,
+    // Alias to quickly clear entire canvas.
+    clear: function () {
+        this.$.clearRect(0, 0, this.$.canvas.width, this.$.canvas.height);
+    },
     // Converts a non-vector value (such as a deprecated Coords() or a two-length array)
     // to a vector value.
     convertToVector: function (point) {

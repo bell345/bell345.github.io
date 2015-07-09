@@ -8,7 +8,32 @@ if (!window.jQuery) {
 
 TBI.UI = {};
 
-TBI.UI.updateUI = function () {
+TBI.log = function (message) {
+    console.log(message);
+    TBI.UI.Notification("Info", message, 30000);
+}
+TBI.warn = function (message) {
+    console.warn(message);
+    TBI.UI.Notification("Warning", message, 40000);
+}
+TBI.error = function (message) {
+    if (message instanceof Error) {
+        var msgLi = TBI.UI.Notification("Error", message.message, 50000);
+        var stackDiv = document.createElement("div");
+            stackDiv.textContent = message.stack;
+            stackDiv.style.display = "none";
+            stackDiv.style.transition = "0s all";
+        var stackButton = document.createElement("button");
+            stackButton.onclick = function () {
+                $(stackDiv).slideToggle();
+            };
+            stackButton.textContent = "Show/Hide Stack";
+        msgLi.appendChild(stackButton);
+        msgLi.appendChild(stackDiv);
+    } else TBI.UI.Notification("Error", message, 50000);
+}
+
+TBI.UI.updateUI = function (force) {
     var items = $("h2.item[id], h2.section[id]");
     if (items.length > 0 && $("#sidebar").length > 0) {
         if ($("#sidebar #sections").length == 0) {
@@ -53,6 +78,7 @@ TBI.UI.updateUI = function () {
         $(this).toggleClass("on");
     });
     $("button.toggle:not(.done)").toggleClass("done", true);
+
     $(".up-down:not(.done)").click(function (event) {
         if (event.button != 0) return true;
         var toSwitch = $($(this).attr("for"));
@@ -60,6 +86,7 @@ TBI.UI.updateUI = function () {
         $(this).toggleClass("on");
     });
     $(".up-down:not(.done)").toggleClass("done", true);
+
     var popups = $("*[data-popup-title]:not(.popup-done), *[data-popup-body]:not(.popup-done)");
     for (var i=0;i<popups.length;i++) {
         TBI.UI.HoverPopup.bindElement(popups[i],
@@ -67,16 +94,20 @@ TBI.UI.updateUI = function () {
             popups[i].attributes["data-popup-body"].value);
     }
     popups.toggleClass("popup-done", true);
+
+    if (force) $("table.sortable.done").toggleClass("done", false);
+
     for (var i=0;i<$("table.sortable:not(.done)").length;i++) {
         var curr = $("table.sortable:not(.done)")[i];
 
         // recording original table order
         var rows = curr.querySelectorAll("tbody tr");
         for (var j=0;j<rows.length;j++)
-            if (rows[j].className.search(" torder") == -1) rows[j].className += " torder-"+j;
+            rows[j].dataset.tableOrder = j;
 
         var sortHeaders = curr.querySelectorAll("thead th.sort");
         $(sortHeaders).toggleClass("none", true);
+        $(sortHeaders).off("click");
         $(sortHeaders).click(function (table) {
             return function () {
                 var upDownList = table.querySelectorAll("thead th.sort");
@@ -88,26 +119,24 @@ TBI.UI.updateUI = function () {
                 }
 
                 var conditions = ["none", "up", "down"];
-                if (index != -1) for (var i=0;i<conditions.length;i++) {
-                    var condition = conditions[i];
-                    if (this.className.search(condition) != -1) {
-                        var futureCondition = conditions[(i + 1) % conditions.length];
-                        // switch condition to next in line
-                        $(this).toggleClass(condition, false);
-                        $(this).toggleClass(futureCondition, true);
-                        // according to current condition...
-                        switch (futureCondition) {
-                            // sort up
-                            case "up": TBI.UI.sortTable(table, index, false); break;
-                            // sort down
-                            case "down": TBI.UI.sortTable(table, index, true); break;
-                            // or restore original order
-                            default: TBI.UI.sortTable(table, -1, false);
+                if (index != -1) {
+                    for (var i=0;i<conditions.length;i++) {
+                        var condition = conditions[i];
+                        if (this.className.search(condition) != -1) {
+                            var futureCondition = conditions[(i + 1) % conditions.length];
+
+                            $(this).toggleClass(condition, false);
+                            $(this).toggleClass(futureCondition, true);
+
+                            switch (futureCondition) {
+                                case "up": TBI.UI.sortTable(table, index, false); break;
+                                case "down": TBI.UI.sortTable(table, index, true); break;
+                                default: TBI.UI.sortTable(table, -1, false);
+                            }
+                            break;
                         }
-                        break;
                     }
-                // if index is invalid, sort table anyway to restore order
-            } else TBI.UI.sortTable(table, -1, false);
+                } else TBI.UI.sortTable(table, -1, false);
             }
         }(curr));
     }
@@ -156,45 +185,75 @@ TBI.UI.HoverPopup.bindElements = function (elementArray, title, body) {
         TBI.UI.HoverPopup.bindElement(elementArray[i], title, body);
 }
 // A predefined popup element that can be added to by using the same header.
-// TODO: Make this better
-TBI.notification = function (group, text, timeout) {
-    var groupId = "note-group-"+group.toLowerCase(),
-        noteGroup = $("#"+groupId),
-        noteGroupList = $("#"+groupId+" li");
-    if ($("#note-holder").length == 0) $("body").append("<div id='note-holder'><div id='note-holder-inner'></div></div>");
-    if (noteGroup.length == 0) {
-        var buttonText = "<button onclick='$(this).parent().remove()'>Dismiss</button>";
-        $("#note-holder-inner").append("<div class='note' id='"+groupId+"'><h3>"+group+"</h3><ul></ul>"+buttonText+"</div>");
-    }
-    if (noteGroupList.length > 0) {
-        var el = noteGroupList[noteGroupList.length-1];
-        if (el.innerHTML == text) {
-            if (isNull(el.dataset.instances)) el.dataset.instances = 1;
-            el.dataset.instances++;
-        } else $("#"+groupId+" ul").append("<li>"+text+"</li>");
-    } else $("#"+groupId+" ul").append("<li>"+text+"</li>");
-    TBI.timerClear("noteRemove-"+group.toLowerCase());
-    var nRemoveTotal = 0;
-    TBI.timerSet("noteRemove-"+group.toLowerCase(), 10, function () {
-        if (nRemoveTotal > timeout) {
-            $("#"+groupId).remove();
-            TBI.timerClear("noteRemove-"+group.toLowerCase());
-        } else nRemoveTotal += 10;
-    });
+TBI.UI.Notification = function (group, text, timeout) {
+    var groupID = "note-group-" + group.toLowerCase(),
+        noteHolder = gebi("note-holder");
+
+    if (noteHolder == null) {
+        noteHolder = document.createElement("div");
+        noteHolder.id = "note-holder";
+        var noteHolderInner = document.createElement("div");
+            noteHolderInner.id = "note-holder-inner";
+        noteHolder.appendChild(noteHolderInner);
+        document.body.appendChild(noteHolder);
+    } else var noteHolderInner = gebi("note-holder-inner");
+
+    var noteGroup = gebi(groupID);
+
+    if (noteGroup == null) {
+        noteGroup = document.createElement("div");
+        noteGroup.className = "note";
+        noteGroup.id = groupID;
+        var noteHeader = document.createElement("h3");
+            noteHeader.textContent = group;
+        noteGroup.appendChild(noteHeader);
+        var noteList = document.createElement("ul");
+        noteGroup.appendChild(noteList);
+        var noteDismiss = document.createElement("button");
+            noteDismiss.textContent = "Dismiss";
+            noteDismiss.addEventListener("click", function (e) { e.target.parentElement.remove(); });
+        noteGroup.appendChild(noteDismiss);
+        noteHolderInner.appendChild(noteGroup);
+    } else var noteList = noteGroup.getn("ul")[0];
+
+    var currNote = document.createElement("li");
+        currNote.innerHTML = text;
+
+    var prevNotes = $(noteList).find("li").toArray();
+    if (prevNotes.length > 0) {
+        var lastNote = prevNotes[prevNotes.length - 1];
+        if (lastNote.innerHTML == text) {
+            if (isNull(lastNote.dataset.instances)) lastNote.dataset.instances = 1;
+            lastNote.dataset.instances++;
+            currNote = lastNote;
+        } else noteList.appendChild(currNote);
+    } else noteList.appendChild(currNote);
+
+    if (timeout > 0) var timer = new TBI.Timer(function (timer) {
+        $(noteGroup).remove();
+    }, timeout, false, groupID);
+    else if (TBI.TimerDB[groupID]) TBI.TimerDB[groupID].clear();
+
+    return currNote;
 }
 // Changes the specified toggleable element either according to the boolean value passed to it, or simply toggles it.
 TBI.UI.toggleButton = function (element, bool) {
     if (!isNull(element[0]) && element[0] instanceof HTMLElement) element = element[0];
     if (!element instanceof HTMLElement) return null;
-    else if (!isNull(element.checked)) return element.checked = isNull(bool)?!element.checked:bool;
+
+    else if (!isNull(element.checked))
+        return element.checked = isNull(bool) ? !element.checked : bool;
+
     var isToggled = TBI.UI.isToggled(element);
-    if (!isToggled && bool !== false) { element.className += " on"; }
-    else if (isToggled && bool !== true) { element.className = element.className.replace(" on",""); }
+    if (!isToggled && bool !== false) element.toggleClass("on", true);
+    else if (isToggled && bool !== true) element.toggleClass("on", false);
+
     if (!isNull(bool) && bool !== isToggled || isNull(bool)) $(element).click();
+
     return TBI.UI.isToggled(element);
 }
 // Returns whether or not a specified toggleable element is toggled or not.
-TBI.UI.isToggled = function (element) { return isNull(element.checked)?element.className.search(" on") != -1:element.checked; }
+TBI.UI.isToggled = function (element) { return isNull(element.checked) ? $(element).hasClass("on") : element.checked; }
 TBI.UI.getRadioInput = function (name) {
     var inputs = document.querySelectorAll("input[type='radio'][name='"+name+"']");
     for (var i=0;i<inputs.length;i++)
@@ -202,32 +261,59 @@ TBI.UI.getRadioInput = function (name) {
     return null;
 }
 // Sorts a specific table element according to the column and direction specified.
-TBI.UI.sortTable = function (table, colIndex, direction) {
-    if (!(table instanceof HTMLTableElement)) return null; // checks if the table is an element
-    var records = table.querySelectorAll("tbody tr"), // all the rows in the table body
-        refs = {}, // references to the rows using the text content as the key and the row number as the value
-        fields = [], // an array of the text content inside of the specified column of the table (that can be sorted)
-        numbers = true; // whether or not to use the custom number-focused sort() algorithm or use the inbuilt .sort() for text values
-    if (colIndex != -1) for (var i=0;i<records.length;i++) { // this loop checks whether or not the table uses all numerical values
-        var list = records[i].querySelectorAll("td");
-        var item = list[colIndex].innerText;
-        if (numbers && isNaN(parseFloat(item))) numbers = false;
+TBI.UI.sortTable = function (table, colIndex, direction, type, customFunc) {
+    var body = table.querySelector("tbody");
+    var rows_nl = body.querySelectorAll("tr");
+    var header = table.querySelectorAll("thead th")[colIndex];
+
+    var rows = []; // reassignment from NodeList to Array
+    for (var i=0;i<rows_nl.length;i++)
+        rows[i] = rows_nl[i];
+
+    if (isNull(type)) { // intelligent sort method guessing
+        type = "numeric";
+
+        if (colIndex == -1) type = "original";
+        else if ($(header).hasClass("numeric")) type = "numeric";
+        else if ($(header).hasClass("date")) type = "date";
+        else if ($(header).hasClass("custom-numeric")) type = "custom-numeric";
+        else if ($(header).hasClass("custom-text")) type = "custom-text";
+        else for (var i=0;i<rows.length;i++) { // if type arg is missing, and ALL elements are good as numbers, type is numeric; otherwise text-based
+            if (isNaN(parseFloat(rows[i].querySelectorAll("td")[colIndex].innerText))) {
+                type = "text"; break;
+            }
+        }
     }
-    for (var i=0;i<records.length;i++) { // this loop places the items into the fields array and adds the row reference to refs
-        var list = records[i].querySelectorAll("td");
-        if (colIndex != -1) {
-            var item = list[colIndex].innerText.toLowerCase();
-            if (numbers) item = parseFloat(item);
-        } else var item = parseFloat(records[i].className.match(/ torder-[0-9]+/)[0].match(/[0-9]+/)[0]);
-        fields.push(item);
-        refs[item] = i;
-    }
-    if (numbers) fields = sort(fields); // sorting algorithms
-    else fields.sort();
-    if (direction) fields.reverse(); // whether or not to reverse the order
-    $(table.getElementsByTagName("tbody")[0]).empty(); // empty the table body (too bad if anything other than <tr>s are inside of it)
-    for (var i=0;i<fields.length;i++) table.getElementsByTagName("tbody")[0].appendChild(records[refs[fields[i]]]);
-    // and add in the rows in the right order
+
+    rows = rows.sort(function (a, b) {
+        var aCell = a.querySelectorAll("td")[colIndex];
+        var bCell = b.querySelectorAll("td")[colIndex];
+        var cond = true;
+
+        switch (type) {
+            case "custom":
+                cond = customFunc(a, b, rows); break;
+            case "text":
+                cond = aCell.textContent.toLowerCase() < bCell.textContent.toLowerCase(); break;
+            case "custom-text":
+                cond = aCell.getAttribute("data-table-sort-value") < bCell.getAttribute("data-table-sort-value"); break;
+            case "numeric":
+                cond = parseFloat(aCell.textContent) < parseFloat(bCell.textContent); break;
+            case "custom-numeric":
+                cond = parseFloat(aCell.getAttribute("data-table-sort-value")) < parseFloat(bCell.getAttribute("data-table-sort-value")); break;
+            case "date":
+                cond = new Date(aCell.textContent).getTime() < new Date(bCell.textContent).getTime(); break;
+            case "original":
+            default:
+                cond = parseInt(a.dataset.tableOrder) < parseInt(b.dataset.tableOrder); break;
+        }
+
+        if (direction) return cond ? 1 : -1;
+        else return cond ? -1 : 1;
+    });
+
+    $(body).empty(); // get rid of all rows
+    rows.forEach(function (e) { body.appendChild(e); }); // and put them back in correct order
 }
 // Generates a desktop notification outside of the regular environment.
 TBI.UI.Note = function (img, title, desc, link) {
