@@ -1,0 +1,44 @@
+canvas {
+    position:absolute;
+    top:0;
+    left:0;
+}
+.gen {
+    display:none;
+    z-index:5;
+    background:rgba(0, 0, 0, 0.2);
+}
+.mini-mandelbrot-container {
+    width:320px;
+    height:240px;
+    transition:0s all;
+    z-index:7;
+    position:relative;
+}
+.ui-container {
+    padding-top:8px;
+    background:rgba(0, 0, 0, 0.2);
+    z-index:9;
+}
+.ui-container .control-row {
+    padding-left:12px;
+    padding-right:12px;
+}
+.bottom-left-ui {
+    position:fixed;
+    bottom:0;
+    left:0;
+    width:320px;
+}
+.bottom-right-ui {
+    position:fixed;
+    bottom:0;
+    right:0;
+    text-align:right;
+}
+.exclusive {
+    display:none;
+}
+h1, h2, h3, a {
+    color:#eee;
+}

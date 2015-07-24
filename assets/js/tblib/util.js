@@ -31,6 +31,14 @@ function gebn(name) { return document.getElementsByName(name); }
 HTMLElement.prototype.gebn = function (name) { return this.getElementsByName(name); }
 HTMLElement.prototype.getStyle = function (name) { return getComputedStyle(this)[name]; }
 
+function zeroPrefix(num, len, char) {
+    len = len || 2;
+    char = char || "0";
+    num = num.toString();
+    while (num.length < len) num = char + num;
+    return num;
+}
+
 // Creates a multi-dimensional array given the depths of the dimensions.
 Array.dimensional = function (lengths, initial) {
     if (isNull(lengths)) lengths = [0];
@@ -516,79 +524,6 @@ function Colour(arg0, g, b, a) {
     this.b = 0;
     this.a = 0;
 
-    // Sets a Colour object with the colour represented by a hex string.
-    // e.g. "#6a0094" or "#ffd" or "AADF09"
-    this.setHex = function (hexStr) {
-        // get rid of the "#", and don't rely on it
-        hexStr = hexStr.removeAll("#");
-        var vals = [];
-        // if hex is three-digit shorthand
-        if (hexStr.length == 3) {
-            // too lazy for the mathematical way
-            hexStr = [
-                hexStr[0], hexStr[0],
-                hexStr[1], hexStr[1],
-                hexStr[2], hexStr[2]
-            ];
-        }
-        if (hexStr.length == 6) {
-            // simple: just convert the relevant hex areas of the string
-            // into their decimal representations using parseInt().
-            this.r = parseInt(hexStr[0]+hexStr[1], 16);
-            this.g = parseInt(hexStr[2]+hexStr[3], 16);
-            this.b = parseInt(hexStr[4]+hexStr[5], 16);
-            this.a = 1;
-        }
-
-        return this;
-    };
-    // Sets a Colour object with the colour represented by three
-    // red, green and blue bytes.
-    // e.g. (34, 89, 179)
-    this.setRGB = function (r, g, b) {
-        this.r = r;
-        this.g = g;
-        this.b = b;
-
-        return this;
-    };
-    // Sets a Colour object with the colour represented by three
-    // red, green and blue bytes and an alpha channel intensity.
-    // e.g. (34, 89, 179, 0.73)
-    this.setRGBA = function (r, g, b, a) {
-        this.r = r;
-        this.g = g;
-        this.b = b;
-        this.a = isNull(a) ? 1 : a;
-
-        return this;
-    }
-    // Sets a Colour object with the colour represented by
-    // three hue [0-360), saturation [0-1] and value [0-1] values.
-    // e.g. 190, 0.5, 0.83
-    // Also: I got this off of a website, no idea where it was [not mine]
-    // and I have no idea how this works (well, I have a cursory idea)
-    this.setHSV = function (h, s, v) {
-        var c = v * s;
-        var x = c * (1 - Math.abs((h/60) % 2 - 1));
-        var m = v - c;
-
-        var rgb = [0, 0, 0];
-        if      (h <  60) rgb = [c,x,0];
-        else if (h < 120) rgb = [x,c,0];
-        else if (h < 180) rgb = [0,c,x];
-        else if (h < 240) rgb = [0,x,c];
-        else if (h < 300) rgb = [x,0,c];
-        else if (h < 360) rgb = [c,0,x];
-
-        this.r = (rgb[0] + m)*255;
-        this.g = (rgb[1] + m)*255;
-        this.b = (rgb[2] + m)*255;
-        this.a = 1;
-
-        return this;
-    };
-
     // To hell with using instanceofs and checks to make sure the
     // input isn't already a colour! Just accept it as input!
     // / this may also bite me in the ass /
@@ -698,28 +633,107 @@ function Colour(arg0, g, b, a) {
             this.setHSV(this.r, this.s, v);
         }
     });
+}
+Colour.prototype = {
+    constructor: Colour,
+
+    // Sets a Colour object with the colour represented by a hex string.
+    // e.g. "#6a0094" or "#ffd" or "AADF09"
+    setHex: function (hexStr) {
+        // get rid of the "#", and don't rely on it
+        hexStr = hexStr.removeAll("#");
+        var vals = [];
+        // if hex is three-digit shorthand
+        if (hexStr.length == 3) {
+            // too lazy for the mathematical way
+            hexStr = [
+                hexStr[0], hexStr[0],
+                hexStr[1], hexStr[1],
+                hexStr[2], hexStr[2]
+            ];
+        }
+        if (hexStr.length == 6) {
+            // simple: just convert the relevant hex areas of the string
+            // into their decimal representations using parseInt().
+            this.r = parseInt(hexStr[0]+hexStr[1], 16);
+            this.g = parseInt(hexStr[2]+hexStr[3], 16);
+            this.b = parseInt(hexStr[4]+hexStr[5], 16);
+            this.a = 1;
+        }
+
+        return this;
+    },
+    // Sets a Colour object with the colour represented by three
+    // red, green and blue bytes.
+    // e.g. (34, 89, 179)
+    setRGB: function (r, g, b) {
+        this.r = r;
+        this.g = g;
+        this.b = b;
+
+        return this;
+    },
+    // Sets a Colour object with the colour represented by three
+    // red, green and blue bytes and an alpha channel intensity.
+    // e.g. (34, 89, 179, 0.73)
+    setRGBA: function (r, g, b, a) {
+        this.r = r;
+        this.g = g;
+        this.b = b;
+        this.a = isNull(a) ? 1 : a;
+
+        return this;
+    },
+    // Sets a Colour object with the colour represented by
+    // three hue [0-360), saturation [0-1] and value [0-1] values.
+    // e.g. 190, 0.5, 0.83
+    // Also: I got this off of a website, no idea where it was [not mine]
+    // and I have no idea how this works (well, I have a cursory idea)
+    setHSV: function (h, s, v) {
+        var c = v * s;
+        var x = c * (1 - Math.abs((h/60) % 2 - 1));
+        var m = v - c;
+
+        var rgb = [0, 0, 0];
+        if      (h <  60) rgb = [c,x,0];
+        else if (h < 120) rgb = [x,c,0];
+        else if (h < 180) rgb = [0,c,x];
+        else if (h < 240) rgb = [0,x,c];
+        else if (h < 300) rgb = [x,0,c];
+        else if (h < 360) rgb = [c,0,x];
+
+        this.r = (rgb[0] + m)*255;
+        this.g = (rgb[1] + m)*255;
+        this.b = (rgb[2] + m)*255;
+        this.a = 1;
+
+        return this;
+    },
 
     // These functions return valid string representations of themselves
     // in various formats (these can also be passed back into Colour()).
     // Useful for HTML/CSS styling and colour animation.
-    this.toRGBA = function () {
+    toRGBA: function () {
         return "rgba("+this.r+", "+this.g+", "+this.b+", "+this.a+")";
-    };
-    this.toRGB = function () {
+    },
+    toRGB: function () {
         return "rgb("+this.r+", "+this.g+", "+this.b+")";
-    };
-    this.toHex = function () {
-        var red = zeroPrefix(transformDecimal(this.r, 16), 2);
-        var green = zeroPrefix(transformDecimal(this.g, 16), 2);
-        var blue = zeroPrefix(transformDecimal(this.b, 16), 2);
+    },
+    toHex: function () {
+        var red = zeroPrefix(parseInt(this.r).toString(16), 2);
+        var green = zeroPrefix(parseInt(this.g).toString(16), 2);
+        var blue = zeroPrefix(parseInt(this.b).toString(16), 2);
         return "#"+red+green+blue;
-    };
-    this.toHSV = function () {
+    },
+    toNumber: function () {
+        return parseInt(this.toHex().removeAll("#"), 16);
+    },
+    toHSV: function () {
         return "hsv("+this.h+", "+(this.s*100)+"%, "+(this.v*100)+"%)";
-    }
+    },
     // A common interface for the above functions;
     // because I like overriding toString() and using parameters. Sue me.
-    this.toString = function (format) {
+    toString: function (format) {
         format = !isNull(format) ? format.toLowerCase() : "rgba";
         switch (format) {
             case "hex": return this.toHex();
@@ -727,11 +741,171 @@ function Colour(arg0, g, b, a) {
             case "hsv": return this.toHSV();
             default: return this.toRGBA();
         }
-    };
-    this.copy = function () {
+    },
+    valueOf: function () {
+        return this.toNumber();
+    },
+    copy: function () {
         return new Colour(this.r, this.g, this.b, this.a);
     }
+
 }
+Colour.fromHSV = function (h, s, v) {
+    Colour.call(this);
+    this.setHSV(h, s, v);
+}
+Colour.fromHSV.prototype = Object.create(Colour.prototype);
+// Directly from the W3C's list of colour names:
+// http://www.w3.org/TR/css3-color/#svg-color
+var Colours = {
+    aliceblue           : new Colour(240, 248, 255),
+    antiquewhite        : new Colour(250, 235, 215),
+    aqua                : new Colour(  0, 255, 255),
+    aquamarine          : new Colour(127, 255, 212),
+    azure               : new Colour(240, 255, 255),
+    beige               : new Colour(245, 245, 220),
+    bisque              : new Colour(255, 228, 196),
+    black               : new Colour(  0,   0,   0),
+    blanchedalmond      : new Colour(255, 235, 205),
+    blue                : new Colour(  0,   0, 255),
+    blueviolet          : new Colour(138,  43, 226),
+    brown               : new Colour(165,  42,  42),
+    burlywood           : new Colour(222, 184, 135),
+    cadetblue           : new Colour( 95, 158, 160),
+    chartreuse          : new Colour(127, 255,   0),
+    chocolate           : new Colour(210, 105,  30),
+    coral               : new Colour(255, 127,  80),
+    cornflowerblue      : new Colour(100, 149, 237),
+    cornsilk            : new Colour(255, 248, 220),
+    crimson             : new Colour(220,  20,  60),
+    cyan                : new Colour(  0, 255, 255),
+    darkblue            : new Colour(  0,   0, 139),
+    darkcyan            : new Colour(  0, 139, 139),
+    darkgoldenrod       : new Colour(184, 134,  11),
+    darkgray            : new Colour(169, 169, 169),
+    darkgreen           : new Colour(  0, 100,   0),
+    darkgrey            : new Colour(169, 169, 169),
+    darkkhaki           : new Colour(189, 183, 107),
+    darkmagenta         : new Colour(139,   0, 139),
+    darkolivegreen      : new Colour( 85, 107,  47),
+    darkorange          : new Colour(255, 140,   0),
+    darkorchid          : new Colour(153,  50, 204),
+    darkred             : new Colour(139,   0,   0),
+    darksalmon          : new Colour(233, 150, 122),
+    darkseagreen        : new Colour(143, 188, 143),
+    darkslateblue       : new Colour( 72,  61, 139),
+    darkslategray       : new Colour( 47,  79,  79),
+    darkslategrey       : new Colour( 47,  79,  79),
+    darkturquoise       : new Colour(  0, 206, 209),
+    darkviolet          : new Colour(148,   0, 211),
+    deeppink            : new Colour(255,  20, 147),
+    deepskyblue         : new Colour(  0, 191, 255),
+    dimgray             : new Colour(105, 105, 105),
+    dimgrey             : new Colour(105, 105, 105),
+    dodgerblue          : new Colour( 30, 144, 255),
+    firebrick           : new Colour(178,  34,  34),
+    floralwhite         : new Colour(255, 250, 240),
+    forestgreen         : new Colour( 34, 139,  34),
+    fuchsia             : new Colour(255,   0, 255),
+    gainsboro           : new Colour(220, 220, 220),
+    ghostwhite          : new Colour(248, 248, 255),
+    gold                : new Colour(255, 215,   0),
+    goldenrod           : new Colour(218, 165,  32),
+    gray                : new Colour(128, 128, 128),
+    green               : new Colour(  0, 128,   0),
+    greenyellow         : new Colour(173, 255,  47),
+    grey                : new Colour(128, 128, 128),
+    honeydew            : new Colour(240, 255, 240),
+    hotpink             : new Colour(255, 105, 180),
+    indianred           : new Colour(205,  92,  92),
+    indigo              : new Colour( 75,   0, 130),
+    ivory               : new Colour(255, 255, 240),
+    khaki               : new Colour(240, 230, 140),
+    lavender            : new Colour(230, 230, 250),
+    lavenderblush       : new Colour(255, 240, 245),
+    lawngreen           : new Colour(124, 252,   0),
+    lemonchiffon        : new Colour(255, 250, 205),
+    lightblue           : new Colour(173, 216, 230),
+    lightcoral          : new Colour(240, 128, 128),
+    lightcyan           : new Colour(224, 255, 255),
+    lightgoldenrodyellow: new Colour(250, 250, 210),
+    lightgray           : new Colour(211, 211, 211),
+    lightgreen          : new Colour(144, 238, 144),
+    lightgrey           : new Colour(211, 211, 211),
+    lightpink           : new Colour(255, 182, 193),
+    lightsalmon         : new Colour(255, 160, 122),
+    lightseagreen       : new Colour( 32, 178, 170),
+    lightskyblue        : new Colour(135, 206, 250),
+    lightslategray      : new Colour(119, 136, 153),
+    lightslategrey      : new Colour(119, 136, 153),
+    lightsteelblue      : new Colour(176, 196, 222),
+    lightyellow         : new Colour(255, 255, 224),
+    lime                : new Colour(  0, 255,   0),
+    limegreen           : new Colour( 50, 205,  50),
+    linen               : new Colour(250, 240, 230),
+    magenta             : new Colour(255,   0, 255),
+    maroon              : new Colour(128,   0,   0),
+    mediumaquamarine    : new Colour(102, 205, 170),
+    mediumblue          : new Colour(  0,   0, 205),
+    mediumorchid        : new Colour(186,  85, 211),
+    mediumpurple        : new Colour(147, 112, 219),
+    mediumseagreen      : new Colour( 60, 179, 113),
+    mediumslateblue     : new Colour(123, 104, 238),
+    mediumspringgreen   : new Colour(  0, 250, 154),
+    mediumturquoise     : new Colour( 72, 209, 204),
+    mediumvioletred     : new Colour(199,  21, 133),
+    midnightblue        : new Colour( 25,  25, 112),
+    mintcream           : new Colour(245, 255, 250),
+    mistyrose           : new Colour(255, 228, 225),
+    moccasin            : new Colour(255, 228, 181),
+    navajowhite         : new Colour(255, 222, 173),
+    navy                : new Colour(  0,   0, 128),
+    oldlace             : new Colour(253, 245, 230),
+    olive               : new Colour(128, 128,   0),
+    olivedrab           : new Colour(107, 142,  35),
+    orange              : new Colour(255, 165,   0),
+    orangered           : new Colour(255,  69,   0),
+    orchid              : new Colour(218, 112, 214),
+    palegoldenrod       : new Colour(238, 232, 170),
+    palegreen           : new Colour(152, 251, 152),
+    paleturquoise       : new Colour(175, 238, 238),
+    palevioletred       : new Colour(219, 112, 147),
+    papayawhip          : new Colour(255, 239, 213),
+    peachpuff           : new Colour(255, 218, 185),
+    peru                : new Colour(205, 133,  63),
+    pink                : new Colour(255, 192, 203),
+    plum                : new Colour(221, 160, 221),
+    powderblue          : new Colour(176, 224, 230),
+    purple              : new Colour(128,   0, 128),
+    red                 : new Colour(255,   0,   0),
+    rosybrown           : new Colour(188, 143, 143),
+    royalblue           : new Colour( 65, 105, 225),
+    saddlebrown         : new Colour(139,  69,  19),
+    salmon              : new Colour(250, 128, 114),
+    sandybrown          : new Colour(244, 164,  96),
+    seagreen            : new Colour( 46, 139,  87),
+    seashell            : new Colour(255, 245, 238),
+    sienna              : new Colour(160,  82,  45),
+    silver              : new Colour(192, 192, 192),
+    skyblue             : new Colour(135, 206, 235),
+    slateblue           : new Colour(106,  90, 205),
+    slategray           : new Colour(112, 128, 144),
+    slategrey           : new Colour(112, 128, 144),
+    snow                : new Colour(255, 250, 250),
+    springgreen         : new Colour(  0, 255, 127),
+    steelblue           : new Colour( 70, 130, 180),
+    tan                 : new Colour(210, 180, 140),
+    teal                : new Colour(  0, 128, 128),
+    thistle             : new Colour(216, 191, 216),
+    tomato              : new Colour(255,  99,  71),
+    turquoise           : new Colour( 64, 224, 208),
+    violet              : new Colour(238, 130, 238),
+    wheat               : new Colour(245, 222, 179),
+    white               : new Colour(255, 255, 255),
+    whitesmoke          : new Colour(245, 245, 245),
+    yellow              : new Colour(255, 255,   0),
+    yellowgreen         : new Colour(154, 205,  50)
+};
 
 // not mine: repurposed from the ActionScript functions in http://gizma.com/easing/. Thanks to Robert Penner.
 var TimingFunctions = {
@@ -902,6 +1076,15 @@ CvsHelper.prototype = {
     // Returns whether or not the specified coordinate is inside of the canvas borders.
     isBounded: function (coord) {
         return this.bound(coord).equals(coord);
+    },
+    getLocationOfCoordinate: function (coord, extents, pan) {
+        var factor = new Vector2D(this.$.canvas.width, this.$.canvas.height).divide(extents);
+        return factor.multiply(extents.divide(2).subtract(pan).add(this.correctCoordinate(coord)));
+    },
+    getCoordinateFromLocation: function (location, extents, pan) {
+        var factor = new Vector2D(this.$.canvas.width, this.$.canvas.height).divide(extents);
+        var coord = location.divide(factor).add(pan).subtract(extents.divide(2));
+        return this.correctCoordinate(coord);
     },
     // Draws an array of points on the canvas as a line plot.
     // The 'fuzz' refers to the glow (rather, shadow) behind a drawn line.

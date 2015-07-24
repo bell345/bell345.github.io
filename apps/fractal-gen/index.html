@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Thomas Bell</title>
+    <meta charset="utf-8" />
+    <base href="../../" />
+    <link rel="stylesheet" href="assets/css/site.css" />
+    <link rel="stylesheet" href="assets/css/apps/fractal-gen.css" />
+    <script src="assets/js/jquery2.min.js"></script>
+    <script src="assets/js/require.js"></script>
+    <script src="assets/js/apps/fractal-gen.js"></script>
+</head>
+<body>
+    <canvas id="canvas" class="gen">
+    </canvas>
+    <canvas id="output">
+        Your browser is not capable of recognising the HTML5 &lt;canvas&gt; graphics framework.
+        Supported browsers include Google Chrome and Mozilla Firefox.
+    </canvas>
+    <div class="bottom-left-ui ui-container">
+        <div class="control-row">
+            <a class="up-down on mini-mandelbrot-toggle" for=".mini-mandelbrot-container" href="#">Mini Map</a>
+        </div>
+        <div class="mini-mandelbrot-container">
+            <canvas id="mini-mandelbrot-gen" class="gen" width="320" height="240"></canvas>
+            <canvas id="mini-mandelbrot" width="320" height="240"></canvas>
+        </div>
+    </div>
+    <div class="bottom-right-ui ui-container">
+        <div class="julia exclusive control-row">
+            <input type="text" class="julia-real" placeholder="Real component..." />
+            <input type="text" class="julia-imaginary" placeholder="Imaginary component..." />
+        </div>
+        <div class="control-row">
+            <select class="fractal-type">
+                <option value="mandelbrot" selected>Mandelbrot Set</option>
+                <option value="julia">Julia Set</option>
+            </select>
+            <button class="major draw-fractal">Draw Fractal</button>
+        </div>
+    </div>
+</body>
+<html>
