@@ -141,14 +141,20 @@ TBI.UI.updateUI = function (force) {
         }(curr));
     }
     $("table.sortable:not(.done)").toggleClass("done", true);
+
+    var elementsInNeed = $(".has-help + .help:not(.done)");
+    for (var i=0;i<elementsInNeed.length;i++)
+        TBI.UI.HoverPopup.bindElement(elementsInNeed[i].previousElementSibling, "", elementsInNeed[i].innerHTML);
+
+    $(".has-help + .help:not(.done)").toggleClass("done", true);
 }
 
 TBI.UI.HoverPopup = function (x, y, title, body) {
     this.position = new Vector2D(x, y);
     var popDiv = document.createElement("div");
     popDiv.className = "popup";
-    popDiv.style.top = this.position.x + 20 + "px";
-    popDiv.style.left = this.position.y + 20 + "px";
+    popDiv.style.left = this.position.x + 20 + "px";
+    popDiv.style.top = this.position.y + 20 + "px";
         var popHead = document.createElement("h3");
         popHead.innerHTML = title;
     popDiv.appendChild(popHead);
@@ -173,7 +179,7 @@ TBI.UI.HoverPopup = function (x, y, title, body) {
 TBI.UI.HoverPopup.bindElement = function (element, title, body) {
     $(element).mousemove(function (title, body) {
         return function (event) {
-            var popup = new TBI.UI.HoverPopup(event.clientX, event.clientY, title, body);
+            var popup = new TBI.UI.HoverPopup(event.pageX, event.pageY, title, body);
         }
     }(title, body));
     $(element).mouseleave(function () {

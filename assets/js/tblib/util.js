@@ -538,7 +538,7 @@ function Colour(arg0, g, b, a) {
         this.r = r;
         this.g = g;
         this.b = b;
-        this.a = a || 1;
+        this.a = isNull(a) ? a : 1;
     // here comes the string parsing
     } else if (!isNull(arg0)) {
         var str = arg0;
@@ -1049,6 +1049,7 @@ function CvsHelper(context) {
 CvsHelper.prototype = {
     constructor: CvsHelper,
     // Alias to quickly clear entire canvas.
+    // Doesn't take into account $.(translate|rotate|scale).
     clear: function () {
         this.$.clearRect(0, 0, this.$.canvas.width, this.$.canvas.height);
     },
@@ -1066,6 +1067,7 @@ CvsHelper.prototype = {
         return a;
     },
     // Corrects a coordinate on a canvas to a properly signed value for drawing on a Canvas2D.
+    // Also works in the opposite direction: can correct a canvas coordinate in retrieving a logical coordinate.
     correctCoordinate: function (coord) {
         return new Vector2D(coord.x, -coord.y);
     },
@@ -1077,13 +1079,19 @@ CvsHelper.prototype = {
     isBounded: function (coord) {
         return this.bound(coord).equals(coord);
     },
+    // Returns a Vector2D representing the canvas location of the given logical plane coordinate.
+    // extents: The width and height of the logical plane subsection inside of the canvas.
+    // pan: The centre of the logical plane subsection inside of the canvas.
     getLocationOfCoordinate: function (coord, extents, pan) {
         var factor = new Vector2D(this.$.canvas.width, this.$.canvas.height).divide(extents);
-        return factor.multiply(extents.divide(2).subtract(pan).add(this.correctCoordinate(coord)));
+        return factor.multiply(extents.divide(2).subtract(this.correctCoordinate(pan)).add(this.correctCoordinate(coord)));
     },
+    // Returns a Vector2D representing the logical plane coordinate from the given canvas location.
+    // extents: The width and height of the logical plane subsection inside of the canvas.
+    // pan: The centre of the logical plane subsection inside of the canvas.
     getCoordinateFromLocation: function (location, extents, pan) {
         var factor = new Vector2D(this.$.canvas.width, this.$.canvas.height).divide(extents);
-        var coord = location.divide(factor).add(pan).subtract(extents.divide(2));
+        var coord = location.divide(factor).add(this.correctCoordinate(pan)).subtract(extents.divide(2));
         return this.correctCoordinate(coord);
     },
     // Draws an array of points on the canvas as a line plot.
@@ -1162,6 +1170,94 @@ CvsHelper.prototype = {
         else this.$.fillText(text, pos.x, pos.y, width);
         this.$.closePath();
         this.$.restore();
+    }
+}
+
+// A class for canvas interfaces that handle common utilities, such as frame management, pausing,
+// reacting to window size changes and UI bindings.
+// cvs: A <canvas> element where the context will be assigned from.
+// notFullWidth: If this is true, this interface will not expand to the limits of the current page.
+function WideCanvas(cvs, notFullWidth) {
+    this.canvas = cvs;
+    this.$ = cvs.getContext("2d");
+    if (isNull(this.$))
+        TBI.error("Canvas initialisation failed.");
+    this.helper = new CvsHelper(this.$);
+    if (notFullWidth)
+        this.fullWidth = false;
+    this._loop();
+}
+WideCanvas.prototype = {
+    constructor: WideCanvas,
+    paused: false,
+    lastFrame: -1,
+    fullWidth: true,
+    _loop: function () {
+        var self = this;
+        setTimeout(function () {
+            self._loop();
+        }, 0);
+
+        var currTime = new Date().getTime();
+        if (!this.paused) {
+            if (this.lastFrame == -1) this.lastFrame = currTime;
+            var delta = (currTime - this.lastFrame) / 1000;
+            this.loop(delta);
+        } else {
+
+        }
+
+        if (this.fullWidth) {
+            if (window.innerWidth != this.canvas.width) this.canvas.width = window.innerWidth;
+            if (window.innerHeight != this.canvas.height) this.canvas.height = window.innerHeight;
+        }
+        this.lastFrame = currTime;
+    },
+    loop: function () {},
+
+    bindings: [],
+    bind: function (element, event, property, onEvent) {
+        if (element instanceof Array || element instanceof jQuery.fn.init) {
+            for (var i=0;i<element.length;i++)
+                this.bind(element[i], event, property, onEvent);
+            return;
+        }
+
+        if (!(onEvent instanceof Function)) onEvent = function () {};
+        var cvs = this;
+
+        var initialVal;
+        if (property instanceof Function) initialVal = property(cvs, null, element);
+        else initialVal = Object.getProperty(cvs, property);
+
+        var isNum;
+        if (typeof initialVal == typeof 1) isNum = true;
+        else isNum = false;
+
+        $(element).val(initialVal);
+
+        var binding = {
+            element: element,
+            event: event,
+            property: property,
+            isNumber: isNum
+        };
+        this.bindings.push(binding);
+
+        $(element).on(event, function (e) {
+            if (property instanceof Function) property(cvs, isNum ? parseFloat(this.value) : this.value, this, e);
+            else Object.setProperty(cvs, property, isNum ? parseFloat(this.value) : this.value);
+            onEvent(e, this.value);
+        });
+    },
+    updateBindings: function () {
+        var cvs = this;
+        this.bindings.forEach(function (e) {
+            var value;
+            if (e.property instanceof Function) value = e.property(cvs, null, e.element);
+            else value = Object.getProperty(cvs, e.property);
+            $(e.element).val(value);
+        });
     }
 }
 

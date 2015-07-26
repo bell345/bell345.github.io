@@ -3,8 +3,8 @@
     "version": 2,
     "projects": [
         {
-            "updated": "2015-07-24T16:51:34Z",
-            "version": "0.9",
+            "updated": "2015-07-26T14:47:00Z",
+            "version": "1.0",
             "id": "fractal-gen",
             "title": "Fractal Generator"
         },

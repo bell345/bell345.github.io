@@ -89,7 +89,6 @@
     padding:0;
     border:0;
     font-family:"Lato", "Open Sans", "Helvetica", "Arial", sans-serif;
-    font-size:18px;
     box-sizing:border-box;
     transition:0.2s all;
 }
@@ -107,6 +106,7 @@ body {
     min-width:100%;
     padding:28px 10%;
     background:linear-gradient(45deg, #d2d2d2, #d2d2d2 50%, #ddd 50%, #ddd) 0 0 / 50px 50px;
+    font-size:18px;
 }
 
 body::after {
@@ -574,6 +574,13 @@ hr {
 .float-right {
     float:right;
 }
+.inline {
+    display:inline-block;
+    padding-left:12px;
+    padding-right:12px;
+    vertical-align:middle;
+    margin-bottom:0;
+}
 /* ============ */
 /* INPUTS/FORMS */
 /* ============ */
@@ -603,6 +610,7 @@ button:focus, input[type]:focus, select:focus { outline:0 }
 input[type], *[contenteditable], select, option {
     padding:8px 12px;
     margin:4px;
+    vertical-align:middle;
 }
 input[type], select, option {
     font-size:14px;
@@ -670,7 +678,7 @@ button.major:active, input[type="submit"]:active {
 .radio-input label {
     padding:4px 8px;
     background:#E2E2E2;
-    font-size:14px;
+    font-size:16px;
     border-radius:0 128px 128px 0;
     -webkit-transition:0.2s all;
     -moz-transition:0.2s all;
@@ -729,6 +737,55 @@ textarea {
     padding:8px 12px;
     font-size:14px;
     transition:0s all;
+}
+input[type="range"] {
+    -webkit-appearance:none;
+    background:none;
+    overflow:hidden;
+    padding-left:0;
+    padding-right:0;
+    width:300px;
+}
+input[type="range"]::-webkit-slider-runnable-track {
+    border:0;
+    height:18px;
+    position:relative;
+    background:transparent;
+    margin-top:-6px;
+}
+input[type="range"]::-webkit-slider-thumb {
+    border:0;
+    height:24px;
+    width:4px;
+    background:#eee;
+    -webkit-appearance:none;
+    position:relative;
+    cursor:ew-resize;
+}
+input[type="range"]::-webkit-slider-thumb::before {
+    content:"";
+    position:absolute;
+    background:#09f;
+    height:16px;
+    margin-left:-8000px;
+    width:8000px;
+    margin-top:4px;
+    box-shadow:inset -4px 0 8px -4px rgba(0,0,0,0.4), inset 0 -2px 0 0 rgba(0,0,0,0.2);
+}
+input[type="range"]::-webkit-slider-thumb::after {
+    content:"";
+    position:absolute;
+    background:rgba(0,0,0,0.2);
+    height:16px;
+    margin-right:-8000px;
+    margin-left:4px;
+    width:8000px;
+    margin-top:4px;
+    box-shadow:inset 4px 0 8px -4px rgba(0,0,0,0.4), inset 0 -2px 0 0 rgba(0,0,0,0.2);
+}
+input[type="color"] {
+    box-sizing:content-box;
+    padding:2px 4px;
 }
 /* ====== */
 /* TABLES */
@@ -1015,7 +1072,7 @@ div.popup ul {
     right:0;
     width:30%;
     height:100%;
-    z-index:1;
+    z-index:9999;
     pointer-events:none;
 }
 #note-holder-inner {
@@ -1088,3 +1145,7 @@ div.popup ul {
 #note-holder-inner #note-group-error li:not([data-instances])::before { content:"\2716"; }
 #note-holder-inner #note-group-info li:not([data-instances])::before { content:"i"; }
 #note-holder-inner .note li[data-instances]::before { content:attr(data-instances); }
+
+.has-help + .help {
+    display:none;
+}

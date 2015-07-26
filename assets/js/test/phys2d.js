@@ -113,6 +113,124 @@ Matrix.prototype.transpose = function () {
     for (var i=0,a=[];i<this.rows;i++) for (var j=0;j<this.columns;j++) a.push(this[j][i]);
     return a;
 }
+
+function Matrix4x4(a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p) {
+    this.elements = b ? [a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q] : a;
+}
+Matrix4x4.prototype.rows = 4;
+Matrix4x4.prototype.columns = 4;
+Matrix4x4.prototype.toArray = function () { return this.elements; };
+Matrix4x4.prototype.getRow = function (row) { return this.elements.filter(function (e, i) { return Math.floor(i/this.columns) == row; }); };
+Matrix4x4.prototype.getColumn = function (column) { return this.elements.filter(function (e, i) { return (i % this.columns) == column; }); };
+
+function PhysObject() {
+    this.position = new Vector2D(0, 0);
+    this.angle = 0;
+    this.scale = function (scale) {};
+    this.getSeparatingAxes = function () { return []; };
+    this.getLengthOfProjection = function (axis) { return 0; };
+    this.getMiddleProjection = function () { return this.position; };
+    this.testForCollision = function (other) {
+        var axes = this.getSeparatingAxes();
+        var otherAxes = other.getSeparatingAxes();
+        otherAxes.forEach(function (e, i) {
+            var index = -1;
+            axes.forEach(function (f, j) { if (e.equals(f)) index = j; });
+            if (index == -1) axes.push(e);
+        });
+
+        if (axes.length == 0) axes = [this.position.subtract(other.position).normalise()];
+
+        var results = [];
+        for (var i=0;i<axes.length;i++) {
+            var axis = axes[i], displacementVec = Vector2D.zero, disp = 0;
+
+            displacementVec =
+                this.getMiddleProjection(axis)
+                .subtract(other.getMiddleProjection(axis))
+                .project(axis);
+
+            disp = displacementVec.magnitude();
+            disp -= this.getLengthOfProjection(axis);
+            disp -= other.getLengthOfProjection(axis);
+
+            var sign = Math.sign(displacementVec.dot(axis));
+            if (sign == 0) sign = 1;
+
+            if (disp > 0) return null;
+            else results.push(-disp * sign);
+        }
+
+        var minIndex = 0,
+            minValue =
+        results.reduce(function (a, b, k) {
+            if (Math.abs(b) < Math.abs(a)) minIndex = k;
+            return Math.abs(b) < Math.abs(a) ? b : a;
+        });
+
+        return axes[minIndex].multiply(minValue);
+    };
+}
+function PhysCircleObject(pos, radius) {
+    PhysObject.call(this);
+    this.position = pos;
+    this.radius = radius;
+    this.scale = function (scale) { this.radius *= scale; };
+    this.getLengthOfProjection = function (axis) { return this.radius; };
+    this.getMiddleProjection = function () { return this.position; };
+}
+function PhysBoxObject(pos, width, height) {
+    PhysObject.call(this);
+    this.position = pos;
+    this.width = width;
+    this.height = height;
+    this.scale = function (scale) {
+        this.width *= scale.x;
+        this.height *= scale.y;
+    };
+    Object.defineProperty(this, "vertices", {
+        get: function () {
+            var extent = Math.pythagoras(this.width, this.height),
+                angle = Math.atan2(this.height, this.width);
+            return [
+                circlePointV2D(this.rotation-angle, -extent, this.position),
+                circlePointV2D(this.rotation+angle, -extent, this.position),
+                circlePointV2D(this.rotation-angle, extent, this.position),
+                circlePointV2D(this.rotation+angle, extent, this.position)
+            ];
+        }
+    });
+    this.getSeparatingAxes = function () {
+        return [
+            circlePointV2D(this.rotation, 1),
+            circlePointV2D(this.rotation + Math.PI/2, 1)
+        ];
+    };
+    this.getMinMaxForAxis = function (axis) {
+        var vtxs = this.vertices,
+            min = vtxs.reduce(function (a, b) {
+                if (a.dot(axis) < b.dot(axis)) return a;
+                else return b;
+            }),
+            max = vtxs.reduce(function (a, b) {
+                if (a.dot(axis) > b.dot(axis)) return a;
+                else return b;
+            });
+        return { min: min, max: max };
+    };
+    this.getMiddleProjection = function (axis) {
+        var minmax = this.getMinMaxForAxis(axis);
+        var avg = new Vector2D(0, 0);
+        avg.x = (minmax.min.x + minmax.max.x) / 2;
+        avg.y = (minmax.min.y + minmax.max.y) / 2;
+        return avg;
+    };
+    this.getLengthOfProjection = function (axis) {
+        var minmax = this.getMinMaxForAxis(axis);
+        return minmax.max.project(axis).subtract(minmax.min.project(axis)).magnitude();
+    };
+}
+
 var Phys2D = {
     canvas: null,
     frames: 0,

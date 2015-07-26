@@ -1,66 +1,4 @@
-var gen;
-function WideCanvas(cvs, notFullWidth) {
-    this.canvas = cvs;
-    this.$ = cvs.getContext("2d");
-    if (isNull(this.$))
-        TBI.error("Canvas initialisation failed.");
-    this.helper = new CvsHelper(this.$);
-    if (notFullWidth)
-        this.fullWidth = false;
-    this._loop();
-}
-WideCanvas.prototype = {
-    constructor: WideCanvas,
-    paused: false,
-    lastFrame: -1,
-    fullWidth: true,
-    _loop: function () {
-        var self = this;
-        setTimeout(function () {
-            self._loop();
-        }, 0);
-
-        var currTime = new Date().getTime();
-        if (!this.paused) {
-            if (this.lastFrame == -1) this.lastFrame = currTime;
-            var delta = (currTime - this.lastFrame) / 1000;
-            this.loop(delta);
-        } else {
-
-        }
-
-        if (this.fullWidth) {
-            if (window.innerWidth != this.canvas.width) this.canvas.width = window.innerWidth;
-            if (window.innerHeight != this.canvas.height) this.canvas.height = window.innerHeight;
-        }
-        this.lastFrame = currTime;
-    },
-    loop: function () {},
-    bind: function (element, event, property, onEvent) {
-        if (!(onEvent instanceof Function)) onEvent = function () {};
-        var cvs = this;
-        function decodeProperty(obj, prop, value) {
-            var tokens = prop.replace(/\["|"\]/, ".").removeAll(/\.$|^\./).split(".");
-            var ref = obj;
-            for (var i=0;i<tokens.length;i++) {
-                if (i == tokens.length - 1 && !isNull(value))
-                    ref[tokens[i]] = value;
-                else if (!isNull(ref[tokens[i]]))
-                    ref = ref[tokens[i]];
-            }
-            return ref;
-        }
-        var isNum = false;
-        var initialVal = decodeProperty(cvs, property);
-        if (typeof initialVal == typeof 1)
-            isNum = true;
-        $(element).val(decodeProperty(cvs, property));
-        $(element).on(event, function (e) {
-            decodeProperty(cvs, property, isNum ? parseFloat(this.value) : this.value);
-            onEvent(e, this.value);
-        });
-    }
-}
+var gen, minimap;
 
 function Complex(real, imaginary) { this.real = real; this.imaginary = imaginary; }
 Complex.prototype.add = function (cmp) {
@@ -76,97 +14,68 @@ Complex.prototype.equals = function (cmp) {
 
 var GenerationModes = { direct: 0, delayed: 1, visual: 2 };
 
-function StateHistory(obj, maxHistory) {
-    this.state = obj;
-    this.maxHistory = maxHistory;
-    this.stack = [];
-}
-StateHistory.prototype.push = function () {
-    if (this.stack.length >= this.maxHistory) this.stack.unshift();
-    else this.stack.push(this.state);
-}
-StateHistory.prototype.pop = function () {
-    this.state = this.stack.pop();
+
+// Quick and dirty fix for the <base> href attribute modifying hash links to point to the root directory
+// instead of a specified portion of the page.
+function fixHashLinks() {
+    var links = $("a[href^='#']"); // all links that start with a "#" symbol (relative anchor links)
+    links.attr("href", function (i, curr) { return location.pathname + curr; }); // put the current path in front of the URL to make it absolute
 }
 
-function FractalGen(cvs, supp, notFullWidth) {
-    WideCanvas.call(this, cvs, notFullWidth);
+$(function () {
+Require([
+    "assets/js/tblib/base.js",
+    "assets/js/tblib/util.js",
+    "assets/js/tblib/loader.js",
+    "assets/js/tblib/ui.js"
+], function () {
+    function FractalGen(cvs, supp, notFullWidth) {
+        WideCanvas.call(this, cvs, notFullWidth);
 
-    this.output = new WideCanvas(supp, notFullWidth);
-    this.settings = {
-        generation: {
-            iterationLimit: 300,
-            boundary: 4,
-            analysisIncrement: 1,
-            mode: GenerationModes.visual
-        },
-        display: {
-            hueFrequency: -1.2,
-            hueStart: 230,
-            saturation: 0.7,
-            value: 0.8
-        },
-        controls: {
-            scrollZoomFactor: 2
-        }
-    };
-    this.state = {
-        view: {
-            extents: new Vector2D(3, 3),
-            pan: new Vector2D(-0.75, 0)
-        },
-        controls: {
-            mouse: null,
-            viewportFactor: 1
-        },
-        function: "mandelbrot",
-        julia: new Complex(0.2, 0.8)
-    };
-    this.history = new StateHistory(this.state, 20);
-    this.palette = [],
-    this.mandelbrot = function (obj, coord) {
-        var gset = obj.settings.generation,
-            dset = obj.settings.display,
-            state = obj.state.view;
-        /*
-            var y2 = coord.y*coord.y;
-            var xt14 = coord.x - 1/4;
-            var q = xt14*xt14 + y2;
-            if (q*(q + xt14) < y2/4
-                || (coord.x + 1)*(coord.x + 1) + y2 < 1/16)
-                return "#000";
-        */
+        this.output = new WideCanvas(supp, notFullWidth);
+        this.settings = {
+            generation: {
+                iterationLimit: 300,
+                boundary: 4,
+                analysisIncrement: 1,
+                mode: GenerationModes.direct,
+                timeout: 30000
+            },
+            display: {
+                hueFrequency: -1.2,
+                hueStart: 230,
+                saturation: 0.7,
+                value: 0.8,
+                boundedColour: Colours.black.toHex()
+            },
+            controls: {
+                scrollZoomFactor: 2
+            }
+        };
+        this.state = {
+            view: {
+                extents: new Vector2D(3, 3),
+                pan: new Vector2D(-0.75, 0)
+            },
+            controls: {
+                mouse: null,
+                viewportFactor: new Vector2D(1)
+            },
+            function: "mandelbrot",
+            julia: new Vector2D(0.2, 0.8)
+        };
+        this.previous = Object.copy(this.state);
+        this.palette = [];
 
-        var cmp = new Complex(coord.x, coord.y);
-        var fate = new Complex(0, 0);
-        var fatesqr = new Complex(0, 0);
+        this.pauseGeneration = false;
 
-        for (var i=0;i<gset.iterationLimit;i++) {
-            //var nextFate = fate.multiply(fate).add(cmp);
-            fate.imaginary = fate.real * fate.imaginary;
-            fate.imaginary += fate.imaginary;
-            fate.imaginary += cmp.imaginary;
-            fate.real = fatesqr.real - fatesqr.imaginary + cmp.real;
-
-            fatesqr.real = Math.pow(fate.real, 2);
-            fatesqr.imaginary = Math.pow(fate.imaginary, 2);
-
-            /*if (nextFate.equals(fate))
-                return "#000";
-            else fate = nextFate;*/
-
-            if (fatesqr.real + fatesqr.imaginary > gset.boundary)
-                return obj.palette[i];
-        }
-        return "#000";
-    };
-    this.julia = function (cmp) {
-        return function (obj, coord) {
+        var juliaFunc = function (obj) { return function (coord, cmp) {
             var gset = obj.settings.generation,
                 dset = obj.settings.display,
                 state = obj.state.view;
 
-            var fate = new Complex(coord.x, coord.y);
+            cmp = cmp instanceof Complex ? cmp : new Complex(cmp.x, cmp.y);
+            var fate = coord instanceof Complex ? coord : new Complex(coord.x, coord.y);
             var fatesqr = new Complex(fate.real*fate.real, fate.imaginary*fate.imaginary);
 
             for (var i=0;i<gset.iterationLimit;i++) {
@@ -182,174 +91,195 @@ function FractalGen(cvs, supp, notFullWidth) {
                     return obj.palette[i];
             }
 
-            return "#000";
-        }
-    }
-    this.keepExtentsSquare = function () {
-        var extents = this.state.view.extents;
-        var ratio = this.$.canvas.width / this.$.canvas.height;
-        if ((extents.x/extents.y).fixFloat(4) == ratio.fixFloat(4)) return;
+            return obj.settings.display.boundedColour;
+        }; }(this);
 
-        extents.x = extents.y * ratio;
-    };
-    this.drawFractal = function (func, resolution, onCompletion) {
-        var set = this.settings.generation,
-            state = this.state.view;
+        this.mandelbrot = function (coord) { return juliaFunc(Vector2D.zero, coord); };
+        this.julia = function (cmp) { return function (coord) { return juliaFunc(coord, cmp); }; };
+        this.keepExtentsSquare = function () {
+            var extents = this.state.view.extents;
+            var ratio = this.$.canvas.width / this.$.canvas.height;
+            if ((extents.x/extents.y).fixFloat(4) == ratio.fixFloat(4)) return;
 
-        var start = new Vector2D(0, 0),
-            end = new Vector2D(this.canvas.width, this.canvas.height);
-
-        var self = this;
-        var draw = function (x, y, coord) {
-            var value = func(self, coord);
-            self.$.fillStyle = value;
-            self.$.beginPath();
-            self.$.fillRect(x, y, resolution, resolution);
-            self.$.fill();
-            self.$.closePath();
-            if (x + resolution >= end.x && y + resolution >= end.y && onCompletion instanceof Function)
-                onCompletion();
+            extents.x = extents.y * ratio;
         };
-        var factor = state.extents.divide(new Vector2D(this.canvas.width, this.canvas.height));
-        var halfExtents = state.extents.divide(2);
-        var constant = state.pan.subtract(halfExtents);
+        this.drawFractal = function (func, resolution, onCompletion, onTimeout) {
+            var set = this.settings.generation,
+                state = this.state.view;
 
-        for (var x=start.x;x<end.x;x+=resolution)
-            for (var y=start.y;y<end.y;y+=resolution)
-                switch (set.mode) {
-                    case GenerationModes.direct:
-                        draw(x, y, new Vector2D(factor.x*x + constant.x, factor.y*y + constant.y)); break;
-                    case GenerationModes.delayed:
-                        requestAnimationFrame(function (x, y) {
-                            var coord = new Vector2D(factor.x*x + constant.x, factor.y*y + constant.y);
-                            return function () {
-                                draw(x, y, coord)
-                            }
-                        }(x, y)); break;
-                    case GenerationModes.visual:
-                        setTimeout(function (x, y) {
-                            var coord = new Vector2D(factor.x*x + constant.x, factor.y*y + constant.y);
-                            draw(x, y, coord);
-                        }, 0, x, y); break;
+            var start = new Vector2D(0, 0),
+                end = new Vector2D(this.canvas.width, this.canvas.height);
+
+            var self = this;
+            var startTime = new Date().getTime();
+            var draw = function (x, y, coord) {
+                if (self.pauseGeneration || (new Date().getTime() - startTime) > set.timeout) return onTimeout();
+                var value = func(coord);
+                self.$.fillStyle = value;
+                self.$.beginPath();
+                self.$.fillRect(x, y, resolution, resolution);
+                self.$.fill();
+                self.$.closePath();
+                if (x + resolution >= end.x && y + resolution >= end.y && onCompletion instanceof Function)
+                    onCompletion();
+            };
+            var factor = state.extents.divide(new Vector2D(this.canvas.width, this.canvas.height));
+            var halfExtents = state.extents.divide(2);
+            var constant = this.helper.correctCoordinate(state.pan).subtract(halfExtents);
+
+            for (var x=start.x;x<end.x;x+=resolution) {
+                for (var y=start.y;y<end.y;y+=resolution) {
+                    if (self.pauseGeneration || (new Date().getTime() - startTime) > set.timeout) return onTimeout();
+                    switch (set.mode) {
+                        case GenerationModes.direct:
+                            draw(x, y, new Vector2D(factor.x*x + constant.x, factor.y*y + constant.y)); break;
+                        case GenerationModes.delayed:
+                            requestAnimationFrame(function (x, y) {
+                                var coord = new Vector2D(factor.x*x + constant.x, factor.y*y + constant.y);
+                                return function () {
+                                    draw(x, y, coord)
+                                }
+                            }(x, y)); break;
+                        case GenerationModes.visual:
+                            setTimeout(function (x, y) {
+                                if (self.pauseGeneration || (new Date().getTime() - startTime) > set.timeout) return onTimeout();
+                                var coord = new Vector2D(factor.x*x + constant.x, factor.y*y + constant.y);
+                                draw(x, y, coord);
+                            }, 0, x, y); break;
+                    }
                 }
-    };
-    this.regeneratePalette = function () {
-        var dset = this.settings.display,
-            gset = this.settings.generation;
+            }
 
-        for (var i=0;i<gset.iterationLimit;i++)
-            this.palette[i] = new Colour.fromHSV(Math.abs(i*dset.hueFrequency + dset.hueStart) % 360, dset.saturation, dset.value).toHex();
-    };
-    this.render = function () {
-        var gset = this.settings.generation;
-        var func = function () {};
+        };
+        this.regeneratePalette = function () {
+            var dset = this.settings.display,
+                gset = this.settings.generation;
 
-        switch (this.state.function) {
-            case "mandelbrot":
-                func = this.mandelbrot; break;
-            case "julia":
-                func = this.julia(this.state.julia); break;
-            default:
-                TBI.log("No function selected.");
-                return;
-        }
+            for (var i=0;i<gset.iterationLimit;i++)
+                this.palette[i] = new Colour.fromHSV(Math.abs(i*dset.hueFrequency + dset.hueStart) % 360, dset.saturation, dset.value).toHex();
+        };
+        this.render = function () {
+            var gset = this.settings.generation;
+            var func = function () {};
 
-        this.keepExtentsSquare();
-        this.helper.clear();
-        this.regeneratePalette();
+            switch (this.state.function) {
+                case "mandelbrot":
+                    func = this.mandelbrot; break;
+                case "julia":
+                    func = this.julia(this.state.julia); break;
+                default:
+                    TBI.log("No function selected.");
+                    return;
+            }
 
-        var self = this;
-        this.canvas.style.display = "block";
-        this.drawFractal(func, gset.analysisIncrement, function () {
-            self.canvas.style.display = "none";
-            self.output.canvas.style.backgroundImage = "url("+self.canvas.toDataURL("image/png")+")";
-        });
-    }
-    this.drawThing = function () {
-        this.render(this.mandelbrot);
-        /*
-        //var increment = 32;
-        var self = this;
-        var draw = function (inc) {
-            self.drawFractal(self.mandelbrot, inc, inc <= 1 ? function () {} : function (i) { return function () { draw(i); }; }(inc/2));
-        }
-        //this.drawFractal(this.mandelbrot, increment);
-        draw(32);*/
-    };
-    this.loop = function (delta) {
-        //this.helper.clear();
-        this.keepExtentsSquare();
-        this.history.push();
-    };
-
-    var master = this;
-    this.output.drawViewport = function () {
-        var mouseCoords = master.state.controls.mouse;
-        if (!isNull(mouseCoords)) {
-            var factor = new Vector2D(this.canvas.width, this.canvas.height).multiply(master.state.controls.viewportFactor);
-
-            var topLeft = mouseCoords.subtract(factor.divide(2));
-            var bottomRight = mouseCoords.add(factor.divide(2));
+            this.keepExtentsSquare();
             this.helper.clear();
-            this.helper.polygon([
-                topLeft,
-                new Vector2D(bottomRight.x, topLeft.y),
-                bottomRight,
-                new Vector2D(topLeft.x, bottomRight.y),
-                topLeft
-            ], "rgba(255, 255, 255, 0.1)", 3, "#eee");
+            this.regeneratePalette();
+
+            var self = this;
+            this.canvas.style.display = "block";
+            this.drawFractal(func, gset.analysisIncrement, function () {
+                self.canvas.style.display = "none";
+                self.output.canvas.style.backgroundImage = "url("+self.canvas.toDataURL("image/png")+")";
+                self.previous = Object.copy(self.state);
+            }, function () {
+                TBI.error("Fractal took too long to generate. Current limit is "+(self.settings.generation.timeout/1000)+" seconds.");
+            });
+        };
+        this.loop = function (delta) {
+            //this.helper.clear();
+            this.keepExtentsSquare();
+        };
+        this.zoom = function (sign) {
+            var set = gen.settings.controls,
+                state = gen.state.controls;
+
+            if (sign < 0)
+                state.viewportFactor = state.viewportFactor.divide(set.scrollZoomFactor);
+            else if (sign > 0)
+                state.viewportFactor = state.viewportFactor.multiply(set.scrollZoomFactor);
+
+            state.viewportFactor = state.viewportFactor.clamp(new Vector2D(1/256), new Vector2D(1));
+            gen.drawViewport();
+        }
+
+        this.drawViewport = function () {
+            var mouseCoords = this.state.controls.mouse;
+            if (!isNull(mouseCoords)) {
+                var factor = new Vector2D(this.output.canvas.width, this.output.canvas.height).multiply(this.state.controls.viewportFactor);
+
+                var topLeft = mouseCoords.subtract(factor.divide(2));
+                var bottomRight = mouseCoords.add(factor.divide(2));
+
+                this.output.helper.clear();
+                this.output.$.lineCap = "round";
+
+                this.output.helper.circle(mouseCoords, 4, "#eee");
+
+                this.output.helper.polygon([
+                    topLeft,
+                    new Vector2D(bottomRight.x, topLeft.y),
+                    bottomRight,
+                    new Vector2D(topLeft.x, bottomRight.y),
+                    topLeft
+                ], "rgba(255, 255, 255, 0.2)", 3, "#eee");
+            }
+            this.updateBindings();
         }
     }
-}
-FractalGen.prototype = Object.create(WideCanvas.prototype);
-FractalGen.prototype.constructor = FractalGen;
-
-$(function () {
-Require([
-    "assets/js/tblib/base.js",
-    "assets/js/tblib/util.js",
-    "assets/js/tblib/loader.js",
-    "assets/js/tblib/ui.js"
-], function () {
+    FractalGen.prototype = Object.create(WideCanvas.prototype);
+    FractalGen.prototype.constructor = FractalGen;
     loader.start();
 
     $(document).on("pageload", function () {
         TBI.UI.updateUI();
+        fixHashLinks();
         gen = new FractalGen($("#canvas")[0], $("#output")[0]);
         gen.render();
 
-        var minimap = new FractalGen($("#mini-mandelbrot-gen")[0], $("#mini-mandelbrot")[0], true);
+        minimap = new FractalGen($("#mini-mandelbrot-gen")[0], $("#mini-mandelbrot")[0], true);
         minimap.render();
 
+        function updateMinimap() {
+            var state = gen.state.view,
+                ministate = minimap.state.view;
+            var isMandelbrot = gen.state.function == "mandelbrot";
+            var pan = state.pan;
+
+            minimap.state.controls.mouse = minimap.helper.getLocationOfCoordinate(isMandelbrot ? pan : gen.state.julia, ministate.extents, ministate.pan);
+            minimap.state.controls.viewportFactor = isMandelbrot ? state.extents.divide(ministate.extents) : 0;
+
+            minimap.drawViewport();
+        }
+
         $("#output").mousemove(function (e) {
-            gen.state.controls.mouse = new Vector2D(e.clientX, e.clientY);
-            gen.output.drawViewport();
+            gen.state.controls.mouse = new Vector2D(e.originalEvent.layerX, e.originalEvent.layerY);
+            gen.drawViewport();
         });
         $("#output").on("mousewheel", function (e) {
-            var set = gen.settings.controls,
-                state = gen.state.controls;
-
-            var dir = e.originalEvent.deltaY;
-            if (dir < 0)
-                state.viewportFactor /= set.scrollZoomFactor;
-            else if (dir > 0)
-                state.viewportFactor *= set.scrollZoomFactor;
-
-            state.viewportFactor = Math.bound(state.viewportFactor, 1/256, 1);
-            gen.output.drawViewport();
+            gen.zoom(e.originalEvent.deltaY);
+        });
+        $(document).on("keydown", function (e) {
+            switch (e.which) {
+                case Keys.PAGE_UP: gen.zoom(-1); gen.updateBindings(); break;
+                case Keys.PAGE_DOWN: gen.zoom(1); gen.updateBindings(); break;
+            }
         });
         $("#output").mouseup(function (e) {
             if (e.button != 0 && e.button != 2) return;
-            var state = gen.state.view;
+            var state = gen.previous.view;
 
-            var mouseCoords = new Vector2D(e.clientX, e.clientY);
+            var mouseCoords = new Vector2D(e.originalEvent.layerX, e.originalEvent.layerY);
             var factor = new Vector2D(gen.canvas.width, gen.canvas.height).divide(state.extents);
-            var vpfactor = e.button == 0 ? gen.state.controls.viewportFactor : 1 / gen.state.controls.viewportFactor;
+            var vpfactor = e.button == 0 ? gen.previous.controls.viewportFactor : gen.previous.controls.viewportFactor.inverse();
 
-            state.pan = gen.helper.correctCoordinate(gen.helper.getCoordinateFromLocation(mouseCoords, state.extents, state.pan));
-            state.extents = state.extents.multiply(vpfactor);
+            var pan = gen.helper.getCoordinateFromLocation(mouseCoords, state.extents, state.pan);
+            gen.state.view.pan = pan;
+            gen.state.view.extents = state.extents.multiply(vpfactor);
 
             gen.render();
+            gen.updateBindings();
+            updateMinimap();
         });
         $("#output").on("contextmenu", function (e) {
             e.preventDefault();
@@ -358,15 +288,84 @@ Require([
         gen.bind($(".fractal-type")[0], "change", "gen.state.function", function (e, v) {
             $(".exclusive").hide();
             $(".exclusive." + v).show();
-            gen.state.view.pan = new Vector2D(0, 0);
+            gen.state.view.pan = v == "mandelbrot" ? new Vector2D(-0.75, 0) : new Vector2D(0, 0);
             gen.state.view.extents = new Vector2D(3, 3);
+            gen.updateBindings();
         });
         $(".draw-fractal").click(function (e) {
             gen.render();
+            gen.updateBindings();
+            updateMinimap();
         });
 
-        gen.bind($(".julia-real")[0], "change", "state.julia.real");
-        gen.bind($(".julia-imaginary")[0], "change", "state.julia.imaginary");
+        $("#mini-mandelbrot").mousemove(function (e) {
+            minimap.state.controls.mouse = new Vector2D(e.originalEvent.layerX, e.originalEvent.layerY);
+            minimap.drawViewport();
+        });
+        $("#mini-mandelbrot").click(function (e) {
+            var state = minimap.state.view;
+            var mouseCoords = new Vector2D(e.originalEvent.layerX, e.originalEvent.layerY);
+
+            var coord = minimap.helper.getCoordinateFromLocation(mouseCoords, state.extents, state.pan);
+            if (gen.function == "julia")
+                gen.state.julia = coord;
+            else
+                gen.state.view.pan = coord;
+
+
+            gen.render();
+            gen.updateBindings();
+            updateMinimap();
+        });
+
+        gen.bind($(".julia-real"), "change", "state.julia.x");
+        gen.bind($(".julia-imaginary"), "change", "state.julia.y");
+        gen.bind($(".fractal-pan-x"), "change", "state.view.pan.x");
+        gen.bind($(".fractal-pan-y"), "change", "state.view.pan.y");
+        gen.bind($(".fractal-zoom"), "change", function (obj, val) {
+            var view = obj.state.view;
+
+            if (isNull(val)) return Math.log2(3 / view.extents.y);
+            else view.extents.y = 3 / Math.pow(2, val);
+        });
+
+        gen.bind($(".display-hue-start"), "change", function (obj, val) {
+            var disp = obj.settings.display;
+
+            if (!isNull(val)) {
+                var colour = new Colour(val);
+                disp.hueStart = colour.h;
+                disp.saturation = colour.s;
+                disp.value = colour.v;
+            } else {
+                var colour = new Colour.fromHSV(disp.hueStart, disp.saturation, disp.value);
+                return colour.toHex();
+            }
+        });
+        gen.bind($(".display-hue-frequency"), "change", function (obj, val) {
+            if (isNull(val)) return -obj.settings.display.hueFrequency;
+            else obj.settings.display.hueFrequency = -val;
+        });
+
+        gen.bind($(".generation-mode input[type='radio']"), "click", function (obj, val, el) {
+            var gset = obj.settings.generation;
+
+            if (isNull(val)) {
+                if (GenerationModes[el.value] == gset.mode)
+                    el.checked = true;
+                else el.checked = false;
+                return el.value;
+            } else if (el.checked) {
+                gset.mode = GenerationModes[el.value];
+            }
+        });
+
+        gen.bind($(".generation-iteration-limit"), "change", "settings.generation.iterationLimit");
+        gen.bind($(".generation-analysis-increment"), "change", function (obj, val) {
+            if (isNull(val)) return 1 / obj.settings.generation.analysisIncrement;
+            else obj.settings.generation.analysisIncrement = 1 / val;
+        });
+        gen.bind($(".generation-timeout"), "change", "settings.generation.timeout");
     });
 });
 });

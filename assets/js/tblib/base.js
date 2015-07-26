@@ -130,6 +130,42 @@ function Enum() {
     if (Object.freeze) Object.freeze(this);
 }
 
+Object.getProperty = function (obj, prop) {
+    var tokens = prop.replace(/\[/, ".").removeAll(/\.$|^\.|\]/).split(".");
+    var ref = obj;
+    for (var i=0;i<tokens.length-1;i++) {
+        if (ref[tokens[i]] !== undefined) ref = ref[tokens[i]];
+    }
+    return ref[tokens[tokens.length-1]];
+}
+Object.setProperty = function (obj, prop, value) {
+    var tokens = prop.replace(/\[/, ".").removeAll(/\.$|^\.|\]/).split(".");
+    var ref = obj;
+    for (var i=0;i<tokens.length-1;i++) {
+        if (ref[tokens[i]] !== undefined) ref = ref[tokens[i]];
+    }
+    ref[tokens[tokens.length-1]] = value;
+}
+Object.copy = function (obj) {
+    if (obj === null || typeof obj != typeof {}) return obj;
+
+    var newObj = obj.constructor();
+    for (var prop in obj) if (obj.hasOwnProperty(prop))
+        newObj[prop] = obj[prop];
+    return newObj;
+}
+Array.copy = function (arr) {
+    var newArr = [];
+    for (var i=0;i<arr.length;i++) newArr[i] = arr[i];
+    return newArr;
+}
+
+Math.logn = function (val, n) {
+    return Math.log(val) / Math.log(n);
+}
+Math.log2 = Math.log2 || function (val) { return Math.logn(val, 2); };
+Math.log10 = Math.log10 || function (val) { return Math.logn(val, 10); };
+
 $(function () {
     TBI.requestManager();
 });
