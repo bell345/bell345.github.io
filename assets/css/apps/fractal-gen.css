@@ -16,13 +16,22 @@ canvas {
     position:relative;
 }
 .ui-container {
+    pointer-events:none;
+}
+.ui-container-inner {
+    position:relative;
     padding-top:8px;
     background:rgba(0, 0, 0, 0.2);
     z-index:9;
+    pointer-events:all;
 }
-.ui-container .control-row {
+.ui-container-inner .control-row {
     padding-left:12px;
     padding-right:12px;
+}
+.ui-container-inner .control-row.last {
+    margin-bottom:0;
+    padding-bottom:8px;
 }
 .bottom-right-ui {
     position:fixed;
@@ -31,15 +40,25 @@ canvas {
     width:320px;
     text-align:right;
 }
+.bottom-right-ui .ui-container-inner {
+    width:320px;
+}
 .bottom-left-ui {
     position:fixed;
     bottom:0;
     left:0;
 }
+.bottom-left-ui .ui-container-inner {
+    padding-right:32px;
+}
 .exclusive {
     display:none;
 }
-.ui-container h1, .ui-container h2, .ui-container h3, .ui-container p, .ui-container a, .ui-container span {
+.ui-container h1, .ui-container h2, .ui-container h3, .ui-container h4, .ui-container p, .ui-container a, .ui-container span {
+    color:#eee;
+    margin-bottom:0;
+}
+.popup button.major {
     color:#eee;
 }
 section {
@@ -47,4 +66,65 @@ section {
 }
 .display-ui, .generation-ui {
     display:none;
+}
+.top-hider, .bottom-hider, .left-hider, .right-hider {
+    position:absolute;
+    background:rgba(0,0,0,0.2);
+    cursor:pointer;
+}
+.bottom-hider {
+    top:0;
+    left:0;
+    right:0;
+    height:5%;
+}
+.left-hider {
+    top:0;
+    bottom:0;
+    right:0;
+    width:7%;
+}
+.top-hider::before, .bottom-hider::before, .left-hider::before, .right-hider::before {
+    content:"";
+    position:absolute;
+    top:0;
+    bottom:0;
+    left:0;
+    right:0;
+    margin:auto;
+    width:8px;
+    height:8px;
+}
+.bottom-hider::before, .top-hidden .top-hider::before {
+    border-top:8px solid #eee;
+    border-left:8px solid transparent;
+    border-right:8px solid transparent;
+    border-bottom:0;
+}
+.left-hider::before, .right-hidden .right-hider::before {
+    border-right:8px solid #eee;
+    border-top:8px solid transparent;
+    border-bottom:8px solid transparent;
+    border-left:0;
+}
+.right-hider::before, .left-hidden .left-hider::before {
+    border-left:8px solid #eee;
+    border-top:8px solid transparent;
+    border-bottom:8px solid transparent;
+    border-right:0;
+}
+.top-hider::before, .bottom-hidden .bottom-hider::before {
+    border-bottom:8px solid #eee;
+    border-left:8px solid transparent;
+    border-right:8px solid transparent;
+    border-top:0;
+}
+.ui-container-inner.bottom-hidden {
+    transform:translateY(95%);
+}
+.ui-container-inner.left-hidden {
+    transform:translateX(-93%);
+}
+.has-help {
+    cursor:pointer;
 }

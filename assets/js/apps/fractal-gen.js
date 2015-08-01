@@ -14,6 +14,39 @@ Complex.prototype.equals = function (cmp) {
 
 var GenerationModes = { direct: 0, delayed: 1, visual: 2 };
 
+function JuliaFunc(obj, returnType) { return function (coord, cmp) {
+    var gset = obj.settings.generation,
+        dset = obj.settings.display,
+        state = obj.state.view;
+
+    cmp = cmp instanceof Complex ? cmp : new Complex(cmp.x, cmp.y);
+    var fate = coord instanceof Complex ? coord : new Complex(coord.x, coord.y);
+    var fatesqr = new Complex(fate.real*fate.real, fate.imaginary*fate.imaginary);
+
+    var plot = [new Vector2D(fate.x, fate.y)];
+
+    for (var i=0;i<gset.iterationLimit;i++) {
+        fate.imaginary = fate.real * fate.imaginary;
+        fate.imaginary += fate.imaginary;
+        fate.imaginary += cmp.imaginary;
+        fate.real = fatesqr.real - fatesqr.imaginary + cmp.real;
+
+        fatesqr.real = Math.pow(fate.real, 2);
+        fatesqr.imaginary = Math.pow(fate.imaginary, 2);
+
+        var escaped = fatesqr.real + fatesqr.imaginary > gset.boundary;
+        if (returnType == "plot") {
+            plot.push(new Vector2D(fate.real, fate.imaginary));
+            if (escaped) break;
+        } else if (returnType == "palette" && escaped) return obj.palette[i];
+        else if (returnType == "integer" && escaped) return i;
+    }
+
+    if (returnType == "plot") return plot;
+    else if (returnType == "palette") return obj.settings.display.boundedColour;
+    else if (returnType == "integer") return -1;
+}; };
+
 
 // Quick and dirty fix for the <base> href attribute modifying hash links to point to the root directory
 // instead of a specified portion of the page.
@@ -69,30 +102,7 @@ Require([
 
         this.pauseGeneration = false;
 
-        var juliaFunc = function (obj) { return function (coord, cmp) {
-            var gset = obj.settings.generation,
-                dset = obj.settings.display,
-                state = obj.state.view;
-
-            cmp = cmp instanceof Complex ? cmp : new Complex(cmp.x, cmp.y);
-            var fate = coord instanceof Complex ? coord : new Complex(coord.x, coord.y);
-            var fatesqr = new Complex(fate.real*fate.real, fate.imaginary*fate.imaginary);
-
-            for (var i=0;i<gset.iterationLimit;i++) {
-                fate.imaginary = fate.real * fate.imaginary;
-                fate.imaginary += fate.imaginary;
-                fate.imaginary += cmp.imaginary;
-                fate.real = fatesqr.real - fatesqr.imaginary + cmp.real;
-
-                fatesqr.real = Math.pow(fate.real, 2);
-                fatesqr.imaginary = Math.pow(fate.imaginary, 2);
-
-                if (fatesqr.real + fatesqr.imaginary > gset.boundary)
-                    return obj.palette[i];
-            }
-
-            return obj.settings.display.boundedColour;
-        }; }(this);
+        var juliaFunc = JuliaFunc(this, "palette");
 
         this.mandelbrot = function (coord) { return juliaFunc(Vector2D.zero, coord); };
         this.julia = function (cmp) { return function (coord) { return juliaFunc(coord, cmp); }; };
@@ -183,6 +193,7 @@ Require([
                 self.output.canvas.style.backgroundImage = "url("+self.canvas.toDataURL("image/png")+")";
                 self.previous = Object.copy(self.state);
             }, function () {
+                self.canvas.style.display = "none";
                 TBI.error("Fractal took too long to generate. Current limit is "+(self.settings.generation.timeout/1000)+" seconds.");
             });
         };
@@ -240,6 +251,8 @@ Require([
         minimap = new FractalGen($("#mini-mandelbrot-gen")[0], $("#mini-mandelbrot")[0], true);
         minimap.render();
 
+        var fateDrawingEnabled = false;
+
         function updateMinimap() {
             var state = gen.state.view,
                 ministate = minimap.state.view;
@@ -252,8 +265,25 @@ Require([
             minimap.drawViewport();
         }
 
+        function drawJuliaFate(fate, coord) {
+            var path = JuliaFunc(gen, "plot")(fate, coord).map(function (e) {
+                return minimap.helper.getLocationOfCoordinate(e, minimap.state.view.extents, minimap.state.view.pan);
+            });
+
+            minimap.output.helper.clear();
+            minimap.drawViewport();
+            minimap.output.helper.linePlot(path, 2, "#eee");
+        }
+
         $("#output").mousemove(function (e) {
             gen.state.controls.mouse = new Vector2D(e.originalEvent.layerX, e.originalEvent.layerY);
+
+            if (fateDrawingEnabled) {
+                var currCoord = gen.helper.getCoordinateFromLocation(gen.state.controls.mouse, gen.state.view.extents, gen.state.view.pan);
+
+                if (gen.state.function == "julia") drawJuliaFate(currCoord, gen.state.julia);
+                else drawJuliaFate(new Complex(0, 0), currCoord);
+            }
             gen.drawViewport();
         });
         $("#output").on("mousewheel", function (e) {
@@ -307,7 +337,7 @@ Require([
             var mouseCoords = new Vector2D(e.originalEvent.layerX, e.originalEvent.layerY);
 
             var coord = minimap.helper.getCoordinateFromLocation(mouseCoords, state.extents, state.pan);
-            if (gen.function == "julia")
+            if (gen.state.function == "julia")
                 gen.state.julia = coord;
             else
                 gen.state.view.pan = coord;
@@ -365,7 +395,18 @@ Require([
             if (isNull(val)) return 1 / obj.settings.generation.analysisIncrement;
             else obj.settings.generation.analysisIncrement = 1 / val;
         });
-        gen.bind($(".generation-timeout"), "change", "settings.generation.timeout");
+        gen.bind($(".generation-timeout"), "change", function (obj, val) {
+            if (isNull(val)) return obj.settings.generation.timeout / 1000;
+            else obj.settings.generation.timeout = val * 1000;
+        });
+
+        function useHider(dir) { $("."+dir+"-hider").click(function () { $(this).parent().toggleClass(dir+"-hidden"); }); }
+        useHider("left");
+
+        TBI.UI.toggleButton($(".toggle-fate-drawing")[0], fateDrawingEnabled);
+        $(".toggle-fate-drawing").click(function () {
+            fateDrawingEnabled = TBI.UI.isToggled(this);
+        });
     });
 });
 });

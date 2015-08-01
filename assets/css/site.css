@@ -621,6 +621,9 @@ input[type="text"].short {
 .control-row {
     margin-bottom:8px;
 }
+.control-row * {
+    vertical-align:middle;
+}
 .ui-widget input[type="text"] {
     margin:0;
 }
@@ -1055,6 +1058,7 @@ button.dialog-header-close:active {
     position:fixed;
     z-index:10;
     padding:12px 18px;
+    transition:0s all;
     max-width:500px;
 }
 .popup h3 {
@@ -1148,4 +1152,7 @@ div.popup ul {
 
 .has-help + .help {
     display:none;
+}
+.has-help {
+    text-decoration:underline;
 }

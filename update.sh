@@ -1,3 +1,3 @@
 #!/bin/bash
 
-python mod_decl.py $@
+python3 mod_decl.py $@

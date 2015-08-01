@@ -8,17 +8,17 @@ if (!window.jQuery) {
 
 TBI.UI = {};
 
-TBI.log = function (message) {
+TBI.log = function (message, timeout) {
     console.log(message);
-    TBI.UI.Notification("Info", message, 30000);
+    TBI.UI.Notification("Info", message, timeout || 30000);
 }
-TBI.warn = function (message) {
+TBI.warn = function (message, timeout) {
     console.warn(message);
-    TBI.UI.Notification("Warning", message, 40000);
+    TBI.UI.Notification("Warning", message, timeout || 40000);
 }
-TBI.error = function (message) {
+TBI.error = function (message, timeout) {
     if (message instanceof Error) {
-        var msgLi = TBI.UI.Notification("Error", message.message, 50000);
+        var msgLi = TBI.UI.Notification("Error", message.message, timeout || 50000);
         var stackDiv = document.createElement("div");
             stackDiv.textContent = message.stack;
             stackDiv.style.display = "none";
@@ -30,7 +30,7 @@ TBI.error = function (message) {
             stackButton.textContent = "Show/Hide Stack";
         msgLi.appendChild(stackButton);
         msgLi.appendChild(stackDiv);
-    } else TBI.UI.Notification("Error", message, 50000);
+    } else TBI.UI.Notification("Error", message, timeout || 50000);
 }
 
 TBI.UI.updateUI = function (force) {
@@ -166,6 +166,24 @@ TBI.UI.HoverPopup = function (x, y, title, body) {
     $(".popup").remove();
     document.body.appendChild(popDiv);
     this.element = popDiv;
+
+    var xpad = parseInt(this.element.getStyle("padding-left")) + parseInt(this.element.getStyle("padding-right")),
+        ypad = parseInt(this.element.getStyle("padding-top")) + parseInt(this.element.getStyle("padding-bottom"));
+    var width = parseInt(this.element.getStyle("width")) + xpad;
+    var left = parseInt(this.element.style.left);
+
+    while (left + width >= window.innerWidth) {
+        this.element.style.left = (left - 1) + "px";
+        left = parseInt(this.element.style.left);
+        width = parseInt(this.element.getStyle("width")) + xpad;
+    }
+    
+    var top = parseInt(this.element.style.top);
+    var height = parseInt(this.element.getStyle("height")) + ypad;
+
+    if (top + height >= window.innerHeight)
+        this.element.style.top = (top - height - 40) + "px";
+
 
     Object.defineProperty(this, "title", {
         get: function () { return this.element.getn("h3")[0].innerHTML; },

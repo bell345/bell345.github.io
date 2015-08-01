@@ -1,71 +1,71 @@
 {
-    "path": "apps",
-    "version": 2,
+    "path": "apps", 
+    "version": 2, 
+    "role": "project-declaration", 
+    "id": "apps", 
     "projects": [
         {
-            "updated": "2015-07-26T14:47:00Z",
-            "version": "1.0",
-            "id": "fractal-gen",
+            "updated": "2015-08-01T20:13:00Z", 
+            "version": "1.1", 
+            "id": "fractal-gen", 
             "title": "Fractal Generator"
-        },
+        }, 
         {
-            "type": "repo",
-            "title": "Spotify Real Randomizer",
-            "preview": "repo",
-            "id": "spotify-rand",
-            "path": "http://52.64.90.134",
-            "updated": "2015-07-09",
-            "version": "1.0",
-            "source": "https://github.com/bell345/real-randomizer",
-            "preview_repo": "bell345/real-randomizer"
-        },
+            "updated": "2015-07-09", 
+            "title": "Spotify Real Randomizer", 
+            "preview_repo": "bell345/real-randomizer", 
+            "source": "https://github.com/bell345/real-randomizer", 
+            "version": "1.0", 
+            "path": "http://52.64.90.134", 
+            "preview": "repo", 
+            "type": "repo", 
+            "id": "spotify-rand"
+        }, 
         {
-            "title": "Periodic Table",
-            "version": "1.1",
-            "id": "ptable",
-            "updated": "2015-05-04"
-        },
+            "updated": "2015-05-04", 
+            "version": "1.1", 
+            "id": "ptable", 
+            "title": "Periodic Table"
+        }, 
         {
-            "type": "repo",
-            "preview_iframe": "https://bell345.github.io/sclicker-editor",
-            "updated": "2014-04-17",
-            "id": "sc-edit",
-            "path": "https://bell345.github.io/sclicker-editor",
-            "title": "Scholar Clicker Editor",
-            "version": "1.0",
-            "preview": "iframe",
-            "source": "https://github.com/bell345/sclicker-editor/tree/gh-pages"
-        },
+            "updated": "2014-04-17", 
+            "title": "Scholar Clicker Editor", 
+            "source": "https://github.com/bell345/sclicker-editor/tree/gh-pages", 
+            "version": "1.0", 
+            "path": "https://bell345.github.io/sclicker-editor", 
+            "preview_iframe": "https://bell345.github.io/sclicker-editor", 
+            "preview": "iframe", 
+            "type": "repo", 
+            "id": "sc-edit"
+        }, 
         {
-            "title": "Cartesian Plane",
-            "version": "1.1",
-            "id": "crtpl2",
-            "updated": "2015-04-09"
-        },
+            "updated": "2015-04-09", 
+            "version": "1.1", 
+            "id": "crtpl2", 
+            "title": "Cartesian Plane"
+        }, 
         {
-            "type": "github",
-            "title": "Logon BG Changer",
-            "preview": "repo",
-            "id": "bgchanger",
-            "path": "https://github.com/bell345/logon-bg-changer/releases/latest",
-            "updated": "2015-03-30",
-            "version": "1.0.5492",
-            "source": "https://github.com/bell345/logon-bg-changer",
-            "preview_repo": "bell345/logon-bg-changer"
-        },
+            "updated": "2015-03-30", 
+            "title": "Logon BG Changer", 
+            "preview_repo": "bell345/logon-bg-changer", 
+            "source": "https://github.com/bell345/logon-bg-changer", 
+            "version": "1.0.5492", 
+            "path": "https://github.com/bell345/logon-bg-changer/releases/latest", 
+            "preview": "repo", 
+            "type": "github", 
+            "id": "bgchanger"
+        }, 
         {
-            "title": "CountDown",
-            "version": "3.4.4",
-            "id": "cdown",
-            "updated": "2015-03-30"
-        },
+            "updated": "2015-03-30", 
+            "version": "3.4.4", 
+            "id": "cdown", 
+            "title": "CountDown"
+        }, 
         {
-            "title": "Calculator",
-            "version": "2.3.2",
-            "id": "calc",
-            "updated": "2015-04-14"
+            "updated": "2015-04-14", 
+            "version": "2.3.2", 
+            "id": "calc", 
+            "title": "Calculator"
         }
-    ],
-    "id": "apps",
-    "role": "project-declaration"
+    ]
 }

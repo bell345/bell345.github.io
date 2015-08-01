@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="assets/css/apps/fractal-gen.css" />
     <script src="assets/js/jquery2.min.js"></script>
     <script src="assets/js/require.js"></script>
+    <script src="assets/js/rts.min.js"></script>
     <script src="assets/js/apps/fractal-gen.js"></script>
 </head>
 <body>
@@ -18,113 +19,176 @@
         Supported browsers include Google Chrome and Mozilla Firefox.
     </canvas>
     <div class="bottom-right-ui ui-container">
-        <div class="control-row">
-            <a class="up-down on mini-mandelbrot-toggle" for=".mini-mandelbrot-container" href="#">Mini Map</a>
-        </div>
-        <div class="mini-mandelbrot-container">
-            <canvas id="mini-mandelbrot-gen" class="gen" width="320" height="240"></canvas>
-            <canvas id="mini-mandelbrot" width="320" height="240"></canvas>
+        <div class="ui-container-inner">
+            <div class="control-row float-left">
+                <button class="toggle toggle-fate-drawing has-help">Line Drawing</button>
+                <div class="help">
+                    <h3>Line Drawing</h3>
+                    <p>
+                        This feature sketches the plot this program follows in order to
+                        generate the fractal. The point it uses is the one in the middle
+                        of the viewpoint, and it draws the sketch to the minimap.
+                    </p>
+                </div>
+            </div>
+            <div class="control-row last">
+                <a class="up-down on mini-mandelbrot-toggle" for=".mini-mandelbrot-container" href="#">Mini Map</a>
+            </div>
+            <div class="mini-mandelbrot-container">
+                <canvas id="mini-mandelbrot-gen" class="gen" width="320" height="240"></canvas>
+                <canvas id="mini-mandelbrot" width="320" height="240"></canvas>
+            </div>
         </div>
     </div>
     <div class="bottom-left-ui ui-container">
-        <div class="control-row">
-            <h3><a href="#" class="up-down" for=".generation-ui">Generation Options</a></h3>
-        </div>
-        <section class="generation-ui">
+        <div class="ui-container-inner">
+            <div class="left-hider"></div>
             <div class="control-row">
-                <span class="inline">Mode</span>
+                <h3><a href="#" class="up-down" for=".generation-ui">Generation Options</a></h3>
             </div>
-            <div class="control-row">
-                <div class="radio-input generation-mode">
-                    <input type="radio" name="generation-mode" id="generation-mode-direct" value="direct" />
-                    <label for="generation-mode-direct" class="inline has-help">Direct</label>
-                    <div class="help">
-                        <h3>Direct Mode</h3>
-                        <p>
-                            The fractal is generated as fast as possible, with no effects. Through
-                            the entire generation process, the browser page will become locked up.
-                        </p>
-                    </div>
+            <section class="generation-ui">
+                <div class="control-row">
+                    <span class="inline">Mode</span>
+                </div>
+                <div class="control-row">
+                    <div class="radio-input generation-mode">
+                        <input type="radio" name="generation-mode" id="generation-mode-direct" value="direct" />
+                        <label for="generation-mode-direct" class="inline has-help">Direct</label>
+                        <div class="help">
+                            <h3>Direct Mode</h3>
+                            <p>
+                                The fractal is generated as fast as possible, with no effects. Through
+                                the entire generation process, the browser page will become locked up.
+                            </p>
+                        </div>
 
-                    <input type="radio" name="generation-mode" id="generation-mode-delayed" value="delayed" />
-                    <label for="generation-mode-delayed" class="inline has-help">Delayed</label>
-                    <div class="help">
-                        <h3>Delayed Mode</h3>
-                        <p>
-                            This mode frees the second half of generation to play with the options. However,
-                            the total process will become longer as a result.
-                        </p><p style="color:red">
-                            <strong>WARNING: </strong> This is more intensive than Direct mode,
-                            so users with &lt; 8 GB of RAM are warned that this may lead to
-                            a large delay.
-                        </p>
-                    </div>
+                        <input type="radio" name="generation-mode" id="generation-mode-delayed" value="delayed" />
+                        <label for="generation-mode-delayed" class="inline has-help">Delayed</label>
+                        <div class="help">
+                            <h3>Delayed Mode</h3>
+                            <p>
+                                This mode frees the second half of generation to play with the options. However,
+                                the total process will become longer as a result.
+                            </p><p style="color:red">
+                                <strong>WARNING: </strong> This is more intensive than Direct mode,
+                                so users with &lt; 8 GB of RAM are warned that this may lead to
+                                a large delay.
+                            </p>
+                        </div>
 
-                    <input type="radio" name="generation-mode" id="generation-mode-visual" value="visual" />
-                    <label for="generation-mode-visual" class="inline has-help">Visual</label>
-                    <div class="help">
-                        <h3>Visual Mode</h3>
-                        <p>
-                            After a brief generation, pixels from the fractal appear left-to-right
-                            in a sweep.
-                        </p><p style="color:red">
-                            <strong>WARNING: </strong> This is by far the most intensive mode,
-                            and users with &lt; 8 GB of RAM might experience dramatic slowdown.
-                        </p>
+                        <input type="radio" name="generation-mode" id="generation-mode-visual" value="visual" />
+                        <label for="generation-mode-visual" class="inline has-help">Visual</label>
+                        <div class="help">
+                            <h3>Visual Mode</h3>
+                            <p>
+                                After a brief generation, pixels from the fractal appear left-to-right
+                                in a sweep.
+                            </p><p style="color:red">
+                                <strong>WARNING: </strong> This is by far the most intensive mode,
+                                and users with &lt; 8 GB of RAM might experience dramatic slowdown.
+                            </p>
+                        </div>
                     </div>
                 </div>
-            </div>
+                <div class="control-row">
+                    <span class="inline has-help">Detail</span>
+                    <div class="help">
+                        <h3>Detail</h3>
+                        <p>
+                            This controls how many times the algorithm tries each point. A higher value
+                            leads to more detail, more colours and less black areas. However, it takes a
+                            bit longer to generate for every point.
+                        </p>
+                    </div>
+                    <input type="range" class="generation-iteration-limit" min="0" max="10000" step="100" />
+                </div>
+                <div class="control-row">
+                    <span class="inline has-help">Resolution</span>
+                    <div class="help">
+                        <h3>Resolution</h3>
+                        <p>
+                            A higher resolution means more pixels will be generated for each picture. Maximum
+                            resolution means that every single pixel is tested, while lower resolutions makes
+                            the picture look blocky and pixelated. This setting greatly impacts performance,
+                            so a much faster image can be achieved by lowering this value.
+                        </p>
+                    </div>
+                    <input type="range" class="generation-analysis-increment" min="0.125" max="1" step="0.125" />
+                </div>
+                <div class="control-row">
+                    <span class="inline">Timeout (seconds)</span>
+                    <input type="number" class="generation-timeout" />
+                </div>
+            </section>
             <div class="control-row">
-                <span class="inline">Detail</span>
-                <input type="range" class="generation-iteration-limit" min="0" max="10000" step="100" />
+                <h3><a href="#" class="up-down" for=".display-ui">Display Options</a></h3>
             </div>
+            <section class="display-ui">
+                <div class="control-row">
+                    <span class="inline">Base Colour</span>
+                    <input type="color" class="display-hue-start" />
+                </div>
+                <div class="control-row">
+                    <span class="inline has-help">Hue Frequency</span>
+                    <div class="help">
+                        <h3>Hue Frequency</h3>
+                        <p>
+                            A higher value means that the fractal reuses colours much faster. Basically,
+                            that means it'll look really psychedelic. Turn this value up if some of the
+                            colours start washing together, and turn it down if you don't want the full
+                            LSD experience.
+                        </p>
+                    </div>
+                    <input type="range" class="display-hue-frequency" min="0.1" max="3.0" step="0.05" />
+                </div>
+            </section>
             <div class="control-row">
-                <span class="inline">Resolution</span>
-                <input type="range" class="generation-analysis-increment" min="0.125" max="1" step="0.125" />
+                <h3><a href="#" class="up-down on" for=".view-ui">View Options</a></h3>
             </div>
-            <div class="control-row">
-                <span class="inline">Timeout (seconds)</span>
-                <input type="number" class="generation-timeout" />
+            <section class="view-ui">
+                <div class="control-row">
+                    <span class="inline">Pan</span>
+                    <input type="text" class="fractal-pan-x" placeholder="X Pan" />
+                    <input type="text" class="fractal-pan-y" placeholder="Y Pan" />
+                </div>
+                <div class="control-row">
+                    <span class="inline">Zoom</span>
+                    <input type="range" class="fractal-zoom" min="0" max="50" />
+                </div>
+            </section>
+            <div class="julia exclusive control-row">
+                <span class="inline">Julia Setup</span>
+                <input type="text" class="julia-real short" placeholder="Real component..." />
+                <input type="text" class="julia-imaginary short" placeholder="Imaginary component..." />
             </div>
-        </section>
-        <div class="control-row">
-            <h3><a href="#" class="up-down" for=".display-ui">Display Options</a></h3>
-        </div>
-        <section class="display-ui">
-            <div class="control-row">
-                <span class="inline">Base Colour</span>
-                <input type="color" class="display-hue-start" />
+            <div class="control-row help-ui">
+                <h3 class="inline">Help</h3>
+                <h4 class="has-help inline">Controls</h4>
+                <div class="help">
+                    <ul class="main">
+                        <li><strong>Click</strong> on the fractal to change the viewpoint/zoom in</li>
+                        <li><strong>Right-click</strong> on the fractal to zoom out</li>
+                        <li><strong>Scroll</strong> or press <strong>Page Up/Down</strong> to zoom the viewpoint</li>
+                        <li>Click <button class="major">Draw Fractal</button> to apply the settings in the lower-left</li>
+                        <li>Click on the <strong>minimap</strong> to change the viewpoint centre</li>
+                    </ul>
+                </div>
+                <h4 class="has-help inline">Performance Tips</h4>
+                <div class="help">
+                    <ul class="main">
+                        <li>The deeper you zoom, the more it slows down.</li>
+                        <li>A lot of lag can easily be fixed by decreasing the Resolution (under Generation Options).</li>
+                        <li>The other modes are there for show. Use Direct Mode for fast imaging.</li>
+                    </ul>
+                </div>
             </div>
-            <div class="control-row">
-                <span class="inline">Hue Frequency</span>
-                <input type="range" class="display-hue-frequency" min="0.1" max="3.0" step="0.05" />
+            <div class="control-row last">
+                <select class="fractal-type">
+                    <option value="mandelbrot" selected>Mandelbrot Set</option>
+                    <option value="julia">Julia Set</option>
+                </select>
+                <button class="major draw-fractal">Draw Fractal</button>
             </div>
-        </section>
-        <div class="control-row">
-            <h3><a href="#" class="up-down on" for=".view-ui">View Options</a></h3>
-        </div>
-        <section class="view-ui">
-            <div class="control-row">
-                <span class="inline">Pan</span>
-                <input type="text" class="fractal-pan-x" placeholder="X Pan" />
-                <input type="text" class="fractal-pan-y" placeholder="Y Pan" />
-            </div>
-            <div class="control-row">
-                <span class="inline">Zoom</span>
-                <input type="range" class="fractal-zoom" min="0" max="50" />
-            </div>
-        </section>
-        <div class="julia exclusive control-row">
-            <span class="inline">Julia Setup</span>
-            <input type="text" class="julia-real short" placeholder="Real component..." />
-            <input type="text" class="julia-imaginary short" placeholder="Imaginary component..." />
-        </div>
-        <div class="control-row">
-            <select class="fractal-type">
-                <option value="mandelbrot" selected>Mandelbrot Set</option>
-                <option value="julia">Julia Set</option>
-            </select>
-            <button class="major draw-fractal">Draw Fractal</button>
         </div>
     </div>
 </body>

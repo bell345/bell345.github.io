@@ -39,6 +39,28 @@ function zeroPrefix(num, len, char) {
     return num;
 }
 
+function sprintf(format) {
+    var str = format;
+    var args = []; for (var i=1;i<arguments.length;i++) args.push(arguments[i]);
+    var j = 0;
+    for (var i=0,f=false,s="";i<format.length;i++) {
+        if (f) {
+            s += format[i];
+            switch (s) {
+                case "s":
+                    str = str.replace(/%s/, args[j++]); break;
+                case "f":
+                    str = str.replace(/%f/, parseFloat(args[j++])); break;
+                case "i":
+                    str = str.replace(/%i/, parseInt(args[j++])); break;
+            }
+        }
+        if (format[i] == "%") { f = true; s = ""; }
+        else if (f) f = false;
+    }
+    return str;
+}
+
 // Creates a multi-dimensional array given the depths of the dimensions.
 Array.dimensional = function (lengths, initial) {
     if (isNull(lengths)) lengths = [0];
@@ -394,6 +416,7 @@ var PointerLock = {
 // A 2 dimensional vector quantity.
 function Vector2D(x, y) { if (isNull(y)) y = x; this.x = x; this.y = y; }
 Vector2D.fromPolar = function (azimuth, radius) { return new Vector2D(radius*Math.cos(azimuth), radius*Math.sin(azimuth)); };
+Vector2D.parse = function (str) { var components = str.replace(/\(\)/, "").split(/, ?/); return new Vector2D(components[0], components[1]); }
 Vector2D.prototype = {
     constructor: Vector2D,
     // Create a copy of the vector that won't change the original.
@@ -1250,14 +1273,19 @@ WideCanvas.prototype = {
             onEvent(e, this.value);
         });
     },
-    updateBindings: function () {
-        var cvs = this;
-        this.bindings.forEach(function (e) {
-            var value;
-            if (e.property instanceof Function) value = e.property(cvs, null, e.element);
-            else value = Object.getProperty(cvs, e.property);
-            $(e.element).val(value);
-        });
+    updateBinding: function (binding) {
+        var cvs = this, value;
+        if (binding.property instanceof Function) value = binding.property(cvs, null, binding.element);
+        else value = Object.getProperty(cvs, binding.property);
+        $(binding.element).val(value);
+    },
+    updateBindings: function (property) {
+        var cvs = this, filterFunc;
+        if (isNull(property)) filterFunc = function () { return true; };
+        else if (property instanceof Function) filterFunc = property;
+        else filterFunc = function (e) { return e.property == property; };
+
+        this.bindings.filter(filterFunc).forEach(function (e) { cvs.updateBinding(e); });
     }
 }
 

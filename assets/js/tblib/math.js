@@ -17,22 +17,6 @@ function highestCommonFactor(a, b) {
     }
     return a;
 }
-
-function sprintf(format) {
-    var str = format;
-    var args = []; for (var i=1;i<arguments.length;i++) args.push(arguments[i]);
-    var j = 0;
-    for (var i=0,f=false,s="";i<format.length;i++) {
-        if (f) {
-            s += format[i];
-            if (s == "s") str.replace(/%s/, args[j++]);
-            else if (s == "f") str.replace(/%f/, parseFloat(args[j++]));
-        }
-        if (format[i] == "%") { f = true; s = ""; }
-        else if (f) f = false;
-    }
-    return str;
-}
 // Proportions a number given from a function with limits a (top) to b (bottom), to a different function with limits c to d.
 Math.proportion = function (n, a, b, c, d) { return (c-d)/(a-b)*n+(d-b); }
 // Transforms a HSV colour value into its equivalent RGB value.
@@ -192,12 +176,12 @@ PolarCoords.prototype.toCartesian = function () {
 PolarCoords.prototype.toString = function () { return "("+this.radius+", "+this.azimuth+")" }
 // Declares a line segment with the endpoints start and end.
 function LineSegment(start, end) {
-    if (!(start instanceof Coords) && !isNull(start[1])) start = new Coords(start[0], start[1]);
-    if (!(end instanceof Coords) && !isNull(end[1])) end = new Coords(end[0], end[1]);
+    if (!(start instanceof Vector2D) && !isNull(start[1])) start = new Vector2D(start[0], start[1]);
+    if (!(end instanceof Vector2D) && !isNull(end[1])) end = new Vector2D(end[0], end[1]);
     this.start = start;
     this.end = end;
     this.length = Math.pythagoras(this.end.x-this.start.x, this.end.y-this.start.y);
-    this.midpoint = new Coords(Math.mean([this.start.x, this.end.x]), Math.mean([this.start.y, this.end.y]));
+    this.midpoint = new Vector2D(Stat.mean([this.start.x, this.end.x]), Stat.mean([this.start.y, this.end.y]));
     this.gradient = ((this.end.y-this.start.y) / (this.end.x-this.start.x)).fixFloat();
     // simple: m = rise/run
     // the trick is to use two points
@@ -221,7 +205,7 @@ LineSegment.parse = function (str) {
 }
 // Finds the midpoint of a line segment.
 LineSegment.prototype.midpoint = function () {
-    return new Coords(Math.mean([this.start.x, this.end.x]), Math.mean([this.start.y, this.end.y]));
+    return new Vector2D(Stat.mean([this.start.x, this.end.x]), Stat.mean([this.start.y, this.end.y]));
 }
 // Transforms a line segment into a linear function.
 LineSegment.prototype.toLinear = function () { return new LinearFunc(this.gradient, this.yIntercept); }
@@ -871,50 +855,123 @@ Math.bounce = function (num, low, high) {
 
 // TODO: implement logic gate adding machine
 
-function BigNumber(n, b, s) {
-    if (n == undefined) n = 0;
-    if (b == undefined) b = 10;
-    if (s == undefined) s = 1;
+function BigNumber(mantissa, exponent, negative) {
+    this.mantissa = mantissa;
+    this.exponent = parseInt(exponent);
+    this.negative = negative ? true : false;
+}
+BigNumber.fromNative = function (n, exponent) {
+    this.negative = n < 0;
+    n = Math.abs(n);
+    var fracComp = (n % 1).toFixed(15).removeAll(/0*$/).substring(2),
+        intComp = parseInt(n).toString().removeAll(/^0*/),
+        mapFunc = function (e) { return parseInt(e, 10); };
 
-    this.base = b;
-    this.sign = s;
+    this.mantissa = intComp.split("").map(mapFunc).concat(fracComp.split("").map(mapFunc));
+    if (!isNaN(parseInt(exponent)))
+        this.exponent = parseInt(exponent) + (intComp.length - 1);
+    else this.exponent = intComp.length < 1 ? -fracComp.length : intComp.length - 1;
 
-    if (!(n instanceof Array)) {
-        n = n.toString();
-        if (n[0] == "-") this.negative = true;
-        for (var i=0,a=[];i<n.length;i++) {
-            var curr = parseInt(n[i]);
-            if (!isNaN(curr)) a.push(curr);
+}
+BigNumber.fromString = function (n, exponent) {
+    this.negative = n.startsWith("-");
+    n = n.removeAll("-");
+    var split = n.split(".");
+    var fracComp = split.length > 1 ? split[1].removeAll(/0*$/) : "",
+        intComp = split[0].removeAll(/^0*/),
+        mapFunc = function (e) { return parseInt(e, 10); };
+
+    this.mantissa = intComp.split("").map(mapFunc).concat(fracComp.split("").map(mapFunc));
+    if (!isNaN(parseInt(exponent)))
+        this.exponent = parseInt(exponent) + (intComp.length - 1);
+    else this.exponent = intComp.length < 1 ? -fracComp.length : intComp.length - 1;
+}
+BigNumber.parse = function (n, exponent) {
+    if (typeof n == typeof "") return BigNumber.fromString(n, exponent);
+    else if (typeof n == typeof 0) return BigNumber.fromNative(n, exponent);
+    else return BigNumber.fromNative(0);
+}
+
+BigNumber.prototype.toNative = function () {
+    return (this.negative ? -1 : 1) * parseFloat(this.mantissa[0] + "." + this.mantissa.slice(1).join("") + "e" + this.exponent.toString());
+}
+BigNumber.fromNative = function (n, exponent) {
+    this.negative = n < 0;
+    n = Math.abs(n);
+    var fracComp = (n % 1).toFixed(15).removeAll(/0*$/).substring(2),
+        intComp = parseInt(n).toString().removeAll(/^0*/),
+        mapFunc = function (e) { return parseInt(e, 10); };
+
+    this.mantissa = intComp.split("").map(mapFunc).concat(fracComp.split("").map(mapFunc));
+    if (!isNaN(parseInt(exponent)))
+        this.exponent = parseInt(exponent) + (intComp.length - 1);
+    else this.exponent = intComp.length < 1 ? -fracComp.length : intComp.length - 1;
+
+}
+BigNumber.fromString = function (n, exponent) {
+    this.negative = n.startsWith("-");
+    n = n.removeAll("-");
+    var split = n.split(".");
+    var fracComp = split.length > 1 ? split[1].removeAll(/0*$/) : "",
+        intComp = split[0].removeAll(/^0*/),
+        mapFunc = function (e) { return parseInt(e, 10); };
+
+    this.mantissa = intComp.split("").map(mapFunc).concat(fracComp.split("").map(mapFunc));
+    if (!isNaN(parseInt(exponent)))
+        this.exponent = parseInt(exponent) + (intComp.length - 1);
+    else this.exponent = intComp.length < 1 ? -fracComp.length : intComp.length - 1;
+}
+
+BigNumber.prototype.negate = function () {
+    return new BigNumber(this.mantissa, this.exponent, !this.negative);
+}
+
+BigNumber.prototype.add = function (n2) {
+    if (!(n2 instanceof BigNumber)) n2 = BigNumber.parse(n2);
+
+    if (n2.negative) return this.subtract(n2.negate());
+    else if (this.negative && !n2.negative) return this.negate().subtract(n2).negate();
+
+    var m1 = this.mantissa.length,
+        m2 = n2.mantissa.length;
+    var diff = Math.abs(this.exponent - n2.exponent);
+
+    var newMantissa = new Array(m1 + m2 - (Math.min(m1, m2) - diff)),
+        carry = new Array(newMantissa.length + 1);
+    for (var i=newMantissa.length-1;i>=0;i--) {
+        var i1 = i - n2.exponent + this.exponent;
+        var i2 = i - this.exponent + n2.exponent;
+
+        var newVal = carry[i+1] == undefined ? 0 : carry[i+1];
+        if (i1 > 0 && i1 < m1) newVal += this.mantissa[i1];
+        if (i2 > 0 && i2 < m2) newVal += n2.mantissa[i2];
+
+        if (newVal > 10) {
+            carry[i] = parseInt(newVal / 10);
+            newVal -= carry[i] * 10;
         }
-        this.stream = a;
-    } else this.stream = n;
-}
-BigNumber.prototype.getDigit = function (p) {
-    var place = this.stream.length - 1 - p;
-    if (this.stream.length <= place || place < 0) return undefined;
-    return this.stream[place];
-}
-BigNumber.prototype.addDigit = function (p, num) {
-    while (this.getDigit(p) == undefined) this.stream.unshift(0);
-
-    var result = this.getDigit(p) + num * this.sign;
-    if (result >= this.base || result <= -this.base) this.addDigit(p + 1, Math.floor(num / this.base));
-    //if (result <= -this.base)
-    //else this.stream[place] = result % this.base;
-}
-BigNumber.prototype.subtractDigit = function (p, num) { // num > 0
-    if (num < 0) num = Math.abs(num);
-
-
-}
-BigNumber.prototype.add = function (num) {
-    if (!(num instanceof BigNumber)) num = new BigNumber(num);
-
-    for (var i=0;i<num.stream.length;i++) {
-        this.addDigit(i, num.getDigit(i));
+        newMantissa[i] = newVal;
     }
 
+    if (carry[0] != undefined) newMantissa.unshift(carry[0]);
 
+    var newExponent = Math.max(this.exponent, n2.exponent) + (carry[0] != undefined ? 1 : 0);
+
+    return new BigNumber(newMantissa, newExponent, false);
+}
+BigNumber.prototype.subtract = function (n2) {
+    if (!(n2 instanceof BigNumber)) n2 = BigNumber.parse(n2);
+
+    if (n2.negative) return this.add(n2.negate());
+    else if (this.negative && !n2.negative) return this.negate().add(n2).negate();
+
+    var m1 = this.mantissa.length,
+        m2 = n2.mantissa.length;
+    var diff = Math.abs(this.exponent - n2.exponent);
+
+    var newMantissa = new Array(m1 + m2 - (Math.min(m1, m2) - diff)),
+        carry = new Array(newMantissa.length + 1);
+    
 }
 
 }
