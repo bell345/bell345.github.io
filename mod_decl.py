@@ -3,7 +3,7 @@
 import json
 import os
 import shutil
-from sys import argv
+from sys import argv, stderr
 from datetime import datetime, timedelta
 
 def bail_usage(msg=None):
@@ -11,25 +11,34 @@ def bail_usage(msg=None):
     print("  command can be any of the following:")
     print("    list: lists all of the project names, versions and IDs.")
     print("    create: creates a new project in an interactive prompt.")
-    print("    edit: edits an existing project's properties in an interactive\
-                   prompt given a project ID.")
+    print("    edit: edits an existing project's properties in an interactive"+\
+               " prompt given a project ID.")
     print("")
     print("(C) Thomas Bell 2015, MIT License")
     print("")
-    print(msg)
+    print(msg, file=stderr)
+    exit(1)
 
 """ Prep """
 
 if len(argv) < 2:
     bail_usage("Number of arguments required is 1. {0} arguments were given.".format(len(argv) - 1))
 
-shutil.copy2(argv[1], argv[1]+".bak")
-fp = open(argv[1], "r")
+fname = argv[1]
+if fname[-5::] != ".json":
+    if fname[-1::] != "/":
+        fname += "/"
+    fname += "declare.json"
+
+shutil.copy2(fname, fname+".bak")
+fp = open(fname, "r")
 
 declaration = json.load(fp)
 
 if declaration["version"] != 2:
     exit("Version number invalid.")
+elif declaration["role"] != "project-declaration":
+    exit("Declaration is valid, but does not specify a project declaration.")
 
 old_declaration = declaration
 start_time = datetime.now()
@@ -77,12 +86,17 @@ def rollback():
     global start_time
     
     declaration = old_declaration
-    shutil.copy2(argv[1]+".bak", argv[1])
+    shutil.copy2(fname+".bak", fname)
     start_time = datetime.now()
 
 def save():
+
+    # sort by date, descending order
+    declaration["projects"].sort(key=lambda o:o["updated"])
+    declaration["projects"] = declaration["projects"][::-1]
+
     try:
-        write_fp = open(argv[1], "w")
+        write_fp = open(fname, "w")
         json.dump(declaration, write_fp, indent=4)
         write_fp.close()
     except Exception as e:

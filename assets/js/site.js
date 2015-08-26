@@ -105,7 +105,7 @@ function createThumbGalleryFigure(gallery, project) {
         img.onError = function (e) {
             this.onError = this.onerror = undefined;
             this.className += " img-error";
-        }
+        };
         img.onerror = img.onError;
         img.alt = project.title;
         img.src = project.thumbnail;
@@ -226,10 +226,10 @@ function parseContentManifest(manifest) {
             proj.preview_image = replaceWithVariables(proj.preview_image, urlReplacer);
 
             // create an inner nav item for the project
-            if (!manifest.hidden) createInnerNavItem(innerNav, proj.title, manifest.path+"#"+proj.id, proj.external);
+            if (!manifest.hidden && !rawProj.hidden) createInnerNavItem(innerNav, proj.title, manifest.path+"#"+proj.id, proj.external);
 
             // do extra stuff if this is meant for the current page
-            if (isCurrentPage) {
+            if (isCurrentPage && !rawProj.hidden) {
                 // create a thumbnail gallery if not already present
                 var thumbGallery = $("main .thumb-gallery.project-view")[0];
                 if (isNull(thumbGallery)) {
@@ -317,7 +317,7 @@ Require(["assets/js/tblib/base.js",     // Concurrently loading the dependencies
                         this.startX = event.clientX;
                         this.startWidth = parseInt($(frame).css("width"));
                     }; }(iframes[0]);
-                    sizer.onmouseup = function () { this.startX = this.startWidth = undefined; }
+                    sizer.onmouseup = function () { this.startX = this.startWidth = undefined; };
                     sizer.onmouseleave = sizer.onmouseup;
                     sizer.onmousemove = function (frame) { return function (event) {
                         if (this.startX != undefined) {

@@ -18,7 +18,7 @@ $(function () {
         // not going to do sh*t if the array doesn't have anything
         if (arr.length == 0) onload();
         // cut the first element of the array out
-        var currScript = arr.splice(0, 1)[0];
+        var currScript = arr.shift();
 
         var func; // this specifies what occurs when the current script has loaded
         if (arr.length > 0) // if there is still more work to do...

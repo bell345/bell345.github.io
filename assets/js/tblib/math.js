@@ -853,6 +853,51 @@ Math.bounce = function (num, low, high) {
 
 }
 
+function Circle(centre, radius) {
+    this.centre = centre;
+    this.radius = radius;
+}
+Circle.prototype = {
+    constructor: Circle,
+    contains: function (point) {
+        return this.centre.subtract(point).magnitude() < this.radius;
+    }
+}
+Object.defineProperty(Circle.prototype, "diameter", {
+    get: function () { return 2*this.radius; },
+    set: function (val) { this.radius = val/2; }
+});
+Object.defineProperty(Circle.prototype, "circumference", {
+    get: function () { return 2*Math.PI*this.radius; },
+    set: function (val) { this.radius = val/(2*Math.PI); }
+});
+Object.defineProperty(Circle.prototype, "area", {
+    get: function () { return Math.PI*this.radius*this.radius; },
+    set: function (val) { this.radius = Math.sqrt(val/Math.PI); }
+});
+
+function Polygon(points) {
+    this.points = points;
+}
+Polygon.prototype.getSides = function () {
+    var sides = [], j = this.points.length - 1;
+    for (var i=1;i<this.points.length;i++) {
+        sides.push(new LineSegment(this.points[j], this.points[i]));
+        j = i;
+    }
+
+    return sides;
+}
+Polygon.prototype.area = function () {
+    var area = 0, j;
+    for (var i=1;i<this.points.length;i++) {
+        j = (i + 1) % this.points.length;
+        area += (this.points[i].x + this.points[j].x) * (this.points[i].y - this.points[j].y);
+    }
+
+    return Math.abs(area/2);
+}
+
 // TODO: implement logic gate adding machine
 
 function BigNumber(mantissa, exponent, negative) {
@@ -971,7 +1016,7 @@ BigNumber.prototype.subtract = function (n2) {
 
     var newMantissa = new Array(m1 + m2 - (Math.min(m1, m2) - diff)),
         carry = new Array(newMantissa.length + 1);
-    
+
 }
 
 }

@@ -19,17 +19,17 @@ $(function () {
 });
 // Shorthand for document.getElementById.
 function gebi(id) { return document.getElementById(id); }
-HTMLElement.prototype.gebi = function (id) { return this.getElementById(id) }
+HTMLElement.prototype.gebi = function (id) { return this.getElementById(id) };
 // Shorthand for document.getElementsByClassName.
 function gecn(className) { return document.getElementsByClassName(className); }
-HTMLElement.prototype.gecn = function (className) { return this.getElementsByClassName(className); }
+HTMLElement.prototype.gecn = function (className) { return this.getElementsByClassName(className); };
 // Shorthand for document.getElementsByTagName.
 function getn(tagName) { return document.getElementsByTagName(tagName); }
-HTMLElement.prototype.getn = function (tagName) { return this.getElementsByTagName(tagName); }
+HTMLElement.prototype.getn = function (tagName) { return this.getElementsByTagName(tagName); };
 // Shorthand for document.getElementsByName.
 function gebn(name) { return document.getElementsByName(name); }
-HTMLElement.prototype.gebn = function (name) { return this.getElementsByName(name); }
-HTMLElement.prototype.getStyle = function (name) { return getComputedStyle(this)[name]; }
+HTMLElement.prototype.gebn = function (name) { return this.getElementsByName(name); };
+HTMLElement.prototype.getStyle = function (name) { return getComputedStyle(this)[name]; };
 
 function zeroPrefix(num, len, char) {
     len = len || 2;
@@ -77,14 +77,14 @@ Array.dimensional = function (lengths, initial) {
             }
         });
         return currDimension;
-    }
+    };
     Object.defineProperty(this, "dimension", {
         get: function () { return _checkDimension(this, 1) },
         enumerable: true
     });
     return this;
-}
-Array.dimensional.prototype = new Array();
+};
+Array.dimensional.prototype = [];
 Array.dimensional.prototype.constructor = Array.dimensional;
 // Gemerates a dimensional array given a regular array.
 Array.dimensional.fromArray = function (arr) {
@@ -94,13 +94,13 @@ Array.dimensional.fromArray = function (arr) {
         else a[i] = arr[i];
     }
     return a;
-}
+};
 // Copies a multi-dimensional array into another.
 Array.dimensional.prototype.copy = function () {
     var a = new Array.dimensional([0]);
     for (var i=0;i<this.length;i++) a.push(this[i]);
     return a;
-}
+};
 // replaces elements of an array given the source entry dimensions, the new array and its dimensions.
 Array.dimensional.prototype.replace = function (sdim, d, ddim) {
     if (!(d instanceof Array.dimensional)) d = Array.dimensional.fromArray(d);
@@ -113,7 +113,7 @@ Array.dimensional.prototype.replace = function (sdim, d, ddim) {
         else this[i] = d[j];
     }
     return this;
-}
+};
 // Turns a multi-dimensional array into a regular array.
 Array.dimensional.prototype.flatten = function () {
     for (var i=0,a=[];i<this.length;i++) {
@@ -121,7 +121,7 @@ Array.dimensional.prototype.flatten = function () {
         else a = a.concat(this[i]);
     }
     return a;
-}
+};
 // Gets a section of a multi-dimensional array given entry and exit points for each dimension.
 Array.dimensional.prototype.getSection = function (sdim) {
     var sd = sdim.shift(),
@@ -132,7 +132,7 @@ Array.dimensional.prototype.getSection = function (sdim) {
         else a.push(this[i]);
     }
     return a;
-}
+};
 // Transposes a two dimensional array.
 Array.dimensional.prototype.transpose2d = function (r) {
     r = isNull(r) ? 1 : r;
@@ -140,7 +140,7 @@ Array.dimensional.prototype.transpose2d = function (r) {
         for (var j=0;j<m;j++) n[i][j] = this[j][i];
     if (r > 1) return n.transpose2d(r-1);
     else return n;
-}
+};
 Object.prototype.toString = function () {
     if (JSON.stringify) return JSON.stringify(this);
     var s = "";
@@ -149,36 +149,36 @@ Object.prototype.toString = function () {
         else s += prop+":"+this[prop].toString()+",";
     }
     return "{"+s.substring(0, s.length-1)+"}";
-}
+};
 Array.prototype.oldToString = Array.prototype.toString;
 Array.prototype.toString = function () {
     return "[" + this.oldToString() + "]";
-}
+};
 // Returns whether or not two arrays are the same.
-Array.prototype.isEqual = function (arr) { return isEqual(this, arr); }
+Array.prototype.isEqual = function (arr) { return isEqual(this, arr); };
 // Determines whether or not an array contains a particular item.
 Array.prototype.contains = function (item) {
     for (var i=0;i<this.length;i++) if (isEqual(this[i], item)) return true; return false;
-}
+};
 // Takes an array and reverses the order of its elements (e.g. [0,1,2,3] to [3,2,1,0])
 Array.prototype.reverse = Array.prototype.reverse || function () {
     for (var i=this.length-1,a=[];i>=0;i--) a.push(this[i]);
     return a;
-}
+};
 // Shorthand for removing a specific element index from an array.
 Array.prototype.remove = Array.prototype.remove || function (index) {
     this.splice(index, 1);
     return this;
-}
+};
 // Copies the elements from one array to another to prevent unintended changes to another array.
 Array.prototype.copy = Array.prototype.copy || function () {
     for (var i=0,a=[];i<this.length;i++) a.push(this[i]);
     return a;
-}
+};
 // Makes sure that a string doesn't get mistaken for meta-characters when constructing a RegExp from a string.
 RegExp.quote = function (str) {
     return str.replace(/([.?*+^$[\]\\(){}-])/g, "\\$1");
-}
+};
 // Replaces all instances of a specified string or regular expression with the given replacement string.
 // When using parentheses in a regular expression; the contents of them will
 // replace "$1"-"$9" in the replacement string in the order of where they are in the RegExp.
@@ -186,28 +186,28 @@ String.prototype.replaceAll = String.prototype.replaceAll || function (toReplace
     if (typeof(toReplace) == "string") toReplace = new RegExp(RegExp.quote(toReplace), 'g');
     else if (toReplace instanceof RegExp) toReplace = new RegExp(toReplace.source, 'g');
     return this.replace(toReplace, replacement);
-}
+};
 // Removes all instances of each of the arguments from a string.
 String.prototype.removeAll = function () {
     for (var i=0,s=this;i<arguments.length;i++)
         s = s.replaceAll(arguments[i], "");
     return s;
-}
+};
 // Takes a string and reverses the order of its characters (e.g. "Hello world!" to "!dlrow olleH").
 String.prototype.reverse = String.prototype.reverse || function () {
     for (var i=this.length-1,s="";i>=0;i--) s += this.charAt(i);
     return s;
-}
+};
 // Returns a bool indicating whether or not the current string contains str at the beginning.
 String.prototype.beginsWith = String.prototype.beginsWith || function (str) {
     if (str.length > this.length) return false;
     return this.indexOf(str) == 0;
-}
+};
 // Returns a bool indicating whether or not the current string contains str at the end.
 String.prototype.endsWith = String.prototype.endsWith || function (str) {
     if (str.length > this.length) return false;
     return this.lastIndexOf(str) == this.length-str.length;
-}
+};
 // Splices an element and returns the array while preserving the original.
 function splice(list, index, howMany) {
     var newlist = [];
@@ -216,20 +216,20 @@ function splice(list, index, howMany) {
     return newlist;
 }
 // A function to compare often inaccurate floating-point values by measuring their difference against an immesurably small value.
-Number.prototype.isFloatEqual = function (num) { return Math.abs(num - this) < Number.EPSILON }
+Number.prototype.isFloatEqual = function (num) { return Math.abs(num - this) < Number.EPSILON };
 // Fixes a malfunctioning floating-point value (e.g. 2.999999999995) by slightly reducing its precision.
-Number.prototype.fixFloat = function (num) { return parseFloat(this.toPrecision(num?(num<13?num:12):12)) }
+Number.prototype.fixFloat = function (num) { return parseFloat(this.toPrecision(num?(num<13?num:12):12)) };
 // Fixes a malfunctioning modulo function by fixing the arguments and the result.
 Number.prototype.fixMod = function (mod, num) {
     var temp = (this.fixFloat(num) % mod.fixFloat(num)).fixFloat(num);
     if (temp.isFloatEqual(mod)) return 0;
     else return temp;
-}
+};
 // arr.indexOf polyfill.
 Array.prototype.indexOf = Array.prototype.indexOf || function (obj, start) {
     for (var i = (start || 0), j = this.length; i < j; i++) if (this[i] === obj) return i;
     return -1;
-}
+};
 // Sorts a number list in ascending order.
 function oldSort(templst) {
     // while an acceptable algorithm, it does not take very long to overcome the call stack limit.
@@ -412,11 +412,11 @@ var PointerLock = {
         document.exitPointerLock();
         $(el).off("pointerlockchange");
     }
-}
+};
 // A 2 dimensional vector quantity.
 function Vector2D(x, y) { if (isNull(y)) y = x; this.x = x; this.y = y; }
 Vector2D.fromPolar = function (azimuth, radius) { return new Vector2D(radius*Math.cos(azimuth), radius*Math.sin(azimuth)); };
-Vector2D.parse = function (str) { var components = str.replace(/\(\)/, "").split(/, ?/); return new Vector2D(components[0], components[1]); }
+Vector2D.parse = function (str) { var components = str.replace(/\(\)/, "").split(/, ?/); return new Vector2D(components[0], components[1]); };
 Vector2D.prototype = {
     constructor: Vector2D,
     // Create a copy of the vector that won't change the original.
@@ -488,13 +488,13 @@ Math.pythagoras = function (arg0, arg1, mode) {
     else if (mode && arg0 < arg1) return Math.sqrt((arg1*arg1)-(arg0*arg0));
     else if (Math.hypot) return Math.hypot(arg0, arg1);
     else return Math.sqrt((arg0*arg0)+(arg1*arg1)).fixFloat();
-}
+};
 // Bounds a number by returning the low value if it is lower than it, and returns the high value if it is higher than it.
 Math.bound = function (num, low, high) {
     low = isNull(low) ? -Infinity : low;
     high = isNull(high) ? Infinity : high;
     return num < low ? low : num > high ? high : num;
-}
+};
 // requestAnimationFrame polyfill
 window.requestAnimationFrame = window.requestAnimationFrame ||
 window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame ||
@@ -502,11 +502,11 @@ window.msRequestAnimationFrame || window.oRequestAnimationFrame ||
 function (cback) { setTimeout(cback, 1000/60); };
 
 // Moves the specified element in 2D CSS space using transforms
-function moveWithTransforms(el, x, y) {
+function moveWithTransforms(el, x, y, abs) {
     var currTransform = el.style.transform ||
                         el.style.webkitTransform ||
                         el.style.mozTransform || ""; // get current transform
-    if (!isNull(currTransform)) { // if it exists...
+    if (!abs && !isNull(currTransform)) { // if it exists...
         try { // if it complains about the match being null, don't hold up execution and just reset the values
             var currX = parseInt(currTransform.match(/translateX\(([^\)]*)\)/)[1]);
             var currY = parseInt(currTransform.match(/translateY\(([^\)]*)\)/)[1]);
@@ -581,7 +581,7 @@ function Colour(arg0, g, b, a) {
                 parseInt(vals[1]),
                 parseInt(vals[2]),
                 parseFloat(isNull(vals[3]) ? 1 : vals[3])
-            )
+            );
         // pretty much rgb() all over again, but with a few modifications
         // and no optional alpha to worry about
         } else if (str.startsWith("hsv")) {
@@ -772,11 +772,11 @@ Colour.prototype = {
         return new Colour(this.r, this.g, this.b, this.a);
     }
 
-}
+};
 Colour.fromHSV = function (h, s, v) {
     Colour.call(this);
     this.setHSV(h, s, v);
-}
+};
 Colour.fromHSV.prototype = Object.create(Colour.prototype);
 // Directly from the W3C's list of colour names:
 // http://www.w3.org/TR/css3-color/#svg-color
@@ -978,7 +978,7 @@ function Tween(start, end, ms, func) {
     // fun fact: I used this.start() before, not knowing that it was already defined as a property
     // a few lines above
     // This begins the animation at the specified time (or at time of execution).
-    this.beginAnimation = function (time) { this.startTime = time || new Date().getTime(); }
+    this.beginAnimation = function (time) { this.startTime = time || new Date().getTime(); };
 
     // A function for returning the value that can be overridden by classes that inherit Tween.
     // e.g. redefining this to return a vector value for animating position
@@ -1037,7 +1037,7 @@ Tween.Vector = function (start, end, ms, func) {
         writable: false,
         configurable: true
     });
-}
+};
 // This isn't *strictly* required, but I like to do it anyway.
 Tween.Vector.prototype = Object.create(Tween.prototype);
 
@@ -1061,7 +1061,7 @@ Tween.Colour = function (start, end, ms, func) {
         writable: false,
         configurable: true
     })
-}
+};
 Tween.Colour.prototype = Object.create(Tween.prototype);
 
 // This creates a helper object that can batch execute common CanvasRenderingContext2D
@@ -1139,6 +1139,36 @@ CvsHelper.prototype = {
         this.$.closePath();
         this.$.restore();
     },
+    genericDotPlot: function (points, drawFunc, style, strokeStyle) {
+        points = this.convertToVectorList(points);
+        if (points.length == 0) return;
+        this.$.save();
+        if (!isNull(style)) this.$.fillStyle = style;
+        if (!isNull(strokeStyle)) this.$.strokeStyle = strokeStyle;
+        for (var i=0;i<points.length;i++) {
+            this.$.save();
+            this.$.translate(points[i].x, points[i].y);
+            this.$.beginPath();
+            drawFunc(this.$, points[i]);
+            this.$.closePath();
+            this.$.restore();
+        }
+        this.$.restore();
+    },
+    crossPlot: function (points, length, width, style) {
+        if (isNull(length)) length = 12;
+        if (isNull(width)) width = 2;
+        this.genericDotPlot(points, function (l, w) {
+            return function ($, point) {
+                $.rotate(dtr(45));
+                $.moveTo(-l/2, 0);
+                $.lineTo(l/2, 0);
+                $.moveTo(0, -l/2);
+                $.lineTo(0, l/2);
+                $.stroke();
+            }
+        }(length, width), null, style);
+    },
     // Draws an array of points representing a polygon on the screen.
     polygon: function (points, style, borderWidth, borderStyle) {
         points = this.convertToVectorList(points);
@@ -1194,7 +1224,7 @@ CvsHelper.prototype = {
         this.$.closePath();
         this.$.restore();
     }
-}
+};
 
 // A class for canvas interfaces that handle common utilities, such as frame management, pausing,
 // reacting to window size changes and UI bindings.
@@ -1203,8 +1233,10 @@ CvsHelper.prototype = {
 function WideCanvas(cvs, notFullWidth) {
     this.canvas = cvs;
     this.$ = cvs.getContext("2d");
-    if (isNull(this.$))
+    if (isNull(this.$)) {
         TBI.error("Canvas initialisation failed.");
+        return;
+    }
     this.helper = new CvsHelper(this.$);
     if (notFullWidth)
         this.fullWidth = false;
@@ -1217,9 +1249,9 @@ WideCanvas.prototype = {
     fullWidth: true,
     _loop: function () {
         var self = this;
-        setTimeout(function () {
+        requestAnimationFrame(function () {
             self._loop();
-        }, 0);
+        });
 
         var currTime = new Date().getTime();
         if (!this.paused) {
@@ -1253,9 +1285,7 @@ WideCanvas.prototype = {
         if (property instanceof Function) initialVal = property(cvs, null, element);
         else initialVal = Object.getProperty(cvs, property);
 
-        var isNum;
-        if (typeof initialVal == typeof 1) isNum = true;
-        else isNum = false;
+        var isNum = typeof initialVal == typeof 1;
 
         $(element).val(initialVal);
 
