@@ -1,7 +1,7 @@
 if (!window.jQuery) {
-    throw new Error("[tblib/base.js] jQuery has not been loaded");
-
     document.body.innerHTML = "<P style='text-align:center;color:#333333;background:#EEEEEE;font-size:32px;padding:24px 48px;margin-top:300px;'>Either jQuery has failed to load, or your browser is too outdated to display this website properly. Please consider updating your browser to either <A href='http://google.com/chrome'>Google Chrome</A> or <A href='http://firefox.com'>Mozilla Firefox</A>.</P>";
+
+    throw new Error("[tblib/base.js] jQuery has not been loaded");
 } else {
 
 $("html").toggleClass("no-js", false);
@@ -101,7 +101,12 @@ function shorten(str, num) {
 }
 // Determines whether or not a number is even.
 function isEven(n) { return n%2==0 }
-// Determines whether or not a variable is nothing at all.
+/**
+ * Determines whether or not a variable is nothing at all.
+ * Checks against undefined, empty string, null and NaN (thing !== thing)
+ * @param thing Any of integer, array, object or string.
+ * @returns {boolean} If the variable is null, return true. Else, return false.
+ */
 function isNull(thing) {
     if (thing instanceof Array) {
         for (var i=0;i<thing.length;i++)
@@ -111,7 +116,6 @@ function isNull(thing) {
 }
 // Determines whether a number is negative.
 function isNegative(num) { return (Math.abs(num) != num); }
-
 function Enum() {
     var removeDashes = function (str) {
         str = str.split("");
@@ -124,7 +128,7 @@ function Enum() {
             else s += str[i];
         }
         return s;
-    }
+    };
     for (var i=0;i<arguments.length;i++)
         this[removeDashes(arguments[i])] = arguments[i];
     if (Object.freeze) Object.freeze(this);

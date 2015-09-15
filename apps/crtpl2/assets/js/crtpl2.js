@@ -1221,6 +1221,7 @@ function CrtPlane2(id, canvas, simple, settings) {
         var yend = this.getCoordinateFromLocation(new Vector2D(originX, 0 - (factor.y*scaleY))).y;
         yend = Math.ceil(yend/scaleY)*scaleY;
 
+
         // which side of the axis to put the scale labels on, x and y
         var xLabelPos = "auto";
         if (originY > (this.canvas.height/2)) xLabelPos = "bottom";

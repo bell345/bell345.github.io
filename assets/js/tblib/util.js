@@ -2,7 +2,7 @@ if (!window.jQuery) {
     throw new Error("[tblib/util.js] jQuery has not been loaded");
 } else if (!window.TBI) {
     throw new Error("[tblib/util.js] base.js has not been loaded");
-} else {
+}
 
 TBI.Util = {};
 
@@ -41,7 +41,7 @@ function zeroPrefix(num, len, char) {
 
 function sprintf(format) {
     var str = format;
-    var args = []; for (var i=1;i<arguments.length;i++) args.push(arguments[i]);
+    var args = []; for (var k=1;k<arguments.length;k++) args.push(arguments[k]);
     var j = 0;
     for (var i=0,f=false,s="";i<format.length;i++) {
         if (f) {
@@ -67,7 +67,7 @@ Array.dimensional = function (lengths, initial) {
     Array.call(this);
     var len = lengths.shift();
     for (var i=0;i<len;i++) this.push(lengths.length==0?initial:new Array.dimensional(lengths, initial));
-    var _checkDimension = function (arr) {
+    /*var _checkDimension = function (arr) {
         var checked = false;
         arr.forEach(function (el) {
             if (el instanceof Array && !checked) {
@@ -81,7 +81,7 @@ Array.dimensional = function (lengths, initial) {
     Object.defineProperty(this, "dimension", {
         get: function () { return _checkDimension(this, 1) },
         enumerable: true
-    });
+    });*/
     return this;
 };
 Array.dimensional.prototype = [];
@@ -89,7 +89,7 @@ Array.dimensional.prototype.constructor = Array.dimensional;
 // Gemerates a dimensional array given a regular array.
 Array.dimensional.fromArray = function (arr) {
     var a = new Array.dimensional([arr.length]);
-    for (var i in arr) {
+    for (var i in arr) if (arr.hasOwnProperty(i)) {
         if (arr[i] instanceof Array) a[i] = Array.dimensional.fromArray(arr[i]);
         else a[i] = arr[i];
     }
@@ -301,10 +301,7 @@ var scrollerWidth = -1;
 function getScrollerWidth() {
     if (scrollerWidth != -1) return scrollerWidth;
 
-    var scr = null;
-    var inn = null;
-    var wNoScroll = 0;
-    var wScroll = 0;
+    var scr, inn, wNoScroll, wScroll;
 
     // Outer scrolling div
     scr = document.createElement('div');
@@ -353,7 +350,7 @@ var Keys = {
     NUM_PERIOD:110,NUM_DIVIDE:111,NUM_MULTIPLY:106,NUM_SUBTRACT:109,NUM_ADD:107
 };
 // Converts a keypress event into a string that represents the face value of the key.
-function convertKeyDown(event, mode) {
+function convertKeyDown(event) {
     var chars = {
         32:" ",27:"esc",112:"f1",113:"f2",114:"f3",115:"f4",116:"f5",117:"f6",118:"f7",119:"f8",120:"f9",
         121:"f10",122:"f11",123:"f12",36:"home",35:"end",45:"insert",46:"delete",192:"`",48:"0",49:"1",
@@ -370,15 +367,16 @@ function convertKeyDown(event, mode) {
 // Converts a normal key press into a shifted one.
 // Only works on US keyboard layouts (no pounds or funny euroes)
 function shiftUp(key, isKeyDown) {
+    var chars = {};
     if (isKeyDown) {
-        var chars = {
+        chars = {
             49:'!',50:'@',51:'#',52:'$',53:'%',54:'^',55:'&',56:'*',57:'(',48:')',189:'_',187:'+',192:'~',219:'{',
             221:'}',220:'|',186:':',222:'"',188:'<',190:'>',111:'?'
         };
         if (isNull(chars[key])) return key.toString();
         else return chars[key.toString()];
     } else {
-        var chars = {
+        chars = {
             '1':'!','2':'@','3':'#','4':'$','5':'%','6':'^','7':'&','8':'*','9':'(','0':')','-':'_','=':'+','`':'~','[':'{',
             ']':'}','\\':'|',';':':','\'':'"',',':'<','.':'>','/':'?'
         };
@@ -405,12 +403,12 @@ var PointerLock = {
     set: function (l, callback) {
         l.requestPointerLock = l.requestPointerLock || l.mozRequestPointerLock || l.webkitRequestPointerLock;
         l.requestPointerLock();
-        if (callback) $(el).on("pointerlockchange", callback);
+        if (callback) $(l).on("pointerlockchange", callback);
     },
     release: function (l) {
         document.exitPointerLock = document.exitPointerLock || document.mozExitPointerLock || document.webkitExitPointerLock;
         document.exitPointerLock();
-        $(el).off("pointerlockchange");
+        $(l).off("pointerlockchange");
     }
 };
 // A 2 dimensional vector quantity.
@@ -507,10 +505,11 @@ function moveWithTransforms(el, x, y, abs) {
                         el.style.webkitTransform ||
                         el.style.mozTransform || ""; // get current transform
     if (!abs && !isNull(currTransform)) { // if it exists...
+        var currX = 0, currY = 0;
         try { // if it complains about the match being null, don't hold up execution and just reset the values
-            var currX = parseInt(currTransform.match(/translateX\(([^\)]*)\)/)[1]);
-            var currY = parseInt(currTransform.match(/translateY\(([^\)]*)\)/)[1]);
-        } catch (e) { var currX = 0; var currY = 0; }
+            currX = parseInt(currTransform.match(/translateX\(([^\)]*)\)/)[1]);
+            currY = parseInt(currTransform.match(/translateY\(([^\)]*)\)/)[1]);
+        } catch (e) { }
         if (!isNaN(currX)) x += currX; // add the previous values to the current one
         if (!isNaN(currY)) y += currY;
         currTransform = currTransform.replace(/translate[XY]\([^\)]*\) ?/g, ""); // get rid of previous transform
@@ -534,12 +533,19 @@ function DirectionQuantity(top, right, bottom, left) {
     this.left = left || right || top;
 }
 
-// A class for colours.
-// Currently supports constructing from and outputting
-// RGB, RGBA, HSV and hex colour formatted strings.
-// HSL coming soon.
-// Also supports 3-4 values for red, green, blue and alpha.
-// Can also take a colour object as an argument (for compatibility).
+/** A class for colours.
+ * Currently supports constructing from and outputting
+ * RGB, RGBA, HSV and hex colour formatted strings.
+ * HSL coming soon.
+ * Also supports 3-4 values for red, green, blue and alpha.
+ * Can also take a colour object as an argument (for compatibility).
+ * @param arg0 Can be any of Colour type, red channel as Integer (0-255),
+ * (hsv|rgb|rgba) colour spec, full hex string or shortened W3C hex string (#000).
+ * @param g When using 3/4 RGBA? numbers, this represents the green channel (0-255).
+ * @param b When using 3/4 RGBA? numbers, this represents the blue channel (0-255).
+ * @param a When using 4 RGBA numbers, this represents the alpha channel (0-1).
+ * @constructor
+ */
 function Colour(arg0, g, b, a) {
     // default is transparent, also colour returned when parsing fails
     this.r = 0;
@@ -547,9 +553,6 @@ function Colour(arg0, g, b, a) {
     this.b = 0;
     this.a = 0;
 
-    // To hell with using instanceofs and checks to make sure the
-    // input isn't already a colour! Just accept it as input!
-    // / this may also bite me in the ass /
     if (arg0 instanceof Colour) {
         this.r = arg0.r;
         this.g = arg0.g;
@@ -557,23 +560,28 @@ function Colour(arg0, g, b, a) {
         this.a = arg0.a;
     // if input is provided as three/four rgb(a) values
     } else if (!isNull(g) && !isNull(b)) {
-        var r = arg0;
-        this.r = r;
+        this.r = arg0;
         this.g = g;
         this.b = b;
         this.a = isNull(a) ? a : 1;
     // here comes the string parsing
     } else if (!isNull(arg0)) {
+        var vals;
         var str = arg0;
-        // hex is simple, just call the function with the string intact
-        if (str.startsWith("#")) {
+        if (Colours[str] instanceof Colour) {
+            var col = Colours[str];
+            this.r = col.r;
+            this.g = col.g;
+            this.b = col.b;
+            this.a = col.a;
+        } else if (str.startsWith("#")) {
             this.setHex(str);
         // if it's rgb formatted, extract the numbers from the string
         } else if (str.startsWith("rgb")) {
             // remove the rgb/rgba( and ) delimiters
             str = str.removeAll(/rgba?\(/, ")");
             // split by commas and trailing whitespace
-            var vals = str.split(/,\W*/);
+            vals = str.split(/,\W*/);
             // only accept good lengths of input
             if (vals.length == 3 || vals.length == 4) this.setRGBA(
                 // and just parse the strings as integers
@@ -586,7 +594,7 @@ function Colour(arg0, g, b, a) {
         // and no optional alpha to worry about
         } else if (str.startsWith("hsv")) {
             str = str.removeAll("hsv(", ")");
-            var vals = str.split(/,\W*/);
+            vals = str.split(/,\W*/);
             if (vals.length == 3) this.setHSV(
                 parseInt(vals[0]),
                 // s and v are apparently given as percentages rather than floats
@@ -665,7 +673,6 @@ Colour.prototype = {
     setHex: function (hexStr) {
         // get rid of the "#", and don't rely on it
         hexStr = hexStr.removeAll("#");
-        var vals = [];
         // if hex is three-digit shorthand
         if (hexStr.length == 3) {
             // too lazy for the mathematical way
@@ -934,34 +941,34 @@ var Colours = {
 var TimingFunctions = {
     linear: function (t, d) { return t / d; },
     quadratic: {
-        in: function (t, d) { t /= d; return t * t; },
-        out: function (t, d) { t /= d; return -t * (t - 2); },
-        both: function (t, d) { t /= (d/2); if (t < 1) return (t * t)/2; t--; return -(t * (t - 2) - 1)/2; }
+        "in": function (t, d) { t /= d; return t * t; },
+        "out": function (t, d) { t /= d; return -t * (t - 2); },
+        "both": function (t, d) { t /= (d/2); if (t < 1) return (t * t)/2; t--; return -(t * (t - 2) - 1)/2; }
     },
     cubic: {
-        in: function (t, d) { t /= d; return t*t*t; },
-        out: function (t, d) { t /= d; t--; return t*t*t + 1; },
-        both: function (t, d) { t /= d/2; if (t < 1) return (t*t*t)/2; t -= 2; return (t*t*t + 2)/2; }
+        "in": function (t, d) { t /= d; return t*t*t; },
+        "out": function (t, d) { t /= d; t--; return t*t*t + 1; },
+        "both": function (t, d) { t /= d/2; if (t < 1) return (t*t*t)/2; t -= 2; return (t*t*t + 2)/2; }
     },
     quartic: {
-        in: function (t, d) { t /= d; return t*t*t*t; },
-        out: function (t, d) { t /= d; t--; return -(t*t*t*t - 1); },
-        both: function (t, d) { t /= d/2; if (t < 1) return (t*t*t*t)/2; t -= 2; return -(t*t*t*t - 2)/2; }
+        "in": function (t, d) { t /= d; return t*t*t*t; },
+        "out": function (t, d) { t /= d; t--; return -(t*t*t*t - 1); },
+        "both": function (t, d) { t /= d/2; if (t < 1) return (t*t*t*t)/2; t -= 2; return -(t*t*t*t - 2)/2; }
     },
     quintic: {
-        in: function (t, d) { t /= d; return t*t*t*t*t; },
-        out: function (t, d) { t /= d; t--; return t*t*t*t*t + 1; },
-        both: function (t, d) { t /= d/2; if (t < 1) return (t*t*t*t*t)/2; t -= 2; return (t*t*t*t*t + 2)/2; }
+        "in": function (t, d) { t /= d; return t*t*t*t*t; },
+        "out": function (t, d) { t /= d; t--; return t*t*t*t*t + 1; },
+        "both": function (t, d) { t /= d/2; if (t < 1) return (t*t*t*t*t)/2; t -= 2; return (t*t*t*t*t + 2)/2; }
     },
     sinusoidal: {
-        in: function (t, d) { return -(Math.cos(t/d * (Math.PI/2)) - 1); },
-        out: function (t, d) { return Math.sin(t/d * (Math.PI/2)); },
-        both: function (t, d) { return -(Math.cos(Math.PI*t/d) - 1)/2; }
+        "in": function (t, d) { return -(Math.cos(t/d * (Math.PI/2)) - 1); },
+        "out": function (t, d) { return Math.sin(t/d * (Math.PI/2)); },
+        "both": function (t, d) { return -(Math.cos(Math.PI*t/d) - 1)/2; }
     },
     exponential: {
-        in: function (t, d) { return Math.pow(2, 10 * (t/d - 1)); },
-        out: function (t, d) { return -Math.pow(2, -10 * t/d) + 1; },
-        both: function (t, d) { return t /= d/2; if (t < 1) return Math.pow(2, 10*(t-1))/2; t--; return (-Math.pow(2, -10 * t) + 2)/2;  }
+        "in": function (t, d) { return Math.pow(2, 10 * (t/d - 1)); },
+        "out": function (t, d) { return -Math.pow(2, -10 * t/d) + 1; },
+        "both": function (t, d) { t /= d/2; if (t < 1) return Math.pow(2, 10*(t-1))/2; t--; return (-Math.pow(2, -10 * t) + 2)/2;  }
     }
 };
 
@@ -1226,6 +1233,65 @@ CvsHelper.prototype = {
     }
 };
 
+function SVGHelper(svg) {
+    this.svg = svg;
+}
+
+(function (l) {
+
+    SVGHelper.prototype = {
+        constructor: SVGHelper,
+        _ns: "http://www.w3.org/2000/svg",
+
+        clear: function () {
+            var children = this.svg.childNodes;
+            for (var i=0;i<children.length;i++)
+                children[i].remove();
+        },
+        getGroup: function (groupName, parent) {
+            if (isNull(parent)) parent = this.svg;
+            var groups = parent.getElementsByTagName("g");
+            for (var i=0;i<groups.length;i++)
+                if (groups[i].getAttribute("class") == groupName)
+                    return groups[i];
+
+            var g = document.createElementNS(this._ns, "g");
+            g.setAttribute("class", groupName);
+            parent.appendChild(g);
+            return g;
+        },
+        linePlot: function (points, className, groupName, tagName) {
+            if (isNull(tagName)) tagName = "polyline";
+            points = this.convertToVectorList(points);
+            if (points.length == 0) return;
+            var p = points.map(function (v) {
+                return v.x + "," + v.y;
+            }).join(" ");
+
+            var el = document.createElementNS(this._ns, tagName);
+            el.setAttribute("points", p);
+
+            if (!isNull(className)) el.setAttribute("class", className);
+            if (!isNull(groupName)) this.getGroup(groupName).appendChild(el);
+            else this.svg.appendChild(el);
+        },
+        polygon: function (points, className, groupName) {
+            this.linePlot(points, className, groupName, "polygon");
+        }
+
+    };
+
+    for (var i=0;i<l.length;i++)
+        SVGHelper.prototype[l[i]] = CvsHelper.prototype[l[i]];
+})(["convertToVector",
+    "convertToVectorList",
+    "correctCoordinate",
+    "bound",
+    "isBounded",
+    "getLocationOfCoordinate",
+    "getCoordinateFromLocation"
+]);
+
 // A class for canvas interfaces that handle common utilities, such as frame management, pausing,
 // reacting to window size changes and UI bindings.
 // cvs: A <canvas> element where the context will be assigned from.
@@ -1317,6 +1383,4 @@ WideCanvas.prototype = {
 
         this.bindings.filter(filterFunc).forEach(function (e) { cvs.updateBinding(e); });
     }
-}
-
-}
+};

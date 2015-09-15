@@ -148,10 +148,8 @@ function loadProjectPage(page) {
 // and contains all the metadata required for parsing the website projects.
 function parseContentManifest(manifest) {
     // version control
-    if (manifest.version < 2) {
-        console.error("Manifest was of an invalid version and was unable to be parsed.");
-        return;
-    }
+    if (manifest.version < 2)
+        throw new Error("Manifest was of an invalid version and was unable to be parsed.");
 
     // If this manifest is being used to specify the "pages" which contain the projects...
     if (manifest.role == "page-declaration") {
@@ -241,6 +239,8 @@ function parseContentManifest(manifest) {
                 createThumbGalleryFigure(thumbGallery, proj);
             }
         }
+    } else {
+        throw new Error("Content manifest was of an invalid or unsupported type.");
     }
 }
 // Quick and dirty fix for the <base> href attribute modifying hash links to point to the root directory
