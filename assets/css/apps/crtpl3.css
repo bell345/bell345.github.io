@@ -4,4 +4,48 @@
     bottom:0;
     left:0;
     right:0;
+    background:#f2f2f2;
+    -webkit-user-select:none;
+    -moz-user-select:none;
+    user-select:none;
+    cursor:move;
+    cursor:-webkit-grab;
+    cursor:-moz-grab;
+    cursor:grab;
+}
+#cplane:active {
+    cursor:-webkit-grabbing;
+    cursor:-moz-grabbing;
+    cursor:grabbing;
+}
+
+svg polyline {
+    stroke:#333;
+    stroke-linecap:square;
+    fill:none;
+}
+
+svg .axis {
+    stroke-width:6;
+}
+
+svg .scale-mark {
+    stroke-width:4;
+}
+
+svg .scale-label {
+    font-size:20px;
+}
+
+svg text {
+    stroke:none;
+}
+
+svg .block-margin {
+    fill:#eee;
+    stroke:none;
+}
+
+svg .functions polyline {
+    stroke-width:4;
 }

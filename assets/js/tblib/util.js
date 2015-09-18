@@ -1075,13 +1075,23 @@ Tween.Colour.prototype = Object.create(Tween.prototype);
 // tasks, such as drawing a line plot or 2D text.
 function CvsHelper(context) {
     this.$ = context;
+
+    var self = this;
+    Object.defineProperty(this, "width", {
+        get: function () { return self.$.canvas.width; },
+        set: function (val) { self.$.canvas.width = parseInt(val); }
+    });
+    Object.defineProperty(this, "height", {
+        get: function () { return self.$.canvas.height; },
+        set: function (val) { self.$.canvas.height = parseInt(val); }
+    });
 }
 CvsHelper.prototype = {
     constructor: CvsHelper,
     // Alias to quickly clear entire canvas.
     // Doesn't take into account $.(translate|rotate|scale).
     clear: function () {
-        this.$.clearRect(0, 0, this.$.canvas.width, this.$.canvas.height);
+        this.$.clearRect(0, 0, this.width, this.height);
     },
     // Converts a non-vector value (such as a deprecated Coords() or a two-length array)
     // to a vector value.
@@ -1103,7 +1113,7 @@ CvsHelper.prototype = {
     },
     // Makes sure that the coordinate is located inside of the canvas borders.
     bound: function (coord) {
-        return coord.clamp(Vector2D.zero, new Vector2D(this.$.canvas.width, this.$.canvas.height));
+        return coord.clamp(Vector2D.zero, new Vector2D(this.width, this.height));
     },
     // Returns whether or not the specified coordinate is inside of the canvas borders.
     isBounded: function (coord) {
@@ -1113,14 +1123,14 @@ CvsHelper.prototype = {
     // extents: The width and height of the logical plane subsection inside of the canvas.
     // pan: The centre of the logical plane subsection inside of the canvas.
     getLocationOfCoordinate: function (coord, extents, pan) {
-        var factor = new Vector2D(this.$.canvas.width, this.$.canvas.height).divide(extents);
+        var factor = new Vector2D(this.width, this.height).divide(extents);
         return factor.multiply(extents.divide(2).subtract(this.correctCoordinate(pan)).add(this.correctCoordinate(coord)));
     },
     // Returns a Vector2D representing the logical plane coordinate from the given canvas location.
     // extents: The width and height of the logical plane subsection inside of the canvas.
     // pan: The centre of the logical plane subsection inside of the canvas.
     getCoordinateFromLocation: function (location, extents, pan) {
-        var factor = new Vector2D(this.$.canvas.width, this.$.canvas.height).divide(extents);
+        var factor = new Vector2D(this.width, this.height).divide(extents);
         var coord = location.divide(factor).add(this.correctCoordinate(pan)).subtract(extents.divide(2));
         return this.correctCoordinate(coord);
     },
@@ -1232,9 +1242,34 @@ CvsHelper.prototype = {
         this.$.restore();
     }
 };
+/**
+ * Similar to CvsHelper, provides an interface for common or otherwise labourious tasks,
+ * such as clearing SVG node of all elements, or plotting coordinates as a line plot.
+ * This implementation may be more convenient, as it relies on CSS by using class names
+ * and grouping instead of JS properties to style the objects. It also means that
+ * certain elements can be removed instead of having to clear the canvas and start all
+ * over again.
+ * @param root The SVG node through which all new elements will get appended to. Does not have to be a root node.
+ * @constructor
+ */
+function SVGHelper(root) {
+    this.root = root;
 
-function SVGHelper(svg) {
-    this.svg = svg;
+    var self = this;
+    Object.defineProperty(this, "svg", {
+        get: function () {
+            if (self.root.ownerSVGElement != null) return self.root.ownerSVGElement;
+            else return self.root;
+        }
+    });
+    Object.defineProperty(this, "width", {
+        get: function () { return parseInt(self.svg.getAttribute("width")); },
+        set: function (val) { self.svg.setAttribute("width", val.toString() + "px"); }
+    });
+    Object.defineProperty(this, "height", {
+        get: function () { return parseInt(self.svg.getAttribute("height")); },
+        set: function (val) { self.svg.setAttribute("height", val.toString() + "px"); }
+    });
 }
 
 (function (l) {
@@ -1243,21 +1278,34 @@ function SVGHelper(svg) {
         constructor: SVGHelper,
         _ns: "http://www.w3.org/2000/svg",
 
+        groups: {},
+
         clear: function () {
-            var children = this.svg.childNodes;
-            for (var i=0;i<children.length;i++)
+            var i;
+            var children = [];
+            for (i=0;i<this.root.childNodes.length;i++) children.push(this.root.childNodes[i]);
+
+            for (i=0;i<children.length;i++)
                 children[i].remove();
+
+            this.groups = {};
         },
         getGroup: function (groupName, parent) {
-            if (isNull(parent)) parent = this.svg;
+            if (isNull(parent)) parent = this.root;
             var groups = parent.getElementsByTagName("g");
-            for (var i=0;i<groups.length;i++)
-                if (groups[i].getAttribute("class") == groupName)
+            if (this.groups[groupName] != undefined) return this.groups[groupName];
+            for (var i = 0; i < groups.length; i++) {
+                if (groups[i].getAttribute("class") == groupName) {
+                    this.groups[groupName] = groups[i];
                     return groups[i];
+                }
+            }
+
 
             var g = document.createElementNS(this._ns, "g");
             g.setAttribute("class", groupName);
             parent.appendChild(g);
+
             return g;
         },
         linePlot: function (points, className, groupName, tagName) {
@@ -1273,16 +1321,33 @@ function SVGHelper(svg) {
 
             if (!isNull(className)) el.setAttribute("class", className);
             if (!isNull(groupName)) this.getGroup(groupName).appendChild(el);
-            else this.svg.appendChild(el);
+            else this.root.appendChild(el);
+
+            return el;
         },
         polygon: function (points, className, groupName) {
-            this.linePlot(points, className, groupName, "polygon");
+            return this.linePlot(points, className, groupName, "polygon");
+        },
+        write: function (text, position, className, groupName, tagName) {
+            if (isNull(tagName)) tagName = "text";
+
+            var el = document.createElementNS(this._ns, tagName);
+            el.setAttribute("x", position.x.toString());
+            el.setAttribute("y", position.y.toString());
+            el.textContent = text;
+
+            if (!isNull(className)) el.setAttribute("class", className);
+            if (!isNull(groupName)) this.getGroup(groupName).appendChild(el);
+            else this.root.appendChild(el);
+
+            return el;
         }
 
     };
 
     for (var i=0;i<l.length;i++)
         SVGHelper.prototype[l[i]] = CvsHelper.prototype[l[i]];
+
 })(["convertToVector",
     "convertToVectorList",
     "correctCoordinate",
@@ -1383,4 +1448,47 @@ WideCanvas.prototype = {
 
         this.bindings.filter(filterFunc).forEach(function (e) { cvs.updateBinding(e); });
     }
+};
+
+function WideSVG(svg, notFullWidth) {
+    this.svg = svg;
+    this.helper = new SVGHelper(svg);
+    if (notFullWidth)
+        this.fullWidth = false;
+    this._loop();
+
+    var self = this;
+    Object.defineProperty(this, "width", {
+        get: function () { return self.helper.width; },
+        set: function (val) { self.helper.width = val; }
+    });
+    Object.defineProperty(this, "height", {
+        get: function () { return self.helper.height; },
+        set: function (val) { self.helper.height = val; }
+    });
+}
+WideSVG.prototype = Object.create(WideCanvas.prototype);
+WideSVG.prototype.constructor = WideSVG;
+WideSVG.prototype._loop = function () {
+    var self = this;
+    requestAnimationFrame(function () {
+        self._loop();
+    });
+
+    var currTime = new Date().getTime();
+    if (!this.paused) {
+        if (this.lastFrame == -1) this.lastFrame = currTime;
+        var delta = (currTime - this.lastFrame) / 1000;
+        this.loop(delta);
+    } else {
+
+    }
+
+    if (this.fullWidth) {
+        if (window.innerWidth != this.svg.getAttribute("width"))
+            this.svg.setAttribute("width", window.innerWidth + "px");
+        if (window.innerHeight != this.svg.getAttribute("height"))
+            this.svg.setAttribute("height", window.innerHeight + "px");
+    }
+    this.lastFrame = currTime;
 };

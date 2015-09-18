@@ -79,6 +79,7 @@ TBI.Timer = function (onCompletion, duration, repeat, timerName) {
     this.finish = function () {
         this.clear();
         this.onCompletion(this);
+        timer.completed = true;
     };
 
     if (this.elapsedTime == undefined) Object.defineProperty(this, "elapsedTime", {
