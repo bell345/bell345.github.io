@@ -84,13 +84,15 @@
 /* ============= */
 /*  GLOBAL/ROOT  */
 /* ============= */
+html {
+    transition:0.2s all;
+}
 *, *::before, *::after {
     margin:0;
     padding:0;
     border:0;
-    font-family:"Lato", "Open Sans", "Helvetica", "Arial", sans-serif;
     box-sizing:border-box;
-    transition:0.2s all;
+    font-family:"Lato", "Open Sans", "Helvetica", "Arial", sans-serif;
 }
 ::selection {
     background-color:rgb(0, 200, 255);
@@ -165,7 +167,6 @@ header {
 main {
     display:inline-block;
     width:58%;
-    margin:auto;
     position:absolute;
     left:0;
     right:0;
@@ -175,7 +176,7 @@ main {
     color:#333;
     box-shadow:2px 2px 0 rgba(0,0,0,0.4);
     transition:0s all;
-    margin-bottom:28px;
+    margin: auto auto 28px;
 }
 
 .thumb-gallery {
@@ -214,8 +215,6 @@ main {
     font-size:26px;
     font-weight:bold;
     font-family:"Raleway", sans-serif;
-    padding:8px 12px;
-    padding-top:12px;
     background:rgba(0, 0, 0, 0.4);
     cursor:pointer;
     position:absolute;
@@ -223,7 +222,7 @@ main {
     bottom:100%;
     left:0;
     right:0;
-    padding-top:40px;
+    padding:40px 12px 8px;
 }
 .thumb-gallery figure:hover figcaption {
     top:0;
@@ -362,7 +361,7 @@ nav > ul li a.external::before {
     box-sizing:content-box;
     content:"\f14c";
     display:inline-block;
-    font-family:"FontAwesome";
+    font-family:"FontAwesome", sans-serif;
     text-align:center;
 }
 
@@ -480,7 +479,7 @@ img.img-error::before {
 /*  TEXT CONTENT  */
 /* ============== */
 main h1, main h1 * {
-    font-family:"Righteous";
+    font-family:"Righteous", sans-serif;
     font-size:52px;
 }
 main h1 {
@@ -488,7 +487,7 @@ main h1 {
     text-align:center;
     font-weight:normal;
 }
-h2, h2 *, h3, h3 * { font-family:"Raleway"; }
+h2, h2 *, h3, h3 * { font-family:"Raleway", sans-serif; }
 h2, h2 * { font-size:34px; }
 h2 { margin-bottom:14px; }
 h3, h3 * { font-size:24px; }
@@ -512,7 +511,7 @@ a[download], a[download] * { cursor:pointer; }
 a > button { color:#333; cursor:pointer; }
 a > button.major { color:#eee; }
 a[download]::before {
-    font-family:FontAwesome;
+    font-family:FontAwesome, sans-serif;
     content:"\f019";
     padding-right:6px;
 }
@@ -527,8 +526,7 @@ ul.txt, ul.main {
 ul.txt li, ul.main li {
     color:#555;
     border-left:4px solid transparent;
-    padding:3px 6px;
-    padding-left:28px;
+    padding: 3px 6px 3px 28px;
     position:relative;
 }
 ul.txt li::before, ul.main li::before {
@@ -544,7 +542,7 @@ ul.txt li::before, ul.main li::before {
     border-top:8px solid transparent;
     border-bottom:8px solid transparent;
 }
-ul.txt li, ul.main li
+ul.txt li, ul.main li,
 ul.txt li *:not(a),
 ul.main li *:not(a) {
     color:#555;
@@ -599,12 +597,12 @@ button.link a, input[type="button"].link {
 }
 button:hover, input[type="button"]:hover {
     background:#eee;
-    box-shadow:inset 0px -2px 0px rgba(0,0,0,0.1);
+    box-shadow:inset 0 -2px 0 rgba(0,0,0,0.1);
 }
 button:active, input[type="button"]:active {
     background:#ddd;
     outline:0;
-    box-shadow:inset 0px 2px 0px rgba(0,0,0,0.1);
+    box-shadow:inset 0 2px 0 rgba(0,0,0,0.1);
 }
 button:focus, input[type]:focus, select:focus { outline:0 }
 input[type], *[contenteditable], select, option {
@@ -636,11 +634,11 @@ button.major, input[type="submit"] {
 }
 button.major:hover, input[type="submit"]:hover {
     background:#19e;
-    box-shadow:inset 0px -2px 0px rgba(0,0,0,0.2);
+    box-shadow:inset 0 -2px 0 rgba(0,0,0,0.2);
 }
 button.major:active, input[type="submit"]:active {
     background:#07c;
-    box-shadow:inset 0px 2px 0px rgba(0,0,0,0.2);
+    box-shadow:inset 0 2px 0 rgba(0,0,0,0.2);
 }
 .toggle {
     padding-right:52px;
@@ -666,11 +664,11 @@ button.major:active, input[type="submit"]:active {
 }
 .toggle.on:hover::after {
     background:#19e;
-    box-shadow:inset 0px -2px 0px rgba(0,0,0,0.1);
+    box-shadow:inset 0 -2px 0 rgba(0,0,0,0.1);
 }
 .toggle.on:active::after {
     background:#07c;
-    box-shadow:inset 0px 2px 0px rgba(0,0,0,0.1);
+    box-shadow:inset 0 2px 0 rgba(0,0,0,0.1);
 }
 .up-down::after {
     content:" \25be";
@@ -679,7 +677,6 @@ button.major:active, input[type="submit"]:active {
     content:" \25b4";
 }
 .radio-input label {
-    padding:4px 8px;
     background:#E2E2E2;
     font-size:16px;
     border-radius:0 128px 128px 0;
@@ -689,7 +686,7 @@ button.major:active, input[type="submit"]:active {
     transition:0.2s all;
     display:inline-block;
     position:relative;
-    padding-right:38px;
+    padding: 4px 38px 4px 8px;
 }
 .radio-input label:hover {
     box-shadow:inset 0 -2px 0 rgba(0,0,0,0.1);
@@ -827,9 +824,8 @@ table.main tbody tr:last-child td, table.main tbody tr:last-child th {
     border-bottom:none;
 }
 table.sortable th.sort {
-    padding:6px 8px;
     cursor:pointer;
-    padding-right:28px;
+    padding: 6px 28px 6px 8px;
 }
 table.sortable th.sort:after {
     position:absolute;
@@ -949,7 +945,7 @@ table.sortable th.sort.down:after {
     min-width:400px;
     height:90%;
     width:90%;
-    box-shadow:0px 0px 4px rgba(0,0,0,0.5);
+    box-shadow:0 0 4px rgba(0,0,0,0.5);
     z-index:9999;
     transition:0s all;
 }
@@ -1054,7 +1050,7 @@ button.dialog-header-close:active {
 
 .popup {
     background:#f2f2f2;
-    box-shadow:4px 4px 0px rgba(0,0,0,0.2);
+    box-shadow:4px 4px 0 rgba(0,0,0,0.2);
     position:fixed;
     z-index:10;
     padding:12px 18px;
@@ -1092,7 +1088,7 @@ div.popup ul {
 #note-holder-inner .note {
     background:#eee;
     padding:6px 18px;
-    box-shadow:4px 4px 0px rgba(0,0,0,0.1);
+    box-shadow:4px 4px 0 rgba(0,0,0,0.1);
     margin-top:16px;
     transition:0.2s all;
     overflow:auto;
@@ -1101,8 +1097,7 @@ div.popup ul {
     display:inline-block;
     text-align:left;
     overflow:hidden;
-    padding:4px 0;
-    padding-right:18px;
+    padding: 4px 18px 4px 0;
 }
 #note-holder-inner .note li {
     list-style:none;
@@ -1133,17 +1128,17 @@ div.popup ul {
     line-height:18px;
     padding:0 8px;
     background:#0094ff;
-    box-shadow:4px 0px 0px #06b;
+    box-shadow:4px 0 0 #06b;
     border-radius:8px;
 }
 #note-holder-inner #note-group-warning li::before {
     background:#FD0;
     color:#000;
-    box-shadow:4px 0px 0px #DB0;
+    box-shadow:4px 0 0 #DB0;
 }
 #note-holder-inner #note-group-error li::before {
     background:#f00;
-    box-shadow:4px 0px 0px #c00;
+    box-shadow:4px 0 0 #c00;
 }
 #note-holder-inner #note-group-warning li:not([data-instances])::before { content:"!"; }
 #note-holder-inner #note-group-error li:not([data-instances])::before { content:"\2716"; }
@@ -1155,4 +1150,56 @@ div.popup ul {
 }
 .has-help {
     text-decoration:underline;
+}
+
+select.styled.done {
+    display:none;
+}
+.styled-select ul:not(.active) {
+     display: none;
+}
+
+.styled-select {
+    position: relative;
+    display:inline-block;
+}
+
+.styled-select > div {
+    background: #fff;
+    padding: 8px 42px 8px 16px;
+    position: relative;
+    cursor: default;
+    font-weight: bold;
+}
+
+.styled-select > div::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 16px;
+    width: 0;
+    height: 0;
+    margin: auto;
+    border-style: solid;
+    border-width: 6px 6px 0 6px;
+    border-color: #333 transparent;
+}
+
+.styled-select ul {
+    list-style-type: none;
+    background: #fff;
+    color: #333;
+    box-shadow: 2px 2px 4px 0 #aaa;
+}
+
+.styled-select ul li {
+    padding: 8px 16px;
+}
+
+.styled-select ul li:hover {
+    cursor: pointer;
+    background: #07d;
+    color: #fff;
+    transition: 0s all !important;
 }

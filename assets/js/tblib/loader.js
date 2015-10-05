@@ -9,7 +9,7 @@ if (!window.jQuery) {
     throw new Error("[tblib/loader.js] base.js has not been loaded");
 } else if (!window.TBI.Util) {
     throw new Error("[tblib/loader.js] util.js has not been loaded");
-} else {
+}
 
 $("body").toggleClass("init", true);
 
@@ -31,7 +31,7 @@ TBI.Loader = function (eventName) {
         for (var i=0;i<this.tasks.length;i++)
             if (this.tasks[i].id == id) return this.tasks[i];
         return null;
-    }
+    };
 
     var LogEntry = function (message) {
         this.time = new Date().getTime() - globalStartTime;
@@ -122,7 +122,7 @@ TBI.Loader = function (eventName) {
             this.completed = true;
             $(document).trigger(this.eventName);
         }
-        else if (this.termiate) {
+        else if (this.terminate) {
             this.milestone("Loader terminated prematurely");
             this.completed = true;
             $(document).trigger(this.eventName);
@@ -157,5 +157,3 @@ $(document).on("pageload", function () {
     loader.milestone("Page loaded", true);
     $("body").toggleClass("init", false);
 });
-
-}

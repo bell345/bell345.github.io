@@ -1,4 +1,7 @@
-#cplane {
+.plane-container {
+    overflow:hidden;
+}
+#main-plane {
     position:absolute;
     top:0;
     bottom:0;
@@ -12,40 +15,184 @@
     cursor:-webkit-grab;
     cursor:-moz-grab;
     cursor:grab;
+    transition:0s all;
 }
-#cplane:active {
+#main-plane:active {
     cursor:-webkit-grabbing;
     cursor:-moz-grabbing;
     cursor:grabbing;
 }
+#main-plane:active::before {
+    content:"";
+    position:fixed;
+    top:0;
+    bottom:0;
+    left:0;
+    right:0;
+    transform:scale(4);
+}
 
-svg polyline {
+svg.plane polyline, svg.plane path {
     stroke:#333;
     stroke-linecap:square;
     fill:none;
 }
 
-svg .axis {
+svg.plane .axis {
     stroke-width:6;
+    stroke:#333;
 }
 
-svg .scale-mark {
+svg.plane .scale-mark {
     stroke-width:4;
 }
-
-svg .scale-label {
-    font-size:20px;
+svg.plane .minor-scale-mark {
+    stroke-width:1;
+    color:#ccc;
 }
 
-svg text {
+svg.plane .scale-label {
+    font-size:20px;
+}
+svg.plane .grid-line {
+    stroke:rgba(200,200,200,0.4);
+    stroke-width:2;
+}
+
+svg.plane text {
     stroke:none;
 }
 
-svg .block-margin {
+svg.plane .block-margin {
     fill:#eee;
     stroke:none;
 }
 
-svg .functions polyline {
+svg.plane .functions {
     stroke-width:4;
+}
+
+.top-bar {
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    height:58px;
+    padding:6px 12px;
+    background:#eee;
+    box-shadow:0 2px 8px 0 rgba(100,100,100,0.5);
+    vertical-align:middle;
+    z-index:99;
+}
+body.no-bar .top-bar {
+    transform:translateY(-100%);
+}
+.plane-container {
+    position:absolute;
+    top:52px;
+    left:0;
+    right:0;
+    bottom:0;
+}
+body.no-bar .plane-container {
+    top:0;
+}
+.zoom-rocker {
+    font-size:0;
+}
+.zoom-rocker button {
+    font-size:0;
+    position:relative;
+    height:100%;
+}
+.zoom-rocker button::before,
+.zoom-rocker button::after {
+    position:absolute;
+    top:0;
+    bottom:0;
+    margin:auto;
+    background:#333;
+}
+.zoom-out {
+    padding:6px 32px 6px 18px;
+}
+.zoom-out::before {
+    content:"";
+    left:18px;
+    height:4px;
+    width:12px;
+}
+.zoom-in {
+    padding:6px 18px 6px 32px;
+}
+.zoom-in::before {
+    content:"";
+    right:18px;
+    height:4px;
+    width:12px;
+}
+.zoom-in::after {
+    content:"";
+    right:22px;
+    height:12px;
+    width:4px;
+}
+.top-bar .separator {
+    margin:0 12px;
+    width:2px;
+    background:#aaa;
+    height:60%;
+    display:inline-block;
+    position:absolute;
+    top:20%;
+}
+.top-bar .separator + * {
+    margin-left:32px;
+}
+.top-bar > span::before,
+.top-bar > span::after {
+    content:"";
+    display:inline-block;
+}
+.icon svg {
+    height:32px;
+    width:32px;
+    fill:#555;
+    transition:0.2s all;
+}
+.icon.toggle {
+    padding-right:10px;
+}
+.icon.toggle svg {
+    fill:#aaa;
+}
+.icon.toggle.on svg {
+    fill:#2bf;
+}
+.icon.toggle::after {
+    display:none;
+}
+.top-bar * {
+    vertical-align:top;
+}
+.top-bar button {
+    background:none;
+    position:relative;
+    transition:0.2s all, 0s box-shadow, 0s background;
+}
+.top-bar button:hover {
+    box-shadow:1px 1px 2px 0 #aaa;
+    background:#eee;
+}
+.top-bar button:active {
+    box-shadow:inset 1px 1px 2px 0 #aaa;
+    background:#ddd;
+}
+.top-bar .styled-select {
+    top:.2em;
+    position:relative;
+    margin-left:18px;
+}
+.fn-defined-only {
+    display:none;
 }

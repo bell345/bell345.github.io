@@ -4,18 +4,18 @@ if (!window.jQuery) {
     throw new Error("[tblib/ui.js] base.js has not been loaded");
 } else if (!TBI.Util) {
     throw new Error("[tblib/ui.js] util.js has not been loaded");
-} else {
+}
 
 TBI.UI = {};
 
 TBI.log = function (message, timeout) {
     console.log(message);
     TBI.UI.Notification("Info", message, timeout || 30000);
-}
+};
 TBI.warn = function (message, timeout) {
     console.warn(message);
     TBI.UI.Notification("Warning", message, timeout || 40000);
-}
+};
 TBI.error = function (message, timeout) {
     if (message instanceof Error) {
         var msgLi = TBI.UI.Notification("Error", message.message, timeout || 50000);
@@ -31,7 +31,7 @@ TBI.error = function (message, timeout) {
         msgLi.appendChild(stackButton);
         msgLi.appendChild(stackDiv);
     } else TBI.UI.Notification("Error", message, timeout || 50000);
-}
+};
 
 TBI.UI.updateUI = function (force) {
     var items = $("h2.item[id], h2.section[id]");
@@ -147,7 +147,58 @@ TBI.UI.updateUI = function (force) {
         TBI.UI.HoverPopup.bindElement(elementsInNeed[i].previousElementSibling, "", elementsInNeed[i].innerHTML);
 
     $(".has-help + .help:not(.done)").toggleClass("done", true);
-}
+
+    var selects = $("select.styled:not(.done)");
+    for (var i=0;i<selects.length;i++) {
+        var select = selects[i];
+
+        var selection = isNull(select.value) ? "\u2014" :
+            $(select).find("option[value='"+select.value+"']").html();
+
+        var div, ul, container;
+        if ($(select).parent().hasClass("styled-select")) {
+            container = $(select).parent();
+            div = container.find("div")[0];
+            ul = container.find("ul")[0];
+            $(ul).empty();
+        } else {
+            container = $(select).wrap("<div class='styled-select'></div>").parent();
+            div = document.createElement("div");
+            container[0].appendChild(div);
+            ul = document.createElement("ul");
+            container[0].appendChild(ul);
+
+            $(div).click(function (ul) {
+                return function (event) {
+                    event.stopPropagation();
+                    $(ul).toggleClass("active");
+                };
+            }(ul));
+            $(document).click(function (ul) {
+                return function () { $(ul).removeClass("active"); };
+            }(ul));
+        }
+
+        $(div).html(selection);
+
+        $(select).find("option").toArray().forEach(function (e) {
+            var li = document.createElement("li");
+                li.innerHTML = e.innerHTML;
+                li.setAttribute("rel", e.getAttribute("value"));
+                $(li).click(function (div, select, ul) {
+                    return function (event) {
+                        event.stopPropagation();
+                        $(div).html($(this).html());
+                        $(select).val($(this).attr("rel"));
+                        $(select).trigger("change");
+                        $(ul).removeClass("active");
+                    };
+                }(div, select, ul));
+            ul.appendChild(li);
+        });
+        $(select).addClass("done");
+    }
+};
 
 TBI.UI.HoverPopup = function (x, y, title, body) {
     this.position = new Vector2D(x, y);
@@ -193,7 +244,7 @@ TBI.UI.HoverPopup = function (x, y, title, body) {
         get: function () { return this.element.gecn("popup-body")[0].innerHTML; },
         set: function (body) { this.element.gecn("popup-body")[0].innerHTML = body; }
     });
-}
+};
 TBI.UI.HoverPopup.bindElement = function (element, title, body) {
     $(element).mousemove(function (title, body) {
         return function (event) {
@@ -203,11 +254,11 @@ TBI.UI.HoverPopup.bindElement = function (element, title, body) {
     $(element).mouseleave(function () {
         $(".popup").remove();
     });
-}
+};
 TBI.UI.HoverPopup.bindElements = function (elementArray, title, body) {
     for (var i=0;i<elementArray.length;i++)
         TBI.UI.HoverPopup.bindElement(elementArray[i], title, body);
-}
+};
 // A predefined popup element that can be added to by using the same header.
 TBI.UI.Notification = function (group, text, timeout) {
     var groupID = "note-group-" + group.toLowerCase(),
@@ -259,7 +310,7 @@ TBI.UI.Notification = function (group, text, timeout) {
     else if (TBI.TimerDB[groupID]) TBI.TimerDB[groupID].clear();
 
     return currNote;
-}
+};
 // Changes the specified toggleable element either according to the boolean value passed to it, or simply toggles it.
 TBI.UI.toggleButton = function (element, bool) {
     if (!isNull(element[0]) && element[0] instanceof HTMLElement) element = element[0];
@@ -275,7 +326,7 @@ TBI.UI.toggleButton = function (element, bool) {
     if (!isNull(bool) && bool !== isToggled || isNull(bool)) $(element).click();
 
     return TBI.UI.isToggled(element);
-}
+};
 // Returns whether or not a specified toggleable element is toggled or not.
 TBI.UI.isToggled = function (element) { return isNull(element.checked) ? $(element).hasClass("on") : element.checked; }
 TBI.UI.getRadioInput = function (name) {
@@ -283,7 +334,7 @@ TBI.UI.getRadioInput = function (name) {
     for (var i=0;i<inputs.length;i++)
         if (inputs[i].checked) return inputs[i].value;
     return null;
-}
+};
 // Sorts a specific table element according to the column and direction specified.
 TBI.UI.sortTable = function (table, colIndex, direction, type, customFunc) {
     var body = table.querySelector("tbody");
@@ -338,7 +389,7 @@ TBI.UI.sortTable = function (table, colIndex, direction, type, customFunc) {
 
     $(body).empty(); // get rid of all rows
     rows.forEach(function (e) { body.appendChild(e); }); // and put them back in correct order
-}
+};
 // Generates a desktop notification outside of the regular environment.
 TBI.UI.Note = function (img, title, desc, link) {
     if (isNull(window.Notification)) return null;
@@ -347,9 +398,9 @@ TBI.UI.Note = function (img, title, desc, link) {
         note.onclick = function () {
             window.open(link);
             note.close();
-        }
+        };
     new Notification(title, note);
-}
+};
 
 // Designates outgoing links.
 TBI.UI.updateLinks = function () {
@@ -368,7 +419,7 @@ TBI.UI.updateLinks = function () {
             return false;
         }
     });
-}
+};
 
 TBI.UI.Dialog = function (header, body, buttons) {
     this.header = header;
@@ -385,7 +436,7 @@ TBI.UI.Dialog = function (header, body, buttons) {
             diaHeaderLoc = new Vector2D(event.clientX, event.clientY);
             diaHeaderTransform = this.parentElement.style.transform;
             if (diaHeaderTransform == "") diaHeaderTransform = "translateX(0px) translateY(0px)";
-        }
+        };
         diaDiv.onmousemove = function (event) {
             if (diaHeaderLoc != null) {
                 var loc = new Vector2D(event.clientX, event.clientY).subtract(diaHeaderLoc);
@@ -410,11 +461,11 @@ TBI.UI.Dialog = function (header, body, buttons) {
                     .replace(/translateX\(.*?\)/, "translateX("+curr.x+"px)")
                     .replace(/translateY\(.*?\)/, "translateY("+curr.y+"px)");
             }
-        }
+        };
         diaHeader.onmouseup = function () {
             diaHeaderLoc = null;
             diaHeaderTransform = null;
-        }
+        };
         diaDiv.onmouseup = diaHeader.onmouseup;
         diaDiv.onmouseleave = diaHeader.onmouseup;
             var diaHeaderText = document.createElement("h2");
@@ -485,19 +536,17 @@ TBI.UI.Dialog = function (header, body, buttons) {
         if (!isNull(event)) {
             var cn = event.target.className.replace("dialog-", "");
             var result = TBI.UI.DialogResult.cancel;
-            for (var prop in TBI.UI.DialogResult)
+            for (var prop in TBI.UI.DialogResult) if (TBI.UI.DialogResult.hasOwnProperty(prop))
                 if (TBI.UI.DialogResult[prop] == cn) result = TBI.UI.DialogResult[prop];
             if (this.onclose) this.onclose(result, event);
         } else if (this.onclose) this.onclose(TBI.UI.DialogResult.cancel);
         this.element.remove();
         this.shadow.className = this.shadow.className.replace(/ ?show/, "");
-    }
+    };
 
     this.getElement = function (cls) {
         return this.element.gecn(cls)[0];
-    }
-}
+    };
+};
 TBI.UI.DialogButtons = new Enum("ok", "ok-cancel", "ok-cancel-apply", "abort-retry-fail");
 TBI.UI.DialogResult = new Enum("ok", "cancel", "apply", "abort", "retry", "fail");
-
-}

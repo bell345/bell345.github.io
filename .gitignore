@@ -29,4 +29,5 @@ srvonly/
 
 *.bak
 
-.*/
+.settings/
+.idea/

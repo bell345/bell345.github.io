@@ -462,7 +462,7 @@ Vector2D.prototype = {
     toMatrix: function () { return new Matrix([this.x, this.y]); },
     // Use this one though, totally cool with it.
     toString: function () { return "("+this.x+", "+this.y+")"; },
-    valueOf: function () { throw new TypeError("Vector2D maths failed: Use the member functions .add, .subtract, .multiply, etc. You're doing it wrong, somewhere."); return 0; }
+    valueOf: function () { throw new TypeError("Vector2D maths failed: Use the member functions .add, .subtract, .multiply, etc. You're doing it wrong, somewhere."); }
 };
 Vector2D.zero = new Vector2D(0, 0);
 // Returns a random positive integer below the specified number.
@@ -516,9 +516,9 @@ function moveWithTransforms(el, x, y, abs) {
     } else currTransform = ""; // otherwise set it to be empty
     currTransform += "translateX("+x+"px) "; // transform appropriately
     currTransform += "translateY("+y+"px) ";
-    if (!isNull(el.style.transform)) el.style.transform = currTransform; // apply changes
-    else if (!isNull(el.style.webkitTransform)) el.style.webkitTransform = currTransform;
-    else if (!isNull(el.style.mozTransform)) el.style.mozTransform = currTransform;
+    if (el.style.transform !== undefined) el.style.transform = currTransform; // apply changes
+    else if (el.style.webkitTransform !== undefined) el.style.webkitTransform = currTransform;
+    else if (el.style.mozTransform !== undefined) el.style.mozTransform = currTransform;
 }
 function resetMovementWithTransforms(el) {
     el.style.transform = el.style.transform.replace(/translate[XY]\([^\)]*\) ?/g, "");
@@ -563,7 +563,7 @@ function Colour(arg0, g, b, a) {
         this.r = arg0;
         this.g = g;
         this.b = b;
-        this.a = isNull(a) ? a : 1;
+        this.a = !isNull(a) ? a : 1;
     // here comes the string parsing
     } else if (!isNull(arg0)) {
         var vals;
@@ -1242,6 +1242,7 @@ CvsHelper.prototype = {
         this.$.restore();
     }
 };
+
 /**
  * Similar to CvsHelper, provides an interface for common or otherwise labourious tasks,
  * such as clearing SVG node of all elements, or plotting coordinates as a line plot.
@@ -1272,6 +1273,81 @@ function SVGHelper(root) {
     });
 }
 
+/**
+ * Helper builder that allows for easily creating SVG paths through a semantic interface.
+ * @param helper {SVGHelper} Used to append paths to an SVG document.
+ * @constructor
+ */
+function SVGPathBuilder(helper) {
+    this.helper = helper;
+    this.path = "";
+}
+SVGPathBuilder.prototype = {
+    constructor: SVGPathBuilder,
+    activePath: false,
+    command: function (op) {
+        this.path += op + " ";
+        for (var i=1;i<arguments.length;i++)
+            this.path += arguments[i].toString() + " ";
+
+        this.activePath = true;
+    },
+    move: function (coord, relative) {
+        this.command(relative ? "m" : "M", coord.x, coord.y);
+        return this;
+    },
+    line: function (coord, relative) {
+        this.command(relative ? "l" : "L", coord.x, coord.y);
+        return this;
+    },
+    append: function (coord) {
+        if (!this.activePath)
+            this.move(coord, false);
+        else this.line(coord, false);
+        return this;
+    },
+    close: function (polygon) {
+        if (this.activePath && polygon)
+            this.command("Z");
+        this.activePath = false;
+        return this;
+    },
+    apply: function (className, groupName) {
+        var result = this.helper.path(this.path, className, groupName);
+        this.path = "";
+        return result;
+    }
+};
+
+/**
+ * Helper builder that allows for easily drawing the same path multiple times in
+ * different locations.
+ * @param {SVGHelper} helper
+ * @param {Function} pathBuilder A function that takes a {@link SVGPathBuilder} and a coordinate as an
+ * argument and returns the {@link SVGPathBuilder} configured to draw a common path using relative coordinates.
+ * @param {Function} [config] Called after a path is created, allows for visual changes, etc.
+ * @param {String} [className] The class name that each individual path will possess.
+ * @param {String} [groupName] The optional group that the paths will be appended to.
+ * @constructor
+ */
+function SVGPathCollectionBuilder(helper, pathBuilder, config, className, groupName) {
+    this.helper = helper;
+    this.buildPath = pathBuilder;
+    this.builder = new SVGPathBuilder(helper);
+    this.config = config || function () {};
+
+    this.className = className;
+    this.groupName = groupName;
+}
+SVGPathCollectionBuilder.prototype = {
+    constructor: SVGPathCollectionBuilder,
+    append: function (coord) {
+        this.buildPath(this.builder, coord);
+        this.config(this.builder.apply(this.className, this.groupName));
+        return this;
+    }
+};
+
 (function (l) {
 
     SVGHelper.prototype = {
@@ -1279,6 +1355,14 @@ function SVGHelper(root) {
         _ns: "http://www.w3.org/2000/svg",
 
         groups: {},
+
+        append: function (el, className, groupName) {
+            if (!isNull(className)) el.setAttribute("class", className);
+            if (!isNull(groupName)) this.getGroup(groupName).appendChild(el);
+            else this.root.appendChild(el);
+
+            return el;
+        },
 
         clear: function () {
             var i;
@@ -1290,8 +1374,22 @@ function SVGHelper(root) {
 
             this.groups = {};
         },
+        appendGroup: function (groupName, parent) {
+            if (isNull(parent)) parent = this.root;
+            else if (typeof parent == typeof "") parent = this.getGroup(parent);
+
+            if (this.groups[groupName] == undefined) return;
+
+            var g = this.groups[groupName];
+            var groups = parent.getElementsByTagName("g");
+            for (var i=0;i<groups.length;i++)
+                if (groups[i] == g) return;
+
+            parent.appendChild(g);
+        },
         getGroup: function (groupName, parent) {
             if (isNull(parent)) parent = this.root;
+            if (isNull(groupName)) return parent;
             var groups = parent.getElementsByTagName("g");
             if (this.groups[groupName] != undefined) return this.groups[groupName];
             for (var i = 0; i < groups.length; i++) {
@@ -1304,7 +1402,9 @@ function SVGHelper(root) {
 
             var g = document.createElementNS(this._ns, "g");
             g.setAttribute("class", groupName);
-            parent.appendChild(g);
+            //parent.appendChild(g);
+
+            this.groups[groupName] = g;
 
             return g;
         },
@@ -1319,9 +1419,15 @@ function SVGHelper(root) {
             var el = document.createElementNS(this._ns, tagName);
             el.setAttribute("points", p);
 
-            if (!isNull(className)) el.setAttribute("class", className);
-            if (!isNull(groupName)) this.getGroup(groupName).appendChild(el);
-            else this.root.appendChild(el);
+            this.append(el, className, groupName);
+
+            return el;
+        },
+        path: function (pathstr, className, groupName) {
+            var el = document.createElementNS(this._ns, "path");
+            el.setAttribute("d", pathstr);
+
+            this.append(el, className, groupName);
 
             return el;
         },
@@ -1336,9 +1442,7 @@ function SVGHelper(root) {
             el.setAttribute("y", position.y.toString());
             el.textContent = text;
 
-            if (!isNull(className)) el.setAttribute("class", className);
-            if (!isNull(groupName)) this.getGroup(groupName).appendChild(el);
-            else this.root.appendChild(el);
+            this.append(el, className, groupName);
 
             return el;
         }
@@ -1357,27 +1461,34 @@ function SVGHelper(root) {
     "getCoordinateFromLocation"
 ]);
 
-// A class for canvas interfaces that handle common utilities, such as frame management, pausing,
-// reacting to window size changes and UI bindings.
-// cvs: A <canvas> element where the context will be assigned from.
-// notFullWidth: If this is true, this interface will not expand to the limits of the current page.
-function WideCanvas(cvs, notFullWidth) {
+/**
+ * A class for canvas interfaces that handle common utilities such as frame management, resizing,
+ * reacting to window size changes and UI bindings.
+ * @param cvs A HTMLCanvasElement where the context will come from.
+ * @param expandElement An optional element that the canvas will fill the entirety of.
+ * @constructor
+ */
+function WideCanvas(cvs, expandElement) {
     this.canvas = cvs;
     this.$ = cvs.getContext("2d");
     if (isNull(this.$)) {
         TBI.error("Canvas initialisation failed.");
         return;
     }
+
     this.helper = new CvsHelper(this.$);
-    if (notFullWidth)
-        this.fullWidth = false;
+    if (expandElement instanceof Node)
+        this.expandElement = expandElement;
+    else if (expandElement)
+        this.expandElement = document.body;
+    else this.expandElement = null;
+
     this._loop();
 }
 WideCanvas.prototype = {
     constructor: WideCanvas,
     paused: false,
     lastFrame: -1,
-    fullWidth: true,
     _loop: function () {
         var self = this;
         requestAnimationFrame(function () {
@@ -1393,9 +1504,15 @@ WideCanvas.prototype = {
 
         }
 
-        if (this.fullWidth) {
-            if (window.innerWidth != this.canvas.width) this.canvas.width = window.innerWidth;
-            if (window.innerHeight != this.canvas.height) this.canvas.height = window.innerHeight;
+        if (this.expandElement != null) {
+            var dims = [
+                parseInt(this.expandElement.getStyle("width")),
+                parseInt(this.expandElement.getStyle("height"))
+            ];
+            if (dims[0] != this.helper.width)
+                this.helper.width = dims[0];
+            if (dims[1] != this.helper.height)
+                this.helper.height = dims[1];
         }
         this.lastFrame = currTime;
     },
@@ -1447,14 +1564,51 @@ WideCanvas.prototype = {
         else filterFunc = function (e) { return e.property == property; };
 
         this.bindings.filter(filterFunc).forEach(function (e) { cvs.updateBinding(e); });
+    },
+
+    events: {},
+    addEventHandler: function (evt, func) {
+        if (this.events[evt] == undefined) this.events[evt] = {};
+        var id = generateUUID();
+        this.events[evt][id] = func;
+        return id;
+    },
+    removeEventHandler: function (id) {
+        for (var evt in this.events) if (this.events.hasOwnProperty(evt))
+            if (this.events[evt][id] != undefined)
+                delete this.events[evt][id];
+    },
+    triggerEvent: function (evt, pass) {
+        var self = this;
+        if (evt instanceof Array) return evt.forEach(function (e) {
+            self.triggerEvent(e);
+        });
+
+        if (this.events[evt] == undefined) return;
+        for (var id in this.events[evt]) if (this.events[evt].hasOwnProperty(id))
+            this.events[evt][id](this, pass);
     }
 };
 
-function WideSVG(svg, notFullWidth) {
+/**
+ * Implements the WideCanvas interface, but uses SVG for implementation.
+ * Works with SVGHelper to provide common display utilities, such as
+ * handling window size changes and UI bindings, frame management and
+ * pausing.
+ * @param svg The SVG element that is element passed to SVGHelper as the root node.
+ * @param expandElement An optional element that the SVG document will fill the entirety of.
+ * @constructor
+ */
+function WideSVG(svg, expandElement) {
     this.svg = svg;
     this.helper = new SVGHelper(svg);
-    if (notFullWidth)
-        this.fullWidth = false;
+
+    if (expandElement instanceof Node)
+        this.expandElement = expandElement;
+    else if (expandElement)
+        this.expandElement = document.body;
+    else this.expandElement = null;
+
     this._loop();
 
     var self = this;
@@ -1469,26 +1623,3 @@ function WideSVG(svg, notFullWidth) {
 }
 WideSVG.prototype = Object.create(WideCanvas.prototype);
 WideSVG.prototype.constructor = WideSVG;
-WideSVG.prototype._loop = function () {
-    var self = this;
-    requestAnimationFrame(function () {
-        self._loop();
-    });
-
-    var currTime = new Date().getTime();
-    if (!this.paused) {
-        if (this.lastFrame == -1) this.lastFrame = currTime;
-        var delta = (currTime - this.lastFrame) / 1000;
-        this.loop(delta);
-    } else {
-
-    }
-
-    if (this.fullWidth) {
-        if (window.innerWidth != this.svg.getAttribute("width"))
-            this.svg.setAttribute("width", window.innerWidth + "px");
-        if (window.innerHeight != this.svg.getAttribute("height"))
-            this.svg.setAttribute("height", window.innerHeight + "px");
-    }
-    this.lastFrame = currTime;
-};

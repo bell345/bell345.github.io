@@ -4,15 +4,51 @@
     <title>Thomas Bell</title>
     <meta charset="utf-8" />
     <base href="../../" />
-    <link rel="stylesheet" href="assets/css/site.css" />
+    <link rel="icon" href="/favicon.png" />
+    <link rel="stylesheet" href="/assets/css/site.css" />
     <link rel="stylesheet" href="assets/css/apps/crtpl3.css" />
-    <script src="assets/js/jquery2.min.js"></script>
-    <script src="assets/js/require.js"></script>
+    <script src="/assets/js/jquery2.min.js"></script>
+    <script src="/assets/js/require.js"></script>
     <script src="assets/js/apps/crtpl3.js"></script>
 </head>
 <body>
-    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" id="cplane">
+    <div class="top-bar">
+        <span class="zoom-rocker">
+            <button class="zoom-out">-</button>
+            <button class="zoom-in">+</button>
+        </span>
+        <span class="separator"></span>
+        <button class="icon return-to-origin"
+                data-icon-src="assets/res/icons/crtpl3/crosshair.svg">
+        </button>
 
-    </svg>
+        <div class="float-right">
+            <button class="icon add-function"
+                    data-icon-src="assets/res/icons/crtpl3/plus.svg">
+            </button>
+            <span class="fn-defined-only">
+                <span class="separator"></span>
+                <button class="icon hide-function toggle"
+                        data-icon-src="assets/res/icons/crtpl3/eye.svg">
+                </button>
+                <button class="icon remove-function"
+                        data-icon-src="assets/res/icons/crtpl3/cross.svg">
+                </button>
+                <button class="icon edit-function"
+                        data-icon-src="assets/res/icons/crtpl3/pencil.svg">
+                </button>
+            </span>
+            <select class="object-list styled">
+            </select>
+            <span class="separator"></span>
+            <button class="icon show-settings"
+                    data-icon-src="assets/res/icons/crtpl3/gear.svg">
+            </button>
+        </div>
+    </div>
+    <div class="plane-container">
+        <svg xmlns="http://www.w3.org/2000/svg" version="1.1" id="main-plane" class="plane">
+        </svg>
+    </div>
 </body>
 </html>

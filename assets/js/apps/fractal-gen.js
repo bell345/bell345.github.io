@@ -63,9 +63,9 @@ Require([
     "assets/js/tblib/ui.js"
 ], function () {
     function FractalGen(cvs, supp, notFullWidth) {
-        WideCanvas.call(this, cvs, notFullWidth);
+        WideCanvas.call(this, cvs, notFullWidth ? null : $(cvs).parent()[0]);
 
-        this.output = new WideCanvas(supp, notFullWidth);
+        this.output = new WideCanvas(supp, notFullWidth ? null : $(cvs).parent()[0]);
         this.settings = {
             generation: {
                 iterationLimit: 300,

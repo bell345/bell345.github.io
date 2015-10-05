@@ -1,6 +1,9 @@
 // VERY quick require() implementation in JavaScript.
 // Loads the specified script files in order as a dependency tree and executes the onload function when completed.
-var Require; // global variable for access
+var Require, require; // global variable for access
+var module = {
+    exports: null
+};
 $(function () {
     // This function appends a <script> element to the bottom of the page with the specified URL and callback
     // function on load.
@@ -10,7 +13,14 @@ $(function () {
         script.src = src;
         script.type = "application/javascript";
         script.async = true;
-        script.onload = onload;
+        script.onload = function () {
+            var pass;
+            if (module.exports !== null) {
+                pass = module.exports;
+                module.exports = null;
+            }
+            onload(pass);
+        };
         document.body.appendChild(script);
     }
     // Adds a list of scripts concurrently and executes a function when 100% completed.
@@ -44,5 +54,11 @@ $(function () {
         
         // let's do this!
         addScripts(arr, onload);
-    }
+    };
+
+    require = function (path, onload) {
+        return addScript(path, onload);
+    };
+
+
 });

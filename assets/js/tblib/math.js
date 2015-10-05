@@ -4,7 +4,7 @@ if (!window.jQuery) {
     throw new Error("[tblib/math.js] base.js has not been loaded");
 } else if (!TBI.Util) {
     throw new Error("[tblib/math.js] util.js has not been loaded");
-} else {
+}
 
 TBI.Math = {};
 
@@ -1016,7 +1016,5 @@ BigNumber.prototype.subtract = function (n2) {
 
     var newMantissa = new Array(m1 + m2 - (Math.min(m1, m2) - diff)),
         carry = new Array(newMantissa.length + 1);
-
-}
 
 }

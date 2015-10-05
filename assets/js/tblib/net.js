@@ -2,7 +2,7 @@ if (!window.jQuery) {
     throw new Error("[tblib/net.js] jQuery has not been loaded");
 } else if (!window.TBI) {
     throw new Error("[tblib/net.js] base.js has not been loaded");
-} else {
+}
 
 TBI.Net = {};
 
@@ -126,5 +126,3 @@ function executeFontLoading() {
 
 $(function () {
 });
-
-}

@@ -126,7 +126,7 @@ function createThumbGalleryFigure(gallery, project) {
 // "$<variable>" in the string with the value of the variable.
 function replaceWithVariables(text, variables) {
     if (isNull(text)) return text;
-    for (var prop in variables)
+    for (var prop in variables) if (variables.hasOwnProperty(prop))
         text = text.replace(new RegExp("\\$"+prop, 'g'), variables[prop]);
     return text;
 }
