@@ -242,6 +242,35 @@ function MathFunction(evalFunc, type, className) {
     }
 }
 MathFunction.Types = new Enum("Cartesian", "Polar", "Parametric");
+
+MathFunction.Variable = function (evalFunc, varObj, type, className) {
+    MathFunction.call(this, evalFunc, type, className);
+    var chars = "abcdefghijklmnopqrstuvwxyz";
+    var vars = [];
+    if (typeof(varObj) == typeof 1) for (var i=2;i<arguments.length && (i-2) < chars.length;i++) {
+        this[chars[i-2]] = arguments[i];
+        vars.push(chars[i-2]);
+    } else for (var prop in varObj) if (varObj.hasOwnProperty(prop)) {
+        this[prop] = varObj[prop];
+        vars.push(prop);
+    }
+    this.variables = vars;
+};
+MathFunction.Variable.parse = function (str, varObj) {
+    try {
+        for (var prop in varObj) if (varObj.hasOwnProperty(prop)) {
+            str = str.replaceAll(new RegExp("([^\\(]|^)\\$"+RegExp.quote(prop)+"([^\\)]|$)"), "$1(this."+prop+")$2");
+            str = str.replaceAll(new RegExp("(\\()\\$"+RegExp.quote(prop)+"([^\\)])"), "$1(this."+prop+")$2");
+            str = str.replaceAll(new RegExp("([^\\(])\\$"+RegExp.quote(prop)+"(\\))"), "$1(this."+prop+")$2");
+            str = str.replaceAll(new RegExp("\\(\\$"+prop+"\\)"), "(this."+prop+")");
+        }
+        return new MathFunction.Variable(stringToEquation(str, true), varObj);
+    } catch (e) {
+        TBI.error("The MathFunction.Variable failed to parse: " + e.message);
+    }
+};
+MathFunction.Variable.prototype = Object.create(MathFunction.prototype);
+MathFunction.Variable.prototype.constructor = MathFunction.Variable;
 function PolynomialFunc() {
     MathFunction.call(this, function (x) {
         this.correctCoefficients();
@@ -418,7 +447,26 @@ PolarFunction.parse = function (str) {
         return new PolarFunction(function (a) { return 0; });
     }
     return new PolarFunction(func);
-}
+};
+
+PolarFunction.Variable = function (evalFunc, varObj) {
+    MathFunction.Variable.call(this, evalFunc, varObj, MathFunction.Types.Polar, "PolarFunction");
+};
+PolarFunction.Variable.parse = function (str, varObj) {
+    try {
+        for (var prop in varObj) if (varObj.hasOwnProperty(prop)) {
+            str = str.replaceAll(new RegExp("([^\\(]|^)\\$"+RegExp.quote(prop)+"([^\\)]|$)"), "$1(this."+prop+")$2");
+            str = str.replaceAll(new RegExp("(\\()\\$"+RegExp.quote(prop)+"([^\\)])"), "$1(this."+prop+")$2");
+            str = str.replaceAll(new RegExp("([^\\(])\\$"+RegExp.quote(prop)+"(\\))"), "$1(this."+prop+")$2");
+            str = str.replaceAll(new RegExp("\\(\\$"+prop+"\\)"), "(this."+prop+")");
+        }
+        return new PolarFunction.Variable(stringToEquation(str, true), varObj);
+    } catch (e) {
+        TBI.error("The PolarFunction.Variable failed to parse: " + e.message);
+    }
+};
+PolarFunction.Variable.prototype = Object.create(PolarFunction.prototype);
+PolarFunction.Variable.prototype.constructor = PolarFunction.Variable;
 function ParametricFunc(xf, yf, className) {
     className = className || "ParametricFunc";
     MathFunction.call(this, function (t) {
@@ -453,31 +501,31 @@ ParametricFunc.Variable = function (xf, yf, varObj) {
     this.variables = vars;
     this.toString = function (useHTML, funcOnly) {
         var str = "f(t) = ("+equationToString(this.xf, true, useHTML)+", "+equationToString(this.yf, true, useHTML)+")";
-        if (!funcOnly) {
-            str += ", ";
-            if (useHTML) str += "<ul>";
-            for (var i=0;i<this.variables.length;i++) {
-                if (useHTML) str += "<li>";
-                str += this.variables[i] + " = "+this[this.variables[i]];
-                if (useHTML) str += "</li>";
-                if (!useHTML && i != this.variables.length - 1) str += ", ";
-            }
-            if (useHTML) str += "</ul>";
-        }
+        //if (!funcOnly) {
+        //    str += ", ";
+        //    if (useHTML) str += "<ul>";
+        //    for (var i=0;i<this.variables.length;i++) {
+        //        if (useHTML) str += "<li>";
+        //        str += this.variables[i] + " = "+this[this.variables[i]];
+        //        if (useHTML) str += "</li>";
+        //        if (!useHTML && i != this.variables.length - 1) str += ", ";
+        //    }
+        //    if (useHTML) str += "</ul>";
+        //}
         return str;
     }
 }
 ParametricFunc.Variable.parse = function (xf, yf, varObj) {
     try {
         for (var prop in varObj) if (varObj.hasOwnProperty(prop)) {
-            xf = xf.replace(new RegExp("([^\\(]|^)\\$"+RegExp.quote(prop)+"([^\\)]|$)"), "$1(this."+prop+")$2");
-            xf = xf.replace(new RegExp("(\\()\\$"+RegExp.quote(prop)+"([^\\)])"), "$1(this."+prop+")$2");
-            xf = xf.replace(new RegExp("([^\\(])\\$"+RegExp.quote(prop)+"(\\))"), "$1(this."+prop+")$2");
-            xf = xf.replace(new RegExp("\\(\\$"+prop+"\\)"), "(this."+prop+")");
-            yf = yf.replace(new RegExp("([^\\(]|^)\\$"+RegExp.quote(prop)+"([^\\)]|$)"), "$1(this."+prop+")$2");
-            yf = yf.replace(new RegExp("(\\()\\$"+RegExp.quote(prop)+"([^\\)])"), "$1(this."+prop+")$2");
-            yf = yf.replace(new RegExp("([^\\(])\\$"+RegExp.quote(prop)+"(\\))"), "$1(this."+prop+")$2");
-            yf = yf.replace(new RegExp("\\(\\$"+prop+"\\)"), "(this."+prop+")");
+            xf = xf.replaceAll(new RegExp("([^\\(]|^)\\$"+RegExp.quote(prop)+"([^\\)]|$)"), "$1(this."+prop+")$2");
+            xf = xf.replaceAll(new RegExp("(\\()\\$"+RegExp.quote(prop)+"([^\\)])"), "$1(this."+prop+")$2");
+            xf = xf.replaceAll(new RegExp("([^\\(])\\$"+RegExp.quote(prop)+"(\\))"), "$1(this."+prop+")$2");
+            xf = xf.replaceAll(new RegExp("\\(\\$"+prop+"\\)"), "(this."+prop+")");
+            yf = yf.replaceAll(new RegExp("([^\\(]|^)\\$"+RegExp.quote(prop)+"([^\\)]|$)"), "$1(this."+prop+")$2");
+            yf = yf.replaceAll(new RegExp("(\\()\\$"+RegExp.quote(prop)+"([^\\)])"), "$1(this."+prop+")$2");
+            yf = yf.replaceAll(new RegExp("([^\\(])\\$"+RegExp.quote(prop)+"(\\))"), "$1(this."+prop+")$2");
+            yf = yf.replaceAll(new RegExp("\\(\\$"+prop+"\\)"), "(this."+prop+")");
         }
         return new ParametricFunc.Variable(stringToEquation(xf, true), stringToEquation(yf, true), varObj);
     } catch (e) {
@@ -703,7 +751,7 @@ MathFunction.parse = function (str, type) {
         return new MathFunction(function (x) { return 0; });
     }
     return new MathFunction(func, isNull(type) ? MathFunction.Types.Cartesian : type);
-}
+};
 function stringToEquation(str, noVerify) {
     str = str.replaceAll("pi", "π");
     str = str.replaceAll(/(^ *| *$)/, "");

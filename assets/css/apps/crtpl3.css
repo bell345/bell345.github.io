@@ -1,3 +1,5 @@
+/* TODO: Implement tooltips */
+
 .plane-container {
     overflow:hidden;
 }
@@ -70,6 +72,11 @@ svg.plane .block-margin {
 
 svg.plane .functions {
     stroke-width:4;
+}
+
+svg.plane .selected {
+    stroke-width:8px;
+    transition:0.2s all;
 }
 
 .top-bar {
@@ -160,16 +167,16 @@ body.no-bar .plane-container {
     fill:#555;
     transition:0.2s all;
 }
-.icon.toggle {
+.icon.toggle, .icon.up-down {
     padding-right:10px;
 }
-.icon.toggle svg {
+.icon.toggle svg, .icon.up-down {
     fill:#aaa;
 }
-.icon.toggle.on svg {
+.icon.on svg {
     fill:#2bf;
 }
-.icon.toggle::after {
+.icon.toggle::after, .icon.up-down::after {
     display:none;
 }
 .top-bar * {
@@ -193,6 +200,81 @@ body.no-bar .plane-container {
     position:relative;
     margin-left:18px;
 }
-.fn-defined-only {
+
+.styled-select .hidden {
+    color:#555;
+    background:#ccc;
+}
+
+.info-box {
+    position:fixed;
+    top:58px;
+    right:0;
+    background:#eee;
+    z-index:98;
+    box-shadow:0 2px 8px 0 rgba(100,100,100,0.5);
+    text-align:right;
     display:none;
+}
+
+.info-box-view-select li {
+     list-style-type: none;
+     display: inline-block;
+     padding: 8px 12px;
+     cursor: pointer;
+ }
+
+ul.info-box-view-select {
+    display: flex;
+    width: 100%;
+    background: #555;
+    color: #eee;
+    justify-content: flex-end;
+}
+
+.info-box-view {
+    padding: 12px 48px;
+}
+
+.info-box-view-select li.active {
+    border-bottom: 4px solid #2bf;
+    margin-bottom: -4px;
+    background: #333;
+}
+
+.info-box-toggle svg {
+    transform:rotate(90deg);
+}
+
+.info-box label {
+    vertical-align:top;
+    padding:4px 8px;
+    margin:4px;
+    display:inline-block;
+    cursor:auto;
+}
+
+.info-box .function-class:not(.show),
+.info-box .function-inputs:not(.show),
+.info-box .info-box-view:not(.show),
+.info-box .type-selection-needed:not(.type-selection-fulfilled),
+.fn-defined-only:not(.fn-defined) {
+    display:none;
+}
+
+.styled-select ul {
+    position:absolute;
+    right:0;
+}
+.styled-select ul li {
+    white-space:nowrap;
+}
+
+.align-top {
+    vertical-align:top;
+}
+
+.evaluate-expression {
+    font-family:monospace;
+    margin:0 8px;
 }

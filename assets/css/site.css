@@ -109,6 +109,7 @@ body {
     padding:28px 10%;
     background:linear-gradient(45deg, #d2d2d2, #d2d2d2 50%, #ddd 50%, #ddd) 0 0 / 50px 50px;
     font-size:18px;
+    transition:0.2s all;
 }
 
 body::after {
@@ -1202,4 +1203,8 @@ select.styled.done {
     background: #07d;
     color: #fff;
     transition: 0s all !important;
+}
+
+.styled-select ul li[rel='-'] {
+    display:none;
 }

@@ -76,6 +76,7 @@ TBI.UI.updateUI = function (force) {
     $("button.toggle:not(.done)").click(function (event) {
         if (event.button != 0) return true;
         $(this).toggleClass("on");
+        $(this).trigger("change");
     });
     $("button.toggle:not(.done)").toggleClass("done", true);
 
@@ -177,27 +178,68 @@ TBI.UI.updateUI = function (force) {
             $(document).click(function (ul) {
                 return function () { $(ul).removeClass("active"); };
             }(ul));
+
+            $(select).on("change", function (div) {
+                return function () {
+                    var $li = $(this).parent().find("li[rel='"+$(this).val()+"']");
+                    $(div).html($li.html());
+                };
+            }(div));
         }
 
         $(div).html(selection);
 
-        $(select).find("option").toArray().forEach(function (e) {
-            var li = document.createElement("li");
-                li.innerHTML = e.innerHTML;
-                li.setAttribute("rel", e.getAttribute("value"));
-                $(li).click(function (div, select, ul) {
-                    return function (event) {
-                        event.stopPropagation();
-                        $(div).html($(this).html());
-                        $(select).val($(this).attr("rel"));
-                        $(select).trigger("change");
-                        $(ul).removeClass("active");
-                    };
-                }(div, select, ul));
-            ul.appendChild(li);
-        });
-        $(select).addClass("done");
+        TBI.UI.updateSelect(select);
     }
+};
+
+
+
+TBI.UI.fillSelect = function (select, obj, callback) {
+    var $this = $(select);
+    var selection = $this.val();
+    $this.removeClass("done");
+    $this.empty();
+    $this.append("<option value='-'>&mdash;</option>");
+    for (var prop in obj) if (obj.hasOwnProperty(prop)) {
+        var option = document.createElement("option");
+        option.innerHTML = obj[prop];
+        option.value = prop;
+        option = callback(option, prop, obj[prop]) || option;
+        select.appendChild(option);
+    }
+    $this.val(selection);
+    $this.trigger("change");
+    TBI.UI.updateSelect(select);
+};
+
+TBI.UI.updateSelect = function (select) {
+    var container, div, ul;
+    if ($(select).parent().hasClass("styled-select")) {
+        container = $(select).parent();
+        div = container.find("div")[0];
+        ul = container.find("ul")[0];
+        $(ul).empty();
+    } else return TBI.UI.updateUI(true);
+
+    $(select).removeClass("done");
+    $(select).find("option").toArray().forEach(function (e) {
+        var li = document.createElement("li");
+        li.innerHTML = e.innerHTML;
+        li.className = e.className;
+        li.setAttribute("rel", e.getAttribute("value"));
+        $(li).click(function (div, select, ul) {
+            return function (event) {
+                event.stopPropagation();
+                $(div).html($(this).html());
+                $(select).val($(this).attr("rel"));
+                $(select).trigger("change");
+                $(ul).removeClass("active");
+            };
+        }(div, select, ul));
+        ul.appendChild(li);
+    });
+    $(select).addClass("done");
 };
 
 TBI.UI.HoverPopup = function (x, y, title, body) {
@@ -286,7 +328,7 @@ TBI.UI.Notification = function (group, text, timeout) {
         noteGroup.appendChild(noteList);
         var noteDismiss = document.createElement("button");
             noteDismiss.textContent = "Dismiss";
-            noteDismiss.addEventListener("click", function (e) { e.target.parentElement.remove(); });
+            noteDismiss.onclick = function () { noteGroup.remove(); };
         noteGroup.appendChild(noteDismiss);
         noteHolderInner.appendChild(noteGroup);
     } else var noteList = noteGroup.getn("ul")[0];
@@ -312,7 +354,7 @@ TBI.UI.Notification = function (group, text, timeout) {
     return currNote;
 };
 // Changes the specified toggleable element either according to the boolean value passed to it, or simply toggles it.
-TBI.UI.toggleButton = function (element, bool) {
+TBI.UI.toggleButton = function (element, bool, cosmetic) {
     if (!isNull(element[0]) && element[0] instanceof HTMLElement) element = element[0];
     if (!element instanceof HTMLElement) return null;
 
@@ -320,10 +362,10 @@ TBI.UI.toggleButton = function (element, bool) {
         return element.checked = isNull(bool) ? !element.checked : bool;
 
     var isToggled = TBI.UI.isToggled(element);
-    if (!isToggled && bool !== false) element.toggleClass("on", true);
-    else if (isToggled && bool !== true) element.toggleClass("on", false);
+    if (!isToggled && bool !== false) $(element).toggleClass("on", true);
+    else if (isToggled && bool !== true) $(element).toggleClass("on", false);
 
-    if (!isNull(bool) && bool !== isToggled || isNull(bool)) $(element).click();
+    if (!cosmetic && (!isNull(bool) && bool !== isToggled || isNull(bool))) $(element).click();
 
     return TBI.UI.isToggled(element);
 };

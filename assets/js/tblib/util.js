@@ -141,18 +141,29 @@ Array.dimensional.prototype.transpose2d = function (r) {
     if (r > 1) return n.transpose2d(r-1);
     else return n;
 };
-Object.prototype.toString = function () {
-    if (JSON.stringify) return JSON.stringify(this);
-    var s = "";
-    for (var prop in this) if (this.hasOwnProperty(prop)) {
-        if (isNull(this[prop])) s += prop+":"+(typeof(this[prop])=="string"?"":typeof(this[prop]))+",";
-        else s += prop+":"+this[prop].toString()+",";
-    }
-    return "{"+s.substring(0, s.length-1)+"}";
+Object._oldToString = Object.prototype.toString;
+Object.oldToString = function (obj) {
+    return Object._oldToString.call(obj);
 };
-Array.prototype.oldToString = Array.prototype.toString;
+Object.prototype.toString = function () {
+    try {
+        if (JSON.stringify) return JSON.stringify(this);
+        var s = "";
+        for (var prop in this) if (this.hasOwnProperty(prop)) {
+            if (isNull(this[prop])) s += prop + ":" + (typeof(this[prop]) == "string" ? "" : typeof(this[prop])) + ",";
+            else s += prop + ":" + this[prop].toString() + ",";
+        }
+        return "{" + s.substring(0, s.length - 1) + "}";
+    } catch (e) {
+        return Object.oldToString(this);
+    }
+};
+Array._oldToString = Array.prototype.toString;
+Array.oldToString = function (arr) {
+    return Array._oldToString.call(arr);
+}
 Array.prototype.toString = function () {
-    return "[" + this.oldToString() + "]";
+    return "[" + Array.oldToString(this) + "]";
 };
 // Returns whether or not two arrays are the same.
 Array.prototype.isEqual = function (arr) { return isEqual(this, arr); };
@@ -744,10 +755,12 @@ Colour.prototype = {
     // in various formats (these can also be passed back into Colour()).
     // Useful for HTML/CSS styling and colour animation.
     toRGBA: function () {
-        return "rgba("+this.r+", "+this.g+", "+this.b+", "+this.a+")";
+        var p = parseInt;
+        return "rgba("+p(this.r)+", "+p(this.g)+", "+p(this.b)+", "+this.a+")";
     },
     toRGB: function () {
-        return "rgb("+this.r+", "+this.g+", "+this.b+")";
+        var p = parseInt;
+        return "rgb("+p(this.r)+", "+p(this.g)+", "+p(this.b)+")";
     },
     toHex: function () {
         var red = zeroPrefix(parseInt(this.r).toString(16), 2);
@@ -759,7 +772,7 @@ Colour.prototype = {
         return parseInt(this.toHex().removeAll("#"), 16);
     },
     toHSV: function () {
-        return "hsv("+this.h+", "+(this.s*100)+"%, "+(this.v*100)+"%)";
+        return "hsv("+parseInt(this.h)+", "+(this.s*100)+"%, "+(this.v*100)+"%)";
     },
     // A common interface for the above functions;
     // because I like overriding toString() and using parameters. Sue me.

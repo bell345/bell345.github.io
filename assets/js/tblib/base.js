@@ -165,6 +165,11 @@ Array.copy = function (arr) {
     return newArr;
 };
 
+String.prototype.startsWith = function (str, position) {
+    position = position || 0;
+    return this.indexOf(str, position) == position;
+};
+
 Math.logn = function (val, n) {
     return Math.log(val) / Math.log(n);
 };

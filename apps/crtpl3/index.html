@@ -10,9 +10,25 @@
     <script src="/assets/js/jquery2.min.js"></script>
     <script src="/assets/js/require.js"></script>
     <script src="assets/js/apps/crtpl3.js"></script>
+    <!-- GOOGLE ANALYTICS -->
+    <script>
+        if (document.cookie.search("ga-optout=1") != -1)
+            window["ga-disable-UA-68824568-1"] = true;
+    </script>
+    <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+        ga('create', 'UA-68824568-1', 'auto');
+        ga('send', 'pageview');
+    </script>
+    <!-- END GOOGLE ANALYTICS -->
 </head>
 <body>
     <div class="top-bar">
+        <!-- TODO: Implement sliders, locking scales -->
         <span class="zoom-rocker">
             <button class="zoom-out">-</button>
             <button class="zoom-in">+</button>
@@ -44,6 +60,79 @@
             <button class="icon show-settings"
                     data-icon-src="assets/res/icons/crtpl3/gear.svg">
             </button>
+        </div>
+    </div>
+    <div class="info-box fn-defined-only">
+        <ul class="info-box-view-select">
+            <li rel=".edit-function-view">Edit Function</li>
+            <li rel=".edit-plot-view">Edit Plot</li>
+            <li rel=".slider-view">Sliders</li>
+        </ul>
+        <div class="info-box-view edit-function-view">
+            <input type="hidden" class="function-id" />
+            <div class="control-row">
+                <label>Name: </label>
+                <input type="text" class="function-name" placeholder="Name (optional)" />
+            </div>
+            <div class="control-row">
+                <label>Type: </label>
+                <select class="function-type styled">
+                    <option value="-" selected>&mdash;</option>
+                    <option value="cartesian">Cartesian</option>
+                    <option value="polar">Polar</option>
+                    <option value="parametric">Parametric</option>
+                </select>
+            </div>
+            <div class="control-row function-inputs cartesian-inputs type-selection-needed">
+                <label>f(x) = </label>
+                <textarea class="function-input">x</textarea>
+            </div>
+            <div class="control-row function-inputs polar-inputs type-selection-needed">
+                <label>f(a) = </label>
+                <textarea class="function-input">a</textarea>
+            </div>
+            <div class="control-row function-inputs parametric-inputs type-selection-needed">
+                <label>f<sub>x</sub>(t) = </label>
+                <textarea class="function-input">t</textarea>
+            </div>
+            <div class="control-row function-inputs parametric-inputs type-selection-needed">
+                <label>f<sub>y</sub>(t) = </label>
+                <textarea class="function-input">t</textarea>
+            </div>
+            <div class="control-row type-selection-needed">
+                <label>Style: </label>
+                <input type="color" class="function-colour" />
+            </div>
+            <div class="control-row type-selection-needed">
+                <h4>Variables</h4>
+            </div>
+            <div class="control-row type-selection-needed">
+                <div>
+                    <span class="align-top">
+                        <button class="variable-add">Add</button>
+                        <button class="variable-remove">Remove</button>
+                    </span>
+                    <input type="text" class="variable-name" placeholder="name" disabled />
+                </div>
+                <select class="variable-select styled">
+                    <option value="-" selected>&mdash;</option>
+                    <option value="new">New</option>
+                </select>
+                <span class="align-top"><button class="major evaluate-expression variable-set" for=".variable-value">=</button></span><input type="text" placeholder="value" class="variable-value" />
+            </div>
+            <div class="control-row type-selection-needed">
+                <button class="major edit-function-submit">Apply</button>
+                <button class="edit-function-cancel info-box-hide">Close</button>
+            </div>
+        </div>
+        <div class="info-box-view edit-plot-view">
+            <h3>Edit Plot</h3>
+            <p class="span">
+                Data (comma separated)
+            </p>
+        </div>
+        <div class="info-box-view slider-view">
+
         </div>
     </div>
     <div class="plane-container">

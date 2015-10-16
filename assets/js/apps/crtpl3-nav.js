@@ -34,7 +34,10 @@ var crtpl3_navPlugin = module.exports = new CrtPlanePlugin({
             if (set.mode == "x-fixed") clampd.x = plane.state.extents.x;
             else if (set.mode == "y-fixed") clampd.y = plane.state.extents.y;
 
-            plane.addAnimation("state.extents", clampd, animSet.durations.zoom);
+            if (plane.plugins.animation)
+                plane.addAnimation("state.extents", clampd, animSet.durations.zoom);
+            else
+                plane.state.extents = clampd;
             /*if (!set.fixedZoom && futureExtents.equals(clampd))
                 plane.addAnimation("state.center",
                     plane.state.center.multiply(factor),
@@ -70,6 +73,7 @@ var crtpl3_navPlugin = module.exports = new CrtPlanePlugin({
     },
     creation: function (plane) {
         plane.addEventHandler("mousedown", function (plane, event) {
+            if (event.which != 1) return;
             var center = plane.state.center;
             if (panTimeout instanceof TBI.Timer && !panTimeout.completed) {
                 panTimeout.finish();

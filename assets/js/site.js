@@ -68,6 +68,10 @@ function loadProjectDescription(figure, proj) {
                             frame.className = "proj-preview";
                             var src = proj.preview_iframe;
                             if (src == undefined) src = proj.path;
+                            if (!src.startsWith("http") || !src.startsWith("//")) {
+                                if (!src.startsWith("/")) src = "/" + src;
+                                src = location.protocol + "//" + location.host + src;
+                            }
                             frame.setAttribute("data-src", src);
                             //frame.src = proj.path;
                         desc.appendChild(frame);
@@ -295,6 +299,27 @@ Require(["assets/js/tblib/base.js",     // Concurrently loading the dependencies
 
     loader.start();
 
+    if (readCookie("ga-optout") !== "1") {
+        //window["ga-disable-UA-68824568-1"] = true;
+
+        // GOOGLE ANALYTICS
+
+        (function (i, s, o, g, r, a, m) {
+            i['GoogleAnalyticsObject'] = r;
+            i[r] = i[r] || function () {
+                    (i[r].q = i[r].q || []).push(arguments)
+                }, i[r].l = 1 * new Date();
+            a = s.createElement(o),
+                m = s.getElementsByTagName(o)[0];
+            a.async = 1;
+            a.src = g;
+            m.parentNode.insertBefore(a, m)
+        })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+        ga('create', 'UA-68824568-1', 'auto');
+        ga('send', 'pageview');
+    }
+
     // When all the above has finished, bind event handlers and such...
     $(document).on("pageload", function () {
         TBI.UI.updateUI();
@@ -367,5 +392,6 @@ Require(["assets/js/tblib/base.js",     // Concurrently loading the dependencies
         });
     });
 });
+
 
 });
