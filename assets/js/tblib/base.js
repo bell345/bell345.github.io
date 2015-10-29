@@ -207,6 +207,7 @@ function perfnow(o){"performance"in o||(o.performance={});var e=o.performance;o.
 // GUID GENERATOR - All thanks to the StackExchange community
 // On StackExchange at: https://stackoverflow.com/a/8809472
 function generateUUID(){var d=performance.now(),uuid='xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,function(c){var r=(d+Math.random()*16)%16|0;d=Math.floor(d/16);return(c=='x'?r:(r&0x3|0x8)).toString(16)});return uuid}
+var generateSequentialID;(function(){var seqID=0;generateSequentialID=function(){return seqID++;}})();
 // PROMISE POLYFILL - All thanks to Taylor Hakes
 // On Github at: https://github.com/taylorhakes/promise-polyfill
 /*! promise-polyfill 2.0.1 */

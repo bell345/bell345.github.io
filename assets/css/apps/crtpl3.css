@@ -1,7 +1,8 @@
-/* TODO: Implement tooltips */
-
 .plane-container {
     overflow:hidden;
+}
+body {
+    background:#f2f2f2;
 }
 #main-plane {
     position:absolute;
@@ -72,6 +73,15 @@ svg.plane .block-margin {
 
 svg.plane .functions {
     stroke-width:4;
+    cursor:pointer;
+}
+
+svg.plane .derivative {
+    stroke-dasharray: 2, 10;
+}
+
+svg.plane .integral {
+    opacity:0.6;
 }
 
 svg.plane .selected {
@@ -195,6 +205,59 @@ body.no-bar .plane-container {
     box-shadow:inset 1px 1px 2px 0 #aaa;
     background:#ddd;
 }
+
+.top-bar [data-tooltip]::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    left: 50%;
+    margin: 8px auto;
+    top: -100%;
+    opacity: 0;
+    background: #555;
+    padding: 6px 10px;
+    white-space: nowrap;
+    color: #eee;
+    text-align: center;
+    transform: translate(-50%);
+    transition: 0.2s all;
+    pointer-events: none;
+    display:block;
+    bottom: initial;
+    right: initial;
+    width: auto;
+    font-size: inherit;
+    line-height: inherit;
+    box-shadow:none;
+}
+
+.top-bar [data-tooltip].on::after {
+    background:#555;
+    box-shadow:none;
+}
+
+.top-bar [data-tooltip]::before {
+    content: "";
+    position: absolute;
+    top: -100%;
+    left: 0;
+    right: 0;
+    margin: auto;
+    width: 8px;
+    opacity: 0;
+    border-style:solid;
+    border-color:transparent transparent #555 transparent;
+    border-width:0 8px 8px 8px;
+    transition: 0.2s all;
+    pointer-events: none;
+    display:block;
+}
+
+.top-bar [data-tooltip]:hover::before,
+.top-bar [data-tooltip]:hover::after {
+    top: 100%;
+    opacity: 1;
+}
+
 .top-bar .styled-select {
     top:.2em;
     position:relative;
@@ -262,12 +325,21 @@ ul.info-box-view-select {
     display:none;
 }
 
+.info-box li[rel=".edit-function-view"]:not(.active),
+.info-box li[rel=".edit-plot-view"]:not(.active) {
+    display:none;
+}
+
 .styled-select ul {
     position:absolute;
     right:0;
 }
 .styled-select ul li {
     white-space:nowrap;
+}
+
+.styled-select li[rel="new"] {
+    display:none;
 }
 
 .align-top {
@@ -277,4 +349,22 @@ ul.info-box-view-select {
 .evaluate-expression {
     font-family:monospace;
     margin:0 8px;
+}
+
+input[type="number"] {
+    width:60px;
+}
+
+.variable-controls,
+.domain-controls {
+    display:none;
+}
+
+.variable-demo {
+    color:#aaa;
+    padding-left:0;
+}
+
+.hide {
+    display:none;
 }

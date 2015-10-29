@@ -28,37 +28,55 @@
 </head>
 <body>
     <div class="top-bar">
-        <!-- TODO: Implement sliders, locking scales -->
+        <!-- TODO: Implement sliders, settings box -->
         <span class="zoom-rocker">
             <button class="zoom-out">-</button>
             <button class="zoom-in">+</button>
         </span>
         <span class="separator"></span>
         <button class="icon return-to-origin"
-                data-icon-src="assets/res/icons/crtpl3/crosshair.svg">
+                data-icon-src="assets/res/icons/crtpl3/crosshair.svg"
+                data-tooltip="Return to Origin">
+        </button>
+        <button class="icon goto-coords"
+                data-icon-src="assets/res/icons/crtpl3/crosshair2.svg"
+                data-tooltip="Goto Coordinates">
+        </button>
+        <button class="icon lock-x toggle on"
+                data-icon-src="assets/res/icons/crtpl3/lock-x.svg"
+                data-tooltip="Lock X scale">
+        </button>
+        <button class="icon lock-y toggle on"
+                data-icon-src="assets/res/icons/crtpl3/lock-y.svg"
+                data-tooltip="Lock Y scale">
         </button>
 
         <div class="float-right">
             <button class="icon add-function"
-                    data-icon-src="assets/res/icons/crtpl3/plus.svg">
+                    data-icon-src="assets/res/icons/crtpl3/plus.svg"
+                    data-tooltip="Add function">
             </button>
             <span class="fn-defined-only">
                 <span class="separator"></span>
                 <button class="icon hide-function toggle"
-                        data-icon-src="assets/res/icons/crtpl3/eye.svg">
+                        data-icon-src="assets/res/icons/crtpl3/eye.svg"
+                        data-tooltip="Hide">
                 </button>
                 <button class="icon remove-function"
-                        data-icon-src="assets/res/icons/crtpl3/cross.svg">
+                        data-icon-src="assets/res/icons/crtpl3/cross.svg"
+                        data-tooltip="Remove">
                 </button>
                 <button class="icon edit-function"
-                        data-icon-src="assets/res/icons/crtpl3/pencil.svg">
+                        data-icon-src="assets/res/icons/crtpl3/pencil.svg"
+                        data-tooltip="Edit">
                 </button>
             </span>
-            <select class="object-list styled">
+            <select class="object-list styled" title="Object">
             </select>
             <span class="separator"></span>
             <button class="icon show-settings"
-                    data-icon-src="assets/res/icons/crtpl3/gear.svg">
+                    data-icon-src="assets/res/icons/crtpl3/gear.svg"
+                    data-tooltip="Settings">
             </button>
         </div>
     </div>
@@ -66,17 +84,13 @@
         <ul class="info-box-view-select">
             <li rel=".edit-function-view">Edit Function</li>
             <li rel=".edit-plot-view">Edit Plot</li>
-            <li rel=".slider-view">Sliders</li>
+            <li rel=".more-tools-view">More Tools</li>
         </ul>
         <div class="info-box-view edit-function-view">
             <input type="hidden" class="function-id" />
             <div class="control-row">
-                <label>Name: </label>
-                <input type="text" class="function-name" placeholder="Name (optional)" />
-            </div>
-            <div class="control-row">
                 <label>Type: </label>
-                <select class="function-type styled">
+                <select class="function-type styled" title="Type">
                     <option value="-" selected>&mdash;</option>
                     <option value="cartesian">Cartesian</option>
                     <option value="polar">Polar</option>
@@ -85,28 +99,41 @@
             </div>
             <div class="control-row function-inputs cartesian-inputs type-selection-needed">
                 <label>f(x) = </label>
-                <textarea class="function-input">x</textarea>
+                <textarea class="function-input" title="Input">x</textarea>
             </div>
             <div class="control-row function-inputs polar-inputs type-selection-needed">
                 <label>f(a) = </label>
-                <textarea class="function-input">a</textarea>
+                <textarea class="function-input" title="Input">a</textarea>
             </div>
             <div class="control-row function-inputs parametric-inputs type-selection-needed">
                 <label>f<sub>x</sub>(t) = </label>
-                <textarea class="function-input">t</textarea>
+                <textarea class="function-input" title="Input">t</textarea>
             </div>
             <div class="control-row function-inputs parametric-inputs type-selection-needed">
                 <label>f<sub>y</sub>(t) = </label>
-                <textarea class="function-input">t</textarea>
+                <textarea class="function-input" title="Input">t</textarea>
             </div>
             <div class="control-row type-selection-needed">
                 <label>Style: </label>
-                <input type="color" class="function-colour" />
+                <input type="color" class="function-colour" title="Colour" />
+            </div>
+            <div class="control-row">
+                <h4><a href="" class="up-down" data-for=".domain-controls">Domain</a></h4>
+            </div>
+            <div class="control-row domain-controls">
+                <label>Start: </label>
+                <input type="number" class="function-start" title="Start" />
+                <label>End: </label>
+                <input type="number" class="function-end" title="End" />
+            </div>
+            <div class="control-row domain-controls">
+                <label>Resolution: </label>
+                <input type="number" class="function-resolution" title="Resolution" />
             </div>
             <div class="control-row type-selection-needed">
-                <h4>Variables</h4>
+                <h4><a href="" class="up-down" data-for=".variable-controls">Variables</a></h4>
             </div>
-            <div class="control-row type-selection-needed">
+            <div class="control-row type-selection-needed variable-controls">
                 <div>
                     <span class="align-top">
                         <button class="variable-add">Add</button>
@@ -114,11 +141,18 @@
                     </span>
                     <input type="text" class="variable-name" placeholder="name" disabled />
                 </div>
-                <select class="variable-select styled">
+                <select class="variable-select styled" title="Select variable">
                     <option value="-" selected>&mdash;</option>
                     <option value="new">New</option>
                 </select>
-                <span class="align-top"><button class="major evaluate-expression variable-set" for=".variable-value">=</button></span><input type="text" placeholder="value" class="variable-value" />
+                <span class="align-top"><button class="major evaluate-expression variable-set" data-for=".variable-value">=</button></span><input type="text" placeholder="value" class="variable-value" />
+                <p>
+                    Use <code>$</code><code class="variable-demo">name</code> to insert a variable.
+                </p>
+            </div>
+            <div class="control-row">
+                <button class="toggle derivative-toggle">Derivative</button>
+                <button class="toggle integral-toggle">Integral</button>
             </div>
             <div class="control-row type-selection-needed">
                 <button class="major edit-function-submit">Apply</button>
@@ -131,8 +165,8 @@
                 Data (comma separated)
             </p>
         </div>
-        <div class="info-box-view slider-view">
-
+        <div class="info-box-view more-tools-view">
+            <h3>More Tools</h3>
         </div>
     </div>
     <div class="plane-container">

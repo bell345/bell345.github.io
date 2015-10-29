@@ -83,7 +83,7 @@ var crtpl3_navPlugin = module.exports = new CrtPlanePlugin({
             plane.previous.startCenter = center;
         });
 
-        plane.addEventHandler("mouseup", function (plane) {
+        plane.addEventHandler("mouseup", function (plane, event) {
             plane.previous.mouseDown = null;
             plane.previous.startCenter = null;
         });

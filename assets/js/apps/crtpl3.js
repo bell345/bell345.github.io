@@ -39,24 +39,72 @@ function FunctionNode(func, style, start, end) {
     this.start = isNull(start) ? null : start; // null = edge of screen for cartesian funcs
     this.end = isNull(end) ? null : end;
     this.resolution = 50; // inverse of parameter step
+    this.derivative = {
+        visible: false,
+        style: null
+    };
+    this.integral = {
+        visible: false,
+        style: null
+    };
     this.draw = function (plane) {
+        try {
+            this.func.eval(2);
+        } catch (e) {
+            TBI.error("Function error: " + e.message);
+            this.visible = false;
+        }
         if (!plane.plugins.scale || !this.visible) return;
-        var scalePlugin = plane.plugins.scale;
+        var scalePlugin = plane.plugins.scale,
+            self = this;
 
         var set = plane.settings.functions, scaleSet = scalePlugin.settings.scale;
         var threshold = set.threshold;
         var start, end, step, loc;
-        var path = new SVGPathBuilder(plane.helper);
+        var path = new SVGPathBuilder(plane.helper),
+            derivativePath = new SVGPathBuilder(plane.helper),
+            integralPath = new SVGPathBuilder(plane.helper);
 
-        function addCoord(coord) {
-            loc = plane.getLocationOfCoordinate(coord);
-            if (loc.clamp(threshold.negate(), threshold).equals(loc))
-                path.append(loc);
-            else path.close();
+        function isValid(loc) {
+            return loc.clamp(threshold.negate(), threshold).equals(loc);
         }
 
-        switch (this.func.type) {
-            case "Cartesian":
+        var lastCoord;
+        function addCoord(coord) {
+            loc = plane.getLocationOfCoordinate(coord);
+            if (isValid(loc))
+                path.append(loc);
+            else path.close();
+            if (self.integral.visible) {
+                if (isNull(lastCoord))
+                    integralPath.append(
+                        plane.getLocationOfCoordinate(
+                            new Vector2D(coord.x, 0)));
+
+                if (isValid(loc))
+                    integralPath.append(loc);
+                else if (!isNull(lastCoord))
+                    integralPath.append(
+                        plane.getLocationOfCoordinate(
+                            new Vector2D(lastCoord.x, 0)));
+            }
+            if (self.derivative.visible && !isNull(lastCoord)) {
+                var rise = coord.y - lastCoord.y,
+                    run = coord.x - lastCoord.x;
+                loc = plane.getLocationOfCoordinate(new Vector2D(
+                    (coord.x + lastCoord.x) / 2,
+                    rise / run
+                ));
+                if (isValid(loc))
+                    derivativePath.append(loc);
+                else derivativePath.close();
+            }
+
+            lastCoord = coord;
+        }
+
+        switch (this.func.type.toLowerCase()) {
+            case "cartesian":
                 var factor = plane.getFactor();
                 var scaleX = plane.computeScale(factor.x, scaleSet.minInterval, scaleSet.maxInterval);
 
@@ -77,20 +125,28 @@ function FunctionNode(func, style, start, end) {
                 addCoord(new Vector2D(end, this.func.eval(end)));
 
                 break;
-            case "Polar":
-                start = this.start || -16*Math.PI;
-                end = this.end || 16*Math.PI;
-                step = Math.PI/this.resolution;
+            case "polar":
+                this.start = start = this.start || -16;
+                this.end = end = this.end || 16;
+                step = 1/this.resolution;
+
+                start *= Math.PI;
+                end *= Math.PI;
+                step *= Math.PI;
 
                 for (var a=start;a<=end;a+=step)
                     addCoord(Vector2D.fromPolar(a, this.func.eval(a)));
                 addCoord(Vector2D.fromPolar(end, this.func.eval(end)));
 
                 break;
-            case "Parametric":
-                start = this.start || -16*Math.PI;
-                end = this.end || 16*Math.PI;
-                step = Math.PI/this.resolution;
+            case "parametric":
+                this.start = start = this.start || -16;
+                this.end = end = this.end || 16;
+                step = 1/this.resolution;
+
+                start *= Math.PI;
+                end *= Math.PI;
+                step *= Math.PI;
 
                 for (var t=start;t<=end;t+=step)
                     addCoord(this.func.eval(t));
@@ -107,10 +163,92 @@ function FunctionNode(func, style, start, end) {
         var plot = path.apply([this.id, "func"].join(" "), "functions");
         plot.style.stroke = this.style.toRGBA();
 
+        if (this.derivative.visible) {
+            var dplot = derivativePath.apply([this.id, "derivative"].join(" "), "functions");
+            dplot.style.stroke = isNull(this.derivative.style) ?
+                this.style.toRGBA() :
+                this.derivative.style.toRGBA();
+        }
+        if (this.integral.visible) {
+            if (lastCoord)
+                integralPath.append(
+                    plane.getLocationOfCoordinate(
+                        new Vector2D(lastCoord.x, 0)));
+            integralPath.close(true);
+
+            var iplot = integralPath.apply([this.id, "integral"].join(" "), "functions");
+            iplot.style.stroke = "transparent";
+            iplot.style.fill = isNull(this.integral.style) ?
+                this.style.toRGBA() :
+                this.integral.style.toRGBA();
+        }
+
         plane.helper.appendGroup("functions");
-    }
+    };
+    this.serialise = function () {
+        var obj = {
+            id: this.id,
+            visible: this.visible,
+            start: this.start,
+            end: this.end,
+            style: this.style.toRGBA(),
+            resolution: this.resolution,
+            derivative: {
+                visible: this.derivative.visible,
+                style: this.derivative.style ? this.derivative.style.toRGBA() : null
+            },
+            integral: {
+                visible: this.integral.visible,
+                style: this.integral.style ? this.integral.style.toRGBA() : null
+            },
+            func_type: this.func.type.toLowerCase(),
+            variables: {}
+        };
+
+        var self = this;
+        if (this.func.variables) this.func.variables.forEach(function (e) {
+            obj.variables[e] = self.func[e];
+        });
+        if (this.func.serialise)
+            obj.func = this.func.serialise();
+        else obj.func = objectToInputs(this, true);
+        return JSON.stringify(obj);
+    };
 }
 FunctionNode.prototype = Object.create(PlaneNode.prototype);
+FunctionNode.prototype.constructor = FunctionNode;
+FunctionNode.deserialise = function (str) {
+    var obj = JSON.parse(str);
+    var func;
+    switch (obj.func_type) {
+        case "cartesian":
+            func = MathFunction.Variable.parse(obj.func[0], obj.variables);
+            break;
+        case "polar":
+            func = PolarFunction.Variable.parse(obj.func[0], obj.variables);
+            break;
+        case "parametric":
+            func = ParametricFunc.Variable.parse(obj.func[0], obj.func[1], obj.variables);
+            break;
+        default:
+            func = null;
+    }
+
+    if (isNull(func)) return;
+    var node = new FunctionNode(func, obj.style, obj.start, obj.end);
+    node.id = obj.id || generateUUID();
+    node.visible = isNull(obj.visible) ? true : obj.visible;
+    node.resolution = obj.resolution;
+    node.derivative = {
+        visible: obj.derivative.visible,
+        style: obj.derivative.style ? new Colour(obj.derivative.style) : null
+    };
+    node.integral = {
+        visible: obj.integral.visible,
+        style: obj.integral.style ? new Colour(obj.integral.style) : null
+    };
+    return node;
+};
 
 var PlotTypes = {"line": "line", "scatter": "scatter"};
 
@@ -119,7 +257,6 @@ function PlotNode(plot, type, style) {
     this.plot = plot;
     this.type = type || "line";
     this.style = style ? new Colour(style) : generateRandomColour(0.8, 0.8);
-    this.width = 2;
     this.draw = function (plane) {
         if (!this.visible) return;
         var threshold = plane.settings.functions.threshold;
@@ -165,9 +302,27 @@ function PlotNode(plot, type, style) {
         }
 
         plane.helper.appendGroup("plots");
-    }
+    };
+    this.serialise = function () {
+        var obj = {
+            id: this.id,
+            visible: this.visible,
+            plot: this.plot,
+            type: this.type,
+            style: this.style.toRGBA()
+        };
+        return JSON.stringify(obj);
+    };
 }
 PlotNode.prototype = Object.create(PlaneNode.prototype);
+PlotNode.prototype.constructor = PlotNode;
+PlotNode.deserialise = function (str) {
+    var obj = JSON.parse(str);
+    var node = new PlotNode(obj.plot, obj.type, obj.style);
+    node.id = obj.id;
+    node.visible = obj.visible;
+    return node;
+};
 
 function CrtPlanePlugin(config) {
     var noop = function () {},
@@ -195,6 +350,7 @@ function CrtPlanePlugin(config) {
         this[prop] = pub[prop];
 }
 
+var objectToInputs;
 $(function () {
 Require([
     "/assets/js/tblib/base.js",
@@ -209,7 +365,7 @@ Require([
         WideSVG.call(this, svg, parent);
         this.settings = {
             functions: {
-                threshold: new Vector2D(4e3, 2e3)
+                threshold: new Vector2D(4e4, 2e4)
             }
         };
         this.plugins = {
@@ -347,6 +503,7 @@ Require([
     loadPlugin("scale");
     loadPlugin("anim");
     loadPlugin("nav");
+    loadPlugin("persist");
     loader.start();
 
     PlotTypes = new Enum("line", "scatter");
@@ -356,24 +513,39 @@ Require([
             .addPlugin(plugins["scale"])
             .addPlugin(plugins["animation"])
             .addPlugin(plugins["navigation"])
-            .updateSettings(CrtPlane3.MasterSettings, "settings");
+            .addPlugin(plugins["persistency"]);
 
-        var demoObjects = [
-            new PolynomialFunc(3, 1/5, -3, -2),
-            //new RelationFunc(2, 3, 10),
-            new MathFunction(function (x) { return Math.sin(x); }),
-            new MathFunction(function (x) { return Math.pow(2, x); }),
-            new PolarFunction(function (a) { return 2*Math.sin(4*a); }),
-            new ParametricFunc.lissajous(0.4, 1),
-            new ParametricFunc.Variable(
-                function (t) { return Math.sin(this.a*t); },
-                function (t) { return Math.cos(this.b*t); },
-                { a: 1, b: 0.9 }
-            )
-        ];
-        demoObjects.forEach(function (e) {
-            cplane.addObject(FunctionNode, e);
-        });
+        if (!isNull(localStorage.getItem("crtpl3-save")))
+            cplane.load(localStorage.getItem("crtpl3-save"));
+        else {
+            cplane.updateSettings(CrtPlane3.MasterSettings, "settings");
+            var demoObjects = [
+                new PolynomialFunc(3, 1 / 5, -3, -2),
+                //new RelationFunc(2, 3, 10),
+                new MathFunction(function (x) {
+                    return Math.sin(x);
+                }),
+                new MathFunction(function (x) {
+                    return Math.pow(2, x);
+                }),
+                new PolarFunction(function (a) {
+                    return 2 * Math.sin(4 * a);
+                }),
+                new ParametricFunc.lissajous(0.4, 1),
+                new ParametricFunc.Variable(
+                    function (t) {
+                        return Math.sin(this.a * t);
+                    },
+                    function (t) {
+                        return Math.cos(this.b * t);
+                    },
+                    {a: 1, b: 0.9}
+                )
+            ];
+            demoObjects.forEach(function (e) {
+                cplane.addObject(FunctionNode, e);
+            });
+        }
 
         $("button[data-icon-src]").each(function () {
             var self = $(this);
@@ -417,6 +589,7 @@ Require([
             $(".fn-defined-only").addClass("fn-defined");
 
             updateInfoBox();
+            updateScaleLocking();
         }
 
         function getCurrentObject() {
@@ -428,9 +601,40 @@ Require([
 
         function bindToSelectedObject(query, handler, evt) {
             if (isNull(evt)) evt = "click";
-            $(query).on(evt, function (event) {
-                handler.apply(this, [getCurrentObject(), event]);
+            $(query).on(evt, function (event, args) {
+                handler.apply(this, [getCurrentObject(), event, args]);
                 cplane.triggerNextUpdate = true;
+            });
+        }
+
+        function updateScaleLocking() {
+            if (!cplane.plugins["navigation"]) return;
+            var set = cplane.settings.controls,
+                x = TBI.UI.isToggled($(".lock-x")[0]),
+                y = TBI.UI.isToggled($(".lock-y")[0]);
+
+            if (!x && !y) set.mode = "free";
+            else if (x && !y) set.mode = "x-fixed";
+            else if (!x && y) set.mode = "y-fixed";
+            else set.mode = "square";
+        }
+
+        function updateObjectList() {
+            var select = $(".object-list")[0];
+            var obj = {};
+            for (var prop in cplane.objects) if (cplane.objects.hasOwnProperty(prop))
+                obj[prop] = prop;
+
+            TBI.UI.fillSelect(select, obj, function (option, id) {
+                var o = cplane.objects[id];
+
+                if (o.name) option.textContent = o.name;
+                else if (o.func) option.innerHTML = o.func.toString(true);
+                else if (o.plot) option.innerHTML = o.plot.toString();
+
+                if (!o.visible)
+                    option.className += " hidden";
+                return option;
             });
         }
 
@@ -453,7 +657,7 @@ Require([
             }
         }
 
-        function objectToInputs(obj) {
+        objectToInputs = function (obj) {
             function normalise(str) {
                 return str.removeAll(/f\([^\)]*\) *= */);
             }
@@ -472,28 +676,37 @@ Require([
                 default:
                     return [];
             }
-        }
+        };
 
         function updateInfoBox() {
             var obj = getCurrentObject();
             var $v = $(".info-box .edit-function-view");
+
             if (isNull(obj)) {
                 $v.find(".function-id").val("");
-                $v.find(".function-name").val("");
-                $v.find(".function-type").val("-").trigger("change");
-                $v.find(".function-colour").val(generateRandomColour().toHex());
+                $v.find(".function-type").val("cartesian").trigger("change");
+                $v.find(".function-colour").val(generateRandomColour(0.8, 0.8).toHex());
+                $v.find(".function-start").val("");
+                $v.find(".function-end").val("");
+                $v.find(".function-resolution").val(50);
                 $v.find(".function-inputs .function-input").val("");
                 TBI.UI.fillSelect($v.find(".variable-select")[0], {});
-                $v.find(".variable-select").val("new");
+                $v.find(".variable-select").val("new").trigger("change");
+                TBI.UI.toggleButton($v.find(".derivative-toggle")[0], false);
+                TBI.UI.toggleButton($v.find(".integral-toggle")[0], false);
                 return;
             }
 
             $v.find(".function-id").val(obj.id);
-            $v.find(".function-name").val(obj.name || "");
             $v.find(".function-type")
                 .val(obj.func.type.toLowerCase())
                 .trigger("change");
             $v.find(".function-colour").val(obj.style ? obj.style.toHex() : generateRandomColour().toHex());
+            $v.find(".function-start").val(isNull(obj.start) ? "" : obj.start);
+            $v.find(".function-end").val(isNull(obj.end) ? "" : obj.end);
+            $v.find(".function-resolution").val(obj.resolution);
+            TBI.UI.toggleButton($v.find(".derivative-toggle")[0], obj.derivative.visible);
+            TBI.UI.toggleButton($v.find(".integral-toggle")[0], obj.integral.visible);
 
             var inputs = objectToInputs(obj);
             $v.find(".function-inputs.show .function-input")
@@ -511,23 +724,23 @@ Require([
                 vars[e] = obj.func[e];
             });
 
+            var selection = $v.find(".variable-select").val();
             TBI.UI.fillSelect($v.find(".variable-select")[0], vars, function (option, prop, val) {
                 option.innerHTML = prop;
                 option.value = prop;
                 option.dataset.value = val;
                 return option;
             });
-            $v.find(".variable-select").val("-");
+            $v.find(".variable-select").val(selection || "-").trigger("change");
 
         }
 
         function getVariableObject() {
             var obj = {};
             $(".variable-select").find("option").each(function (i, e) {
-                obj[e.value] = e.dataset.value;
+                if (!isNaN(parseFloat(e.dataset.value)))
+                    obj[e.value] = parseFloat(e.dataset.value);
             });
-            if (obj["-"]) delete obj["-"];
-            if (obj["new"]) delete obj["new"];
             return obj;
         }
 
@@ -538,9 +751,11 @@ Require([
             var currVar = $(".variable-select").val() || "";
             var option = $(".variable-select").find("option[value='"+currVar+"']");
             if (option.length == 0 || currVar == "new")
-                addVariable();
+                currVar = addVariable();
             else
                 option.attr("data-value", val);
+
+            return currVar;
 
         }
 
@@ -573,6 +788,7 @@ Require([
             TBI.UI.updateSelect(select);
             $(select).val(name)
                 .trigger("change");
+            return name;
         }
 
         function inputsToMathFunction() {
@@ -602,28 +818,58 @@ Require([
             }
         }
 
-        cplane.addEventHandler("post-update", function () {
-            var select = $(".object-list")[0];
-            var obj = {};
-            for (var prop in cplane.objects) if (cplane.objects.hasOwnProperty(prop))
-                obj[prop] = prop;
+        function submitFunction() {
+            var varname = setVariable();
 
-            TBI.UI.fillSelect(select, obj, function (option, id) {
-                var o = cplane.objects[id];
+            var id = $(".function-id").val() || generateUUID();
 
-                if (o.name) option.textContent = o.name;
-                else if (o.func) option.innerHTML = o.func.toString(true);
-                else if (o.plot) option.innerHTML = o.plot.toString();
+            var start = isNull($(".function-start").val()) ? null :
+                parseInt($(".function-start").val());
+            var end = isNull($(".function-end").val()) ? null :
+                parseInt($(".function-end").val());
+            var resolution = Math.abs(parseInt($(".function-resolution").val())) || 50;
 
-                if (!o.visible)
-                    option.className += " hidden";
-                return option;
-            });
-        });
+            var func = inputsToMathFunction();
+            if (isNull(func))
+                return TBI.error("Failed to save function.");
+            var style = new Colour($(".function-colour").val()) || Colours.black;
+
+            var obj = getCurrentObject();
+            if (isNull(obj)) obj = new FunctionNode(func, style);
+            else {
+                obj.func = func;
+                obj.style = style;
+            }
+
+            obj.id = id;
+            obj.start = start;
+            obj.end = end;
+            obj.resolution = resolution;
+            obj.derivative.visible = TBI.UI.isToggled($(".derivative-toggle")[0]);
+            obj.integral.visible = TBI.UI.isToggled($(".integral-toggle")[0]);
+
+            cplane.objects[id] = obj;
+            cplane.triggerNextUpdate = true;
+            updateObjectList();
+            $(".object-list").val(id).trigger("update");
+            if (!isNull(varname)) $(".variable-select").val(varname).trigger("update");
+        }
+
+        cplane.addEventHandler("post-update", updateObjectList);
 
         bindToPlane("#main-plane", "mousedown");
         bindToPlane("#main-plane", "mouseup");
         bindToPlane("#main-plane", "mousemove");
+
+        cplane.addEventHandler("mouseup", function (plane, event) {
+            var uuidRe = /([0-9A-Fa-f]{8}\-([0-9A-Fa-f]{4}\-){3}[0-9A-Fa-f]{12})/;
+            if (!isNull(plane.state.deltaCenter)
+                && plane.state.deltaCenter.equals(Vector2D.zero)
+                && event.target.getAttribute("class").search(uuidRe) != -1) {
+                $(".object-list").val(event.target.getAttribute("class").match(uuidRe)[1])
+                    .trigger("change");
+            }
+        });
 
         $(".object-list").change(refreshUI);
 
@@ -641,7 +887,7 @@ Require([
                 cplane.addAnimation(prop, 1, 600);
             } else {
                 obj.style.a = 1;
-                cplane.addAnimation(prop, 0, 600, null, function (plane, tween) {
+                cplane.addAnimation(prop, 0, 600, null, function () {
                     obj.style.a = 1;
                     obj.visible = false;
                 });
@@ -654,13 +900,13 @@ Require([
                 return;
             }
 
-            cplane.addAnimation("objects."+obj.id+".style.a", 0, 600, null, function (plane, tween) {
+            cplane.addAnimation("objects."+obj.id+".style.a", 0, 600, null, function (plane) {
                 delete plane.objects[obj.id];
                 $(".object-list").val("-").trigger("update");
             });
         }, "click");
 
-        bindToSelectedObject(".edit-function", function (obj) {
+        bindToSelectedObject(".edit-function", function () {
             switchView(".edit-function-view");
             updateInfoBox();
         }, "click");
@@ -674,11 +920,15 @@ Require([
         });
 
         $(".zoom-in").click(function () {
+            if (!cplane.plugins["navigation"]) return;
+
             var set = cplane.settings.controls;
             cplane.zoom(1/set.buttonZoomFactor);
         });
 
         $("#main-plane").on("mousewheel", function (event) {
+            if (!cplane.plugins["navigation"]) return;
+
             var set = cplane.settings.controls;
             var delta = event.originalEvent.wheelDelta;
             if (delta > 0) cplane.zoom(1/set.scrollZoomFactor);
@@ -686,9 +936,14 @@ Require([
         });
 
         $(".zoom-out").click(function () {
+            if (!cplane.plugins["navigation"]) return;
+
             var set = cplane.settings.controls;
             cplane.zoom(set.buttonZoomFactor);
         });
+
+        $(".lock-x").on("change", updateScaleLocking);
+        $(".lock-y").on("change", updateScaleLocking);
 
         cplane.addEventHandler("post-update", updateInfoBox);
 
@@ -712,7 +967,7 @@ Require([
         });
 
         $(".evaluate-expression").click(function () {
-            var el = $($(this).attr("for"));
+            var el = $($(this).attr("data-for") || $(this).attr("for"));
             evalExpression(el.val(), el);
         });
 
@@ -724,20 +979,28 @@ Require([
 
         $(".variable-select").change(function () {
             var val = $(this).val();
-            if (isNull(val) || val == "-") return null;
-            else if (val.toLowerCase() == "new") {
+            if (isNull(val) || val == "-") {
+                $(".variable-name").attr("disabled", true);
+                $(".variable-name").val("");
+                $(".variable-value").val(0);
+                $(".variable-demo").text("name");
+            } else if (val.toLowerCase() == "new") {
                 $(".variable-name").attr("disabled", false);
                 $(".variable-name").val("");
                 $(".variable-value").val(0);
+                $(".variable-demo").text("name");
             } else {
                 $(".variable-name").attr("disabled", true);
                 $(".variable-name").val(val);
                 var variableValue = $(this).find("option[value='"+val+"']").attr("data-value");
                 $(".variable-value").val(variableValue);
+                $(".variable-demo").text(val);
             }
         });
 
-        $(".variable-set").click(setVariable);
+        $(".variable-value").on("blur", submitFunction);
+
+        $(".variable-set").click(submitFunction);
 
         $(".variable-add").click(addVariable);
 
@@ -745,41 +1008,22 @@ Require([
             var $s = $(".variable-select");
             var currVar = $s.val();
             if (currVar !== "new" && currVar !== "-") {
-                var option = s.find("option[value='"+currVar+"']");
+                var option = $s.find("option[value='"+currVar+"']");
                 if (option.length > 0)
                     option[0].remove();
             }
-            $s.val("-");
+            $s.val("-").trigger("update");
         });
 
-        $(".edit-function-submit").click(function () {
-            setVariable();
+        $(".edit-function-submit").click(submitFunction);
 
-            var id = $(".function-id").val() || generateUUID();
-            var name = $(".function-name").val() || "";
+        $(".function-start").on("blur", submitFunction);
+        $(".function-end").on("blur", submitFunction);
+        $(".function-colour").on("change", submitFunction);
+        $(".derivative-toggle").on("change", submitFunction);
+        $(".integral-toggle").on("change", submitFunction);
 
-            var func = inputsToMathFunction();
-            if (isNull(func))
-                return TBI.error("Failed to save function.");
-            var style = new Colour($(".function-colour").val()) || Colours.black;
 
-            var obj = getCurrentObject();
-            if (isNull(obj)) obj = new FunctionNode(func, style);
-            else {
-                obj.func = func;
-                obj.style = style;
-            }
-
-            obj.name = name || undefined;
-            obj.id = id;
-
-            cplane.objects[id] = obj;
-            var handler_id = cplane.addEventHandler("post-update", function () {
-                $(".object-list").val(id).trigger("update");
-                cplane.removeEventHandler(handler_id);
-            });
-            cplane.triggerNextUpdate = true;
-        });
     });
 });
 });

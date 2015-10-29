@@ -81,10 +81,12 @@ TBI.UI.updateUI = function (force) {
     $("button.toggle:not(.done)").toggleClass("done", true);
 
     $(".up-down:not(.done)").click(function (event) {
-        if (event.button != 0) return true;
-        var toSwitch = $($(this).attr("for"));
+        if (event.button != 0) return false;
+        var toSwitch = $($(this).attr("data-for") || $(this).attr("for"));
         if (toSwitch.length > 0) toSwitch.slideToggle();
         $(this).toggleClass("on");
+        $(this).trigger("change");
+        return false;
     });
     $(".up-down:not(.done)").toggleClass("done", true);
 

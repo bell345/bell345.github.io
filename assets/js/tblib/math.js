@@ -18,7 +18,7 @@ function highestCommonFactor(a, b) {
     return a;
 }
 // Proportions a number given from a function with limits a (top) to b (bottom), to a different function with limits c to d.
-Math.proportion = function (n, a, b, c, d) { return (c-d)/(a-b)*n+(d-b); }
+Math.proportion = function (n, a, b, c, d) { return (c-d)/(a-b)*n+(d-b); };
 // Transforms a HSV colour value into its equivalent RGB value.
 function hsvToRgb(h,s,v) {
     var bt = (1-s)*v,
@@ -53,17 +53,17 @@ Math.total = function (list) {
     var total = 0;
     for (var i=0;i<list.length;i++) total += list[i];
     return total;
-}
+};
 // Finds the mean of a list.
 Math.mean = function (list) {
     return Math.total(list) / list.length;
-}
+};
 // Finds the median of a list.
 Math.median = function (list) {
     if (!isSorted(list)) list = sort(list);
     if (list.length % 2 == 0) return Math.mean([list[list.length/2], list[(list.length/2)-1]]);
     else return list[(list.length-1)/2];
-}
+};
 // Finds the mode of a list.
 Math.mode = function (list) {
     var freq = {},
@@ -80,12 +80,12 @@ Math.mode = function (list) {
     }
     if (max < 2) return null;
     return modes.length == 1?modes[0]:modes;
-}
+};
 // Finds the range of a list.
 Math.range = function (list) {
     list = sort(list);
     return list[list.length-1]-list[0];
-}
+};
 // Finds the upper quartile, the lower quartile, median and the inter-quartile range of a list.
 Math.quartiles = function (list) {
     list = sort(list);
@@ -94,12 +94,12 @@ Math.quartiles = function (list) {
     var up = [], lw = [];
     for (var i=0;i<list.length;i++) i<list.length/2?lw.push(list[i]):up.push(list[i]);
     return {lower:Math.median(lw),median:med,upper:Math.median(up),range:Math.median(up) - Math.median(lw)};
-}
+};
 // Returns the factorial of the number specified.
 Math.factorial = function (num) {
     for (var i=0,t=1;i<num;i++) t *= i+1;
     return t;
-}
+};
 // Uses Eratosthenes' sieve to calculate the prime numbers up to the number specified.
 Math.eratosthenes = function (num) {
     var sqrt = Math.sqrt(num),
@@ -111,11 +111,11 @@ Math.eratosthenes = function (num) {
             for (var j=i*i;j<num;j+=i)
                 nums[j] = false;
     return nums;
-}
+};
 // Returns a value which, when added to a list of values, will change its mean to the specified number.
 Math.newValueForMean = function (list, num) {
     return num * (list.length + 1) - Math.total(list);
-}
+};
 // Declares a fraction with a numerator and a denominator.
 function Fraction(numerator, denominator) {
     this.numerator = numerator;
@@ -146,18 +146,18 @@ function Coords(x, y) {
 }
 // Declares a coordinate value given a string as follows: "(x, y)".
 Coords.parse = function (str) {
-    var params = str.replaceAll(/[\(\)]/, "").split(/\, ?/);
+    var params = str.replaceAll(/[\(\)]/, "").split(/, ?/);
     return new Coords(parseFloat(params[0]).fixFloat(), parseFloat(params[1]).fixFloat());
-}
+};
 // Transforms coordinates into an array of [x,y].
-Coords.prototype.toArray = function () { return [this.x,this.y] }
+Coords.prototype.toArray = function () { return [this.x,this.y] };
 // Transforms coordinates into a string representation of "(x, y)".
-Coords.prototype.toString = function (spacing) { return "("+this.x+","+(isNull(spacing)?" ":spacing?" ":"")+this.y+")" }
+Coords.prototype.toString = function (spacing) { return "("+this.x+","+(isNull(spacing)?" ":spacing?" ":"")+this.y+")" };
 // Transforms cartesian coordinates into a polar form of (r, a).
 Coords.prototype.toPolar = function () {
     return new PolarCoords(Math.pythagoras(this.x, this.y), Math.atan2(this.y, this.x));
-}
-Coords.prototype.toVector = function () { return new Vector2D(this.x, this.y); }
+};
+Coords.prototype.toVector = function () { return new Vector2D(this.x, this.y); };
 // Declares a set of polar coordinates as follows: {r,a}, where r is the radius and a is the azimuth.
 function PolarCoords(radius, azimuth) {
     this.radius = radius;
@@ -165,15 +165,15 @@ function PolarCoords(radius, azimuth) {
 }
 // Declares a polar coordinate value using a string as follows: "(r, a)".
 PolarCoords.parse = function (str) {
-    var params = str.replaceAll(/[\(\)]/, "").split(/\, ?/);
+    var params = str.replaceAll(/[\(\)]/, "").split(/, ?/);
     return new PolarCoords(params[0], params[1]);
-}
+};
 // Transforms polar coordinates into a cartesian form of (x, y).
 PolarCoords.prototype.toCartesian = function () {
     return new Coords(this.radius*Math.cos(this.azimuth), this.radius*Math.sin(this.azimuth));
-}
+};
 // Transforms polar coordinates into a string representation of "(r, a)".
-PolarCoords.prototype.toString = function () { return "("+this.radius+", "+this.azimuth+")" }
+PolarCoords.prototype.toString = function () { return "("+this.radius+", "+this.azimuth+")" };
 // Declares a line segment with the endpoints start and end.
 function LineSegment(start, end) {
     if (!(start instanceof Vector2D) && !isNull(start[1])) start = new Vector2D(start[0], start[1]);
@@ -202,20 +202,20 @@ function LineSegment(start, end) {
 LineSegment.parse = function (str) {
     var params = str.replace("((", "(").replace("))", ")").split(/\), ?\(/);
     return new LineSegment(Coords.parse(params[0]), Coords.parse(params[1]));
-}
+};
 // Finds the midpoint of a line segment.
 LineSegment.prototype.midpoint = function () {
     return new Vector2D(Stat.mean([this.start.x, this.end.x]), Stat.mean([this.start.y, this.end.y]));
-}
+};
 // Transforms a line segment into a linear function.
-LineSegment.prototype.toLinear = function () { return new LinearFunc(this.gradient, this.yIntercept); }
+LineSegment.prototype.toLinear = function () { return new LinearFunc(this.gradient, this.yIntercept); };
 // Transforms a line segment into a multi-dimensional array representation of [[x1,y1],[x2,y2]].
-LineSegment.prototype.toArray = function () { return [[this.start.x, this.start.y], [this.end.x, this.end.y]]; }
+LineSegment.prototype.toArray = function () { return [[this.start.x, this.start.y], [this.end.x, this.end.y]]; };
 // Transforms a line segment into a string representation of "((x1,y1),(x2,y2))".
 LineSegment.prototype.toString = function (spacing) {
     var s = spacing ? " " : "";
     return "(" + this.start.toString(s==" ") + "," + s + this.end.toString(s==" ") + ")";
-}
+};
 function Enum() {
     var removeDashes = function (str) {
         str = str.replace(/ /g, "_").split("");
@@ -258,11 +258,16 @@ MathFunction.Variable = function (evalFunc, varObj, type, className) {
 };
 MathFunction.Variable.parse = function (str, varObj) {
     try {
-        for (var prop in varObj) if (varObj.hasOwnProperty(prop)) {
-            str = str.replaceAll(new RegExp("([^\\(]|^)\\$"+RegExp.quote(prop)+"([^\\)]|$)"), "$1(this."+prop+")$2");
-            str = str.replaceAll(new RegExp("(\\()\\$"+RegExp.quote(prop)+"([^\\)])"), "$1(this."+prop+")$2");
-            str = str.replaceAll(new RegExp("([^\\(])\\$"+RegExp.quote(prop)+"(\\))"), "$1(this."+prop+")$2");
-            str = str.replaceAll(new RegExp("\\(\\$"+prop+"\\)"), "(this."+prop+")");
+        var variables = [];
+        for (var prop in varObj) if (varObj.hasOwnProperty(prop))
+            variables.push(prop);
+        variables.sort(function (a, b) { return a.length < b.length; });
+        for (var i=0;i<variables.length;i++) {
+            var p = variables[i];
+            str = str.replaceAll(new RegExp("([^\\(]|^)\\$"+RegExp.quote(p)+"([^\\)]|$)"), "$1(this."+p+")$2");
+            str = str.replaceAll(new RegExp("(\\()\\$"+RegExp.quote(p)+"([^\\)])"), "$1(this."+p+")$2");
+            str = str.replaceAll(new RegExp("([^\\(])\\$"+RegExp.quote(p)+"(\\))"), "$1(this."+p+")$2");
+            str = str.replaceAll(new RegExp("\\(\\$"+p+"\\)"), "(this."+p+")");
         }
         return new MathFunction.Variable(stringToEquation(str, true), varObj);
     } catch (e) {
@@ -289,7 +294,7 @@ function PolynomialFunc() {
             }
         }
         this.coefficients = a.reverse();
-    }
+    };
     var args = [];
     for (var i=0,r=false;i<arguments.length;i++) {
         if (arguments[i] != 0 || r) {
@@ -302,6 +307,7 @@ function PolynomialFunc() {
     this.toString = function (useHTML) {
         this.correctCoefficients();
         if (isNull(useHTML)) useHTML = false;
+        var variable;
         var s = " ";
         var str = "";
         if (this.coefficients.length < 1) return "";
@@ -315,7 +321,7 @@ function PolynomialFunc() {
                     case 1: sign = "+"; break;
                 }
                 val = Math.abs(val);
-                var variable = "";
+                variable = "";
                 if (i == 0) variable = "";
                 else if (i == 1) variable = "x";
                 else if (useHTML) variable = "x<sup>"+i+"</sup>";
@@ -325,7 +331,7 @@ function PolynomialFunc() {
         }
         var lastIndex = this.coefficients.length-1;
         var lastVal = this.coefficients[lastIndex];
-        var variable = "";
+        variable = "";
         if (lastIndex == 0) variable = "";
         else if (lastIndex == 1) variable = "x";
         else if (useHTML) variable = "x<sup>"+i+"</sup>";
@@ -342,7 +348,7 @@ function PolynomialFunc() {
             })
         }
         delete this.defineAliases;
-    }
+    };
     Object.defineProperty(this, "defineAliases", {
         value: defineAliases,
         configurable: true,
@@ -444,7 +450,7 @@ PolarFunction.parse = function (str) {
         func = stringToEquation(str);
     } catch (e) {
         TBI.error("The PolarFunction failed to parse: "+e.message);
-        return new PolarFunction(function (a) { return 0; });
+        return new PolarFunction(function () { return 0; });
     }
     return new PolarFunction(func);
 };
@@ -454,12 +460,19 @@ PolarFunction.Variable = function (evalFunc, varObj) {
 };
 PolarFunction.Variable.parse = function (str, varObj) {
     try {
-        for (var prop in varObj) if (varObj.hasOwnProperty(prop)) {
-            str = str.replaceAll(new RegExp("([^\\(]|^)\\$"+RegExp.quote(prop)+"([^\\)]|$)"), "$1(this."+prop+")$2");
-            str = str.replaceAll(new RegExp("(\\()\\$"+RegExp.quote(prop)+"([^\\)])"), "$1(this."+prop+")$2");
-            str = str.replaceAll(new RegExp("([^\\(])\\$"+RegExp.quote(prop)+"(\\))"), "$1(this."+prop+")$2");
-            str = str.replaceAll(new RegExp("\\(\\$"+prop+"\\)"), "(this."+prop+")");
+        var variables = [];
+        for (var prop in varObj) if (varObj.hasOwnProperty(prop))
+            variables.push(prop);
+        variables.sort(function (a, b) { return a.length < b.length; });
+        for (var i=0;i<variables.length;i++) {
+            var p = variables[i];
+            str = str.replaceAll(new RegExp("([^\\(]|^)\\$"+RegExp.quote(p)+"([^\\)]|$)"), "$1(this."+p+")$2");
+            str = str.replaceAll(new RegExp("(\\()\\$"+RegExp.quote(p)+"([^\\)])"), "$1(this."+p+")$2");
+            str = str.replaceAll(new RegExp("([^\\(])\\$"+RegExp.quote(p)+"(\\))"), "$1(this."+p+")$2");
+            str = str.replaceAll(new RegExp("\\(\\$"+p+"\\)"), "(this."+p+")");
         }
+        if (str.search(/f\(a\) *= */) != 0)
+            str = "f(a) = " + str;
         return new PolarFunction.Variable(stringToEquation(str, true), varObj);
     } catch (e) {
         TBI.error("The PolarFunction.Variable failed to parse: " + e.message);
@@ -485,7 +498,7 @@ ParametricFunc.parse = function (xf, yf) {
         TBI.error("The ParametricFunc failed to parse: "+e.message);
         return new ParametricFunc(function(){return 0;}, function(){return 0;});
     }
-}
+};
 ParametricFunc.prototype = Object.create(MathFunction.prototype);
 ParametricFunc.Variable = function (xf, yf, varObj) {
     ParametricFunc.call(this, xf, yf, "ParametricFunc_Variable");
@@ -499,8 +512,7 @@ ParametricFunc.Variable = function (xf, yf, varObj) {
         vars.push(prop);
     }
     this.variables = vars;
-    this.toString = function (useHTML, funcOnly) {
-        var str = "f(t) = ("+equationToString(this.xf, true, useHTML)+", "+equationToString(this.yf, true, useHTML)+")";
+    this.toString = function (useHTML) {
         //if (!funcOnly) {
         //    str += ", ";
         //    if (useHTML) str += "<ul>";
@@ -512,26 +524,35 @@ ParametricFunc.Variable = function (xf, yf, varObj) {
         //    }
         //    if (useHTML) str += "</ul>";
         //}
-        return str;
+        return "f(t) = (" + equationToString(this.xf, true, useHTML) + ", " + equationToString(this.yf, true, useHTML) + ")";
     }
-}
+};
 ParametricFunc.Variable.parse = function (xf, yf, varObj) {
     try {
-        for (var prop in varObj) if (varObj.hasOwnProperty(prop)) {
-            xf = xf.replaceAll(new RegExp("([^\\(]|^)\\$"+RegExp.quote(prop)+"([^\\)]|$)"), "$1(this."+prop+")$2");
-            xf = xf.replaceAll(new RegExp("(\\()\\$"+RegExp.quote(prop)+"([^\\)])"), "$1(this."+prop+")$2");
-            xf = xf.replaceAll(new RegExp("([^\\(])\\$"+RegExp.quote(prop)+"(\\))"), "$1(this."+prop+")$2");
-            xf = xf.replaceAll(new RegExp("\\(\\$"+prop+"\\)"), "(this."+prop+")");
-            yf = yf.replaceAll(new RegExp("([^\\(]|^)\\$"+RegExp.quote(prop)+"([^\\)]|$)"), "$1(this."+prop+")$2");
-            yf = yf.replaceAll(new RegExp("(\\()\\$"+RegExp.quote(prop)+"([^\\)])"), "$1(this."+prop+")$2");
-            yf = yf.replaceAll(new RegExp("([^\\(])\\$"+RegExp.quote(prop)+"(\\))"), "$1(this."+prop+")$2");
-            yf = yf.replaceAll(new RegExp("\\(\\$"+prop+"\\)"), "(this."+prop+")");
+        var variables = [];
+        for (var prop in varObj) if (varObj.hasOwnProperty(prop))
+            variables.push(prop);
+        variables.sort(function (a, b) { return a.length < b.length; });
+        for (var i=0;i<variables.length;i++) {
+            var p = variables[i];
+            xf = xf.replaceAll(new RegExp("([^\\(]|^)\\$"+RegExp.quote(p)+"([^\\)]|$)"), "$1(this."+p+")$2");
+            xf = xf.replaceAll(new RegExp("(\\()\\$"+RegExp.quote(p)+"([^\\)])"), "$1(this."+p+")$2");
+            xf = xf.replaceAll(new RegExp("([^\\(])\\$"+RegExp.quote(p)+"(\\))"), "$1(this."+p+")$2");
+            xf = xf.replaceAll(new RegExp("\\(\\$"+p+"\\)"), "(this."+p+")");
+            yf = yf.replaceAll(new RegExp("([^\\(]|^)\\$"+RegExp.quote(p)+"([^\\)]|$)"), "$1(this."+p+")$2");
+            yf = yf.replaceAll(new RegExp("(\\()\\$"+RegExp.quote(p)+"([^\\)])"), "$1(this."+p+")$2");
+            yf = yf.replaceAll(new RegExp("([^\\(])\\$"+RegExp.quote(p)+"(\\))"), "$1(this."+p+")$2");
+            yf = yf.replaceAll(new RegExp("\\(\\$"+p+"\\)"), "(this."+p+")");
         }
+        if (xf.search(/f\(t\) *= */) != 0)
+            xf = "f(t) = " + xf;
+        if (yf.search(/f\(t\) *= */) != 0)
+            yf = "f(t) = " + yf;
         return new ParametricFunc.Variable(stringToEquation(xf, true), stringToEquation(yf, true), varObj);
     } catch (e) {
         TBI.error("The ParametricFunc.Variable failed to parse: "+e.message);
     }
-}
+};
 ParametricFunc.Variable.prototype = Object.create(ParametricFunc.prototype);
 // Declares a parametric function that generates an ellipse.
 ParametricFunc.ellipse = function (a, b) {
@@ -541,7 +562,7 @@ ParametricFunc.ellipse = function (a, b) {
         a, b
     );
     this.className = "Ellipse";
-}
+};
 ParametricFunc.ellipse.prototype = Object.create(ParametricFunc.Variable.prototype);
 // Declares a parametric function that generates a Lissajous curve.
 ParametricFunc.lissajous = function (a, b, sigma) {
@@ -551,7 +572,7 @@ ParametricFunc.lissajous = function (a, b, sigma) {
         { a:a, b:b, σ: isNaN(sigma) ? 0 : sigma }
     );
     this.className = "Lissajous";
-}
+};
 ParametricFunc.lissajous.prototype = Object.create(ParametricFunc.Variable.prototype);
 // Declares a parametric function that generates a trochoid.
 ParametricFunc.trochoid = function (a, b) {
@@ -561,7 +582,7 @@ ParametricFunc.trochoid = function (a, b) {
         { a:a, b:b }
     );
     this.className = "Trochoid";
-}
+};
 ParametricFunc.trochoid.prototype = Object.create(ParametricFunc.Variable.prototype);
 // Declares a parametric function that generates a hypotrochoid.
 ParametricFunc.hypotrochoid = function (R, r, d) {
@@ -571,7 +592,7 @@ ParametricFunc.hypotrochoid = function (R, r, d) {
         { R:R, r:r, d:d }
     );
     this.className = "Hypotrochoid";
-}
+};
 ParametricFunc.hypotrochoid.prototype = Object.create(ParametricFunc.Variable.prototype);
 // The transcendental butterfly curve.
 // https://en.wikipedia.org/wiki/Butterfly_curve_(transcendental)
@@ -582,7 +603,7 @@ ParametricFunc.butterfly = function (a, b) {
         { a:a||1, b:b||1 }
     );
     this.className = "Butterfly";
-}
+};
 ParametricFunc.butterfly.prototype = Object.create(ParametricFunc.Variable.prototype);
 
 var Stat = {};
@@ -591,11 +612,11 @@ Math.sigmaSum = function (arr, func) {
     for (var i=0,t=0;i<arr.length;i++)
         t += func(arr[i], i, arr);
     return t;
-}
-Stat.sum = function (arr) { return Math.sigmaSum(arr, function (a) { return a; }); }
+};
+Stat.sum = function (arr) { return Math.sigmaSum(arr, function (a) { return a; }); };
 Stat.mean = function (arr) {
     return Stat.sum(arr) / arr.length;
-}
+};
 Stat.median = function (arr) {
     var even = arr.length % 2 == 0;
     if (!even) return arr[arr.length/2];
@@ -603,7 +624,7 @@ Stat.median = function (arr) {
         var mid = arr.length / 2;
         return (arr[Math.floor(mid)] + arr[Math.ceil(mid)]) / 2;
     }
-}
+};
 Stat.mode = function (arr) {
     var freqs = {};
     for (var i=0;i<arr.length;i++) {
@@ -620,7 +641,7 @@ Stat.mode = function (arr) {
             result.push(prop);
     }
     return result;
-}
+};
 Stat.quartiles = function (arr) {
     var q2 = Stat.median(arr);
     var even = arr.length % 2 == 0;
@@ -634,7 +655,7 @@ Stat.quartiles = function (arr) {
     var second = Stat.median(secondHalf);
 
     return { lower: first, upper: second, median: q2, range: second - first };
-}
+};
 Stat.trendline = function (arr) {
     for (var i=0,a=[];i<arr.length;i++) a.push(new Vector2D(arr[i].x, arr[i].y));
 
@@ -648,14 +669,14 @@ Stat.trendline = function (arr) {
     });
 
     return new LinearFunc(gradient, ymean - gradient*xmean);
-}
+};
 
 // because why not? I'm using UTF-8 anyway
 var π = Math.PI;
 // Transforms an equation into a string representation.
 Function.equationToString = function (func, toReplace, replacement) {
     return equationToString(func);
-}
+};
 // Magic. Obfuscated to f**k.
 // Takes all instances of function r with b brackets and
 // interior regex specification n in s and replaces them with t.
@@ -728,10 +749,10 @@ function equationToString(func, noHeader, useHTML) {
     str = str.replaceAll(/\t/, "    ");
     str = str.replaceAll(/\r?\n/, " ");
     str = str.replaceAll(/  +/, " ");
-    str = str.replaceAll(/((\() +| +(\)))/, "$2")
+    str = str.replaceAll(/((\() +| +(\)))/, "$2");
     str = str.replaceAll(/ *(f)unction ?(\([^\)]*\)) ?\{ ?(return )?/, noHeader ? "" : "$1$2 = ");
     str = str.removeAll(/ ?return ?/);
-    str = str.replaceAll(/\; ?\, ?/, ", ");
+    str = str.replaceAll(/; ?, ?/, ", ");
     str = str.replaceAll(/(([A-Za-z_]|\\[0-9])+)([0-9])([A-Za-z0-9_]*)\(/, "$1\\$3$4(");
     str = str.replaceAll(/([A-Za-z_]+) ?\* ?([0-9]+)/, "$2$1");
     str = str.replaceAll(/\\([0-9])/, "$1");
@@ -761,7 +782,7 @@ function stringToEquation(str, noVerify) {
     str = str.replaceAll(/([0-9π\)]+)([\(a-zA-Zπ]+)/, "$1*$2");
     str = str.replaceAll(/([a-zA-Zπ\)]+)([0-9π]+)/, "$1*$2");
     str = str.replaceAll(/\\([0-9])/, "$1");
-    str = str.replaceAll(/([0-9a-zA-Z\.]+)\^(([0-9a-zA-Z\.]+|\([^\)]+?\)))/, "Math.pow($1,$2)");
+    str = str.replaceAll(/([0-9a-zA-Z\.]+)\^([0-9a-zA-Z\.]+|\([^\)]+?\))/, "Math.pow($1,$2)");
     str = str.replace(/$/, "; }");
     var funcs = str.match(/[a-zA-Z_][a-zA-Z0-9_]*\(/g);
     if (funcs != null) for (var i=0;i<funcs.length;i++)
@@ -769,7 +790,7 @@ function stringToEquation(str, noVerify) {
             str = str.replaceAll(new RegExp("([^\\.])("+RegExp.quote(funcs[i])+")", 'g'), "$1Math.$2");
     try {
         var func = null;
-        eval("func = "+str);
+        eval("func = (function () { var e = Math.E, pi = Math.PI; return "+str+" })();");
         if (!noVerify) func(1);
     } catch (e) {
         TBI.error(e);
@@ -784,8 +805,8 @@ String.parseFunction = function (text) {
         .replaceAll(/([0-9π\)]+)([\(a-zA-Z]+)/, "$1*$2")
         .replaceAll(/([a-zA-Z\)]+)([0-9π]+)/, "$1*$2")
         .replaceAll("π", "Math.PI")
-        .replaceAll(/(([^a-zA-Z\.]|^))e/, "$1Math.E")
-        .replaceAll(/([0-9a-zA-Z\.]+)\^(([0-9a-zA-Z\.]+|\([^\)]+?\)))/, "Math.pow($1,$2)")
+        .replaceAll(/([^a-zA-Z\.]|^)e/, "$1Math.E")
+        .replaceAll(/([0-9a-zA-Z\.]+)\^([0-9a-zA-Z\.]+|\([^\)]+?\))/, "Math.pow($1,$2)")
         .replaceAll(/([^\.a])(a?(sin|cos|tan))/, "$1Math.$2"));
     var regex = /f\(([a-zA-Z_]([a-zA-Z0-9_]+)?)\) ?= ?/,
         typestr = "";
@@ -797,12 +818,12 @@ String.parseFunction = function (text) {
         func(1);
     } catch (e) { TBI.error(e); return null; }
     return func;
-}
+};
 function createCodedStream(str, radix, len, delimit) {
     if (isNull(len)) delimit = true;
     var characters = str.split("");
     for (var i=0,s="";i<characters.length;i++) {
-        var charCode = characters[i].charCodeAt();
+        var charCode = characters[i].charCodeAt(0);
         s += transformDecimal(charCode, radix, len);
         if (delimit && i != characters.length-1) s += " ";
     }
@@ -815,8 +836,7 @@ function translateCodedStream(str, radix, len) {
     else codes = str.split(new RegExp("(\\w{"+len+"})\\W*"));
     for (var i=0,s="";i<codes.length;i++) {
         if (codes[i] != "") {
-            var character = String.fromCharCode(parseInt(codes[i], radix));
-            s += character;
+            s += String.fromCharCode(parseInt(codes[i], radix));
         }
     }
     return s;
@@ -892,14 +912,14 @@ Math.wrap = function (num, low, high) {
     // wrap from right side (diff is negative in this case)
     else if (low == bound) return high + diff;
     else return bound;
-}
+};
 // arr[num % arr.length], but more generalised.
 Math.wrapArray = function (arr, num) {
     return arr[((num % arr.length) + arr.length) % arr.length];
-}
+};
 Math.bounce = function (num, low, high) {
 
-}
+};
 
 function Circle(centre, radius) {
     this.centre = centre;
@@ -910,7 +930,7 @@ Circle.prototype = {
     contains: function (point) {
         return this.centre.subtract(point).magnitude() < this.radius;
     }
-}
+};
 Object.defineProperty(Circle.prototype, "diameter", {
     get: function () { return 2*this.radius; },
     set: function (val) { this.radius = val/2; }
@@ -935,7 +955,7 @@ Polygon.prototype.getSides = function () {
     }
 
     return sides;
-}
+};
 Polygon.prototype.area = function () {
     var area = 0, j;
     for (var i=1;i<this.points.length;i++) {
@@ -944,7 +964,7 @@ Polygon.prototype.area = function () {
     }
 
     return Math.abs(area/2);
-}
+};
 
 // TODO: implement logic gate adding machine
 
@@ -965,7 +985,7 @@ BigNumber.fromNative = function (n, exponent) {
         this.exponent = parseInt(exponent) + (intComp.length - 1);
     else this.exponent = intComp.length < 1 ? -fracComp.length : intComp.length - 1;
 
-}
+};
 BigNumber.fromString = function (n, exponent) {
     this.negative = n.startsWith("-");
     n = n.removeAll("-");
@@ -978,16 +998,16 @@ BigNumber.fromString = function (n, exponent) {
     if (!isNaN(parseInt(exponent)))
         this.exponent = parseInt(exponent) + (intComp.length - 1);
     else this.exponent = intComp.length < 1 ? -fracComp.length : intComp.length - 1;
-}
+};
 BigNumber.parse = function (n, exponent) {
     if (typeof n == typeof "") return BigNumber.fromString(n, exponent);
     else if (typeof n == typeof 0) return BigNumber.fromNative(n, exponent);
     else return BigNumber.fromNative(0);
-}
+};
 
 BigNumber.prototype.toNative = function () {
     return (this.negative ? -1 : 1) * parseFloat(this.mantissa[0] + "." + this.mantissa.slice(1).join("") + "e" + this.exponent.toString());
-}
+};
 BigNumber.fromNative = function (n, exponent) {
     this.negative = n < 0;
     n = Math.abs(n);
@@ -1000,7 +1020,7 @@ BigNumber.fromNative = function (n, exponent) {
         this.exponent = parseInt(exponent) + (intComp.length - 1);
     else this.exponent = intComp.length < 1 ? -fracComp.length : intComp.length - 1;
 
-}
+};
 BigNumber.fromString = function (n, exponent) {
     this.negative = n.startsWith("-");
     n = n.removeAll("-");
@@ -1013,11 +1033,11 @@ BigNumber.fromString = function (n, exponent) {
     if (!isNaN(parseInt(exponent)))
         this.exponent = parseInt(exponent) + (intComp.length - 1);
     else this.exponent = intComp.length < 1 ? -fracComp.length : intComp.length - 1;
-}
+};
 
 BigNumber.prototype.negate = function () {
     return new BigNumber(this.mantissa, this.exponent, !this.negative);
-}
+};
 
 BigNumber.prototype.add = function (n2) {
     if (!(n2 instanceof BigNumber)) n2 = BigNumber.parse(n2);
@@ -1051,7 +1071,7 @@ BigNumber.prototype.add = function (n2) {
     var newExponent = Math.max(this.exponent, n2.exponent) + (carry[0] != undefined ? 1 : 0);
 
     return new BigNumber(newMantissa, newExponent, false);
-}
+};
 BigNumber.prototype.subtract = function (n2) {
     if (!(n2 instanceof BigNumber)) n2 = BigNumber.parse(n2);
 
@@ -1065,4 +1085,4 @@ BigNumber.prototype.subtract = function (n2) {
     var newMantissa = new Array(m1 + m2 - (Math.min(m1, m2) - diff)),
         carry = new Array(newMantissa.length + 1);
 
-}
+};

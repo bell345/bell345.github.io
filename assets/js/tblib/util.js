@@ -1582,7 +1582,7 @@ WideCanvas.prototype = {
     events: {},
     addEventHandler: function (evt, func) {
         if (this.events[evt] == undefined) this.events[evt] = {};
-        var id = generateUUID();
+        var id = generateSequentialID();
         this.events[evt][id] = func;
         return id;
     },
