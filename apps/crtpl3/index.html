@@ -40,16 +40,29 @@
         </button>
         <button class="icon goto-coords"
                 data-icon-src="assets/res/icons/crtpl3/crosshair2.svg"
-                data-tooltip="Goto Coordinates">
+                data-tooltip="Go To Coordinates">
         </button>
-        <button class="icon lock-x toggle on"
+        <button class="icon lock-x toggle"
                 data-icon-src="assets/res/icons/crtpl3/lock-x.svg"
                 data-tooltip="Lock X scale">
         </button>
-        <button class="icon lock-y toggle on"
+        <button class="icon lock-y toggle"
                 data-icon-src="assets/res/icons/crtpl3/lock-y.svg"
                 data-tooltip="Lock Y scale">
         </button>
+        <span class="separator"></span>
+        <span class="tool-select">
+            <input type="radio" name="tool-select" value="navigation" id="tool-select-navigation" class="hide" checked />
+            <label for="tool-select-navigation" class="icon button-like"
+                   data-icon-src="assets/res/icons/crtpl3/move.svg"
+                   data-tooltip="Navigation">
+            </label>
+            <input type="radio" name="tool-select" value="measurement" id="tool-select-measurement" class="hide" />
+            <label for="tool-select-measurement" class="icon button-like"
+                   data-icon-src="assets/res/icons/crtpl3/ruler.svg"
+                   data-tooltip="Measurement">
+            </label>
+        </span>
 
         <div class="float-right">
             <button class="icon add-function"
@@ -84,7 +97,6 @@
         <ul class="info-box-view-select">
             <li rel=".edit-function-view">Edit Function</li>
             <li rel=".edit-plot-view">Edit Plot</li>
-            <li rel=".more-tools-view">More Tools</li>
         </ul>
         <div class="info-box-view edit-function-view">
             <input type="hidden" class="function-id" />
@@ -150,6 +162,19 @@
                     Use <code>$</code><code class="variable-demo">name</code> to insert a variable.
                 </p>
             </div>
+            <div class="control-row variable-controls variable-slider-controls">
+                <input type="range" min="-5" max="5" class="variable-slider" step="any" />
+            </div>
+            <div class="control-row variable-controls variable-slider-controls">
+                <input type="number" class="variable-slider-start" value="-5" />
+                <button class="variable-slider-backwards"></button>
+                <button class="variable-slider-stop"></button>
+                <button class="variable-slider-forwards"></button>
+                <input type="number" class="variable-slider-end" value="5" />
+            </div>
+            <div class="control-row variable-controls variable-slider-controls">
+                <button class="variable-slider-stop-all">Stop All Animations</button>
+            </div>
             <div class="control-row">
                 <button class="toggle derivative-toggle">Derivative</button>
                 <button class="toggle integral-toggle">Integral</button>
@@ -165,13 +190,29 @@
                 Data (comma separated)
             </p>
         </div>
-        <div class="info-box-view more-tools-view">
-            <h3>More Tools</h3>
-        </div>
     </div>
     <div class="plane-container">
         <svg xmlns="http://www.w3.org/2000/svg" version="1.1" id="main-plane" class="plane">
         </svg>
+    </div>
+    <div class="tool-container">
+        <div class="measurement-crosshair"></div>
+    </div>
+    <div class="dialog-container"></div>
+    <div class="window-templates hide">
+        <div class="measurement-tool-template">
+            <div class="control-row">
+                <label>X: </label>
+                <input type="text" class="measurement-tool-x" />
+            </div>
+            <div class="control-row">
+                <label>Y: </label>
+                <input type="text" class="measurement-tool-y" />
+            </div>
+        </div>
+        <div class="settings-box-template">
+
+        </div>
     </div>
 </body>
 </html>

@@ -1193,6 +1193,7 @@ select.styled.done {
     background: #fff;
     color: #333;
     box-shadow: 2px 2px 4px 0 #aaa;
+    z-index: 99;
 }
 
 .styled-select ul li {

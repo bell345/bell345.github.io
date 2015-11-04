@@ -1,4 +1,4 @@
-var cplane;
+var cplane, dialogWM, toolWM;
 var generateRandomColour;
 (function () {
     var genHues = [];
@@ -357,7 +357,8 @@ Require([
     "/assets/js/tblib/util.js",
     "/assets/js/tblib/loader.js",
     "/assets/js/tblib/math.js",
-    "/assets/js/tblib/ui.js"
+    "/assets/js/tblib/ui.js",
+    "/assets/js/jswm2.js"
 ], function () {
 
     function CrtPlane3(svg, parent) {
@@ -515,6 +516,9 @@ Require([
             .addPlugin(plugins["navigation"])
             .addPlugin(plugins["persistency"]);
 
+        dialogWM = new JSWM($(".dialog-container")[0]);
+        toolWM = new JSWM($(".tool-container")[0]);
+
         if (!isNull(localStorage.getItem("crtpl3-save")))
             cplane.load(localStorage.getItem("crtpl3-save"));
         else {
@@ -547,7 +551,7 @@ Require([
             });
         }
 
-        $("button[data-icon-src]").each(function () {
+        $("[data-icon-src]").each(function () {
             var self = $(this);
 
             var src = self.attr("data-icon-src");
@@ -945,6 +949,14 @@ Require([
         $(".lock-x").on("change", updateScaleLocking);
         $(".lock-y").on("change", updateScaleLocking);
 
+        if (cplane.plugins["navigation"]) {
+            var m = cplane.settings.controls.mode;
+            if (m) {
+                TBI.UI.toggleButton($(".lock-x")[0], m === "x-fixed" || m === "square");
+                TBI.UI.toggleButton($(".lock-y")[0], m === "y-fixed" || m === "square");
+            }
+        }
+
         cplane.addEventHandler("post-update", updateInfoBox);
 
         $(".info-box-view-select li").click(function () {
@@ -954,6 +966,10 @@ Require([
 
         $(".info-box-hide").click(function () {
             $(".info-box").slideUp();
+        });
+
+        $(".info-box-show").click(function () {
+            $(".info-box").slideDown();
         });
 
         $(".function-type").change(function () {
@@ -982,18 +998,24 @@ Require([
             if (isNull(val) || val == "-") {
                 $(".variable-name").attr("disabled", true);
                 $(".variable-name").val("");
-                $(".variable-value").val(0);
+                $(".variable-value").attr("disabled", true);
+                $(".variable-value").val(0).trigger("update");
+                updateSlider(0);
                 $(".variable-demo").text("name");
             } else if (val.toLowerCase() == "new") {
                 $(".variable-name").attr("disabled", false);
                 $(".variable-name").val("");
-                $(".variable-value").val(0);
+                $(".variable-value").attr("disabled", false);
+                $(".variable-value").val(0).trigger("update");
                 $(".variable-demo").text("name");
+                updateSlider(0);
             } else {
                 $(".variable-name").attr("disabled", true);
                 $(".variable-name").val(val);
                 var variableValue = $(this).find("option[value='"+val+"']").attr("data-value");
-                $(".variable-value").val(variableValue);
+                $(".variable-value").attr("disabled", false);
+                $(".variable-value").val(variableValue).trigger("update");
+                updateSlider(variableValue);
                 $(".variable-demo").text(val);
             }
         });
@@ -1012,7 +1034,7 @@ Require([
                 if (option.length > 0)
                     option[0].remove();
             }
-            $s.val("-").trigger("update");
+            $s.val("-").trigger("change");
         });
 
         $(".edit-function-submit").click(submitFunction);
@@ -1023,7 +1045,258 @@ Require([
         $(".derivative-toggle").on("change", submitFunction);
         $(".integral-toggle").on("change", submitFunction);
 
+        var gotoBody = [
+            "<form class='goto-form'>",
+                "<div class='control-row'>",
+                    "<input type='number' class='goto-x-input' />",
+                    "<input type='number' class='goto-y-input' />",
+                    "<input type='submit' value='Go' />",
+                "</div>",
+            "</form>"
+        ].join("\n");
 
+        $(".goto-coords").click(function () {
+            var win = dialogWM.createWindow("Go To Coordinates", gotoBody, {
+                x: "35%",
+                y: "35%",
+                width: "30%",
+                height: "30%",
+                flags: JSWM.WindowFlags.bound | JSWM.WindowFlags.resize,
+                onClose: function () { /*$(".shadow").removeClass("show");*/ }
+            });
+
+            var $win = $(win.element);
+
+            $win.find(".goto-x-input").val(cplane.state.center.x);
+            $win.find(".goto-y-input").val(cplane.state.center.y);
+            $win.find(".goto-form").on("submit", function (event) {
+                if (event.preventDefault) event.preventDefault();
+
+                var c = new Vector2D(
+                    parseFloat($win.find(".goto-x-input").val()),
+                    parseFloat($win.find(".goto-y-input").val())
+                );
+
+                if (cplane.plugins["animation"])
+                    cplane.addAnimation("state.center", c);
+                else cplane.state.center = c;
+
+                //win.close();
+
+                return false;
+            });
+
+            // $(".shadow").addClass("show");
+        });
+
+        var measurementToolWindow,
+            updateMeasurementTool = function (coords) {
+                var $c = $(".measurement-crosshair"),
+                    sel = cplane.objects[$(".object-list").val()],
+                    off = new Vector2D(
+                        $("#main-plane").offset().left,
+                        $("#main-plane").offset().top
+                    );
+
+                var loc = cplane.getLocationOfCoordinate(coords),
+                    screen = loc.add(off);
+
+                if (isNull(sel)) {
+                    $c.css("left", screen.x)
+                        .css("top", screen.y);
+                } else switch (sel.func.type) {
+                    case MathFunction.Types.Cartesian:
+                        var y = sel.func.eval(coords.x);
+
+                        $c.css("left", screen.x);
+                        $c.css("top", cplane.getLocationOfCoordinate(
+                            new Vector2D(y)).add(off).y);
+                        break;
+
+                    case MathFunction.Types.Polar:
+                    case MathFunction.Types.Parametric:
+                    default:
+                        $c.css("left", screen.x);
+                        $c.css("top", screen.y);
+                }
+
+                coords = cplane.getCoordinateFromLocation(new Vector2D(
+                    parseFloat($c.css("left")),
+                    parseFloat($c.css("top"))
+                ).subtract(off));
+
+                $(".measurement-tool-x").val(coords.x);
+                $(".measurement-tool-y").val(coords.y);
+
+            },
+            measurementMousemove = function (event) {
+                var off = new Vector2D(
+                    $("#main-plane").offset().left,
+                    $("#main-plane").offset().top
+                );
+
+                updateMeasurementTool(cplane.getCoordinateFromLocation(
+                    new Vector2D(
+                        event.clientX,
+                        event.clientY
+                    ).subtract(off)
+                ));
+            };
+        $("[name='tool-select']").on("change", function () {
+            var val = TBI.UI.getRadioInput("tool-select"),
+                possibilities = $("[name='tool-select']")
+                    .toArray()
+                    .map(function (e) { return e.value; });
+
+            $(".tool-container").removeClass(possibilities.join(" "));
+            $(".tool-container").addClass(val);
+
+            switch (val) {
+                case "measurement":
+                    if (!measurementToolWindow ||
+                        !measurementToolWindow.element ||
+                        !measurementToolWindow.element.parentElement) {
+
+                        if (measurementToolWindow && measurementToolWindow.element)
+                            delete measurementToolWindow.element;
+
+                        measurementToolWindow =
+                            toolWM.createWindow("Measurement", $(".measurement-tool-template").html(), {
+                                x: "80%",
+                                y: "80%",
+                                width: 140,
+                                height: 240,
+                                flags: JSWM.WindowFlags.bound | JSWM.WindowFlags.resize,
+                                onClose: function () {
+                                    $("#tool-select-navigation")[0].checked = true;
+                                    $("#tool-select-navigation").trigger("change");
+                                }
+                            });
+
+                        var $e = $(measurementToolWindow.element);
+                        $e.find(".measurement-tool-x").on("change", function () {
+                            updateMeasurementTool(new Vector2D(
+                                parseFloat($(this).val()),
+                                parseFloat($e.find(".measurement-tool-y").val())
+                            ));
+                        });
+                        $e.find(".measurement-tool-y").on("change", function () {
+                            updateMeasurementTool(new Vector2D(
+                                parseFloat($e.find(".measurement-tool-x").val()),
+                                parseFloat($(this).val())
+                            ));
+                        });
+                    }
+                    $("#main-plane").on("mousemove", measurementMousemove);
+                    break;
+                default:
+                    $("#main-plane").off("mousemove", measurementMousemove);
+                    break;
+            }
+        });
+
+        var updateSlider = (function () {
+            var lastUpdated = new Date().getTime();
+            return function (val) {
+                if (new Date().getTime() - 50 <= lastUpdated) return;
+                else lastUpdated = new Date().getTime();
+
+                var $s = $(".variable-slider"),
+                    min = parseFloat($s.attr("min")),
+                    max = parseFloat($s.attr("max"));
+
+                if (val < min)
+                    $(".variable-slider-start").val(parseFloat(val)).trigger("change");
+                if (val > max)
+                    $(".variable-slider-end").val(parseFloat(val)).trigger("change");
+
+                $s.val(parseFloat(val));
+            };
+        })();
+
+        $(".variable-slider-start").on("change", function () {
+            $(".variable-slider").attr("min", $(this).val());
+        });
+        $(".variable-slider-end").on("change", function () {
+            $(".variable-slider").attr("max", $(this).val());
+        });
+        $(".variable-value").on("change", function () {
+            updateSlider($(this).val());
+        });
+        $(".variable-slider").on("change", function () {
+            var val = $(".variable-select").val();
+            if (isNull(val) || val == "-") return false;
+            $(".variable-value").val($(this).val());
+
+            submitFunction();
+        });
+
+        var sliderTimers = [];
+        function setSliderTimer(sign, obj, variable) {
+            var $s = $(".variable-slider"),
+                min = parseFloat($s.attr("min")),
+                max = parseFloat($s.attr("max")),
+                bounce = true,
+                interval = 1000/20,
+                duration = 2000;
+
+            //if (sliderTimer instanceof TBI.Timer)
+            //    sliderTimer.clear();
+
+            if (sign !== 0 && !isNull(obj) && !isNull(variable)
+                    && variable !== "new"
+                    && variable !== "-") {
+                sliderTimers.push(new TBI.Timer(function (timer) {
+                    var val = obj.func[variable],
+                        step = (interval / duration) * (max - min);
+
+                    var newval = val + sign * step;
+                    if (newval > max) {
+                        if (bounce) {
+                            newval = max - (newval - max);
+                            setSliderTimer(sign * -1, obj, variable);
+                        } else newval = min + (newval - max);
+                    }
+
+                    if (newval < min) {
+                        if (bounce) {
+                            newval = min + (min - newval);
+                            setSliderTimer(sign * -1, obj, variable);
+                        } else newval = max - (min - newval);
+                    }
+
+                    if (isNaN(obj.func[variable]) || !cplane.objects[obj.id])
+                        return timer.clear();
+
+                    // $s.val(newval).trigger("change");
+                    obj.func[variable] = newval;
+                    cplane.triggerNextUpdate = true;
+                }, interval, true, "cplane-" + obj.id + "-" + variable));
+            } else {
+                var timer = TBI.TimerDB["cplane-" + obj.id + "-" + variable];
+                if (timer) timer.clear();
+            }
+        }
+
+        bindToSelectedObject(".variable-slider-forwards", function (obj) {
+            console.log(obj);
+            setSliderTimer( 1, obj, $(".variable-select").val());
+        }, "click");
+
+        bindToSelectedObject(".variable-slider-backwards", function (obj) {
+            setSliderTimer(-1, obj, $(".variable-select").val());
+        }, "click");
+
+        bindToSelectedObject(".variable-slider-stop", function (obj) {
+            setSliderTimer( 0, obj, $(".variable-select").val());
+        }, "click");
+
+        $(".variable-slider-stop-all").click(function () {
+            sliderTimers.forEach(function (t) {
+                if (t instanceof TBI.Timer) t.clear();
+            });
+            sliderTimers = [];
+        });
     });
 });
 });
