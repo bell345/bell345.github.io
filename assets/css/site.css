@@ -298,7 +298,7 @@ nav > ul > li {
     transition:0.8s all;
     box-sizing:content-box;
     background-origin:content-box;
-    background-position:9px 9px;
+    background-position:9px 7px;
     background-repeat:no-repeat;
     background-size:40px 40px;
 }
@@ -333,6 +333,7 @@ nav > ul > li a::before {
     position:absolute;
     height:100%;
     width:100%;
+    transition:0.2s all;
 }
 header nav > ul > li a::before {
     left:0;
@@ -379,6 +380,7 @@ li:hover > .inner-nav, .sections .inner-nav {
     max-height:34px;
     line-height:32px;
     position:relative;
+    list-style-type:none;
 }
 .inner-nav li a {
     font-weight:normal;
@@ -395,6 +397,8 @@ li:hover > .inner-nav, .sections .inner-nav {
 .nav-apps { background-image:url(../res/icons/work.svg); }
 .nav-proj { background-image:url(../res/icons/cube.svg); }
 .nav-contact { background-image:url(../res/icons/email.svg); }
+.nav-updates { background-image:url(../res/icons/star.svg); }
+.nav-updates > a { color:#2bf; }
 .nav-top { background-image:url(../res/icons/arrow.svg); }
 
 nav aside {
@@ -422,6 +426,7 @@ nav aside * {
     -moz-transform:perspective(40px);
     transform:perspective(40px);
     display:inline-block;
+    transition:0.2s all;
 }
 .version6::before {
     content:"V.";
@@ -471,7 +476,7 @@ img.img-error::before {
     right:0;
     color:#eee;
     font-weight:bold;
-    font-size:18px;
+    font-size:24px;
     line-height:256px;
     text-shadow:0 0 16px #000, 0 0 8px #555;
     background:url(../res/missing.png) center / 75% #aaa;

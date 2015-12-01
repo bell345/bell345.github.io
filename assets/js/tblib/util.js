@@ -769,7 +769,9 @@ Colour.prototype = {
         return "#"+red+green+blue;
     },
     toNumber: function () {
-        return parseInt(this.toHex().removeAll("#"), 16);
+        return (this.r << 16 & 0xff0000)
+             | (this.g <<  8 & 0x00ff00)
+             | (this.b       & 0x0000ff);
     },
     toHSV: function () {
         return "hsv("+parseInt(this.h)+", "+(this.s*100)+"%, "+(this.v*100)+"%)";
@@ -1636,3 +1638,139 @@ function WideSVG(svg, expandElement) {
 }
 WideSVG.prototype = Object.create(WideCanvas.prototype);
 WideSVG.prototype.constructor = WideSVG;
+
+function Wide3D(rootElement, expandElement) {
+    if (expandElement instanceof Node)
+        this.expandElement = expandElement;
+    else if (expandElement)
+        this.expandElement = document.body;
+    else this.expandElement = null;
+
+    this.renderer = new THREE.WebGLRenderer();
+    this.element = this.renderer.domElement;
+    rootElement.appendChild(this.element);
+
+    this.scene = new THREE.Scene();
+    this.camera = new THREE.PerspectiveCamera(75,
+        this.element.getStyle("width") / this.element.getStyle("height"), 0.1, 1000);
+
+    this._loop();
+}
+Wide3D.prototype = {
+    constructor: Wide3D,
+    paused: false,
+    lastFrame: -1,
+    _loop: function () {
+        var self = this;
+        requestAnimationFrame(function () {
+            self._loop();
+        });
+
+        if (this.expandElement != null) {
+            var dims = [
+                parseInt(this.expandElement.getStyle("width")),
+                parseInt(this.expandElement.getStyle("height"))
+            ], changed = false;
+
+            if (dims[0] !== parseInt(this.element.getStyle("width")) && (changed = true))
+                this.element.width = dims[0];
+
+            if (dims[1] !== parseInt(this.element.getStyle("height")) && (changed = true))
+                this.element.height = dims[1];
+
+            if (changed) {
+                if (dims[0] / dims[1] !== this.camera.aspect) {
+                    this.camera.aspect = dims[0] / dims[1];
+                    this.camera.updateProjectionMatrix();
+                }
+                this.renderer.setSize(dims[0], dims[1]);
+            }
+        }
+
+        var currTime = new Date().getTime();
+        if (!this.paused) {
+            if (this.lastFrame == -1) this.lastFrame = currTime;
+            var delta = (currTime - this.lastFrame) / 1000;
+
+            this.loop(delta);
+            this.renderer.render(this.scene, this.camera);
+        } else {
+
+        }
+
+        this.lastFrame = currTime;
+    },
+    loop: function () {},
+
+
+    bindings: [],
+    bind: function (element, event, property, onEvent) {
+        if (element instanceof Array || element instanceof jQuery.fn.init) {
+            for (var i=0;i<element.length;i++)
+                this.bind(element[i], event, property, onEvent);
+            return;
+        }
+
+        if (!(onEvent instanceof Function)) onEvent = function () {};
+        var cvs = this;
+
+        var initialVal;
+        if (property instanceof Function) initialVal = property(cvs, null, element);
+        else initialVal = Object.getProperty(cvs, property);
+
+        var isNum = typeof initialVal == typeof 1;
+
+        $(element).val(initialVal);
+
+        var binding = {
+            element: element,
+            event: event,
+            property: property,
+            isNumber: isNum
+        };
+        this.bindings.push(binding);
+
+        $(element).on(event, function (e) {
+            if (property instanceof Function) property(cvs, isNum ? parseFloat(this.value) : this.value, this, e);
+            else Object.setProperty(cvs, property, isNum ? parseFloat(this.value) : this.value);
+            onEvent(e, this.value);
+        });
+    },
+    updateBinding: function (binding) {
+        var cvs = this, value;
+        if (binding.property instanceof Function) value = binding.property(cvs, null, binding.element);
+        else value = Object.getProperty(cvs, binding.property);
+        $(binding.element).val(value);
+    },
+    updateBindings: function (property) {
+        var cvs = this, filterFunc;
+        if (isNull(property)) filterFunc = function () { return true; };
+        else if (property instanceof Function) filterFunc = property;
+        else filterFunc = function (e) { return e.property == property; };
+
+        this.bindings.filter(filterFunc).forEach(function (e) { cvs.updateBinding(e); });
+    },
+
+    events: {},
+    addEventHandler: function (evt, func) {
+        if (this.events[evt] == undefined) this.events[evt] = {};
+        var id = generateSequentialID();
+        this.events[evt][id] = func;
+        return id;
+    },
+    removeEventHandler: function (id) {
+        for (var evt in this.events) if (this.events.hasOwnProperty(evt))
+            if (this.events[evt][id] != undefined)
+                delete this.events[evt][id];
+    },
+    triggerEvent: function (evt, pass) {
+        var self = this;
+        if (evt instanceof Array) return evt.forEach(function (e) {
+            self.triggerEvent(e);
+        });
+
+        if (this.events[evt] == undefined) return;
+        for (var id in this.events[evt]) if (this.events[evt].hasOwnProperty(id))
+            this.events[evt][id](this, pass);
+    }
+};

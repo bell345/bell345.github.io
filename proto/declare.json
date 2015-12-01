@@ -1,21 +1,42 @@
 {
-    "version": 2,
     "role": "project-declaration",
     "id": "proto",
+    "version": 2,
     "path": "proto",
     "projects": [
-        {   "id": "cvscom",
+        {
+            "version": "0.1",
+            "id": "jsnes",
+            "title": "JS NES Emulator",
+            "updated": "2015-11-16T21:36:16Z"
+        },
+        {
+            "title": "Intel 8080 Emulator",
+            "id": "intel-8080",
+            "version": "1.0",
+            "updated": "2015-11-16T19:43:56Z"
+        },
+        {
+            "title": "City Generator",
+            "id": "city",
+            "version": "0.1",
+            "updated": "2015-11-08T12:23:38Z"
+        },
+        {
             "title": "Fractal Generator",
+            "id": "cvscom",
             "version": "1.6",
             "updated": "2015-03-30"
         },
-        {   "id": "psim",
+        {
             "title": "Planetarium",
+            "id": "psim",
             "version": "0.9.2",
             "updated": "2015-03-29"
         },
-        {   "id": "ttbl",
+        {
             "title": "Timetable",
+            "id": "ttbl",
             "version": "0.6.1",
             "updated": "2015-03-26"
         }

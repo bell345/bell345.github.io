@@ -1,5 +1,7 @@
 $(function () {
 
+var contentListing = {};
+
 // This function returns a TBI.Loader task function that loads and parses the site-wide content manifest,
 // used in populating the sidebar as well as providing metadata for the cool things on the website.
 function loadProjectManifest(url) {
@@ -29,6 +31,7 @@ function createInnerNavItem(ul, name, href, external) {
     }
     li.appendChild(a);
     ul.appendChild(li);
+    return li;
 }
 // Creates a button with an embedded link. More obvious than plain <a> elements. Also accepts an optional
 // className parameter for modifying the button ("major", for example, makes the button featured).
@@ -176,6 +179,7 @@ function parseContentManifest(manifest) {
                     navLink.innerHTML = page.title;
                 navListItem.appendChild(navLink);
             }
+            page.projects = {};
 
             // and load the page manifest
             loader.addTask(loadProjectPage(page), null, "projectPage "+page.path);
@@ -228,7 +232,8 @@ function parseContentManifest(manifest) {
             proj.preview_image = replaceWithVariables(proj.preview_image, urlReplacer);
 
             // create an inner nav item for the project
-            if (!manifest.hidden && !rawProj.hidden) createInnerNavItem(innerNav, proj.title, manifest.path+"#"+proj.id, proj.external);
+            if (!manifest.hidden && !rawProj.hidden && $(innerNav).find("li").length < 5)
+                createInnerNavItem(innerNav, proj.title, manifest.path+"#"+proj.id, proj.external);
 
             // do extra stuff if this is meant for the current page
             if (isCurrentPage && !rawProj.hidden) {
@@ -242,7 +247,11 @@ function parseContentManifest(manifest) {
                 // and add the project as a gallery item
                 createThumbGalleryFigure(thumbGallery, proj);
             }
+            projects[i] = proj;
         }
+
+        contentListing[manifest.id] = manifest;
+        updateLatestProjects();
     } else {
         throw new Error("Content manifest was of an invalid or unsupported type.");
     }
@@ -281,6 +290,29 @@ function handleLayoutModification() {
 
     if (mstyle.left != lstyle.width) main.css("left", left.css("width"));
     if (mstyle.right != rstyle.width) main.css("right", right.css("width"));
+}
+
+function updateLatestProjects() {
+    var innerNav = $(".nav-updates .inner-nav");
+    innerNav.empty();
+
+    var projectsToSort = [];
+    for (var page_id in contentListing) if (contentListing.hasOwnProperty(page_id)) {
+        var page = contentListing[page_id];
+        for (var project_id in page.projects) if (page.projects.hasOwnProperty(project_id)) {
+            var project = page.projects[project_id];
+            project.page = page;
+            projectsToSort.push(project);
+        }
+    }
+    projectsToSort = projectsToSort.sort(function (a, b) {
+        return new Date(b["updated"]).getTime() - new Date(a["updated"]).getTime();
+    });
+
+    projectsToSort.slice(0, 5).forEach(function (e) {
+        var li = createInnerNavItem(innerNav[0], e.title, e.page.id + "#" + e.id, e.external);
+        $(li).attr("data-updated", e["updated"]);
+    });
 }
 
 Require(["assets/js/tblib/base.js",     // Concurrently loading the dependencies for the website.

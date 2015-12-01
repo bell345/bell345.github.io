@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Thomas Bell</title>
+    <meta charset="utf-8" />
+    <base href="../../" />
+    <link rel="stylesheet" href="assets/css/site.css" />
+    <link rel="stylesheet" href="assets/css/proto/intel-8080.css" />
+    <script src="assets/js/jquery2.min.js"></script>
+    <script src="assets/js/require.js"></script>
+    <script src="assets/js/proto/intel-8080.js"></script>
+    <style>
+        .registers,
+        .feed-container {
+            display:inline-block;
+            padding:18px 24px;
+        }
+        .feed-container {
+            max-height:240px;
+            overflow:auto;
+            overflow:overlay;
+        }
+        .registers input[type='text'] {
+            width:60px;
+        }
+        
+        .feed li {
+            background:#ddd;
+            padding:4px 8px;
+            font-size:14px;
+            list-style-type:none;
+        }
+        
+        #screen {
+            -webkit-transform-origin:50% 50%;
+            -moz-transform-origin:50% 50%;
+            -ms-transform-origin:50% 50%;
+            -o-transform-origin:50% 50%;
+            transform-origin:50% 50%;
+            -webkit-transform:rotate(-90deg);
+            -moz-transform:rotate(-90deg);
+            -ms-transform:rotate(-90deg);
+            -o-transform:rotate(-90deg);
+            transform:rotate(-90deg);
+        }
+        label {
+            display:block;
+            font-size:12px;
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <h2>An Intel 8080 emulator</h2>
+        <div class="emulator control-row">
+            <canvas id="screen" width="256" height="224"></canvas>
+            <div class="registers">
+                <div>
+                    <label>Accumulator: </label>
+                    <input type="text" class="register-a" />
+                </div>
+                <div>
+                    <label>B/C: </label>
+                    <input type="text" class="register-b" />
+                    <input type="text" class="register-c" />
+                </div>
+                <div>
+                    <label>D/E: </label>
+                    <input type="text" class="register-d" />
+                    <input type="text" class="register-e" />
+                </div>
+                <div>
+                    <label>H/L: </label>
+                    <input type="text" class="register-h" />
+                    <input type="text" class="register-l" />
+                </div>
+                <div>
+                    <label>Stack Pointer: </label>
+                    <input type="text" class="stack-pointer" />
+                </div>
+                <div>
+                    <label>Program Counter: </label>
+                    <input type="text" class="program-counter" />
+                </div>
+            </div>
+            <div class="feed-container">
+                <ul class="feed">
+                </ul>
+            </div>
+            <div class="controls">
+                <div class="control-row">
+                    <button class="major start-cpu">Start</button>
+                    <button class="major stop-cpu">Stop</button>
+                    <button class="step-cpu">Step</button>
+                    <button class="reset-cpu">Reset</button>
+                </div>
+            </div>
+        </div>
+        <hr />
+        <div class="description">
+            <h3>Controls</h3>
+            <ul class="main">
+                <li>LEFT/RIGHT or A/D: Move left and right</li>
+                <li>SPACE, UP or W: Fire</li>
+                <li>Z: Single-player</li>
+                <li>X: Multi-player</li>
+                <li>C: Insert Coin</li>
+                <li>R: Reset the CPU</li>
+            </ul>
+            <p>
+                Somewhat substantially based off of
+                <a href="http://typedarray.org/intel-8080-cpu-emulation-in-javascript">Thibault Imbert's</a>
+                implementation.
+            </p>
+        </div>
+    </main>
+</body>
+</html>
