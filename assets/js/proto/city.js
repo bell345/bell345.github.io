@@ -1,3 +1,149 @@
+function PriorityQueue() {
+    this._storage = [];
+    var self = this;
+    Object.defineProperty(this, "length", {
+        get: function () { return self._storage.length; }
+    });
+}
+PriorityQueue.prototype = {
+    constructor: PriorityQueue,
+    push: function (item, priority) {
+        this._storage.push({ item: item, priority: priority });
+        this._storage = this._storage.sort(function (a, b) { return a.priority < b.priority; });
+    },
+    pop: function () {
+        return this._storage.pop();
+    }
+};
+
+function DataMap2D(arr, width, height) {
+    this.array = arr;
+    this.width = width;
+    this.height = height;
+}
+DataMap2D.prototype.setXY = function (x, y, value) {
+    if (isNaN(value)) debugger;
+    this.array[y + x * this.width] = value;
+};
+DataMap2D.prototype.getXY = function (x, y) {
+    return this.array[y + x * this.width];
+};
+
+function generateDSTerrain(detail, roughness_arg, seeds, smoothing_factor, smoothing_passes) {
+    var res = Math.pow(2, detail),
+        geometry = new THREE.PlaneGeometry(1, 1, res, res),
+        v = new DataMap2D(geometry.vertices, res + 1, res + 1);
+
+    function squareStep(x, y, halfWidth, roughness) {
+        var accum = 0,
+            validPoints = 0;
+
+        if (x - halfWidth >= 0   && ++validPoints) accum += v.getXY(x - halfWidth, y            ).z;
+        if (x + halfWidth <= res && ++validPoints) accum += v.getXY(x + halfWidth, y            ).z;
+        if (y - halfWidth >= 0   && ++validPoints) accum += v.getXY(x,             y - halfWidth).z;
+        if (y + halfWidth <= res && ++validPoints) accum += v.getXY(x,             y + halfWidth).z;
+
+        if (validPoints !== 0) {
+            var value = accum / validPoints;
+            value += (Math.random() - 0.5) * roughness;
+
+            v.getXY(x, y).setZ(value);
+        }
+    }
+
+    function diamondStep(x, y, width, roughness) {
+        var halfWidth = width / 2;
+
+        var accum = 0;
+        accum += v.getXY(x,         y        ).z;
+        accum += v.getXY(x,         y + width).z;
+        accum += v.getXY(x + width, y        ).z;
+        accum += v.getXY(x + width, y + width).z;
+
+        var middle = accum / 4;
+        middle += (Math.random() - 0.5) * roughness;
+
+        v.getXY(x + halfWidth, y + halfWidth).setZ(middle);
+    }
+
+    v.getXY(0,     0).setZ(seeds[0]);
+    v.getXY(res,   0).setZ(seeds[1]);
+    v.getXY(0,   res).setZ(seeds[2]);
+    v.getXY(res, res).setZ(seeds[3]);
+
+    var roughness = roughness_arg;
+    var width = res;
+    do {
+        var x, y, halfWidth = width/2;
+
+        for (x = 0; x < res; x += width)
+            for (y = 0; y < res; y += width)
+                diamondStep(x, y, width, roughness);
+
+        for (x = halfWidth; x < res; x += width)
+            for (y = 0; y <= res; y += width)
+                squareStep(x, y, halfWidth, roughness);
+
+        for (x = 0; x <= res; x += width)
+            for (y = halfWidth; y < res; y += width)
+                squareStep(x, y, halfWidth, roughness);
+
+        roughness /= 2;
+        width = halfWidth;
+    } while (width > 1);
+
+    if (smoothing_factor !== undefined)
+        geometry = smoothGeometry(geometry, res+1, res+1, smoothing_factor, smoothing_passes);
+
+    geometry.verticesNeedUpdate = true;
+
+    return geometry;
+}
+
+function smoothGeometry(geometry, width, height, factor, passes) {
+    var v = new DataMap2D(geometry.vertices, width, height);
+
+    var x, y;
+    while (passes --> 0) {
+        for (x = 0; x < width; x++) {
+            for (y = 1; y < height; y++) v.getXY(x, y).setZ(
+                v.getXY(x, y - 1).z * (1 - factor) +
+                v.getXY(x, y).z * factor
+            );
+
+            for (y = 0; y < height-1; y++) v.getXY(x, y).setZ(
+                v.getXY(x, y + 1).z * (1 - factor) +
+                v.getXY(x, y).z * factor
+            );
+        }
+        for (y = 0; y < height; y++) {
+            for (x = 1; x < width; x++) v.getXY(x, y).setZ(
+                v.getXY(x - 1, y).z * (1 - factor) +
+                v.getXY(x, y).z * factor
+            );
+
+            for (x = 0; x < width-1; x++) v.getXY(x, y).setZ(
+                v.getXY(x + 1, y).z * (1 - factor) +
+                v.getXY(x, y).z * factor
+            );
+        }
+    }
+
+    return geometry;
+}
+
+function indicateOrder(detail) {
+    var res = Math.pow(2, detail),
+        geometry = new THREE.PlaneGeometry(1, 1, res, res);
+
+    for (var i=0;i<geometry.vertices.length;i++)
+        geometry.vertices[i].setZ(i / geometry.vertices.length);
+
+    geometry.verticesNeedUpdate = true;
+
+    return geometry;
+}
+
 var gen;
 $(function () {
 Require([
@@ -5,134 +151,6 @@ Require([
     "assets/js/tblib/util.js",
     "assets/js/tblib/loader.js"
 ], function () {
-
-    function DataMap2D(arr, width, height) {
-        this.array = arr;
-        this.width = width;
-        this.height = height;
-    }
-    DataMap2D.prototype.setXY = function (x, y, value) {
-        if (isNaN(value)) debugger;
-        this.array[y + x * this.width] = value;
-    };
-    DataMap2D.prototype.getXY = function (x, y) {
-        return this.array[y + x * this.width];
-    };
-
-    function generateDSTerrain(detail, roughness_arg, seeds, smoothing_factor, smoothing_passes) {
-        var res = Math.pow(2, detail),
-            geometry = new THREE.PlaneGeometry(1, 1, res, res),
-            v = new DataMap2D(geometry.vertices, res + 1, res + 1);
-        
-        function squareStep(x, y, halfWidth, roughness) {
-            var accum = 0,
-                validPoints = 0;
-
-            if (x - halfWidth >= 0   && ++validPoints) accum += v.getXY(x - halfWidth, y            ).z;
-            if (x + halfWidth <= res && ++validPoints) accum += v.getXY(x + halfWidth, y            ).z;
-            if (y - halfWidth >= 0   && ++validPoints) accum += v.getXY(x,             y - halfWidth).z;
-            if (y + halfWidth <= res && ++validPoints) accum += v.getXY(x,             y + halfWidth).z;
-
-            if (validPoints !== 0) {
-                var value = accum / validPoints;
-                value += (Math.random() - 0.5) * roughness;
-
-                v.getXY(x, y).setZ(value);
-            }
-        }
-
-        function diamondStep(x, y, width, roughness) {
-            var halfWidth = width / 2;
-
-            var accum = 0;
-            accum += v.getXY(x,         y        ).z;
-            accum += v.getXY(x,         y + width).z;
-            accum += v.getXY(x + width, y        ).z;
-            accum += v.getXY(x + width, y + width).z;
-
-            var middle = accum / 4;
-            middle += (Math.random() - 0.5) * roughness;
-
-            v.getXY(x + halfWidth, y + halfWidth).setZ(middle);
-        }
-
-        v.getXY(0,     0).setZ(seeds[0]);
-        v.getXY(res,   0).setZ(seeds[1]);
-        v.getXY(0,   res).setZ(seeds[2]);
-        v.getXY(res, res).setZ(seeds[3]);
-
-        var roughness = roughness_arg;
-        var width = res;
-        do {
-            var x, y, halfWidth = width/2;
-
-            for (x = 0; x < res; x += width)
-                for (y = 0; y < res; y += width)
-                    diamondStep(x, y, width, roughness);
-
-            for (x = halfWidth; x < res; x += width)
-                for (y = 0; y <= res; y += width)
-                    squareStep(x, y, halfWidth, roughness);
-
-            for (x = 0; x <= res; x += width)
-                for (y = halfWidth; y < res; y += width)
-                    squareStep(x, y, halfWidth, roughness);
-
-            roughness /= 2;
-            width = halfWidth;
-        } while (width > 1);
-
-        if (smoothing_factor !== undefined)
-            geometry = smoothGeometry(geometry, res+1, res+1, smoothing_factor, smoothing_passes);
-
-        geometry.verticesNeedUpdate = true;
-
-        return geometry;
-    }
-
-    function smoothGeometry(geometry, width, height, factor, passes) {
-        var v = new DataMap2D(geometry.vertices, width, height);
-
-        var x, y;
-        while (passes --> 0) {
-            for (x = 0; x < width; x++) {
-                for (y = 1; y < height; y++) v.getXY(x, y).setZ(
-                    v.getXY(x, y - 1).z * (1 - factor) +
-                    v.getXY(x, y).z * factor
-                );
-
-                for (y = 0; y < height-1; y++) v.getXY(x, y).setZ(
-                    v.getXY(x, y + 1).z * (1 - factor) +
-                    v.getXY(x, y).z * factor
-                );
-            }
-            for (y = 0; y < height; y++) {
-                for (x = 1; x < width; x++) v.getXY(x, y).setZ(
-                    v.getXY(x - 1, y).z * (1 - factor) +
-                    v.getXY(x, y).z * factor
-                );
-
-                for (x = 0; x < width-1; x++) v.getXY(x, y).setZ(
-                    v.getXY(x + 1, y).z * (1 - factor) +
-                    v.getXY(x, y).z * factor
-                );
-            }
-        }
-
-        return geometry;
-    }
-
-    function indicateOrder(detail) {
-        var res = Math.pow(2, detail),
-            geometry = new THREE.PlaneGeometry(1, 1, res, res);
-
-        for (var i=0;i<geometry.vertices.length;i++)
-            geometry.vertices[i].setZ(i / geometry.vertices.length);
-
-        geometry.verticesNeedUpdate = true;
-
-        return geometry;
-    }
 
     function CityGenerator(rootElement, expandElement) {
         Wide3D.call(this, rootElement, expandElement);
@@ -161,6 +179,9 @@ Require([
             density: {
                 resolution: 256,
                 maxHeight: 0.6
+            },
+            roads: {
+
             }
         };
         this.state = {};
@@ -228,6 +249,39 @@ Require([
             }
 
             return cities;
+        };
+        this.generateRoads = function (terrain, cities) {
+            function localConstraints(road) {
+                return road;
+            }
+            function globalGoals(road) {
+                return [];
+            }
+
+            function Road(segment, parameters) {
+                this.segment = segment;
+                this.params = parameters;
+            }
+
+            var startSegment,
+                startParameters;
+
+            var queue = new PriorityQueue(),
+                segments = [];
+            queue.push(new Road(startSegment, startParameters), 0);
+
+            while (queue.length > 0) {
+                var item = queue.pop(),
+                    road = item.item;
+
+                road = localConstraints(road);
+                if (!road) continue;
+
+                segments.push(road);
+                globalGoals(road).forEach(function (e) {
+                    queue.push(new Road(e.segment, e.params), e.priority);
+                });
+            }
         };
         this.generateDensityMap = function (terrain, cities) {
             var s = this.settings.density,
@@ -305,7 +359,7 @@ Require([
             //this.box = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshBasicMaterial({color: 0x00ff00}));
             //this.scene.add(this.box);
 
-            this.camera.position.y = 5;
+            this.camera.position.y = 3;
             this.camera.lookAt(new THREE.Vector3(0, 0, 0));
         };
 
@@ -315,9 +369,9 @@ Require([
         this.animate = function (delta) {
             var t = +(new Date);
 
-            //this.camera.position.x = Math.sin(t/1000)*2;
-            //this.camera.position.z = Math.cos(t/1000)*2;
-            //this.camera.lookAt(new THREE.Vector3(0, 0, 0));
+            this.camera.position.x = Math.sin(t/1000)*2;
+            this.camera.position.z = Math.cos(t/1000)*2;
+            this.camera.lookAt(new THREE.Vector3(0, 0, 0));
         };
     }
     CityGenerator.prototype = Object.create(Wide3D.prototype);
