@@ -584,7 +584,7 @@ TBI.UI.Dialog = function (header, body, buttons) {
                 if (TBI.UI.DialogResult[prop] == cn) result = TBI.UI.DialogResult[prop];
             if (this.onclose) this.onclose(result, event);
         } else if (this.onclose) this.onclose(TBI.UI.DialogResult.cancel);
-        this.element.remove();
+        $(this.element).remove();
         this.shadow.className = this.shadow.className.replace(/ ?show/, "");
     };
 

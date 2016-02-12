@@ -1032,7 +1032,7 @@ Require([
             if (currVar !== "new" && currVar !== "-") {
                 var option = $s.find("option[value='"+currVar+"']");
                 if (option.length > 0)
-                    option[0].remove();
+                    $(option[0]).remove();
             }
             $s.val("-").trigger("change");
         });

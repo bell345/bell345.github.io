@@ -181,7 +181,9 @@ Require([
                 maxHeight: 0.6
             },
             roads: {
-
+                branchTries: 3,
+                branchLength: 0.15,
+                deviationAngle: dtr(75)
             }
         };
         this.state = {};
@@ -250,14 +252,32 @@ Require([
 
             return cities;
         };
-        this.generateRoads = function (terrain, cities) {
+        this.generateRoads = function (terrain, densityMap) {
+            var rset = this.settings.roads;
+            function populationDensity(xy) {
+                var data = densityMap.image.data,
+                    i = (xy.y * densityMap.image.width + xy.x) * 3;
+
+                return (data[i] + data[i+1] + data[i+2]) / 765; // 3 * 255
+            }
             function localConstraints(road) {
                 return road;
             }
             function globalGoals(road) {
-                return [];
-            }
+                // currently, road is only a highway; more parameters can be added in later
+                var branchNo = Math.floor(Math.random()*rset.branchTries) + 1;
+                var branches = [], blength = rset.branchLength;
+                for (var i=0;i<branchNo;i++)
+                    branches.push(Math.random() * (2*rset.deviationAngle) - rset.deviationAngle);
 
+                return branches.map(function (angle) {
+                    var absangle = (road.vector.angle() + angle) % dtr(360);
+                    return new LineSegment(road.end, road.end.add(Vector2D.fromPolar(absangle, blength)));
+                }).sort(function (a, b) {
+                    return populationDensity(b.end) - populationDensity(a.end);
+                }).slice(0, 1);
+                // return [];
+            }
             function Road(segment, parameters) {
                 this.segment = segment;
                 this.params = parameters;
@@ -268,7 +288,7 @@ Require([
 
             var queue = new PriorityQueue(),
                 segments = [];
-            queue.push(new Road(startSegment, startParameters), 0);
+            //queue.push(new Road(startSegment, startParameters), 0);
 
             while (queue.length > 0) {
                 var item = queue.pop(),
@@ -351,6 +371,8 @@ Require([
 
             var densityMap = this.generateDensityMap(this.terrain, this.cities);
             this.terrain.material.map = densityMap;
+
+            //this.generateRoads(this.terrain, densityMap);
 
             this.light = new THREE.PointLight(0xffffff, 1, 100);
             this.light.position.set(5, 5, -5);

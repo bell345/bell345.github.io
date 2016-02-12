@@ -180,23 +180,23 @@ function LineSegment(start, end) {
     if (!(end instanceof Vector2D) && !isNull(end[1])) end = new Vector2D(end[0], end[1]);
     this.start = start;
     this.end = end;
-    this.length = Math.pythagoras(this.end.x-this.start.x, this.end.y-this.start.y);
-    this.midpoint = new Vector2D(Stat.mean([this.start.x, this.end.x]), Stat.mean([this.start.y, this.end.y]));
-    this.gradient = ((this.end.y-this.start.y) / (this.end.x-this.start.x)).fixFloat();
-    // simple: m = rise/run
-    // the trick is to use two points
-    // take away the first point's y values from the second y value (rise)
-    // and then divide that by the second x from the first x, same as the last step (run)
-    // the .fix() is simply to reduce the chances of floating point errors
-    // the formula is (y2-y1)/(x2-x1)
-    this.yIntercept = this.start.y-(this.gradient*this.start.x);
-    // pick a point, any point
-    // I chose the "start" point, but it doesn't matter
-    // the gradient was calculated previously with two of the points
-    // simply take this point's y value
-    // and take away from it the value of mx,
-    // where m is the gradient and x is the x value of the point
-    // the formula is y-mx
+    var self = this;
+    Object.defineProperty(this, "length", {
+        get: function () { return Math.pythagoras(self.end.x-self.start.x, self.end.y-self.start.y); }
+    });
+    Object.defineProperty(this, "midpoint", {
+        get: function () { return new Vector2D(Stat.mean([self.start.x, self.end.x]), Stat.mean([self.start.y, self.end.y])); }
+    });
+    Object.defineProperty(this, "gradient", {
+        get: function () { return ((self.end.y-self.start.y) / (self.end.x-self.start.x)).fixFloat(); }
+    });
+    Object.defineProperty(this, "yIntercept", {
+        get: function () { return self.start.y-(self.gradient*self.start.x); }
+    });
+    Object.defineProperty(this, "vector", {
+        get: function () { return self.end.subtract(self.start); },
+        set: function (v) { self.end = self.start.add(v); }
+    });
 }
 // Declares a line segment using a string of the form: "((x1,y1),(x2,y2))".
 LineSegment.parse = function (str) {
@@ -722,7 +722,7 @@ function replaceNestedFunctions(str, func, interior, replacement, brackets) {
         if (str[i] == brackets[0]) layer++;
         else if (str[i] == brackets[1] && watchLayers.indexOf(--layer) != -1) {
             resultLayers.push(layer);
-            watchLayers = watchLayers.remove(watchLayers.indexOf(layer));
+            watchLayers.splice(watchLayers.indexOf(layer), 1);
             result += u + layer + u;
         }
         result += str[i];

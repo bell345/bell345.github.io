@@ -1385,7 +1385,7 @@ SVGPathCollectionBuilder.prototype = {
             for (i=0;i<this.root.childNodes.length;i++) children.push(this.root.childNodes[i]);
 
             for (i=0;i<children.length;i++)
-                children[i].remove();
+                $(children[i]).remove();
 
             this.groups = {};
         },
