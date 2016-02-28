@@ -187,6 +187,9 @@ function LineSegment(start, end) {
     Object.defineProperty(this, "midpoint", {
         get: function () { return new Vector2D(Stat.mean([self.start.x, self.end.x]), Stat.mean([self.start.y, self.end.y])); }
     });
+    Object.defineProperty(this, "vertical", {
+        get: function () { return self.end.x == self.end.y; }
+    });
     Object.defineProperty(this, "gradient", {
         get: function () { return ((self.end.y-self.start.y) / (self.end.x-self.start.x)).fixFloat(); }
     });
@@ -1085,4 +1088,64 @@ BigNumber.prototype.subtract = function (n2) {
     var newMantissa = new Array(m1 + m2 - (Math.min(m1, m2) - diff)),
         carry = new Array(newMantissa.length + 1);
 
+};
+
+function NewLineSegment(start, end) {
+    this.start = start;
+    this.end = end;
+}
+NewLineSegment.prototype.isVertical = function () {
+    return this.start.x == this.end.x;
+};
+NewLineSegment.prototype.isHorizontal = function () {
+    return this.start.y == this.end.y;
+};
+NewLineSegment.prototype.gradient = function () {
+    if (this.isVertical()) return null;
+    if (this.isHorizontal()) return 0;
+    return (this.end.y-this.start.y)/(this.end.x-this.start.x);
+};
+NewLineSegment.prototype.yIntercept = function () {
+    if (this.isVertical()) return null;
+    if (this.isHorizontal()) return this.start.y;
+    return this.start.y - (this.gradient()*this.start.x);
+};
+NewLineSegment.prototype.xIntercept = function () {
+    if (this.isVertical()) return this.start.x;
+    else if (this.isHorizontal()) return null;
+    return -(this.yIntercept()/this.gradient());
+};
+NewLineSegment.prototype.midpoint = function () {
+    return new Vector2D((this.start.x+this.end.x) / 2, (this.start.y+this.end.y) / 2);
+};
+NewLineSegment.prototype.sub = function (x) {
+    if (this.isVertical()) throw new TypeError("Vertical lines cannot be used as linear equations.");
+    return new Vector2D(x, x*this.gradient() + this.yIntercept());
+};
+NewLineSegment.prototype.contains = function (xy) {
+    if (this.isVertical()) return fuzzyEq(xy.x, this.start.x) && ((xy.y >= this.start.y) ^ (xy.y > this.end.y));
+    if ((xy.x < this.start.x) ^ (xy.x > this.end.x)) return false;
+    return fuzzyEq(this.sub(xy.x).y, xy.y);
+};
+NewLineSegment.prototype.intersection = function (seg) {
+    if ( this.isVertical() && !seg.isVertical()) return seg.sub(this.start.x);
+    if (!this.isVertical() &&  seg.isVertical()) return this.sub(seg.start.x);
+    if ( this.isVertical() &&  seg.isVertical()) return null;
+    if ( this.gradient()   ==  seg.gradient()  ) return null;
+    return this.sub((this.yIntercept()-seg.yIntercept())/(seg.gradient()-this.gradient()));
+};
+NewLineSegment.prototype.hasIntersection = function (seg) {
+    var intersection = this.intersection(seg);
+    if (!intersection) return null;
+    if (this.contains(intersection) && seg.contains(intersection)) return intersection;
+    return null;
+};
+NewLineSegment.prototype.vec = function () {
+    return this.end.subtract(this.start);
+};
+NewLineSegment.prototype.length = function () {
+    return this.vec().magnitude();
+};
+NewLineSegment.prototype.equals = function (seg) {
+    return this.start.equals(seg.start) && this.end.equals(seg.end);
 };

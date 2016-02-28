@@ -228,6 +228,9 @@ function splice(list, index, howMany) {
 }
 // A function to compare often inaccurate floating-point values by measuring their difference against an immesurably small value.
 Number.prototype.isFloatEqual = function (num) { return Math.abs(num - this) < Number.EPSILON };
+function fuzzyEq(n1, n2, precision) {
+    return parseFloat(Math.abs(n1 - n2).toFixed(precision || 12)) == 0;
+}
 // Fixes a malfunctioning floating-point value (e.g. 2.999999999995) by slightly reducing its precision.
 Number.prototype.fixFloat = function (num) { return parseFloat(this.toPrecision(num?(num<13?num:12):12)) };
 // Fixes a malfunctioning modulo function by fixing the arguments and the result.
@@ -468,6 +471,7 @@ Vector2D.prototype = {
     normal: function (dir) { if (dir) return new Vector2D(-this.y, this.x); else return new Vector2D(this.y, -this.x); },
     // Law of reflection, assuming instaced vector is the incidence vector and argument is the surface normal.
     reflect: function (nml) { return nml.multiply(2*this.dot(nml)).subtract(this); },
+    difference: function (vec) { return this.subtract(vec).length(); },
     equals: function (vec) { return this.x == vec.x && this.y == vec.y; },
     fix: function (num) { return new Vector2D(this.x.fixFloat(num), this.y.fixFloat(num)); },
     toMatrix: function () { return new Matrix([this.x, this.y]); },

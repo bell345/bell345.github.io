@@ -16,6 +16,8 @@ PriorityQueue.prototype = {
     }
 };
 
+var indices = [],
+    randStraightTotal = 0;
 function DataMap2D(arr, width, height) {
     this.array = arr;
     this.width = width;
@@ -149,19 +151,22 @@ $(function () {
 Require([
     "assets/js/tblib/base.js",
     "assets/js/tblib/util.js",
-    "assets/js/tblib/loader.js"
+    "assets/js/tblib/loader.js",
+    "assets/js/tblib/math.js"
 ], function () {
+
+    LineSegment = NewLineSegment;
 
     function CityGenerator(rootElement, expandElement) {
         Wide3D.call(this, rootElement, expandElement);
 
         this.settings = {
             terrain: {
-                detail: 8,
+                detail: 9,
                 diffuse: 0xffffff,
-                scale: new THREE.Vector3(5, 5, 2),
+                scale: new THREE.Vector3(25, 25, 3),
                 roughness: 0.3,
-                smoothing: 0.1,
+                smoothing: 0.0,
                 smoothingPasses: 4
             },
             water: {
@@ -170,29 +175,28 @@ Require([
             },
             cities: {
                 maxElevation: 2,
-                size: 0.5,
-                maxNumber: 6,
-                minNumber: 2,
-                minSize: 0.1,
+                size: 0.8,
+                maxNumber: 10,
+                minNumber: 4,
+                minSize: 0.3,
                 timeout: 8000
             },
             density: {
-                resolution: 256,
+                resolution: 512,
                 maxHeight: 0.6
             },
             roads: {
-                branchTries: 3,
-                branchLength: 0.15,
+                highwayBranchThreshold: 0.1,
+                highwayBranchLength: 0.07,
+                highwayBranchProbability: 0.2,
+                branchLength: 0.005,
+                branchTime: 5,
+                branchProbability: 0.4,
+                branchThreshold: 0.02,
                 deviationAngle: dtr(75)
             }
         };
         this.state = {};
-
-        this.renderer.setClearColor(0xeeeeee);
-
-        this.terrainRoot = new THREE.Object3D();
-        this.terrainRoot.rotation.x = -Math.PI/2;
-        this.scene.add(this.terrainRoot);
 
         this.generateTerrain = function () {
             var s = this.settings.terrain;
@@ -239,10 +243,10 @@ Require([
                 var maxRadius = (s.minSize + (Math.random() * (s.size - s.minSize))) * ts.scale.x;
 
                 // temporary marker
-                var sphere = new THREE.Mesh(new THREE.SphereGeometry(maxRadius, 32, 32),
-                    new THREE.MeshBasicMaterial({ color: 0xcc7777, opacity: 0.4, transparent: true, shading: THREE.FlatShading }));
-                sphere.position.copy(v.getXY(x, y)).multiply(ts.scale);
-                this.terrainRoot.add(sphere);
+                //var sphere = new THREE.Mesh(new THREE.SphereGeometry(maxRadius, 32, 32),
+                //    new THREE.MeshBasicMaterial({ color: 0xcc7777, opacity: 0.4, transparent: true, shading: THREE.FlatShading }));
+                //sphere.position.copy(v.getXY(x, y)).multiply(ts.scale);
+                //this.terrainRoot.add(sphere);
 
                 cities[i] = {
                     terrainPoint: v.getXY(x, y),
@@ -255,42 +259,185 @@ Require([
         this.generateRoads = function (terrain, densityMap) {
             var rset = this.settings.roads;
             function populationDensity(xy) {
-                var data = densityMap.image.data,
-                    i = (xy.y * densityMap.image.width + xy.x) * 3;
+                var coords = new Vector2D(
+                    (xy.x) * densityMap.image.width,
+                    (xy.y) * densityMap.image.height
+                );
 
-                return (data[i] + data[i+1] + data[i+2]) / 765; // 3 * 255
+                var data = densityMap.image.data,
+                    i = Math.floor((coords.x * densityMap.image.width + coords.y) * 3);
+
+                var value = (data[i] + data[i+1] + data[i+2]) / 765; // 3 * 255;
+                indices.push(coords);
+
+                return value || 0;
+            }
+            function randomDeviation(angle) {
+                return (Math.random()*angle) - (angle/2);
             }
             function localConstraints(road) {
+                var clamp = road.s.end.clamp(new Vector2D(0, 0), new Vector2D(1, 1));
+                if (!clamp.equals(road.s.end)) {
+                    road.s.end = clamp;
+                    road.severed = true;
+                    return road;
+                }
+
+                var roadlength = road.s.vec().magnitudeSquared();
+                var nearby = segments.filter(function (r) {
+                    return (
+                        r.s.start.subtract(road.s.end).magnitudeSquared() < roadlength ||
+                        r.s.end.subtract(road.s.end).magnitudeSquared()   < roadlength
+                    ) && (!road.previous || !r.s.equals(road.previous.s)) && (!r.previous || !r.previous.s.equals(road.previous.s));
+                });
+
+                var crossed = nearby.map(function (r) {
+                    return r.s.hasIntersection(road.s);
+                }).filter(function (e) {
+                    return !!e;
+                }).sort(function (a, b) {
+                    return road.s.end.subtract(a).magnitude() - road.s.end.subtract(b).magnitude();
+                });
+
+                if (crossed.length > 0) {
+                    road.s.end = crossed[0];
+                    road.severed = true;
+                    return road;
+                }
+
+                var isects = [];
+                nearby.forEach(function (r) {
+                    if (r.s.end.subtract(road.s.end).magnitude() < roadlength && r.branches.length > 1)
+                        isects.push([r, r.s.end]);
+                    if (r.s.start.subtract(road.s.end).magnitude() < roadlength && r.previous && r.previous.branches > 1)
+                        isects.push([r.previous, r.s.start]);
+                });
+
+                isects.sort(function (sec1, sec2) {
+                    return sec1[1].subtract(road.end).magnitude() - sec2[1].subtract(road.end).magnitude();
+                });
+
+                if (isects.length > 0) {
+                    road.s.end = isects[0][1];
+                    road.severed = true;
+                    return road;
+                }
+
+                var originalEnd = road.s.end;
+                road.s.end = road.s.end.add(road.s.vec());
+
+                crossed = nearby.map(function (r) {
+                    return r.s.hasIntersection(road.s);
+                }).filter(function (e) {
+                    return !!e;
+                }).sort(function (a, b) {
+                    return road.s.end.subtract(a).magnitude() - road.s.end.subtract(b).magnitude();
+                });
+
+                if (crossed.length > 0) {
+                    road.s.end = crossed[0];
+                    road.severed = true;
+                    return road;
+                }
+
+                road.s.end = originalEnd;
                 return road;
             }
             function globalGoals(road) {
-                // currently, road is only a highway; more parameters can be added in later
-                var branchNo = Math.floor(Math.random()*rset.branchTries) + 1;
-                var branches = [], blength = rset.branchLength;
-                for (var i=0;i<branchNo;i++)
-                    branches.push(Math.random() * (2*rset.deviationAngle) - rset.deviationAngle);
+                var branches = [];
+                function extendRoad(road, angle, highway) {
+                    highway = isNull(highway) ? road.highway : highway;
+                    var newr = new Road(
+                        new LineSegment(
+                            road.s.end,
+                            road.s.end.add(Vector2D.fromPolar(
+                                road.s.vec().angle() + angle || 0,
+                                highway ? rset.highwayBranchLength : rset.branchLength
+                            ))
+                        ), highway
+                    );
+                    newr.previous = road;
+                    return newr;
+                }
+                function addBranch(road, priority) {
+                    road.density = populationDensity(road.s.end);
+                    branches.push({
+                        road: road,
+                        priority: isNull(priority) ? (road.highway ? 0 : rset.branchTime) : priority
+                    });
+                }
 
-                return branches.map(function (angle) {
-                    var absangle = (road.vector.angle() + angle) % dtr(360);
-                    return new LineSegment(road.end, road.end.add(Vector2D.fromPolar(absangle, blength)));
-                }).sort(function (a, b) {
-                    return populationDensity(b.end) - populationDensity(a.end);
-                }).slice(0, 1);
-                // return [];
-            }
-            function Road(segment, parameters) {
-                this.segment = segment;
-                this.params = parameters;
-            }
+                if (road.severed) return [];
 
-            var startSegment,
-                startParameters;
+                var straight = extendRoad(road);
+                if (road.highway) {
+                    var randStraight = extendRoad(road, randomDeviation(rset.deviationAngle));
+
+                    var roadPop;
+                    if (populationDensity(straight.s.end) > populationDensity(randStraight.s.end)) {
+                        addBranch(straight);
+                        roadPop = populationDensity(straight.s.end);
+                    } else {
+                        randStraightTotal++;
+                        addBranch(randStraight);
+                        roadPop = populationDensity(randStraight.s.end);
+                    }
+
+                    if (roadPop >= rset.highwayBranchThreshold) {
+                        if (Math.random() < rset.highwayBranchProbability) {
+                            var leftBranch = extendRoad(road, randomDeviation(rset.deviationAngle) - dtr(90));
+                            addBranch(leftBranch);
+                        }
+                        if (Math.random() < rset.highwayBranchProbability) {
+                            var rightBranch = extendRoad(road, randomDeviation(rset.deviationAngle) + dtr(90));
+                            addBranch(rightBranch);
+                        }
+                    }
+                } else if (populationDensity(straight.s.end) > rset.branchThreshold)
+                    addBranch(straight, 0);
+
+                console.log(populationDensity(straight.s.end));
+                if (populationDensity(straight.s.end) > rset.branchThreshold) {
+                    if (Math.random() < rset.branchProbability) {
+                        var leftBranch = extendRoad(road, randomDeviation(rset.deviationAngle) - dtr(90), false);
+                        addBranch(leftBranch);
+                    }
+                    if (Math.random() < rset.branchProbability) {
+                        var rightBranch = extendRoad(road, randomDeviation(rset.deviationAngle) + dtr(90), false);
+                        addBranch(rightBranch);
+                    }
+                }
+                road.branches = road.branches.concat(branches);
+                return branches;
+            }
+            function Road(segment, highway) {
+                this.s = segment;
+                this.highway = highway || false;
+                this.severed = false;
+                this.previous = null;
+                this.branches = [];
+            }
 
             var queue = new PriorityQueue(),
                 segments = [];
-            //queue.push(new Road(startSegment, startParameters), 0);
 
-            while (queue.length > 0) {
+            var tries = 0,
+                startRoad;
+
+            do {
+                var startPos = new Vector2D(Math.random(), Math.random());
+                startRoad = new Road(new LineSegment(
+                    startPos,
+                    startPos.add(Vector2D.fromPolar(
+                        Math.random()*2*Math.PI,
+                        0.01
+                    ))
+                ), true);
+                tries++;
+            } while (populationDensity(startRoad.s.end) == 0 && tries < 200);
+            queue.push(startRoad, 0);
+
+            while (queue.length > 0 && segments.length < 2000) {
                 var item = queue.pop(),
                     road = item.item;
 
@@ -299,9 +446,11 @@ Require([
 
                 segments.push(road);
                 globalGoals(road).forEach(function (e) {
-                    queue.push(new Road(e.segment, e.params), e.priority);
+                    queue.push(e.road, item.priority + e.priority + 1);
                 });
             }
+
+            return segments;
         };
         this.generateDensityMap = function (terrain, cities) {
             var s = this.settings.density,
@@ -359,8 +508,89 @@ Require([
 
             return texture;
         };
+        this.generateHeightMap = function (terrain) {
+            var s = this.settings.density,
+                ts = this.settings.terrain,
+                res = Math.pow(2, ts.detail),
+                v = new DataMap2D(terrain.geometry.vertices, res+1, res+1);
+
+            var texture = THREE.ImageUtils.generateDataTexture(s.resolution, s.resolution, 0xffffff),
+                img = texture.image;
+
+            function getTerrainVertex(x, y) {
+                var dx = Math.floor(x/img.width * (res+1)),
+                    dy = Math.floor(y/img.height * (res+1));
+
+                return v.getXY(dx, dy);
+            }
+
+            for (var x=0;x<img.width;x++) {
+                for (var y=0;y<img.height;y++) {
+                    var i = (y + x * img.width) * 3;
+                    var vertex = getTerrainVertex(x, y);
+
+                    img.data[i] = img.data[i+1] = img.data[i+2] = Math.max(255 * 4 * vertex.z);
+                }
+            }
+
+            texture.flipY = true;
+            texture.needsUpdate = true;
+
+            return texture;
+        };
+
+        this.appendRoads = function (roads) {
+            var self = this,
+                densityMap = this.terrain.material.map,
+                ds = this.settings.density,
+                ts = this.settings.terrain,
+                res = Math.pow(2, ts.detail),
+                v = new DataMap2D(this.terrain.geometry.vertices, res+1, res+1);
+
+            this.roads.forEach(function (r) {
+                function getTerrainVertex(x, y) {
+                    var dx = Math.min(res, Math.max(0, Math.floor(x * (res+1)))),
+                        dy = Math.min(res, Math.max(0, Math.floor(y * (res+1))));
+
+                    return v.getXY(dx, dy);
+                }
+
+                var scale = new Vector2D(ts.scale.x, ts.scale.y);
+                var vec = r.s.vec().multiply(scale);
+                var mid = r.s.midpoint();
+                var end = r.s.end;
+                var midadj = r.s.midpoint().subtract(new Vector2D(0.5, 0.5)).multiply(scale);
+                var z = getTerrainVertex(mid.x, mid.y).z * ts.scale.z;
+                var zdiff = Math.abs(z - getTerrainVertex(end.x, end.y).z * ts.scale.z);
+
+                //var colour = (r.highway ? new THREE.Color(0, 0, 1) : new THREE.Color(1, 0, 0));
+                var colour = new THREE.Color(0, 0, r.density);
+
+                var geo = new THREE.PlaneGeometry(vec.magnitude(), 0.05);
+                var mat = new THREE.MeshBasicMaterial({ color: colour, side: THREE.DoubleSide });
+                var mesh = new THREE.Mesh(geo, mat);
+                mesh.translateX(midadj.x);
+                mesh.translateY(midadj.y);
+                mesh.translateZ(z);
+                mesh.rotateZ(vec.angle());
+                mesh.rotateX(Math.asin((2*zdiff)/vec.magnitude()));
+                self.roadRoot.add(mesh);
+            });
+        };
 
         this.init = function () {
+            this.scene.children = [];
+            this.renderer.setClearColor(0xeeeeee);
+
+            this.terrainRoot = new THREE.Object3D();
+            this.terrainRoot.rotation.x = -Math.PI/2;
+            this.scene.add(this.terrainRoot);
+
+            this.roadRoot = new THREE.Object3D();
+            this.roadRoot.rotation.z = -Math.PI/2;
+            this.roadRoot.position.z += 0.01;
+            this.terrainRoot.add(this.roadRoot);
+
             this.terrain = this.generateTerrain();
             this.terrainRoot.add(this.terrain);
 
@@ -369,10 +599,12 @@ Require([
 
             this.cities = this.generateCities(this.terrain);
 
-            var densityMap = this.generateDensityMap(this.terrain, this.cities);
-            this.terrain.material.map = densityMap;
+            this.densityMap = this.generateDensityMap(this.terrain, this.cities);
+            this.heightMap = this.generateHeightMap(this.terrain);
+            this.terrain.material.map = this.densityMap;
 
-            //this.generateRoads(this.terrain, densityMap);
+            this.roads = this.generateRoads(this.terrain, this.densityMap);
+            this.appendRoads(this.roads);
 
             this.light = new THREE.PointLight(0xffffff, 1, 100);
             this.light.position.set(5, 5, -5);
@@ -381,7 +613,7 @@ Require([
             //this.box = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshBasicMaterial({color: 0x00ff00}));
             //this.scene.add(this.box);
 
-            this.camera.position.y = 3;
+            this.camera.position.y = 5;
             this.camera.lookAt(new THREE.Vector3(0, 0, 0));
         };
 
