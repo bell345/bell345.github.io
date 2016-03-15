@@ -89,6 +89,14 @@ MOS6502.prototype = {
         this.registers[reg] = value;
         return this;
     },
+    _setOverflow: function (value1, value2) {
+        var s1 = value1 & 0x80,
+            s2 = value2 & 0x80,
+            s3 = ((value1 + value2) & 0xFF) & 0x80;
+
+        this.OVERFLOW = Boolean((s1 == s2) && (s3 != s1));
+        return this;
+    },
     _setAccumulatorWithFlags: function (value) {
         if (this.DECIMAL && !this.options.disableDecimal) {
             this._setRegister(this.REGISTERS.A, this._BCDToBinary(value & 0xFF));
@@ -256,9 +264,9 @@ MOS6502.prototype = {
         } else {
             result = a + value + (this.CARRY ? 1 : 0);
 
-            this.OVERFLOW = Boolean((a & 0x80) ^ (result & 0x80));
+            this._setOverflow(a, value);
         }
-        this._setAccumulatorWithFlags(this.REGISTERS.A, result);
+        this._setAccumulatorWithFlags(result);
     },
 
     SBC: function (value) {
@@ -647,7 +655,17 @@ MOS6502.prototype = {
                 break;
         }
 
-        return str.join(" ");
+        var inst_str = str.join(" ");
+        inst_str += prefix("", 48 - inst_str.length, " ");
+        inst_str += "A:" + h(self._getRegister(self.REGISTERS.A));
+        inst_str += " X:" + h(self._getRegister(self.REGISTERS.X));
+        inst_str += " Y:" + h(self._getRegister(self.REGISTERS.Y));
+        inst_str += " P:" + h(self._getPS());
+        inst_str += " SP:" + h(self.stackPointer);
+        inst_str += " CYC:" + prefix(self.cycles % 341, 3, " ");
+        inst_str += " SL:" + prefix((Math.floor(self.cycles / 341) + 242) % 262 - 1, 3, " ");
+
+        return inst_str.toUpperCase();
     },
 
     ARITHMETIC_GROUP: ["ADC","AND","CMP","EOR","LDA","LDX","LDY","ORA","SBC"],

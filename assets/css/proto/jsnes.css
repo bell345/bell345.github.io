@@ -1,0 +1,11 @@
+
+.registers,
+.feed-container {
+    display:inline-block;
+    padding:18px 24px;
+}
+.feed-container {
+    max-height:240px;
+    overflow:auto;
+    overflow:overlay;
+}
