@@ -1453,6 +1453,16 @@ SVGPathCollectionBuilder.prototype = {
         polygon: function (points, className, groupName) {
             return this.linePlot(points, className, groupName, "polygon");
         },
+        circle: function (radius, position, className, groupName) {
+            var el = document.createElementNS(this._ns, "circle");
+            el.setAttribute("cx", position.x.toString());
+            el.setAttribute("cy", position.y.toString());
+            el.setAttribute("r", radius.toString());
+
+            this.append(el, className, groupName);
+
+            return el;
+        },
         write: function (text, position, className, groupName, tagName) {
             if (isNull(tagName)) tagName = "text";
 

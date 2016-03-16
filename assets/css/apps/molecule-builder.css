@@ -1,0 +1,17 @@
+.toolbox {
+    position:absolute;
+    left:0;
+    top:0;
+    bottom:0;
+    width:128px;
+    overflow:auto;
+    background:#eee;
+}
+.top-bar {
+    position:absolute;
+    left:128px;
+    top:0;
+    right:0;
+    height:52px;
+    background:#ddd;
+}

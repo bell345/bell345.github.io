@@ -1,77 +1,84 @@
 {
-    "version": 2,
-    "id": "apps",
     "role": "project-declaration",
-    "path": "apps",
     "projects": [
         {
+            "id": "molecule-builder",
+            "updated": "2016-03-16T21:47:20Z",
+            "hidden": true,
+            "title": "Molecule Builder",
+            "version": "0.1"
+        },
+        {
+            "id": "crtpl3",
             "updated": "2015-11-29T21:34:08Z",
             "title": "Cartesian Plane 3",
-            "id": "crtpl3",
             "version": "0.9"
         },
         {
-            "type": "repo",
-            "preview": "repo",
-            "title": "Spotify Real Randomizer",
+            "source": "https://github.com/bell345/real-randomizer",
             "id": "spotify-rand",
+            "title": "Spotify Real Randomizer",
             "preview_repo": "bell345/real-randomizer",
-            "path": "http://52.63.0.243/",
+            "preview": "repo",
             "updated": "2015-11-03T20:16:43Z",
+            "path": "http://52.63.0.243/",
             "version": "1.2.4",
-            "source": "https://github.com/bell345/real-randomizer"
+            "type": "repo"
         },
         {
+            "id": "fractal-gen",
             "updated": "2015-08-01T20:13:00Z",
             "title": "Fractal Generator",
-            "id": "fractal-gen",
             "version": "1.1"
         },
         {
+            "id": "ptable",
             "updated": "2015-05-04",
             "title": "Periodic Table",
-            "id": "ptable",
             "version": "1.1"
         },
         {
             "preview": "iframe",
-            "type": "repo",
-            "title": "Scholar Clicker Editor",
-            "preview_iframe": "https://bell345.github.io/sclicker-editor",
-            "source": "https://github.com/bell345/sclicker-editor/tree/gh-pages",
-            "path": "https://bell345.github.io/sclicker-editor",
-            "updated": "2015-04-17",
             "id": "sc-edit",
-            "version": "1.0"
+            "version": "1.0",
+            "title": "Scholar Clicker Editor",
+            "type": "repo",
+            "updated": "2015-04-17",
+            "path": "https://bell345.github.io/sclicker-editor",
+            "preview_iframe": "https://bell345.github.io/sclicker-editor",
+            "source": "https://github.com/bell345/sclicker-editor/tree/gh-pages"
         },
         {
+            "id": "calc",
             "updated": "2015-04-14",
             "title": "Calculator",
-            "id": "calc",
             "version": "2.3.2"
         },
         {
+            "id": "crtpl2",
             "updated": "2015-04-09",
             "title": "Cartesian Plane",
-            "id": "crtpl2",
             "version": "1.1"
         },
         {
+            "source": "https://github.com/bell345/logon-bg-changer",
+            "id": "bgchanger",
+            "title": "Logon BG Changer",
+            "preview_repo": "bell345/logon-bg-changer",
+            "preview": "repo",
             "updated": "2015-03-30",
-            "title": "CountDown",
-            "id": "cdown",
-            "version": "3.4.4"
+            "path": "https://github.com/bell345/logon-bg-changer/releases/latest",
+            "version": "1.0.5492",
+            "type": "github"
         },
         {
-            "type": "github",
-            "preview": "repo",
-            "title": "Logon BG Changer",
-            "id": "bgchanger",
-            "preview_repo": "bell345/logon-bg-changer",
-            "path": "https://github.com/bell345/logon-bg-changer/releases/latest",
+            "id": "cdown",
             "updated": "2015-03-30",
-            "version": "1.0.5492",
-            "source": "https://github.com/bell345/logon-bg-changer"
+            "title": "CountDown",
+            "version": "3.4.4"
         }
-    ]
+    ],
+    "id": "apps",
+    "version": 2,
+    "path": "apps"
 }
