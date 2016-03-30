@@ -547,6 +547,32 @@ function DirectionQuantity(top, right, bottom, left) {
     this.bottom = bottom || top;
     this.left = left || right || top;
 }
+DirectionQuantity.prototype = {
+    constructor: DirectionQuantity,
+    copy: function () {
+        return new DirectionQuantity(this.top, this.right, this.bottom, this.left);
+    },
+    add: function (quantity) {
+        if (!quantity instanceof DirectionQuantity)
+            quantity = new DirectionQuantity(quantity);
+        var res = this.copy();
+        res.top += quantity.top;
+        res.right += quantity.right;
+        res.bottom += quantity.bottom;
+        res.left += quantity.left;
+        return res;
+    },
+    multiply: function (quantity) {
+        if (!quantity instanceof DirectionQuantity)
+            quantity = new DirectionQuantity(quantity);
+        var res = this.copy();
+        res.top *= quantity.top;
+        res.right *= quantity.right;
+        res.bottom *= quantity.bottom;
+        res.left *= quantity.left;
+        return res;
+    }
+};
 
 /** A class for colours.
  * Currently supports constructing from and outputting
