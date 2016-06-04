@@ -1,4 +1,4 @@
-var methane, formaldehyde;
+var methane, formaldehyde, Modules, builder;
 $(function () {
 Require([
     "assets/js/tblib/base.js",
@@ -8,6 +8,32 @@ Require([
     loader.start();
 
     var SVGNS = "http://www.w3.org/2000/svg";
+
+    function MoleculeBuilder(svg, parent) {
+        if (isNull(parent)) parent = $(svg).parent()[0];
+        this.svg = svg;
+        WideSVG.call(this, this.svg, parent);
+
+        this.settings = {
+            positioning: {
+                presets: {
+                    above: new Vector2D(0, -1.1),
+                    below: new Vector2D(0, 1.1),
+                    left: new Vector2D(-1.1, 0),
+                    right: new Vector2D(1.1, 0),
+                    "below-left": new Vector2D(-1.1, 0.8),
+                    "below-right": new Vector2D(1.1, 0.8)
+                },
+                defaultRadius: 30
+            }
+        };
+        this.state = {
+            position: new Vector2D(0, 0),
+            factor: new Vector2D(1, 1)
+        };
+    }
+    MoleculeBuilder.prototype = Object.create(WideSVG.prototype);
+    MoleculeBuilder.prototype.constructor = MoleculeBuilder;
 
     var Settings = {
         positioning: {
@@ -23,7 +49,7 @@ Require([
         }
     };
 
-    var Modules = {
+    Modules = {
         "methane": [
             {
                 "type": "atom",
@@ -104,6 +130,90 @@ Require([
                 "type": "atom",
                 "symbol": "H"
             }
+        ],
+        "ethanol": [
+            {
+                "type": "atom",
+                "symbol": "C",
+                "links": [
+                    {
+                        "type": "single",
+                        "with": 1,
+                        "position": "above"
+                    },
+                    {
+                        "type": "single",
+                        "with": 2,
+                        "position": "left"
+                    },
+                    {
+                        "type": "single",
+                        "with": 3,
+                        "position": "below"
+                    },
+                    {
+                        "type": "single",
+                        "with": 4,
+                        "position": "right"
+                    }
+                ]
+            },
+            {
+                "type": "atom",
+                "symbol": "H"
+            },
+            {
+                "type": "atom",
+                "symbol": "H"
+            },
+            {
+                "type": "atom",
+                "symbol": "H"
+            },
+            {
+                "type": "atom",
+                "symbol": "C",
+                "links": [
+                    {
+                        "type": "single",
+                        "with": 5,
+                        "position": "above"
+                    },
+                    {
+                        "type": "single",
+                        "with": 6,
+                        "position": "below"
+                    },
+                    {
+                        "type": "single",
+                        "with": 7,
+                        "position": "right"
+                    }
+                ]
+            },
+            {
+                "type": "atom",
+                "symbol": "H"
+            },
+            {
+                "type": "atom",
+                "symbol": "H"
+            },
+            {
+                "type": "atom",
+                "symbol": "O",
+                "links": [
+                    {
+                        "type": "single",
+                        "with": 8,
+                        "position": "right"
+                    }
+                ]
+            },
+            {
+                "type": "atom",
+                "symbol": "H"
+            }
         ]
     };
 
@@ -149,7 +259,7 @@ Require([
                 obj = items[i];
 
             if (item["links"]) for (var j=0;j<item["links"].length;j++) {
-                var link = item["links"][j];
+                var link = $.extend({}, item["links"][j]);
                 if (typeof link["with"] == "number")
                     link["with"] = items[link["with"]];
 
@@ -173,6 +283,7 @@ Require([
             var posSet = Settings.positioning;
             if (!document.contains(this.root))
                 throw new Error("Module needs to exist on the page in order to be repositioned.");
+
             this.root.setAttribute("width", width.toString());
             this.root.setAttribute("height", height.toString());
 
@@ -259,7 +370,27 @@ Require([
         }
     };
 
+    function addPreview(spec, name) {
+        var preview = new Module(spec);
+        var li = document.createElement("li"),
+            span = document.createElement("span");
+        span.textContent = name;
+        li.appendChild(preview.root);
+        li.appendChild(span);
+
+        document.body.appendChild(li);
+        preview.reposition(128, 128);
+        document.body.removeChild(li);
+
+        $(".modules")[0].appendChild(li);
+    }
+
     $(document).on("pageload", function () {
+        builder = new MoleculeBuilder($("svg.main-builder")[0]);
+
+        addPreview(Modules.methane, "Methane");
+        addPreview(Modules.formaldehyde, "Formaldehyde");
+        addPreview(Modules.ethanol, "Ethanol");
         methane = new Module(Modules.methane);
         formaldehyde = new Module(Modules.formaldehyde);
     });

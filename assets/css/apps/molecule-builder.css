@@ -7,6 +7,29 @@
     overflow:auto;
     background:#eee;
 }
+
+body {
+    padding:0;
+}
+
+.main-builder-container {
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+}
+
+.modules>li>svg {
+    width:128px;
+    height:128px;
+    padding:12px;
+}
+.modules>li span {
+    display:block;
+    text-align:center;
+}
+
 .top-bar {
     position:absolute;
     left:128px;
