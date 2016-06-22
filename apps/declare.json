@@ -1,83 +1,83 @@
 {
     "projects": [
         {
-            "title": "Molecule Builder",
-            "id": "molecule-builder",
-            "version": "0.2",
-            "hidden": true,
-            "updated": "2016-03-30T16:40:33Z"
-        },
-        {
-            "title": "Cartesian Plane 3",
+            "updated": "2016-06-22T19:25:29Z",
             "id": "crtpl3",
-            "version": "0.9",
-            "updated": "2015-11-29T21:34:08Z"
+            "title": "Cartesian Plane 3",
+            "version": "0.10"
+        },
+        {
+            "updated": "2016-03-30T16:40:33Z",
+            "hidden": true,
+            "id": "molecule-builder",
+            "title": "Molecule Builder",
+            "version": "0.2"
         },
         {
             "type": "repo",
-            "id": "spotify-rand",
-            "preview_repo": "bell345/real-randomizer",
-            "version": "1.2.4",
+            "source": "https://github.com/bell345/real-randomizer",
             "updated": "2015-11-03T20:16:43Z",
-            "preview": "repo",
+            "version": "1.2.4",
             "title": "Spotify Real Randomizer",
-            "source": "https://github.com/bell345/real-randomizer"
+            "preview": "repo",
+            "id": "spotify-rand",
+            "preview_repo": "bell345/real-randomizer"
         },
         {
-            "title": "Fractal Generator",
+            "updated": "2015-08-01T20:13:00Z",
             "id": "fractal-gen",
-            "version": "1.1",
-            "updated": "2015-08-01T20:13:00Z"
+            "title": "Fractal Generator",
+            "version": "1.1"
         },
         {
-            "title": "Periodic Table",
+            "updated": "2015-05-04",
             "id": "ptable",
-            "version": "1.1",
-            "updated": "2015-05-04"
+            "title": "Periodic Table",
+            "version": "1.1"
         },
         {
             "type": "repo",
-            "preview_iframe": "https://bell345.github.io/sclicker-editor",
-            "id": "sc-edit",
+            "source": "https://github.com/bell345/sclicker-editor/tree/gh-pages",
             "updated": "2015-04-17",
             "version": "1.0",
-            "preview": "iframe",
             "title": "Scholar Clicker Editor",
-            "source": "https://github.com/bell345/sclicker-editor/tree/gh-pages",
+            "preview": "iframe",
+            "id": "sc-edit",
+            "preview_iframe": "https://bell345.github.io/sclicker-editor",
             "path": "https://bell345.github.io/sclicker-editor"
         },
         {
-            "title": "Calculator",
+            "updated": "2015-04-14",
             "id": "calc",
-            "version": "2.3.2",
-            "updated": "2015-04-14"
+            "title": "Calculator",
+            "version": "2.3.2"
         },
         {
-            "title": "Cartesian Plane",
+            "updated": "2015-04-09",
             "id": "crtpl2",
-            "version": "1.1",
-            "updated": "2015-04-09"
-        },
-        {
-            "title": "CountDown",
-            "id": "cdown",
-            "version": "3.4.4",
-            "updated": "2015-03-30"
+            "title": "Cartesian Plane",
+            "version": "1.1"
         },
         {
             "type": "github",
+            "source": "https://github.com/bell345/logon-bg-changer",
+            "updated": "2015-03-30",
+            "version": "1.0.5492",
+            "title": "Logon BG Changer",
+            "preview": "repo",
             "id": "bgchanger",
             "preview_repo": "bell345/logon-bg-changer",
-            "version": "1.0.5492",
-            "updated": "2015-03-30",
-            "preview": "repo",
-            "title": "Logon BG Changer",
-            "source": "https://github.com/bell345/logon-bg-changer",
             "path": "https://github.com/bell345/logon-bg-changer/releases/latest"
+        },
+        {
+            "updated": "2015-03-30",
+            "id": "cdown",
+            "title": "CountDown",
+            "version": "3.4.4"
         }
     ],
-    "path": "apps",
     "id": "apps",
-    "version": 2,
-    "role": "project-declaration"
+    "path": "apps",
+    "role": "project-declaration",
+    "version": 2
 }

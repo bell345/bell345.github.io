@@ -18,6 +18,79 @@ var generateRandomColour;
     };
 })();
 
+function MathJSFunction(expr, scope) {
+    this.expr = expr;
+    this.node = math.parse(expr);
+    this.compiledNode = this.node.compile();
+    this.scope = scope || {};
+    this.className = "MathJSFunction";
+    this.type = "cartesian";
+    this.variables = [];
+    if (scope) for (var prop in scope) if (scope.hasOwnProperty(prop)) {
+        this.variables.push(prop);
+    }
+}
+MathJSFunction.prototype.eval = function (v) {
+    return this.compiledNode.eval(this.scope)(v);
+};
+MathJSFunction.prototype.get = function (variableName) {
+    return this.scope[variableName];
+};
+MathJSFunction.prototype.set = function (variableName, v) {
+    this.scope[variableName] = v;
+};
+MathJSFunction.prototype.serialise = function () {
+    return {
+        expr: this.expr,
+        scope: this.scope,
+        className: this.className
+    };
+};
+MathJSFunction.deserialise = function (obj) {
+    return new MathJSFunction(obj.expr, obj.scope);
+};
+MathJSFunction.prototype.toString = function () {
+    return this.node.toString().replaceAll(/ *function +/g, "");
+};
+
+function MathJSPolarFunction(expr, scope) {
+    MathJSFunction.call(this, expr, scope);
+    this.className = "MathJSPolarFunction";
+    this.type = "polar";
+}
+MathJSPolarFunction.prototype = Object.create(MathJSFunction.prototype);
+MathJSPolarFunction.prototype.constructor = MathJSPolarFunction;
+MathJSPolarFunction.deserialise = function (obj) {
+    return new MathJSPolarFunction(obj.expr, obj.scope);
+};
+
+function MathJSParametricFunction(exprX, exprY, scope) {
+    this.exprX = exprX;
+    this.exprY = exprY;
+    var expr = "f(t) = [" + exprX + ", " + exprY + "]";
+    MathJSFunction.call(this, expr, scope);
+    this.compiledNode = this.node.compile();
+    this.className = "MathJSParametricFunction";
+    this.type = "parametric";
+}
+MathJSParametricFunction.prototype = Object.create(MathJSFunction.prototype);
+MathJSParametricFunction.prototype.constructor = MathJSParametricFunction;
+MathJSParametricFunction.prototype.eval = function (v) {
+    var data = this.compiledNode.eval(this.scope)(v)._data;
+    return new Vector2D(data[0], data[1]);
+};
+MathJSParametricFunction.prototype.serialise = function () {
+    return {
+        exprX: this.exprX,
+        exprY: this.exprY,
+        scope: this.scope,
+        className: this.className
+    };
+};
+MathJSParametricFunction.deserialise = function (obj) {
+    return new MathJSParametricFunction(obj.exprX, obj.exprY, obj.scope);
+};
+
 function PlaneNode() {
     this.id = generateUUID();
     this.visible = true;
@@ -202,12 +275,13 @@ function FunctionNode(func, style, start, end) {
                 style: this.integral.style ? this.integral.style.toRGBA() : null
             },
             func_type: this.func.type.toLowerCase(),
+            className: this.func.className,
             variables: {}
         };
 
         var self = this;
         if (this.func.variables) this.func.variables.forEach(function (e) {
-            obj.variables[e] = self.func[e];
+            obj.variables[e] = self.func.scope[e];
         });
         if (this.func.serialise)
             obj.func = this.func.serialise();
@@ -220,18 +294,29 @@ FunctionNode.prototype.constructor = FunctionNode;
 FunctionNode.deserialise = function (str) {
     var obj = JSON.parse(str);
     var func;
-    switch (obj.func_type) {
-        case "cartesian":
-            func = MathFunction.Variable.parse(obj.func[0], obj.variables);
-            break;
-        case "polar":
-            func = PolarFunction.Variable.parse(obj.func[0], obj.variables);
-            break;
-        case "parametric":
-            func = ParametricFunc.Variable.parse(obj.func[0], obj.func[1], obj.variables);
-            break;
-        default:
-            func = null;
+    if (obj.className && window[obj.className]
+        && typeof(window[obj.className].deserialise) == "function") {
+        func = window[obj.className].deserialise(obj.func);
+    }
+
+    if (isNull(func)) {
+        var funcstr = null;
+        if (!isNull(obj.func[0]) && obj.func[0].search(/^f\([A-Za-z]\) *= */) != -1)
+            funcstr = obj.func[0];
+
+        switch (obj.func_type) {
+            case "cartesian":
+                func = new MathJSFunction(funcstr || "f(x) = " + obj.func[0], obj.variables);
+                break;
+            case "polar":
+                func = new MathJSPolarFunction(funcstr || "f(a) = " + obj.func[0], obj.variables);
+                break;
+            case "parametric":
+                func = new MathJSParametricFunction(obj.func[0], obj.func[1], obj.variables);
+                break;
+            default:
+                func = null;
+        }
     }
 
     if (isNull(func)) return;
@@ -358,8 +443,10 @@ Require([
     "/assets/js/tblib/loader.js",
     "/assets/js/tblib/math.js",
     "/assets/js/tblib/ui.js",
-    "/assets/js/jswm2.js"
+    "/assets/js/jswm2.js",
+    "/assets/js/math.min.js"
 ], function () {
+
 
     function CrtPlane3(svg, parent) {
         if (isNull(parent)) parent = $(svg).parent()[0];
@@ -524,25 +611,14 @@ Require([
         else {
             cplane.updateSettings(CrtPlane3.MasterSettings, "settings");
             var demoObjects = [
-                new PolynomialFunc(3, 1 / 5, -3, -2),
+                new MathJSFunction("f(x) = 3x^3 + (1/5)x^2 - 3x - 2"),
                 //new RelationFunc(2, 3, 10),
-                new MathFunction(function (x) {
-                    return Math.sin(x);
-                }),
-                new MathFunction(function (x) {
-                    return Math.pow(2, x);
-                }),
-                new PolarFunction(function (a) {
-                    return 2 * Math.sin(4 * a);
-                }),
-                new ParametricFunc.lissajous(0.4, 1),
-                new ParametricFunc.Variable(
-                    function (t) {
-                        return Math.sin(this.a * t);
-                    },
-                    function (t) {
-                        return Math.cos(this.b * t);
-                    },
+                new MathJSFunction("f(x) = sin(x)"),
+                new MathJSFunction("f(x) = 2^x"),
+                new MathJSPolarFunction("f(a) = 2sin(4a)"),
+                new MathJSParametricFunction(
+                    "sin(a t)",
+                    "cos(b t)",
                     {a: 1, b: 0.9}
                 )
             ];
@@ -652,8 +728,8 @@ Require([
 
         function evalExpression(expr, el) {
             try {
-                var f = MathFunction.Variable.parse(expr, getVariableObject);
-                var val = f.eval();
+                var f = math.parse(expr).compile();
+                var val = f.eval(getVariableObject());
                 if (el) $(el).val(val);
                 return isNull(val) ? 0 : val;
             } catch (e) {
@@ -674,8 +750,8 @@ Require([
                 case "parametric":
                     var str = obj.func.toString();
                     return normalise(str)
-                        .replace(/^\(/, "")
-                        .replace(/\)$/, "")
+                        .replace(/^[\(\[]/, "")
+                        .replace(/[\)\]]$/, "")
                         .split(", ");
                 default:
                     return [];
@@ -725,7 +801,7 @@ Require([
                 "new": null
             };
             if (obj.func.variables) obj.func.variables.forEach(function (e) {
-                vars[e] = obj.func[e];
+                vars[e] = obj.func.scope[e];
             });
 
             var selection = $v.find(".variable-select").val();
@@ -801,13 +877,13 @@ Require([
                 var inputList = $(".function-inputs.show .function-input").map(function (i, e) { return $(e).val(); });
                 switch ($(".function-type").val()) {
                     case "cartesian":
-                        result = MathFunction.Variable.parse("f(x) = " + inputList[0], getVariableObject());
+                        result = new MathJSFunction("f(x) = " + inputList[0], getVariableObject());
                         break;
                     case "polar":
-                        result = PolarFunction.Variable.parse("f(a) = " + inputList[0], getVariableObject());
+                        result = new MathJSPolarFunction("f(a) = " + inputList[0], getVariableObject());
                         break;
                     case "parametric":
-                        result = ParametricFunc.Variable.parse("f(t) = " + inputList[0], "f(t) = " + inputList[1], getVariableObject());
+                        result = new MathJSParametricFunction(inputList[0], inputList[1], getVariableObject());
                         break;
                     default:
                         return null;
@@ -857,6 +933,8 @@ Require([
             updateObjectList();
             $(".object-list").val(id).trigger("update");
             if (!isNull(varname)) $(".variable-select").val(varname).trigger("update");
+
+            cplane.triggerEvent("save");
         }
 
         cplane.addEventHandler("post-update", updateObjectList);
@@ -881,6 +959,7 @@ Require([
             var prop = "objects." + obj.id + ".style.a";
             if (!cplane.plugins.animation) {
                 obj.visible = TBI.UI.isToggled(this);
+                cplane.triggerEvent("save");
                 return;
             }
 
@@ -901,12 +980,14 @@ Require([
         bindToSelectedObject(".remove-function", function (obj) {
             if (!cplane.plugins.animation) {
                 delete cplane.objects[obj.id];
+                cplane.triggerEvent("save");
                 return;
             }
 
             cplane.addAnimation("objects."+obj.id+".style.a", 0, 600, null, function (plane) {
                 delete plane.objects[obj.id];
                 $(".object-list").val("-").trigger("update");
+                cplane.triggerEvent("save");
             });
         }, "click");
 
@@ -918,6 +999,7 @@ Require([
         $(".return-to-origin").click(function () {
             if (!cplane.plugins.animation) {
                 cplane.state.center = new Vector2D(0, 0);
+                cplane.triggerEvent("save");
                 return;
             }
             cplane.addAnimation("state.center", Vector2D.zero);
@@ -1104,8 +1186,8 @@ Require([
                 if (isNull(sel)) {
                     $c.css("left", screen.x)
                         .css("top", screen.y);
-                } else switch (sel.func.type) {
-                    case MathFunction.Types.Cartesian:
+                } else switch (sel.func.type.toLowerCase()) {
+                    case "cartesian":
                         var y = sel.func.eval(coords.x);
 
                         $c.css("left", screen.x);
@@ -1113,8 +1195,8 @@ Require([
                             new Vector2D(y)).add(off).y);
                         break;
 
-                    case MathFunction.Types.Polar:
-                    case MathFunction.Types.Parametric:
+                    case "polar":
+                    case "parametric":
                     default:
                         $c.css("left", screen.x);
                         $c.css("top", screen.y);
@@ -1162,10 +1244,10 @@ Require([
 
                         measurementToolWindow =
                             toolWM.createWindow("Measurement", $(".measurement-tool-template").html(), {
-                                x: "80%",
-                                y: "80%",
-                                width: 140,
-                                height: 240,
+                                x: "50%",
+                                y: "50%",
+                                width: 300,
+                                height: 190,
                                 flags: JSWM.WindowFlags.bound | JSWM.WindowFlags.resize,
                                 onClose: function () {
                                     $("#tool-select-navigation")[0].checked = true;
@@ -1247,7 +1329,7 @@ Require([
                     && variable !== "new"
                     && variable !== "-") {
                 sliderTimers.push(new TBI.Timer(function (timer) {
-                    var val = obj.func[variable],
+                    var val = obj.func.scope[variable],
                         step = (interval / duration) * (max - min);
 
                     var newval = val + sign * step;
@@ -1265,11 +1347,11 @@ Require([
                         } else newval = max - (min - newval);
                     }
 
-                    if (isNaN(obj.func[variable]) || !cplane.objects[obj.id])
+                    if (isNaN(obj.func.scope[variable]) || !cplane.objects[obj.id])
                         return timer.clear();
 
                     // $s.val(newval).trigger("change");
-                    obj.func[variable] = newval;
+                    obj.func.scope[variable] = newval;
                     cplane.triggerNextUpdate = true;
                 }, interval, true, "cplane-" + obj.id + "-" + variable));
             } else {
@@ -1296,6 +1378,9 @@ Require([
                 if (t instanceof TBI.Timer) t.clear();
             });
             sliderTimers = [];
+        });
+        $(".save").click(function () {
+            cplane.triggerEvent("save", true);
         });
     });
 });

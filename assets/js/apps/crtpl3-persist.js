@@ -6,8 +6,8 @@ var crtpl3_persistPlugin = module.exports = new CrtPlanePlugin({
     settings: {
         persistency: {
             name: "crtpl3-save",
-            interval: -1,
-            notify: true
+            interval: 30e3,
+            notify: false
         }
     },
     iface: {
@@ -46,27 +46,32 @@ var crtpl3_persistPlugin = module.exports = new CrtPlanePlugin({
         }
     },
     creation: function (plane) {
-        plane.addEventHandler("save", function (plane, autosave) {
+        plane.addEventHandler("save", function (plane, notify, autosave) {
             var set = plane.settings.persistency;
             try {
                 localStorage.setItem(set.name, plane.save());
-                if (set.notify)
+                if (set.notify || notify)
                     TBI.log(autosave ? "Autosaved." : "Saved.");
             } catch (e) {
                 TBI.error("Failed to save: "+e.message);
             }
         });
         var autosave = function (save) {
-            if (save) plane.triggerEvent("save", true);
-            var interval = plane.settings.persistency.interval;
+            var set = plane.settings.persistency;
+            if (save) plane.triggerEvent("save", true, true);
+            var interval = set.interval;
             setTimeout(function () {
                 autosave(interval >= 0);
             }, interval < 0 ? 1000 : interval);
         };
         autosave(false);
 
-        $(window).bind("beforeunload", function () {
-            plane.triggerEvent("save");
-        });
+        if (!readCookie("crtpl3-not-first-time")) {
+            createCookie("crtpl3-not-first-time", 1);
+            $(window).bind("beforeunload", function (e) {
+                e.returnValue = "You might want to save your work before you go. This will be the last time this message will appear. Happy browsing!";
+                return e.returnValue;
+            });
+        }
     }
 });

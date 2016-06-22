@@ -35,9 +35,15 @@ var crtpl3_navPlugin = module.exports = new CrtPlanePlugin({
             else if (set.mode == "y-fixed") clampd.y = plane.state.extents.y;
 
             if (plane.plugins.animation)
-                plane.addAnimation("state.extents", clampd, animSet.durations.zoom);
-            else
+                plane.addAnimation("state.extents", clampd, animSet.durations.zoom, null, function (plane, curr) {
+                    if (plane.plugins.persistency)
+                        plane.triggerEvent("save");
+                });
+            else {
                 plane.state.extents = clampd;
+                if (plane.plugins.persistency)
+                    plane.triggerEvent("save");
+            }
             /*if (!set.fixedZoom && futureExtents.equals(clampd))
                 plane.addAnimation("state.center",
                     plane.state.center.multiply(factor),
