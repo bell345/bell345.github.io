@@ -1,0 +1,64 @@
+label {
+    margin:4px;
+    padding:4px 8px;
+}
+input[type='number'] {
+    width:80px;
+}
+.output-table {
+    display:none;
+}
+
+@keyframes blue-flash-anim {
+    0% {
+        color:#08d;
+        box-shadow:0 0 0 0 #06b;
+    }
+    100% {
+        color:#eee;
+        box-shadow:4px 4px 0 0 #06b;
+    }
+}
+@keyframes red-flash-anim {
+    0% {
+        color:#d22;
+        box-shadow:0 0 0 0 #b00;
+    }
+    100% {
+        color:#eee;
+        box-shadow:4px 4px 0 0 #b00;
+    }
+}
+
+.flash-blue {
+    -webkit-animation:blue-flash-anim 2s;
+    -moz-animation:blue-flash-anim 2s;
+    -o-animation:blue-flash-anim 2s;
+    animation:blue-flash-anim 2s;
+    background:#08d;
+    color:#eee;
+    box-shadow:4px 4px 0 0 #06b;
+}
+.flash-red {
+    -webkit-animation:red-flash-anim 2s;
+    -moz-animation:red-flash-anim 2s;
+    -o-animation:red-flash-anim 2s;
+    animation:red-flash-anim 2s;
+    background:#d22;
+    color:#eee;
+    box-shadow:4px 4px 0 0 #b00;
+}
+
+.possibility-output {
+    font-size:24px;
+    display:block;
+    text-align:center;
+    padding:8px 12px;
+}
+
+input[type].numbers-input {
+    font-size:48px;
+    padding:12px 18px;
+    display:block;
+    max-width:100%;
+}

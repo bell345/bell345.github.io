@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Thomas Bell</title>
+    <meta charset="utf-8" />
+    <base href="../../" />
+    <link rel="stylesheet" href="assets/css/site.css" />
+    <link rel="stylesheet" href="assets/css/test/bextree.css" />
+    <script src="assets/js/jquery2.min.js"></script>
+    <script src="assets/js/require.js"></script>
+    <script src="assets/js/test/bextree.js"></script>
+</head>
+<body>
+    <main>
+        <h2>Strike</h2>
+        <div class="control-row">
+            <input type="text" class="numbers-input" placeholder="Input Numbers" />
+        </div>
+        <div class="control-row">
+            <span class="possibility-output"></span>
+        </div>
+        <div class="control-row">
+            <label>Input Range</label>
+            <input type="number" class="number-input-range-min" value="1" />
+            <label> to </label>
+            <input type="number" class="number-input-range-max" value="10" />
+        </div>
+        <div class="control-row">
+            <label># of Input Numbers</label>
+            <input type="number" class="number-input-n" value="3" />
+        </div>
+        <div class="control-row">
+            <button class="random-numbers major">Generate Random Input Numbers</button>
+            <button class="check-possibility">Check that Inputs can produce Output Range</button>
+        </div>
+        <div class="control-row">
+            <label>Output Range</label>
+            <input type="number" class="number-output-range-min" value="1" />
+            <label> to </label>
+            <input type="number" class="number-output-range-max" value="10" />
+        </div>
+        <div class="control-row">
+            <button class="solve major">Solve for Output Range using Input</button>
+            <button class="clear-table">Clear Table</button>
+        </div>
+        <table class="main output-table">
+            <thead>
+                <tr>
+                    <th>Output</th>
+                    <th>Permutation</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </main>
+</body>
+</html>

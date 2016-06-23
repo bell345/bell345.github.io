@@ -180,6 +180,15 @@ main {
     margin: auto auto 28px;
 }
 
+@media (max-width: 800px) {
+    main {
+        width:auto;
+    }
+    body {
+        padding-top:0;
+    }
+}
+
 .thumb-gallery {
     font-size:0;
     text-align:center;
@@ -1078,6 +1087,7 @@ div.popup ul {
     bottom:0;
     right:0;
     width:30%;
+    min-width:350px;
     height:100%;
     z-index:9999;
     pointer-events:none;
@@ -1086,7 +1096,7 @@ div.popup ul {
     position:absolute;
     bottom:0;
     right:0;
-    padding:16px;
+    margin:16px;
     max-height:calc(100% - 84px);
     max-width:100%;
     overflow-y:auto;
