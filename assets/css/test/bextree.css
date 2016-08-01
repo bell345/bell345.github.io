@@ -8,6 +8,14 @@ input[type='number'] {
 .output-table {
     display:none;
 }
+.regen-button-header {
+    width:100px;
+}
+
+tr.impossible {
+    background:#d22;
+    color:#eee;
+}
 
 @keyframes blue-flash-anim {
     0% {
