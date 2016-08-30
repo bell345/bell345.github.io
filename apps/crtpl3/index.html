@@ -27,7 +27,7 @@
     <!-- END GOOGLE ANALYTICS -->
 </head>
 <body>
-    <div class="top-bar">
+    <div class="bar top-bar">
         <!-- TODO: Implement sliders, settings box -->
         <span class="zoom-rocker">
             <button class="zoom-out">-</button>
@@ -65,27 +65,6 @@
         </span>
 
         <div class="float-right">
-            <button class="icon add-function"
-                    data-icon-src="assets/res/icons/crtpl3/plus.svg"
-                    data-tooltip="Add function">
-            </button>
-            <span class="fn-defined-only">
-                <span class="separator"></span>
-                <button class="icon hide-function toggle"
-                        data-icon-src="assets/res/icons/crtpl3/eye.svg"
-                        data-tooltip="Hide">
-                </button>
-                <button class="icon remove-function"
-                        data-icon-src="assets/res/icons/crtpl3/cross.svg"
-                        data-tooltip="Remove">
-                </button>
-                <button class="icon edit-function"
-                        data-icon-src="assets/res/icons/crtpl3/pencil.svg"
-                        data-tooltip="Edit">
-                </button>
-            </span>
-            <select class="object-list styled" title="Object">
-            </select>
             <span class="separator"></span>
             <button class="icon save"
                     data-icon-src="assets/res/icons/crtpl3/save.svg"
@@ -95,6 +74,35 @@
                     data-icon-src="assets/res/icons/crtpl3/gear.svg"
                     data-tooltip="Settings">
             </button>
+        </div>
+    </div>
+    <div class="bar bottom-bar">
+        <div class="float-right">
+            <button class="icon add-function tooltip-up"
+                    data-icon-src="assets/res/icons/crtpl3/plus.svg"
+                    data-tooltip="Add function">
+            </button>
+            <button class="icon add-plot tooltip-up"
+                    data-icon-src="assets/res/icons/crtpl3/plus.svg"
+                    data-tooltip="Add plot">
+            </button>
+            <span class="fn-defined-only">
+                <span class="separator"></span>
+                <button class="icon hide-function toggle tooltip-up"
+                        data-icon-src="assets/res/icons/crtpl3/eye.svg"
+                        data-tooltip="Hide">
+                </button>
+                <button class="icon remove-function tooltip-up"
+                        data-icon-src="assets/res/icons/crtpl3/cross.svg"
+                        data-tooltip="Remove">
+                </button>
+                <button class="icon edit-function tooltip-up"
+                        data-icon-src="assets/res/icons/crtpl3/pencil.svg"
+                        data-tooltip="Edit">
+                </button>
+            </span>
+            <select class="object-list styled" title="Object">
+            </select>
         </div>
     </div>
     <div class="info-box fn-defined-only">
@@ -189,10 +197,51 @@
             </div>
         </div>
         <div class="info-box-view edit-plot-view">
-            <h3>Edit Plot</h3>
-            <p class="span">
-                Data (comma separated)
-            </p>
+            <input type="hidden" class="plot-id" />
+            <div class="control-row">
+                <label>Name: </label>
+                <input type="text" class="plot-name" />
+            </div>
+            <div class="control-row">
+                <label>Type: </label>
+                <select class="plot-type styled" title="Type">
+                    <option value="-" selected>&mdash;</option>
+                    <option value="line">Line Graph</option>
+                    <option value="scatter">Scatter Plot</option>
+                </select>
+            </div>
+            <div class="control-row">
+                <label>Coordinates: </label>
+                <textarea class="plot-input" title="Input" >(0, 1), (2, 3)</textarea>
+            </div>
+            <div class="control-row">
+                <button class="toggle plot-closed">Closed Shape</button>
+            </div>
+            <div class="control-row">
+                <h4><a href="" class="up-down" data-for=".plot-tform-controls">Transformation</a></h4>
+            </div>
+            <div class="control-row plot-tform-controls">
+                <div>
+                    <label>Transformation: </label>
+                    <input type="number" class="plot-matrix 0-0" value="1" />
+                    <input type="number" class="plot-matrix 0-1" value="0" />
+                </div>
+                <div>
+                    <input type="number" class="plot-matrix 1-0" value="0" />
+                    <input type="number" class="plot-matrix 1-1" value="1" />
+                </div>
+            </div>
+            <div class="control-row plot-tform-controls">
+                <button class="plot-matrix-reset">Reset Matrix</button>
+            </div>
+            <div class="control-row">
+                <label>Style: </label>
+                <input type="color" class="plot-colour" title="Colour" />
+            </div>
+            <div class="control-row type-selection-needed">
+                <button class="major edit-plot-submit">Apply</button>
+                <button class="edit-plot-cancel info-box-hide">Close</button>
+            </div>
         </div>
     </div>
     <div class="plane-container">

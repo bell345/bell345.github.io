@@ -50,7 +50,10 @@ MathJSFunction.deserialise = function (obj) {
     return new MathJSFunction(obj.expr, obj.scope);
 };
 MathJSFunction.prototype.toString = function () {
-    return this.node.toString().replaceAll(/ *function +/g, "");
+    return this.node.toString().replaceAll(/ *function +/g, "")
+        .replaceAll(/ +/g, "")
+        .replaceAll(/([+\-=])/g, " $1 ")
+        .replaceAll(/([,])/g, "$1 ");
 };
 
 function MathJSPolarFunction(expr, scope) {
@@ -93,6 +96,7 @@ MathJSParametricFunction.deserialise = function (obj) {
 
 function PlaneNode() {
     this.id = generateUUID();
+    this.name = "";
     this.visible = true;
     this.draw = function () {};
 }
@@ -339,9 +343,19 @@ var PlotTypes = {"line": "line", "scatter": "scatter"};
 
 function PlotNode(plot, type, style) {
     PlaneNode.call(this);
-    this.plot = plot;
+    this.plot = plot.map(function (o) {
+        if (o instanceof Vector2D)
+            return o;
+        else if (o.length && o.length == 2)
+            return new Vector2D(o[0], o[1]);
+        else if (!isNull(o['x']) && !isNull(o['y']))
+            return new Vector2D(o.x, o.y);
+    });
     this.type = type || "line";
     this.style = style ? new Colour(style) : generateRandomColour(0.8, 0.8);
+    this.closed = false;
+    this.matrix = [[1,0],[0,1]];
+
     this.draw = function (plane) {
         if (!this.visible) return;
         var threshold = plane.settings.functions.threshold;
@@ -360,12 +374,19 @@ function PlotNode(plot, type, style) {
                         builder.move(coord);
                         builder.line(e, true);
                     });
+                    builder.close();
                 }, function (path) {
                     path.style.stroke = self.style.toRGBA();
-                }, "cross", this.id);
+                }, [this.id, "plot"].join(" "), "plots");
 
                 this.plot.forEach(function (e) {
-                    var loc = plane.getLocationOfCoordinate(e);
+                    var image = new Vector2D(0, 0);
+                    image.x = self.matrix[0][0] * e.x
+                            + self.matrix[0][1] * e.y;
+                    image.y = self.matrix[1][0] * e.x
+                            + self.matrix[1][1] * e.y;
+
+                    var loc = plane.getLocationOfCoordinate(image);
                     if (loc.clamp(threshold.negate(), threshold).equals(loc))
                         path.append(loc);
                 });
@@ -376,11 +397,18 @@ function PlotNode(plot, type, style) {
                 path = new SVGPathBuilder(plane.helper);
 
                 this.plot.forEach(function (e) {
-                    var loc = plane.getLocationOfCoordinate(e);
+                    var image = new Vector2D(0, 0);
+                    image.x = self.matrix[0][0] * e.x
+                            + self.matrix[0][1] * e.y;
+                    image.y = self.matrix[1][0] * e.x
+                            + self.matrix[1][1] * e.y;
+
+                    var loc = plane.getLocationOfCoordinate(image);
                     if (loc.clamp(threshold.negate(), threshold).equals(loc))
                         path.append(loc);
                     else path.close();
                 });
+                path.close(self.closed);
 
                 var plot = path.apply([this.id, "plot"].join(" "), "plots");
                 plot.style.stroke = this.style.toRGBA();
@@ -391,10 +419,13 @@ function PlotNode(plot, type, style) {
     this.serialise = function () {
         var obj = {
             id: this.id,
+            name: this.name,
             visible: this.visible,
             plot: this.plot,
             type: this.type,
-            style: this.style.toRGBA()
+            style: this.style.toRGBA(),
+            closed: this.closed,
+            matrix: this.matrix
         };
         return JSON.stringify(obj);
     };
@@ -406,6 +437,13 @@ PlotNode.deserialise = function (str) {
     var node = new PlotNode(obj.plot, obj.type, obj.style);
     node.id = obj.id;
     node.visible = obj.visible;
+    node.closed = obj.closed;
+    node.name = obj.name;
+    node.matrix = [[1,0],[0,1]];
+    if (!isNull(obj.matrix) && !isNull(obj.matrix[0]) && !isNull(obj.matrix[1])) {
+        node.matrix = obj.matrix;
+    }
+
     return node;
 };
 
@@ -760,9 +798,11 @@ Require([
 
         function updateInfoBox() {
             var obj = getCurrentObject();
-            var $v = $(".info-box .edit-function-view");
+            var $v = $(".info-box .edit-function-view"),
+                $p = $(".info-box .edit-plot-view");
 
             if (isNull(obj)) {
+
                 $v.find(".function-id").val("");
                 $v.find(".function-type").val("cartesian").trigger("change");
                 $v.find(".function-colour").val(generateRandomColour(0.8, 0.8).toHex());
@@ -774,44 +814,75 @@ Require([
                 $v.find(".variable-select").val("new").trigger("change");
                 TBI.UI.toggleButton($v.find(".derivative-toggle")[0], false);
                 TBI.UI.toggleButton($v.find(".integral-toggle")[0], false);
-                return;
-            }
 
-            $v.find(".function-id").val(obj.id);
-            $v.find(".function-type")
-                .val(obj.func.type.toLowerCase())
-                .trigger("change");
-            $v.find(".function-colour").val(obj.style ? obj.style.toHex() : generateRandomColour().toHex());
-            $v.find(".function-start").val(isNull(obj.start) ? "" : obj.start);
-            $v.find(".function-end").val(isNull(obj.end) ? "" : obj.end);
-            $v.find(".function-resolution").val(obj.resolution);
-            TBI.UI.toggleButton($v.find(".derivative-toggle")[0], obj.derivative.visible);
-            TBI.UI.toggleButton($v.find(".integral-toggle")[0], obj.integral.visible);
+                $p.find(".plot-id").val("");
+                $p.find(".plot-type").val("line").trigger("change");
+                $p.find(".plot-colour").val(generateRandomColour(0.8, 0.8).toHex());
+                $p.find(".plot-matrix").find(".0-1,.1-0").val(0);
+                $p.find(".plot-matrix").find(".0-0,.1-1").val(1);
+                $p.find(".plot-name").val("");
+                TBI.UI.toggleButton($p.find(".plot-closed")[0], false);
+                $p.find(".plot-input").val("(0, 1), (2, 3)");
 
-            var inputs = objectToInputs(obj);
-            $v.find(".function-inputs.show .function-input")
-                .each(function (i, e) {
-                    if (i < inputs.length)
-                        $(e).val(inputs[i]);
-                    else
-                        $(e).val("");
+            } else if (obj instanceof FunctionNode) {
+
+                //switchView(".edit-function-view");
+                $v.find(".function-id").val(obj.id);
+                $v.find(".function-type")
+                    .val(obj.func.type.toLowerCase())
+                    .trigger("change");
+                $v.find(".function-colour").val(obj.style ? obj.style.toHex() : generateRandomColour().toHex());
+                $v.find(".function-start").val(isNull(obj.start) ? "" : obj.start);
+                $v.find(".function-end").val(isNull(obj.end) ? "" : obj.end);
+                $v.find(".function-resolution").val(obj.resolution);
+                TBI.UI.toggleButton($v.find(".derivative-toggle")[0], obj.derivative.visible);
+                TBI.UI.toggleButton($v.find(".integral-toggle")[0], obj.integral.visible);
+
+                var inputs = objectToInputs(obj);
+                $v.find(".function-inputs.show .function-input")
+                    .each(function (i, e) {
+                        if (i < inputs.length)
+                            $(e).val(inputs[i]);
+                        else
+                            $(e).val("");
+                    });
+
+                var vars = {
+                    "new": null
+                };
+                if (obj.func.variables) obj.func.variables.forEach(function (e) {
+                    vars[e] = obj.func.scope[e];
                 });
 
-            var vars = {
-                "new": null
-            };
-            if (obj.func.variables) obj.func.variables.forEach(function (e) {
-                vars[e] = obj.func.scope[e];
-            });
+                var selection = $v.find(".variable-select").val();
+                TBI.UI.fillSelect($v.find(".variable-select")[0], vars, function (option, prop, val) {
+                    option.innerHTML = prop;
+                    option.value = prop;
+                    option.dataset.value = val;
+                    return option;
+                });
+                $v.find(".variable-select").val(selection || "-").trigger("change");
 
-            var selection = $v.find(".variable-select").val();
-            TBI.UI.fillSelect($v.find(".variable-select")[0], vars, function (option, prop, val) {
-                option.innerHTML = prop;
-                option.value = prop;
-                option.dataset.value = val;
-                return option;
-            });
-            $v.find(".variable-select").val(selection || "-").trigger("change");
+            } else if (obj instanceof PlotNode) {
+
+                //switchView(".edit-plot-view");
+                $p.find(".plot-id").val(obj.id);
+                $p.find(".plot-type")
+                    .val(obj.type.toLowerCase())
+                    .trigger("change");
+                $p.find(".plot-colour").val(obj.style ? obj.style.toHex() : generateRandomColour().toHex());
+                $p.find(".plot-matrix.0-0").val(obj.matrix[0][0]);
+                $p.find(".plot-matrix.0-1").val(obj.matrix[0][1]);
+                $p.find(".plot-matrix.1-0").val(obj.matrix[1][0]);
+                $p.find(".plot-matrix.1-1").val(obj.matrix[1][1]);
+                $p.find(".plot-name").val(obj.name || "");
+                TBI.UI.toggleButton($p.find(".plot-closed")[0], obj.closed);
+
+                $p.find(".plot-input").val(obj.plot.map(function (v) { return v.toString(); }).join(", "));
+
+            } else {
+                TBI.error("Object type not supported");
+            }
 
         }
 
@@ -898,6 +969,22 @@ Require([
             }
         }
 
+        function inputsToPlot() {
+            try {
+                var result = null;
+                var coords = $(".plot-input").val().replaceAll(/(^\(|\)$)/g, "").split(/\), *\(/);
+                coords = coords.map(function (c) {
+                    var parts = c.split(/, */).map(parseFloat);
+                    return new Vector2D(parts[0], parts[1]);
+                });
+
+                return coords;
+            } catch (e) {
+                TBI.error("Plot failed to parse: " + e.message);
+                return null;
+            }
+        }
+
         function submitFunction() {
             var varname = setVariable();
 
@@ -933,6 +1020,42 @@ Require([
             updateObjectList();
             $(".object-list").val(id).trigger("update");
             if (!isNull(varname)) $(".variable-select").val(varname).trigger("update");
+
+            cplane.triggerEvent("save");
+        }
+
+        function submitPlot() {
+            var id = $(".plot-id").val() || generateUUID();
+
+            var plot = inputsToPlot();
+            if (isNull(plot))
+                return TBI.error("Failed to save plot.");
+            var style = new Colour($(".plot-colour").val()) || Colours.black;
+            var name = $(".plot-name").val();
+            var closed = TBI.UI.isToggled($(".plot-closed")[0]);
+            var type = $(".plot-type").val();
+            var mat = [
+                [parseFloat($(".plot-matrix.0-0").val()), parseFloat($(".plot-matrix.0-1").val())],
+                [parseFloat($(".plot-matrix.1-0").val()), parseFloat($(".plot-matrix.1-1").val())]
+            ];
+
+            var obj = getCurrentObject();
+            if (isNull(obj)) obj = new PlotNode(plot, type, style);
+            else {
+                obj.plot = plot;
+                obj.type = type;
+                obj.style = style;
+            }
+
+            obj.id = id;
+            obj.closed = closed;
+            obj.name = name;
+            obj.matrix = mat;
+
+            cplane.objects[id] = obj;
+            cplane.triggerNextUpdate = true;
+            updateObjectList();
+            $(".object-list").val(id).trigger("update");
 
             cplane.triggerEvent("save");
         }
@@ -992,7 +1115,12 @@ Require([
         }, "click");
 
         bindToSelectedObject(".edit-function", function () {
-            switchView(".edit-function-view");
+            var obj = getCurrentObject();
+            if (obj instanceof FunctionNode)
+                switchView(".edit-function-view");
+            else if (obj instanceof PlotNode)
+                switchView(".edit-plot-view");
+
             updateInfoBox();
         }, "click");
 
@@ -1075,6 +1203,12 @@ Require([
             updateInfoBox();
         });
 
+        $(".add-plot").click(function () {
+            switchView(".edit-plot-view");
+            $(".object-list").val("-").trigger("change");
+            updateInfoBox();
+        });
+
         $(".variable-select").change(function () {
             var val = $(this).val();
             if (isNull(val) || val == "-") {
@@ -1126,6 +1260,18 @@ Require([
         $(".function-colour").on("change", submitFunction);
         $(".derivative-toggle").on("change", submitFunction);
         $(".integral-toggle").on("change", submitFunction);
+
+        $(".edit-plot-submit").click(submitPlot);
+        $(".plot-colour").on("change", submitPlot);
+        $(".plot-closed").on("change", submitPlot);
+        $(".plot-matrix").on("blur", submitPlot);
+        $(".plot-name").on("blur", submitPlot);
+
+        bindToSelectedObject(".plot-matrix-reset", function (obj) {
+            if (obj instanceof PlotNode)
+                obj.matrix = [[1,0],[0,1]];
+            updateInfoBox();
+        });
 
         var gotoBody = [
             "<form class='goto-form'>",

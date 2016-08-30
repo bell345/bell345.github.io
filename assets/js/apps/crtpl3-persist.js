@@ -58,7 +58,7 @@ var crtpl3_persistPlugin = module.exports = new CrtPlanePlugin({
         });
         var autosave = function (save) {
             var set = plane.settings.persistency;
-            if (save) plane.triggerEvent("save", true, true);
+            if (save) plane.triggerEvent("save", false, true);
             var interval = set.interval;
             setTimeout(function () {
                 autosave(interval >= 0);

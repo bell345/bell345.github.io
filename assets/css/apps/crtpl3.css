@@ -72,7 +72,7 @@ svg.plane .block-margin {
     stroke:none;
 }
 
-svg.plane .functions {
+svg.plane .functions, svg.plane .plots {
     stroke-width:4;
     cursor:pointer;
 }
@@ -90,20 +90,29 @@ svg.plane .selected {
     transition:0.2s all;
 }
 
-.top-bar {
+.bar {
     position:absolute;
-    top:0;
     left:0;
     right:0;
     height:58px;
     padding:6px 12px;
     background:#eee;
-    box-shadow:0 2px 8px 0 rgba(100,100,100,0.5);
     vertical-align:middle;
     z-index:99;
 }
-body.no-bar .top-bar {
+.top-bar {
+    top:0;
+    box-shadow:0 2px 8px 0 rgba(100,100,100,0.5);
+}
+.bottom-bar {
+    bottom:0;
+    box-shadow:0 -2px 8px 0 rgba(100,100,100,0.5);
+}
+body.no-bar .bar {
     transform:translateY(-100%);
+}
+body.no-bar .bottom-bar {
+    transform:translateY(100%);
 }
 .plane-container {
     position:absolute;
@@ -155,7 +164,7 @@ body.no-bar .plane-container {
     height:12px;
     width:4px;
 }
-.top-bar .separator {
+.bar .separator {
     margin:0 12px;
     width:2px;
     background:#aaa;
@@ -164,11 +173,11 @@ body.no-bar .plane-container {
     position:absolute;
     top:20%;
 }
-.top-bar .separator + * {
+.bar .separator + * {
     margin-left:32px;
 }
-.top-bar > span::before,
-.top-bar > span::after {
+.bar > span::before,
+.bar > span::after {
     content:"";
     display:inline-block;
 }
@@ -190,22 +199,22 @@ body.no-bar .plane-container {
 .icon.toggle::after, .icon.up-down::after {
     display:none;
 }
-.top-bar * {
+.bar * {
     vertical-align:top;
 }
-.top-bar button,
-.top-bar .button-like {
+.bar button,
+.bar .button-like {
     background:none;
     position:relative;
     transition:0.2s all, 0s box-shadow, 0s background;
 }
-.top-bar button:hover,
-.top-bar .button-like:hover {
+.bar button:hover,
+.bar .button-like:hover {
     box-shadow:1px 1px 2px 0 #aaa;
     background:#eee;
 }
-.top-bar button:active,
-.top-bar .button-like:active{
+.bar button:active,
+.bar .button-like:active{
     box-shadow:inset 1px 1px 2px 0 #aaa;
     background:#ddd;
 }
@@ -257,6 +266,11 @@ body.no-bar .plane-container {
     display:block;
 }
 
+*.tooltip-up[data-tooltip]::before {
+    border-color:#555 transparent transparent transparent;
+    border-width:8px 8px 0 8px;
+}
+
 *[data-tooltip]:hover::before,
 *[data-tooltip]:hover::after {
     top: 100%;
@@ -296,7 +310,16 @@ body.no-bar .plane-container {
     transform:none;
 }
 
-.top-bar .styled-select {
+*.tooltip-up[data-tooltip]::before,
+*.tooltip-up[data-tooltip]::after,
+*.tooltip-up[data-tooltip].on::after,
+*.tooltip-up[data-tooltip]:hover::after,
+*.tooltip-up[data-tooltip].on:hover::after {
+    bottom:100%;
+    top:initial;
+}
+
+.bar .styled-select {
     top:.2em;
     position:relative;
     margin-left:18px;
@@ -305,6 +328,10 @@ body.no-bar .plane-container {
 .styled-select .hidden {
     color:#555;
     background:#ccc;
+}
+
+.bottom-bar .styled-select ul.active {
+    bottom:100%;
 }
 
 .info-box {
@@ -394,7 +421,8 @@ input[type="number"] {
 }
 
 .variable-controls,
-.domain-controls {
+.domain-controls,
+.plot-tform-controls {
     display:none;
 }
 
