@@ -7,7 +7,7 @@ function factorial(n) {
         res *= i;
     return res;
 }
-var solve, ExprNode, start;
+var solve, solveMany, ExprNode, start;
 start = new Date().getTime();
 
 $(function () {
@@ -61,15 +61,18 @@ Require([
             if (!isNaN(+this.value))
                 return this.value.toString();
 
-            var b = function (op, x, y) { return "(" + x + " " + op + " " + y + ")"; };
+            var b = function (op, x, y) { return "(" + x + " " + op + " " + y + ")";},
+                c = function (c) { return (c.children && (c.children.length == 2)) ? "(" + c.toString() + ")" : c.toString(); };
 
-            if (this.children.length == 2)
-                return b(this.value, this.children[0].toString(), this.children[1].toString());
-            else if (this.children.length == 1)
+            if (this.children.length == 2) {
+                var child1 = c(this.children[0]),
+                    child2 = c(this.children[1]);
+                return child1 + " " + this.value + " " + child2;
+            } else if (this.children.length == 1)
                 switch (this.value) {
-                    case '-': return "-" + this.children[0].toString();
-                    case '~': return "~" + this.children[0].toString();
-                    case '!': return this.children[0].toString() + "!";
+                    case '-': return "-" + c(this.children[0]);
+                    case '~': return "~" + c(this.children[0]);
+                    case '!': return c(this.children[0]) + "!";
                     case 'sqrt': return "sqrt(" + this.children[0].toString() + ")";
                 }
             return this.value.toString();
@@ -121,6 +124,44 @@ Require([
         return rootNode;
     };
 
+    solveMany = function (inputs, outputs, maxTries) {
+        maxTries = maxTries || 100000;
+        function choice(a) { return a[Math.floor(Math.random() * a.length)]; }
+        var unary = ["!", "sqrt"],
+            binary = ["+", "-", "*", "/", "^"],
+            operators = unary.concat(binary),
+            n, rootNode, currResult, stack,
+            results = {},
+            tries = 0;
+
+        for (var i=0;i<outputs.length;i++)
+            results[outputs[i]] = null;
+
+        do {
+            stack = inputs.map(function (a) { return new ExprNode(a); });
+            stack.shuffle();
+
+            while (stack.length >= 2) {
+                var op = choice(operators);
+                if (unary.indexOf(op) != -1)
+                    stack.push(ExprNode.unary(op, stack.pop()));
+                else
+                    stack.push(ExprNode.binary(op, stack.pop(), stack.pop()));
+
+                stack.shuffle();
+            }
+
+            rootNode = stack.pop();
+            currResult = rootNode.eval();
+            for (var i=0;i<outputs.length;i++)
+                if (currResult == outputs[i])
+                    results[outputs[i]] = rootNode;
+
+        } while (tries++ < maxTries);
+
+        return results;
+    };
+
     function getInputs() {
         var inputField = $(".numbers-input").val();
         if (inputField.length == 0 || inputField.search(/[^, 0-9]/g) != -1) {
@@ -170,16 +211,19 @@ Require([
         $(".solve").click(function () {
             var min = parseInt($(".number-output-range-min").val());
             var max = parseInt($(".number-output-range-max").val());
+            function rangeInclusive(lo, hi) { for (var i=lo,a=[];i<=hi;i++) a.push(i); return a; }
 
             var inputs = getInputs();
             if (isNull(inputs)) return;
 
             var body = $(".output-table tbody");
             body.empty();
+
+            var results = solveMany(inputs, rangeInclusive(min, max), 5e4 * (max-min));
             for (var i=min;i<=max;i++) {
                 var row = document.createElement("tr");
 
-                var result = solve(inputs, i);
+                var result = results[i];
                 if (isNull(result))
                     $(row).addClass("impossible");
 
@@ -190,6 +234,25 @@ Require([
                 var resultCell = document.createElement("td");
                     resultCell.innerHTML = isNull(result) ? "" : result.toString();
                 row.appendChild(resultCell);
+
+                var retryCell = document.createElement("td");
+                    var retryButton = document.createElement("button");
+                        retryButton.innerHTML = "Retry";
+                        $(retryButton).click(function (i, row, resultCell) { return function () {
+                            var self = this;
+                            $(self).html("Working...");
+                            setTimeout(function () {
+                                var result = solve(inputs, i, 3e6);
+                                if (!isNull(result)) {
+                                    $(row).removeClass("impossible");
+                                    resultCell.innerHTML = result.toString();
+                                }
+                                $(self).html("Retry");
+                            }, 100);
+                        }}(i, row, resultCell));
+                    retryCell.appendChild(retryButton);
+                row.appendChild(retryCell);
+
                 body[0].appendChild(row);
             }
 
@@ -199,6 +262,7 @@ Require([
         $(".check-possibility").click(function () {
             var min = parseInt($(".number-output-range-min").val());
             var max = parseInt($(".number-output-range-max").val());
+            function rangeInclusive(lo, hi) { for (var i=lo,a=[];i<=hi;i++) a.push(i); return a; }
 
             var inputs = getInputs();
             if (isNull(inputs)) return;
@@ -209,8 +273,9 @@ Require([
             setTimeout(function () {
 
                 var impossible = false;
+                var results = solveMany(inputs, rangeInclusive(min, max), 5e5 * (max-min));
                 for (var i=min;i<=max;i++) {
-                    var result = solve(inputs, i, 5e5);
+                    var result = results[i];
                     if (isNull(result)) {
                         impossible = true;
                         break;

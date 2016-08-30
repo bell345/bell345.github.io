@@ -1,39 +1,39 @@
 {
-    "id": "test",
     "role": "project-declaration",
-    "path": "test",
-    "hidden": true,
     "version": 2,
+    "path": "test",
+    "id": "test",
     "projects": [
         {
-            "updated": "2016-06-23T18:23:13Z",
+            "id": "bextree",
+            "version": "1.1",
             "title": "Strike Solver",
-            "version": "1.0",
-            "id": "bextree"
+            "updated": "2016-08-01T20:10:36Z"
         },
         {
+            "id": "trigcircle",
+            "preview": "iframe",
+            "type": "app",
+            "version": "0.1",
+            "path": "$page_path/$id",
+            "preview_iframe": "$page_path/$id",
+            "description": "$path/desc.htm",
             "thumbnail": "assets/img/$id.png",
             "title": "Unit Circle Trigonometry",
-            "preview": "iframe",
-            "description": "$path/desc.htm",
-            "updated": "2015-05-01",
-            "path": "$page_path/$id",
-            "type": "app",
-            "id": "trigcircle",
-            "version": "0.1",
-            "preview_iframe": "$page_path/$id"
+            "updated": "2015-05-01"
         },
         {
+            "id": "phys2d",
+            "preview": "iframe",
+            "type": "app",
+            "version": "0.1",
+            "path": "$page_path/$id",
+            "preview_iframe": "$page_path/$id",
+            "description": "$path/desc.htm",
             "thumbnail": "assets/img/$id.png",
             "title": "2D Physics Engine",
-            "preview": "iframe",
-            "description": "$path/desc.htm",
-            "updated": "2015-04-27",
-            "path": "$page_path/$id",
-            "type": "app",
-            "id": "phys2d",
-            "version": "0.1",
-            "preview_iframe": "$page_path/$id"
+            "updated": "2015-04-27"
         }
-    ]
+    ],
+    "hidden": true
 }
