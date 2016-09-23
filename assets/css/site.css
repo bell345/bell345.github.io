@@ -474,7 +474,7 @@ figcaption span.version {
 }
 
 img.img-error {
-    min-height:256px;
+    min-height:320px;
 }
 img.img-error::before {
     content:attr(alt);
@@ -486,7 +486,7 @@ img.img-error::before {
     color:#eee;
     font-weight:bold;
     font-size:24px;
-    line-height:256px;
+    line-height:320px;
     text-shadow:0 0 16px #000, 0 0 8px #555;
     background:url(../res/missing.png) center / 75% #aaa;
 }

@@ -7,14 +7,15 @@ from sys import argv, stderr
 from datetime import datetime, timedelta
 
 def bail_usage(msg=None):
-    print("{} file command [ID]".format(argv[0]))
+    print("{} file command [ID] [file2]".format(argv[0]))
     print("  command can be any of the following:")
     print("    list: lists all of the project names, versions and IDs.")
     print("    create: creates a new project in an interactive prompt.")
     print("    edit: edits an existing project's properties in an interactive"+\
                " prompt given a project ID.")
+    print("    remove: removes a project given a project ID.")
     print("")
-    print("(C) Thomas Bell 2015, MIT License")
+    print("(C) Thomas Bell 2015/2016, MIT License")
     print("")
     print(msg, file=stderr)
     exit(1)
@@ -24,26 +25,36 @@ def bail_usage(msg=None):
 if len(argv) < 2:
     bail_usage("Number of arguments required is 1. {0} arguments were given.".format(len(argv) - 1))
 
-fname = argv[1]
-if fname[-5::] != ".json":
-    if fname[-1::] != "/":
-        fname += "/"
-    fname += "declare.json"
+def get_filename(arg):
+    if arg[-5:] != ".json":
+        if arg[-1:] != "/":
+            arg += "/"
+        arg += "declare.json"
+    return arg
 
-shutil.copy2(fname, fname+".bak")
-fp = open(fname, "r")
+def load(arg):
+    global declaration
+    global old_declaration
+    global start_time
 
-declaration = json.load(fp)
+    fname = get_filename(arg)
 
-if declaration["version"] != 2:
-    exit("Version number invalid.")
-elif declaration["role"] != "project-declaration":
-    exit("Declaration is valid, but does not specify a project declaration.")
+    shutil.copy2(fname, fname+".bak")
+    fp = open(fname, "r")
 
-old_declaration = declaration
-start_time = datetime.now()
+    declaration = json.load(fp)
 
-fp.close()
+    if declaration["version"] != 2:
+        exit("Version number invalid.")
+    elif declaration["role"] != "project-declaration":
+        exit("Declaration is valid, but does not specify a project declaration.")
+
+    old_declaration = declaration
+    start_time = datetime.now()
+
+    fp.close()
+
+load(argv[1])
 
 if len(argv) < 3:
     bail_usage("Command needs to be supplied.")
@@ -57,6 +68,11 @@ def find_project(proj_id):
         if item["id"] == proj_id:
             return item
     return None
+
+def delete_project(proj_id):
+    for i,item in enumerate(declaration["projects"]):
+        if item["id"] == proj_id:
+            del declaration["projects"][i]
 
 def ask(prompt):
     return input(prompt)
@@ -149,13 +165,34 @@ def edit_project(proj_id=None):
 
     proj = find_project(proj_id)
     if proj == None:
-        exit("Unable to find project.")
+        exit("Unable to find project {}.".format(proj_id))
     
     prop_to_change = get_property(proj)
     edit_property(proj, prop_to_change)
     proj["updated"] = datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
+    save()
 
-    
+def remove_project(proj_id=None):
+    if proj_id == None:
+        exit("No project ID to remove was supplied.")
+
+    proj = find_project(proj_id)
+    if proj == None:
+        exit("Unable to find project {}.".format(proj_id))
+
+    print("Removing project {}:".format(proj_id))
+    for prop in proj:
+        print("{0} = {1}".format(prop, proj[prop]))
+
+    user_in = input("Are you sure you want to delete this project (y/n): ")
+    if user_in[0].lower() == 'y':
+        delete_project(proj_id)
+        save()
+        print("Project deleted.")
+
+    else:
+        print("Project not deleted.")
+
 if command == "create":
     new_project()
     save()
@@ -163,8 +200,11 @@ elif command == "edit":
     if len(argv) < 4:
         exit("Project ID needs to be supplied. Use the 'list' command to find valid project IDs.")
     edit_project(argv[3])
-    save()
 elif command == "list":
     list_projects()
+elif command  == "remove":
+    if len(argv) < 4:
+        exit("Project ID needs to be supplied. Use the 'list' command to find valid project IDs.")
+    remove_project(argv[3])
 else:
     exit("{} is not a valid command.".format(command))

@@ -1,0 +1,89 @@
+.morse-button-container {
+    text-align:center;
+}
+button.morse-button {
+    width:90px;
+    height:90px;
+    background:#09f;
+    border-radius:100%;
+}
+button.morse-button:hover {
+    background:#2bf;
+    box-shadow:inset 0 -8px 0 rgba(0,0,0,0.2);
+}
+button.morse-button:active {
+    background:#07d;
+    box-shadow:inset 0 8px 0 rgba(0,0,0,0.2);
+}
+.message-container {
+    text-align:center;
+    margin-top:24px;
+}
+.message {
+    width:40%;
+    max-width:40%;
+    min-width:40%;
+    min-height:200px;
+    font-family:monospace;
+    position:relative;
+}
+label {
+    padding:8px 24px;
+}
+.dit-dah-meter-container {
+    height:24px;
+    width:60%;
+    background:rgba(200,200,200,0.2);
+    display:inline-block;
+    position:relative;
+    box-shadow:inset 0 -2px 0 rgba(0,0,0,0.1);
+    border-radius:0 12px 12px 0;
+    margin-top:12px;
+}
+.dit-dah-meter-container::before {
+    content:"dah";
+    position:absolute;
+    left:25%;
+    right:0;
+    text-align:center;
+    bottom:115%;
+    font-size:16px;
+}
+.dit-indicator {
+    position:absolute;
+    top:0;
+    left:0;
+    height:100%;
+    width:25%;
+    background:rgba(0,0,0,0.1);
+    border-radius:0 10px 10px 0;
+}
+.dit-indicator::before {
+    content:"dit";
+    position:absolute;
+    left:0;
+    right:0;
+    text-align:center;
+    bottom:115%;
+    font-size:16px;
+}
+.dit-dah-meter-indicator {
+    display:inline-block;
+    background:#09f;
+    height:100%;
+    width:0;
+    position:absolute;
+    box-shadow:inset 0 -2px rgba(0,0,0,0.2);
+    border-radius:0 12px 12px 0;
+    left:0;
+}
+.center { text-align:center; }
+.encode-decode-container {
+    display:inline-block;
+}
+.encode-decode-container * {
+    display:block;
+    font-size:24px;
+    padding:10px 16px;
+    margin:12px 18px;
+}

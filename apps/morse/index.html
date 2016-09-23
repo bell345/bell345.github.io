@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Thomas Bell</title>
+    <meta charset="utf-8" />
+    <base href="../../" />
+    <link rel="stylesheet" href="assets/css/site.css" />
+    <link rel="stylesheet" href="assets/css/apps/morse.css" />
+    <script src="assets/js/jquery2.min.js"></script>
+    <script src="assets/js/require.js"></script>
+    <script src="assets/js/apps/morse.js"></script>
+</head>
+<body>
+    <main>
+        <h1>Morse Code</h1>
+        <div class="message-container control-row">
+            <textarea class="message decoded-message" placeholder="Decoded message (plain text)"></textarea>
+            <div class="encode-decode-container">
+                <button class="major encode-message">&rarr;</button>
+                <button class="encode-message-instant">&Rarr;</button>
+                <button class="major decode-message-instant">&larr;</button>
+            </div>
+            <textarea class="message encoded-message" placeholder="Encoded message (Morse code)"></textarea>
+        </div>
+        <div class="control-row center">
+            <button class="clear-message">Clear Message</button>
+            <button class="cancel-encoding">Cancel Encoding</button>
+        </div>
+        <div class="control-row center">
+            <label for="time-gap">Time Gap (ms)</label>
+            <input type="number" class="time-gap" id="time-gap" max="1000" min="10" step="10" />
+        </div>
+        <div class="control-row center">
+            <label for="frequency">Frequency of beep (Hz)</label>
+            <input type="number" class="frequency" id="frequency" max="48000" min="10" step="10" />
+        </div>
+        <div class="control-row center">
+            <div class="dit-dah-meter-container">
+                <div class="dit-indicator"></div>
+                <div class="dit-dah-meter-indicator"></div>
+            </div>
+        </div>
+        <div class="morse-button-container">
+            <button class="morse-button"></button>
+        </div>
+    </main>
+</body>
+</html>
