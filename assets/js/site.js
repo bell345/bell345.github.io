@@ -310,7 +310,7 @@ function updateLatestProjects() {
     });
 
     projectsToSort.slice(0, 5).forEach(function (e) {
-        var li = createInnerNavItem(innerNav[0], e.title, e.page.id + "#" + e.id, e.external);
+        var li = createInnerNavItem(innerNav[0], e.title, e.page.path + "#" + e.id, e.external);
         $(li).attr("data-updated", e["updated"]);
     });
 }

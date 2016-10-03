@@ -33,6 +33,7 @@ def get_filename(arg):
     return arg
 
 def load(arg):
+    global fname
     global declaration
     global old_declaration
     global start_time
@@ -113,7 +114,7 @@ def save():
 
     try:
         write_fp = open(fname, "w")
-        json.dump(declaration, write_fp, indent=4)
+        json.dump(declaration, write_fp, indent=4, sort_keys=True)
         write_fp.close()
     except Exception as e:
         rollback()

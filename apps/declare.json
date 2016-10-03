@@ -1,5 +1,18 @@
 {
+    "id": "apps",
+    "path": "apps",
     "projects": [
+        {
+            "id": "spotify-rand",
+            "path": "https://sigptr.me/real-randomizer/",
+            "preview": "repo",
+            "preview_repo": "bell345/real-randomizer",
+            "source": "https://github.com/bell345/real-randomizer",
+            "title": "Spotify Real Randomizer",
+            "type": "repo",
+            "updated": "2016-10-03T18:36:23Z",
+            "version": "1.2.4"
+        },
         {
             "id": "morse",
             "title": "Morse Code",
@@ -20,16 +33,6 @@
             "version": "0.2"
         },
         {
-            "type": "repo",
-            "source": "https://github.com/bell345/real-randomizer",
-            "id": "spotify-rand",
-            "preview_repo": "bell345/real-randomizer",
-            "preview": "repo",
-            "title": "Spotify Real Randomizer",
-            "updated": "2015-11-03T20:16:43Z",
-            "version": "1.2.4"
-        },
-        {
             "id": "fractal-gen",
             "title": "Fractal Generator",
             "updated": "2015-08-01T20:13:00Z",
@@ -42,13 +45,13 @@
             "version": "1.1"
         },
         {
-            "title": "Scholar Clicker Editor",
-            "type": "repo",
-            "path": "https://bell345.github.io/sclicker-editor",
             "id": "sc-edit",
-            "source": "https://github.com/bell345/sclicker-editor/tree/gh-pages",
+            "path": "https://bell345.github.io/sclicker-editor",
             "preview": "iframe",
             "preview_iframe": "https://bell345.github.io/sclicker-editor",
+            "source": "https://github.com/bell345/sclicker-editor/tree/gh-pages",
+            "title": "Scholar Clicker Editor",
+            "type": "repo",
             "updated": "2015-04-17",
             "version": "1.0"
         },
@@ -71,19 +74,17 @@
             "version": "3.4.4"
         },
         {
-            "type": "github",
-            "path": "https://github.com/bell345/logon-bg-changer/releases/latest",
             "id": "bgchanger",
-            "preview_repo": "bell345/logon-bg-changer",
-            "updated": "2015-03-30",
+            "path": "https://github.com/bell345/logon-bg-changer/releases/latest",
             "preview": "repo",
-            "title": "Logon BG Changer",
+            "preview_repo": "bell345/logon-bg-changer",
             "source": "https://github.com/bell345/logon-bg-changer",
+            "title": "Logon BG Changer",
+            "type": "github",
+            "updated": "2015-03-30",
             "version": "1.0.5492"
         }
     ],
-    "path": "apps",
-    "id": "apps",
     "role": "project-declaration",
     "version": 2
 }
