@@ -61,86 +61,6 @@ function sprintf(format) {
     return str;
 }
 
-// Creates a multi-dimensional array given the depths of the dimensions.
-Array.dimensional = function (lengths, initial) {
-    if (isNull(lengths)) lengths = [0];
-    Array.call(this);
-    var len = lengths.shift();
-    for (var i=0;i<len;i++) this.push(lengths.length==0?initial:new Array.dimensional(lengths, initial));
-    /*var _checkDimension = function (arr) {
-        var checked = false;
-        arr.forEach(function (el) {
-            if (el instanceof Array && !checked) {
-                currDimension++;
-                checked = true;
-                return _checkDimension(el, currDimension);
-            }
-        });
-        return currDimension;
-    };
-    Object.defineProperty(this, "dimension", {
-        get: function () { return _checkDimension(this, 1) },
-        enumerable: true
-    });*/
-    return this;
-};
-Array.dimensional.prototype = [];
-Array.dimensional.prototype.constructor = Array.dimensional;
-// Gemerates a dimensional array given a regular array.
-Array.dimensional.fromArray = function (arr) {
-    var a = new Array.dimensional([arr.length]);
-    for (var i in arr) if (arr.hasOwnProperty(i)) {
-        if (arr[i] instanceof Array) a[i] = Array.dimensional.fromArray(arr[i]);
-        else a[i] = arr[i];
-    }
-    return a;
-};
-// Copies a multi-dimensional array into another.
-Array.dimensional.prototype.copy = function () {
-    var a = new Array.dimensional([0]);
-    for (var i=0;i<this.length;i++) a.push(this[i]);
-    return a;
-};
-// replaces elements of an array given the source entry dimensions, the new array and its dimensions.
-Array.dimensional.prototype.replace = function (sdim, d, ddim) {
-    if (!(d instanceof Array.dimensional)) d = Array.dimensional.fromArray(d);
-    if (!(sdim instanceof Array.dimensional)) sdim = Array.dimensional.fromArray(sdim);
-    if (!(ddim instanceof Array.dimensional)) ddim = Array.dimensional.fromArray(ddim);
-    var sd = sdim.shift(),
-        dd = ddim.shift();
-    for (var i=sd[0],j=dd[0];i<sd[1],j<dd[1];i++,j++) {
-        if (this[i] instanceof Array.dimensional) this[i].replace(sdim.copy(), d[j], ddim.copy());
-        else this[i] = d[j];
-    }
-    return this;
-};
-// Turns a multi-dimensional array into a regular array.
-Array.dimensional.prototype.flatten = function () {
-    for (var i=0,a=[];i<this.length;i++) {
-        if (this[i] instanceof Array.dimensional) a = a.concat(this[i].flatten());
-        else a = a.concat(this[i]);
-    }
-    return a;
-};
-// Gets a section of a multi-dimensional array given entry and exit points for each dimension.
-Array.dimensional.prototype.getSection = function (sdim) {
-    var sd = sdim.shift(),
-        a = new Array.dimensional([0]);
-    if (!(sdim instanceof Array.dimensional)) sdim = Array.dimensional.fromArray(sdim);
-    for (var i=sd[0];i<sd[1];i++) {
-        if (this[i] instanceof Array.dimensional) a.push(this[i].getSection(sdim.copy()));
-        else a.push(this[i]);
-    }
-    return a;
-};
-// Transposes a two dimensional array.
-Array.dimensional.prototype.transpose2d = function (r) {
-    r = isNull(r) ? 1 : r;
-    for (var i=0,l=this[0].length,m=this.length,n=new Array.dimensional([l,m]);i<l;i++)
-        for (var j=0;j<m;j++) n[i][j] = this[j][i];
-    if (r > 1) return n.transpose2d(r-1);
-    else return n;
-};
 Object._oldToString = Object.prototype.toString;
 Object.oldToString = function (obj) {
     return Object._oldToString.call(obj);
@@ -1548,6 +1468,7 @@ function WideCanvas(cvs, expandElement) {
         this.expandElement = document.body;
     else this.expandElement = null;
 
+    this.bindings = [];
     this._loop();
 }
 WideCanvas.prototype = {
@@ -1583,7 +1504,6 @@ WideCanvas.prototype = {
     },
     loop: function () {},
 
-    bindings: [],
     bind: function (element, event, property, onEvent) {
         if (element instanceof Array || element instanceof jQuery.fn.init) {
             for (var i=0;i<element.length;i++)
@@ -1704,6 +1624,7 @@ function Wide3D(rootElement, expandElement) {
     this.camera = new THREE.PerspectiveCamera(75,
         this.element.getStyle("width") / this.element.getStyle("height"), 0.1, 1000);
 
+    this.bindings = [];
     this._loop();
 }
 Wide3D.prototype = {
@@ -1752,8 +1673,6 @@ Wide3D.prototype = {
     },
     loop: function () {},
 
-
-    bindings: [],
     bind: function (element, event, property, onEvent) {
         if (element instanceof Array || element instanceof jQuery.fn.init) {
             for (var i=0;i<element.length;i++)
